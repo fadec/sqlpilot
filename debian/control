@@ -1,0 +1,12 @@
+Source: sqlpilot
+Section: user/office
+Priority: optional
+Maintainer: Sam Danielson
+Build-Depends: debhelper (>= 4.0.0), intltool, hildon-base-lib-dev,
+ hildon-libs-dev, libgtk2.0-dev, libosso-gnomevfs2-dev,
+ libglib2.0-dev, libdbus-glib-1-dev, libosso-dev
+Standards-Version: 3.6.0
+
+Package: sqlpilot
+Architecture: any
+Description: pilot logbook.
