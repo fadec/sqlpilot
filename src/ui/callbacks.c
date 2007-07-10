@@ -222,13 +222,13 @@ void read_file_to_buffer ( MainView* mainview )
     /* try to get file info */
     vfs_result = gnome_vfs_get_file_info(mainview->file_name, &finfo, GNOME_VFS_FILE_INFO_DEFAULT);
     if ( vfs_result != GNOME_VFS_OK ) {
-        interface_error( MAEMOPAD_ERROR_OPEN_FAILED, mainview );
+        interface_error( SQLPILOT_ERROR_OPEN_FAILED, mainview );
         return;
     }
     /* try to create handle to file */
     vfs_result = gnome_vfs_open(&handle, mainview->file_name, GNOME_VFS_OPEN_READ);
     if ( vfs_result != GNOME_VFS_OK ) {
-        interface_error( MAEMOPAD_ERROR_OPEN_FAILED, mainview );
+        interface_error( SQLPILOT_ERROR_OPEN_FAILED, mainview );
         return;
     }
 
@@ -262,7 +262,7 @@ void write_buffer_to_file ( MainView* mainview )
     /* try to create handle to file */
     vfs_result = gnome_vfs_create(&handle, mainview->file_name, GNOME_VFS_OPEN_WRITE, 0, 0600);
     if ( vfs_result != GNOME_VFS_OK ) {
-        interface_error( MAEMOPAD_ERROR_SAVE_FAILED, mainview );
+        interface_error( SQLPILOT_ERROR_SAVE_FAILED, mainview );
         return;
     }
 

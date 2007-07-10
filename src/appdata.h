@@ -1,6 +1,6 @@
 
-#ifndef MAEMOPAD_APPDATA_H
-#define MAEMOPAD_APPDATA_H
+#ifndef SQLPILOT_APPDATA_H
+#define SQLPILOT_APPDATA_H
 
 #include <libosso.h>
 

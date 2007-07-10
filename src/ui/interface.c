@@ -140,19 +140,19 @@ void interface_error( SqlpilotError me, MainView *main )
 
     switch (me) {
 
-    case MAEMOPAD_ERROR_INVALID_URI:
+    case SQLPILOT_ERROR_INVALID_URI:
         msg = g_strdup( _("sqlpilot_invalid_uri") );
         break;
 
-    case MAEMOPAD_ERROR_SAVE_FAILED:
+    case SQLPILOT_ERROR_SAVE_FAILED:
         msg = g_strdup( _("sqlpilot_save_failed") );
         break;
 
-    case MAEMOPAD_ERROR_OPEN_FAILED:
+    case SQLPILOT_ERROR_OPEN_FAILED:
         msg = g_strdup( _("sqlpilot_open_failed") );
         break;
 
-    case MAEMOPAD_NO_ERROR:
+    case SQLPILOT_NO_ERROR:
         return;
 
     default:
