@@ -9,7 +9,7 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 AC_PROG_LIBTOOL
-AC_PROG_INTLTOOL([0.23])
+AC_PROG_INTLTOOL
 AC_HEADER_STDC
 
 # Option to enable debugging
@@ -24,17 +24,17 @@ else
 fi
 
 # Hildon library dependsncies
-PKG_CHECK_MODULES(HILDON, hildon-libs >= 0.9.50 hildon-fm libossohelp)
-AC_SUBST(HILDON_LIBS)
-AC_SUBST(HILDON_CFLAGS)
+#PKG_CHECK_MODULES(HILDON, hildon-libs >= 0.9.50 hildon-fm libossohelp)
+#AC_SUBST(HILDON_LIBS)
+#AC_SUBST(HILDON_CFLAGS)
 
 # Only used for the .service file path
-PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= 0.60)
+#PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= 0.60)
 
 # OSSO application framework dependencies
-PKG_CHECK_MODULES(OSSO, osso-af-settings >= 0.8.5 libosso >= 0.9.17 gnome-vfs-2.0 >= 2.8.4.11 gnome-vfs-module-2.0 >= 2.8.4.11)
-AC_SUBST(OSSO_LIBS)
-AC_SUBST(OSSO_CFLAGS)
+#PKG_CHECK_MODULES(OSSO, osso-af-settings >= 0.8.5 libosso >= 0.9.17 gnome-vfs-2.0 >= 2.8.4.11 gnome-vfs-module-2.0 >= 2.8.4.11)
+#AC_SUBST(OSSO_LIBS)
+#AC_SUBST(OSSO_CFLAGS)
 
 # Localisation
 GETTEXT_PACKAGE=$PACKAGE
