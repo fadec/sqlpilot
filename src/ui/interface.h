@@ -77,9 +77,5 @@ struct _MainView
 /* Publics: */
 MainView* interface_main_view_new( AppData* data );
 void interface_main_view_destroy( MainView* main );
-char* interface_file_chooser( MainView* main, GtkFileChooserAction action );
-PangoFontDescription* interface_font_chooser( MainView * main );
-gint interface_save_changes_note( MainView* main );
-void interface_error( SqlpilotError me, MainView *main );
 
 #endif
