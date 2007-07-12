@@ -1,24 +1,15 @@
 
 #include <gtk/gtk.h>
 
-#include <libintl.h>
-#include <locale.h>
+// For future localization
+#define _(String) String
 
-#define _(String) gettext(String)
-
-#include <config.h>
-
-#include <ui/interface.h>
+#include "ui/interface.h"
 
 int main( int argc, char* argv[] )
 {
     GtkWidget* main_window;
     
-    setlocale ( LC_ALL, "" );
-    bindtextdomain ( GETTEXT_PACKAGE, LOCALEDIR );
-    bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-    textdomain ( GETTEXT_PACKAGE );
-
     gtk_init( &argc, &argv );
 
     g_set_application_name ( _("Sql Pilot") );

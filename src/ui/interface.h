@@ -4,7 +4,7 @@
 
 #include <gtk/gtk.h>
 
-#define _(String) gettext(String)
+#define _(String) String
 
 /* confirmation responses */
 #define CONFRESP_YES 1
