@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=0.1
+Type=Application
+Name=SqlPilot
+Exec=/usr/bin/sqlpilot
+Icon=sqlpilot
+X-Window-Icon=sqlpilot
+X-Window-Icon-Dimmed=sqlpilot
+X-Osso-Service=sqlpilot
+X-Osso-Type=application/x-executable

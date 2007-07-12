@@ -1,0 +1,4 @@
+# List of source files to be localized
+
+../src/main.c
+../src/ui/interface.c
