@@ -30,3 +30,7 @@ scm-clean:
 
 wc:
 	@wc `find -name *.c` `find -name *.h`
+
+db-reset:
+	-rm -f logbook.db
+	sqlite3 -init logbook.sql logbook.db
