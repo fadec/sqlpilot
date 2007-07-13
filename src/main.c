@@ -4,24 +4,27 @@
 // For future localization
 #define _(String) String
 
-#include "ui/interface.h"
+#include <sqlpilot.h>
+#include <ui/interface.h>
+#include <db/db.h>
 
 int main( int argc, char* argv[] )
 {
-    GtkWidget* main_window;
-    
-    gtk_init( &argc, &argv );
+	MainView* main_view;
+	DB* db;
 
-    g_set_application_name ( _("Sql Pilot") );
+	gtk_init( &argc, &argv );
 
-    main_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	g_set_application_name ( _("Sql Pilot") );
 
-    gtk_signal_connect( G_OBJECT(main_window), "delete_event", gtk_main_quit, NULL );    
-    
-    /* Begin the main app */
-    gtk_widget_show ( main_window );
-    gtk_main();
+	db = db_open("logbook.db");
 
-    return 0;
+	main_view = interface_main_view_create();
+	gtk_widget_show ( main_view->window );
+	gtk_main();
+	interface_main_view_destroy(main_view);
+
+	db_close(db);
+	return 0;
 }     
 

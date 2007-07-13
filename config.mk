@@ -1,3 +1,5 @@
+## Makefile configuration
+
 # sqlpilot version
 VERSION = 0.0
 
@@ -10,13 +12,13 @@ MANPREFIX = ${PREFIX}/share/man
 
 # includes and libs
 INCS = -Isrc -I${PREFIX}/include -I/usr/include `pkg-config gtk+-2.0 --cflags`
-LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm `pkg-config gtk+-2.0 --libs`
+LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 `pkg-config gtk+-2.0 --libs`
 
 # flags
-CFLAGS = -Os ${INCS} -DVERSION=\"${VERSION}\"
-LDFLAGS = ${LIBS}
-#CFLAGS = -g -Wall -O2 ${INCS} -DVERSION=\"${VERSION}\"
-#LDFLAGS = -g ${LIBS}
+#CFLAGS = -Os ${INCS} -DVERSION=\"${VERSION}\"
+#LDFLAGS = ${LIBS}
+CFLAGS = -g -Wall -O2 ${INCS} -DVERSION=\"${VERSION}\"
+LDFLAGS = -g ${LIBS}
 
 # Solaris
 #CFLAGS = -fast ${INCS} -DVERSION=\"${VERSION}\"

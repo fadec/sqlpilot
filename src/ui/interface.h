@@ -20,4 +20,13 @@ typedef enum {
     SQLPILOT_ERROR_OPEN_FAILED
 } SqlpilotError;
 
+typedef struct _MainView MainView;
+struct _MainView {
+	GtkWidget *window;
+	GtkWidget *button;
+};
+
+MainView* interface_main_view_create();
+void interface_main_view_destroy(MainView *);
+
 #endif

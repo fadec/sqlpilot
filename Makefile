@@ -1,14 +1,20 @@
 include config.mk
 
 SRC = src/main.c \
+      src/db/db.c \
       src/ui/interface.c \
       src/ui/callbacks.c
+
+HEADERS = src/sqlpilot.h \
+	  src/db/db.h \
+	  src/ui/interface.h \
+	  src/ui/callbacks.h
 
 OBJ = ${SRC:.c=.o}
 
 all: sqlpilot
 
-${OBJ}: src/ui/interface.h src/ui/callbacks.h config.mk
+${OBJ}: ${HEADERS} config.mk
 
 sqlpilot: ${OBJ}
 	@${LD} -o $@ ${OBJ} ${LDFLAGS}
@@ -22,4 +28,5 @@ clean:
 scm-clean:
 	-rm -rf `svn stat | grep ^? | sed s/.......//`
 
-
+wc:
+	@wc `find -name *.c` `find -name *.h`
