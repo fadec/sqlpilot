@@ -21,7 +21,7 @@ sqlpilot: ${OBJ}
 #	@strip $@
 
 clean:
-	-rm -f `find -name *.o`
+	-rm -f `find -name '*.o'`
 	-rm -f core sqlpilot
 
 # Remove files and directories that are not under source control
@@ -29,8 +29,8 @@ scm-clean:
 	-rm -rf `svn stat | grep ^? | sed s/.......//`
 
 wc:
-	@wc `find -name *.c` `find -name *.h`
+	@wc `find -name '*.c'` `find -name '*.h'`
 
-db-reset:
+db-reset: logbook.sql
 	-rm -f logbook.db
 	sqlite3 -init logbook.sql logbook.db
