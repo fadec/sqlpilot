@@ -23,7 +23,6 @@ typedef enum {
 typedef struct _MainView MainView;
 struct _MainView {
 	GtkWidget *window;
-	GtkWidget *button;
 };
 
 MainView* interface_main_view_create();
