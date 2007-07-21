@@ -105,10 +105,9 @@ CREATE TABLE through_stops (
 -- ident   adep    aarr    aout    ain     adur
 -- appch   inst    ldgs    nite    XC
 
--- CA      XJT     121     EZ952A  crew    notes
--- 2196    EWR     ALB     19:20   20:05   01+05
--- ------  ---     ---     -----   -----   *****
--- ---     ---     ---     -----   --
+-- 2196    EWR     ALB     19:20   20:05   01+05   XJT
+-- ------  ---     ---     -----   -----   *****   EZ962A
+-- ---     ---     ---     -----   --      ---     notes
 
 -- CA      XJT     121     EZ952A  crew    notes
 -- 2196    EWR     ALB     19:20   20:25   01+05
