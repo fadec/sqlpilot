@@ -1,7 +1,6 @@
 
 #include <gtk/gtk.h>
 
-// For future localization
 #define _(String) String
 
 #include <sqlpilot.h>

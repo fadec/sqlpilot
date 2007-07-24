@@ -8,7 +8,5 @@ typedef enum {
 
 typedef sqlite3 DB;
 
-typedef build_tre
-
 DB* db_open(char*);
 void db_close(DB*);
