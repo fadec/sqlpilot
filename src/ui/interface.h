@@ -24,6 +24,7 @@ typedef struct _MainView MainView;
 struct _MainView {
 	GtkWidget *window;
 	GtkWidget *menu;
+	GtkWidget *flight;
 };
 
 MainView* interface_main_view_create();

@@ -1,18 +1,13 @@
 CREATE TABLE flights (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,aircraft_id INTEGER
-	,employer_id INTEGER
 	,position_id INTEGER
+	,scheduled_flight_id INTEGER
 	,departure_airport_id INTEGER
 	,arrival_airport_id INTEGER
-	,flight_number VARCHAR
-	,trip_number VARCHAR
 	,out_at DATETIME
 	,in_at DATETIME
 	,duration INTEGER
-	,scheduled_out_at DATETIME
-	,scheduled_in_at DATETIME
-	,scheduled_duration INTEGER
 	,night INTEGER
 	,instrument INTEGER
 	,simulated_instrument INTEGER
@@ -22,6 +17,35 @@ CREATE TABLE flights (
 	,night_landings INTEGER
 	,crew TEXT
 	,notes TEXT
+);
+
+CREATE TABLE scheduled_flights (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_number VARCHAR
+	,duty_period_id INTEGER
+	,departure_airport_id INTEGER
+	,arrival_airport_id INTEGER
+	,out_at DATETIME
+	,in_at DATETIME
+	,duration INTEGER
+);
+
+CREATE TABLE duty_periods (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,trip_id INTEGER
+	,sequence INTEGER
+);
+
+CREATE TABLE trips (
+	id INTEGER PRIMARY KEY AUTOINCREMNENT
+	,employer_id INTEGER
+	,trip_number VARCHAR
+);
+
+CREATE TABLE employers (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,ident CHAR
+	,name CHAR
 );
 
 CREATE TABLE positions (
@@ -34,12 +58,6 @@ CREATE TABLE positions (
 	,dual_given BOOLEAN
 	,dual_received BOOLEAN
 	,total BOOLEAN
-);
-
-CREATE TABLE employers (
-	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,ident CHAR
-	,name CHAR
 );
 
 CREATE TABLE aircraft (
@@ -97,7 +115,6 @@ CREATE TABLE through_stops (
 	,airport_id INTEGER
 	,sequence INTEGER
 );
-
 
 
 -- pos     emp     ops     trip    crew    notes
