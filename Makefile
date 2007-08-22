@@ -31,6 +31,6 @@ scm-clean:
 wc:
 	@wc `find -name '*.c'` `find -name '*.h'`
 
-db-reset: logbook.sql
-	-rm -f logbook.db
-	sqlite3 -init logbook.sql logbook.db
+db-reset: db/logbook.sql
+	-rm -f db/logbook.db
+	sqlite3 -init db/logbook.sql db/logbook.db
