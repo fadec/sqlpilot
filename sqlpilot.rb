@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'rubygems'
 require 'active_record'
 require 'gtk2'
@@ -9,6 +11,12 @@ ActiveRecord::Base.establish_connection({
 
 class Aircraft < ActiveRecord::Base
   set_table_name :aircraft
+  belongs_to :aircraft_type
+end
+
+class AircraftType < ActiveRecord::Base
+  set_table_name :aircraft_types
+  has_many :aircraft
 end
 
 class Flight < ActiveRecord::Base
@@ -30,21 +38,61 @@ end
 class Callbacks
   attr_accessor :interface
 
+
   def clean_exit
     Gtk.main_quit
   end
   def welcome
-    interface.set_view WelcomeView.new
+    interface.set_pane WelcomePane.new
+  end
+  def set_pane_aircraft
+    interface.set_pane AircraftPane.new
   end
 end
 
-class View
+class Pane
   attr_accessor :widget
 end
 
-class WelcomeView < View
+class WelcomePane < Pane
   def initialize
     @widget = Gtk::Label.new("Welcome to SQL Pilot")
+    @widget.show_all
+
+  end
+end
+
+class AircraftPane < Pane
+  def initialize
+    @widget = Gtk::HBox.new
+    build_interface
+  end
+
+  def build_interface
+    store = Gtk::TreeStore.new(Integer, String, String)
+    view = Gtk::TreeView.new store
+    ident_renderer = Gtk::CellRendererText.new
+    ident_renderer.editable = true
+    type_renderer = Gtk::CellRendererText.new
+    type_renderer.editable = true
+    ident_column = Gtk::TreeViewColumn.new("Ident", ident_renderer, :text => 1)
+    type_column = Gtk::TreeViewColumn.new("Type", type_renderer, :text => 2)
+    view.append_column ident_column
+    view.append_column type_column
+    ident_renderer.signal_connect("edited") do |renderer, path, data|
+      iter = store.get_iter path
+      iter[1] = data
+      Aircraft.find(iter[0]).update_attributes(:ident => data)
+    end
+    type_renderer.signal_connect("edited") { |a, b, c| puts a; puts b; puts c; }
+    Aircraft.find(:all).each do |a|
+      iter = store.insert(nil,1)
+      iter[0] = a.id
+      iter[1] = a.ident
+      iter[2] = a.aircraft_type.name
+    end
+    @widget.pack_start view
+    new_button = Gtk::Button.new("New")
     @widget.show_all
   end
 end
@@ -106,6 +154,9 @@ class Interface
     return @aircraft_menu if @aircraft_menu
     menu = Gtk::Menu.new
     item = Gtk::MenuItem.new("List")
+    item.signal_connect("activate") do
+      callbacks.set_pane_aircraft
+    end
     menu.append item
     item = Gtk::MenuItem.new("Add")
     menu.append item
@@ -120,13 +171,15 @@ class Interface
     @content_vbox ||= Gtk::VBox.new
   end
 
-  def set_view(view)
+  def set_pane(pane)
     content_vbox.remove @content if @content
-    @content = view.widget
+    @content = pane.widget
     content_vbox.pack_start @content
   end
 
 end
 
-
-SqlPilot.new.run if __FILE__ == $0
+def run
+  SqlPilot.new.run
+end
+run if __FILE__ == $0

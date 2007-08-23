@@ -63,10 +63,10 @@ CREATE TABLE positions (
 CREATE TABLE aircraft (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ident CHAR
-	,type_id INTEGER
+	,aircraft_type_id INTEGER
 );
 
-CREATE TABLE types (
+CREATE TABLE aircraft_types (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ident CHAR
 	,name CHAR
@@ -198,9 +198,9 @@ INSERT INTO approaches VALUES (2, 2, 1, 1);
 INSERT INTO employers VALUES (1, 'XJT', 'ExpressJet');
 INSERT INTO employers VALUES (2, 'PD', 'Piedmont Airlines');
 
-INSERT INTO types VALUES (1, 'EMB145XR', 'Embraer 145 XR', 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1);
-INSERT INTO types VALUES (2, 'PA28-161', 'Piper Warrior', 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1);
-INSERT INTO types VALUES (3, 'DH8', 'Dash 8', 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1);
+INSERT INTO aircraft_types VALUES (1, 'EMB145XR', 'Embraer 145 XR', 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1);
+INSERT INTO aircraft_types VALUES (2, 'PA28-161', 'Piper Warrior', 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1);
+INSERT INTO aircraft_types VALUES (3, 'DH8', 'Dash 8', 1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1);
 
 INSERT INTO aircraft VALUES (1, 'N12345', 1);
 INSERT INTO aircraft VALUES (2, 'N123ND', 2);
