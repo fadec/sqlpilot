@@ -20,6 +20,43 @@ class AircraftType < ActiveRecord::Base
 end
 
 class Flight < ActiveRecord::Base
+  belongs_to :aircraft
+  belongs_to :position
+  belongs_to :scheduled_flight
+  belongs_to :departure_airport
+  belongs_to :arrival_airport
+  has_many :through_stops
+  has_many :approaches
+end
+
+class ScheduledFlight < ActiveRecord::Base
+  belongs_to :duty_period
+  belongs_to :departure_airport
+  belongs_to :arrival_airport
+  has_many :flights
+end
+
+class DutyPeriod < ActiveRecord::Base
+  belongs_to :trip
+  has_many :scheduled_flights
+end
+
+class Trip < ActiveRecord::Base
+  belongs_to :employer
+  has_many :duty_periods
+end
+
+class Employer < ActiveRecord::Base
+  has_many :trips
+end
+
+class Airport < ActiveRecord::Base
+end
+
+class Approach < ActiveRecord::Base
+end
+
+class ApproachType < ActiveRecord::Base
 end
 
 class SqlPilot
@@ -38,7 +75,6 @@ end
 class Callbacks
   attr_accessor :interface
 
-
   def clean_exit
     Gtk.main_quit
   end
@@ -48,54 +84,109 @@ class Callbacks
   def set_pane_aircraft
     interface.set_pane AircraftPane.new
   end
-end
-
-class Pane
-  attr_accessor :widget
-end
-
-class WelcomePane < Pane
-  def initialize
-    @widget = Gtk::Label.new("Welcome to SQL Pilot")
-    @widget.show_all
-
+  def set_pane_airports
+    interface.set_pane AirportPane.new
   end
 end
 
-class AircraftPane < Pane
+class Pane
+  attr_accessor :container
+  
   def initialize
-    @widget = Gtk::HBox.new
+    @container = Gtk::HBox.new
     build_interface
   end
 
   def build_interface
-    store = Gtk::TreeStore.new(Integer, String, String)
-    view = Gtk::TreeView.new store
-    ident_renderer = Gtk::CellRendererText.new
-    ident_renderer.editable = true
-    type_renderer = Gtk::CellRendererText.new
-    type_renderer.editable = true
-    ident_column = Gtk::TreeViewColumn.new("Ident", ident_renderer, :text => 1)
-    type_column = Gtk::TreeViewColumn.new("Type", type_renderer, :text => 2)
-    view.append_column ident_column
-    view.append_column type_column
-    ident_renderer.signal_connect("edited") do |renderer, path, data|
-      iter = store.get_iter path
-      iter[1] = data
-      Aircraft.find(iter[0]).update_attributes(:ident => data)
-    end
-    type_renderer.signal_connect("edited") { |a, b, c| puts a; puts b; puts c; }
-    Aircraft.find(:all).each do |a|
-      iter = store.insert(nil,1)
-      iter[0] = a.id
-      iter[1] = a.ident
-      iter[2] = a.aircraft_type.name
-    end
-    @widget.pack_start view
-    new_button = Gtk::Button.new("New")
-    @widget.show_all
   end
 end
+
+class WelcomePane < Pane
+  def initialize
+    @container = Gtk::Label.new("Welcome to SQL Pilot")
+    @container.show_all
+  end
+end
+
+class AirportPane < Pane
+  def build_interface
+    records = Airport.find(:all)
+    grid = GridEditor.new records, [[:ident, "Ident"], [:utc_offset, "UTC Offset"]]
+    @container.pack_start grid.view
+    @container.show_all
+  end
+end
+
+class AircraftPane < Pane
+  def build_interface
+    aircraft = Aircraft.find :all
+    grid = GridEditor.new aircraft, [[String, :ident, "Ident"]]
+    @container.pack_start grid.view
+    new_button = Gtk::Button.new("New")
+    @container.show_all
+  end
+end
+
+# GridEditor.new(Aircraft.find(:all), [:ident => "Ident", :aircraft_type => "Type"]
+class GridEditor
+  attr_accessor :view
+
+  # GTK tree columns
+  CLASS_COLUMN = 0
+  ID_COLUMN = 1
+  DATA_COLUMNS_BEGIN = 2
+
+  # Constructor column arguments
+  TYPE = 0
+  METHOD = 1
+  HEADER = 2
+
+  def initialize(records, columns)
+    # Change this to add more columns
+    @store = Gtk::TreeStore.new Class, Integer, *columns.map { |c| c[TYPE] }
+    
+    @view = Gtk::TreeView.new @store
+
+    n = 0
+    records.each do |r|
+      iter = @store.insert(nil, 1)
+      iter[CLASS_COLUMN] = r.class
+      iter[ID_COLUMN] = r.id
+      n = DATA_COLUMNS_BEGIN
+      columns.each do |c|
+        iter[n] = r.send c[METHOD]
+        n += 1
+      end
+    end
+
+    n = DATA_COLUMNS_BEGIN
+    columns.each do |c|
+      renderer = Gtk::CellRendererText.new
+      renderer.editable = true
+      # This do block doesn't seem to work like a closure since it always prints the
+      # last value of n. No good.
+      renderer.signal_connect "edited" do |renderer, path, data|
+        iter = @store.get_iter path
+        rec = iter[CLASS_COLUMN].find(iter[ID_COLUMN])
+        if rec.update_attributes(c[METHOD] => data)
+          iter[n] = data
+        else
+          on_error(rec)
+        end
+      end
+      column = Gtk::TreeViewColumn.new(c[HEADER], renderer, :text => n)
+      @view.append_column column
+      n += 1
+    end
+    @view.show_all
+    self
+  end
+
+  def on_error(rec)
+    raise 'aaaaaah'
+  end
+end
+
 
 class Interface
 
@@ -159,6 +250,9 @@ class Interface
     end
     menu.append item
     item = Gtk::MenuItem.new("Add")
+    item.signal_connect("activate") do
+      callbacks.set_pane_airports
+    end
     menu.append item
     @aircraft_menu = menu
   end
@@ -173,7 +267,7 @@ class Interface
 
   def set_pane(pane)
     content_vbox.remove @content if @content
-    @content = pane.widget
+    @content = pane.container
     content_vbox.pack_start @content
   end
 
