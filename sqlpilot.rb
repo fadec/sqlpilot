@@ -4,6 +4,16 @@ require 'rubygems'
 require 'active_record'
 require 'gtk2'
 
+class Object
+  def send_methods(methods)
+    obj = self
+    methods.to_a.flatten.each do |meth|
+      obj = obj.send meth
+    end
+    obj
+  end
+end
+
 ActiveRecord::Base.establish_connection({
       :adapter => "sqlite3", 
       :dbfile => "db/logbook.db" 
@@ -120,6 +130,7 @@ end
 class AircraftPane < Pane
   def build_interface
     aircraft = Aircraft.find :all
+    #grid = GridEditor.new aircraft, [[String, :ident, "Ident"], [String, [:type, :ident], "Type"]
     grid = GridEditor.new aircraft, [[String, :ident, "Ident"]]
     @container.pack_start grid.view
     new_button = Gtk::Button.new("New")
@@ -138,7 +149,7 @@ class GridEditor
 
   # Constructor column arguments
   TYPE = 0
-  METHOD = 1
+  METHODS = 1
   HEADER = 2
 
   def initialize(records, columns)
@@ -154,7 +165,7 @@ class GridEditor
       iter[ID_COLUMN] = r.id
       n = DATA_COLUMNS_BEGIN
       columns.each do |c|
-        iter[n] = r.send c[METHOD]
+        iter[n] = get_attribute(r, c[METHODS])
         n += 1
       end
     end
@@ -163,17 +174,7 @@ class GridEditor
     columns.each do |c|
       renderer = Gtk::CellRendererText.new
       renderer.editable = true
-      # This do block doesn't seem to work like a closure since it always prints the
-      # last value of n. No good.
-      renderer.signal_connect "edited" do |renderer, path, data|
-        iter = @store.get_iter path
-        rec = iter[CLASS_COLUMN].find(iter[ID_COLUMN])
-        if rec.update_attributes(c[METHOD] => data)
-          iter[n] = data
-        else
-          on_error(rec)
-        end
-      end
+      connect_edit_function_object(renderer, c, n)
       column = Gtk::TreeViewColumn.new(c[HEADER], renderer, :text => n)
       @view.append_column column
       n += 1
@@ -181,6 +182,23 @@ class GridEditor
     @view.show_all
     self
   end
+
+  def connect_edit_function_object(renderer, c, n)
+    renderer.signal_connect "edited" do |renderer, path, data|
+      iter = @store.get_iter path
+      rec = iter[CLASS_COLUMN].find(iter[ID_COLUMN])
+      if rec.update_attributes(c[METHOD] => data)
+        iter[n] = data
+      else
+        on_error(rec)
+      end
+    end
+  end
+
+  def edit_function(renderer, path, data)
+
+  end
+
 
   def on_error(rec)
     raise 'aaaaaah'
