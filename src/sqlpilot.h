@@ -1,7 +1,6 @@
 
 
-typedef struct _SqlPilot SqlPilot;
-struct _SqlPilot {
+typedef struct SqlPilot SqlPilot;
+struct SqlPilot {
 	int i;
 };
-

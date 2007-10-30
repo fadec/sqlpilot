@@ -73,3 +73,11 @@ static void create_flight_cell(GtkWidget* container)
 	gtk_widget_show(sdep);
 
 }
+
+static void build_airport_manager(GtkWidget *container)
+{
+	GtkWidget *vbox;
+
+
+};
+

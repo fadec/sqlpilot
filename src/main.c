@@ -7,7 +7,7 @@
 #include <ui/interface.h>
 #include <db/db.h>
 
-int main( int argc, char* argv[] )
+int main( int argc, char **argv )
 {
 	MainView* main_view;
 	//DB* db;

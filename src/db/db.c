@@ -2,7 +2,9 @@
 #include <db/db.h>
 
 #include <stdio.h>
-#include <gtk/gtk.h>
+#include <string.h>
+#include <stdlib.h>
+#include <glib.h>
 
 DB* db_open(char* filename)
 {
@@ -16,7 +18,7 @@ DB* db_open(char* filename)
 		sqlite3_close(db);
 		exit(1);
 	}
-	return;
+	return db;
 }
 
 void db_close(DB* db)
@@ -24,44 +26,70 @@ void db_close(DB* db)
 	sqlite3_close( (sqlite3*) db );
 }
 
-enum
+DBResults *db_get_table(DB *db, const char *sql, char **errormsg)
 {
-	COL_NAME = 0,
-	COL_AGE,
-	NUM_COLS
-} ;
-
-GtkTreeModel* list_from_sql(void) //DB* db, char* sql)
-{
-	GtkListStore* store;
-	GtkTreeIter iter;
-
-	//store = gtk_list_store_newv(2, ...);
-	store = gtk_list_store_new (NUM_COLS, G_TYPE_STRING, G_TYPE_UINT);
+	char **data;
+	int nrow;
+	int ncolumn;
+	DBResults **results;
 	
-        /* Append a row and fill in some data */
-	gtk_list_store_append (store, &iter);
-	gtk_list_store_set (store, &iter,
-			COL_NAME, "Heinz El-Mann",
-			COL_AGE, 51,
-			-1);
+	if ((code = sqlite3_get_table(db, sql, &data, &nrow, &ncolumn, &errormsg)) != SQLITE_OK)
+	{
+		return NULL;
+	}
 
-	/* append another row and fill in some data */
-	gtk_list_store_append (store, &iter);
-	gtk_list_store_set (store, &iter,
-			COL_NAME, "Jane Doe",
-			COL_AGE, 23,
-			-1);
-
-	/* ... and a third row */
-	gtk_list_store_append (store, &iter);
-	gtk_list_store_set (store, &iter,
-			COL_NAME, "Joe Bungop",
-			COL_AGE, 91,
-			-1);
-
-	return GTK_TREE_MODEL (store);
-
-
+	table = malloc(sizeof(table));
+	table->
+	return table;
 }
+
+void db_free_results(DBResults *results)
+{
+	sqlite3_free_table(table->table);
+	free(table);
+}
+
+DBResultsList *db_get_list(DB *db, const char *sql, char **errormsg)
+{
+	sqlite3_stmt *stmt;
+	char *unused_sql;
+	int result_code;
+	int column_count;
+	int i;
+	unsigned char *text;
+	unsigned char **row;
+	GSList *list = NULL;
+	DBResults *results;
+
+	sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), &stmt, &unused_sql);
+	column_count = sqlite3_column_count(stmt);
+
+	while ((result_code = sqlite3_step(stmt)) == SQLITE_ROW)
+	{
+		row = malloc(sizeof(unsigned char*) * column_count);
+		//printf("%d\n", row);
+		for(i = 0; i < column_count; i++)
+		{
+			text = sqlite3_column_text(stmt, i);
+			row[i] = malloc(sqlite3_column_bytes(stmt, i) + 1);
+			strcpy(row[i], text);
+		}
+		list = g_slist_prepend(list, row);
+		//printf("%s\n", ((unsigned char **)list->data)[0]);
+	}
+
+	sqlite3_finalize(stmt);
+	
+	results = malloc(sizeof(DBResults));
+	results->column_count = column_count;
+	results->row_count = g_slist_length(list);
+	// I think reverse is in place - no new list is allocated??
+	list = g_slist_reverse(list);
+	results->list = list;
+	
+	return results;
+}
+
+const char **db_get_one(DB *db, const char *sql);
+
 
