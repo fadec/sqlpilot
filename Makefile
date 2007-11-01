@@ -13,22 +13,22 @@ HEADERS = src/db/db.h \
 	  src/ui/interface.h \
 	  src/ui/callbacks.h
 
-PROG_HEADERS = src/sqlpilot.h ${HEADERS}
+APP_HEADERS = src/sqlpilot.h ${HEADERS}
 
 TEST_HEADERS = test/test.h ${HEADERS}
 
-PROG_OBJ = ${PROG_SRC:.c=.o}
+APP_OBJ = ${PROG_SRC:.c=.o}
 
 TEST_OBJ = ${TEST_SRC:.c=.o}
 
-build: sqlpilot
+app: sqlpilot
 
-${PROG_OBJ}: ${PROG_HEADERS} config.mk
+${APP_OBJ}: ${APP_HEADERS} config.mk
 
 ${TEST_OBJ}: ${TEST_HEADERS} config.mk
 
-sqlpilot: ${PROG_OBJ}
-	${LD} -o $@ ${PROG_OBJ} ${LDFLAGS}
+sqlpilot: ${APP_OBJ}
+	${LD} -o $@ ${APP_OBJ} ${LDFLAGS}
 #	@strip $@
 
 clean:

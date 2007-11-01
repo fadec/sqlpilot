@@ -6,5 +6,5 @@
 
 void test_init(void);
 int test(void *test_function(void));
-int assert_equal_int(int a, int b);
+int assert(int);
 int assert_equal_str(const char *, const char *);

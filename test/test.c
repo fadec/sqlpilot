@@ -25,18 +25,23 @@ void test_init()
 	ntests = nassertions = nfailures = 0;
 }
 
+void test_finalize()
+{
+	printf("\n%d tests, %d assertions, %d failures\n", ntests, nassertions, nfailures);
+}
+
 int test(void *test_function(void))
 {
 	ntests++;
 	test_function();
 }
 
-int assert_equal_int(int a, int b)
+int assert(int perhaps)
 {
-	return (a == b) ? pass() : fail();
+	return perhaps ? pass() : fail();
 }
 
 int assert_equal_str(const char *a, const char *b)
 {
-	return ((strlen(a) == strlen(b)) && (!strcmp(a, b))) ? pass() : fail();
+	return assert((strlen(a) == strlen(b)) && (!strcmp(a, b)));
 }

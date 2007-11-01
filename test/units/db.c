@@ -6,26 +6,20 @@ void test_db()
 {
 	DB *mydb;
 	DBResults *results;
-	GSList *row;
-	int code;
+	char *errormsg;
 
 	mydb = db_open("test.db");
-	results = db_get_many(mydb, "select * from memos;");
+	results = db_get_table(mydb, "select * from memos;", &errormsg);
 
-	row = results->list;
-	assert_equal_str(((unsigned char **)(row->data))[0], "Hello");
+	assert_equal_str(db_results_table_lookup(results, 0, 0), "Hello");
+	assert_equal_str(db_results_table_lookup(results, 0, 1), "World");
+	assert_equal_str(db_results_table_lookup(results, 1, 0), "Yes");
+	assert_equal_str(db_results_table_lookup(results, 1, 1), "No");
 
-	char **table;
-	int nrow;
-	int ncolumn;
-	char *errormsg;
-	
-	if ((code = sqlite3_get_table(mydb, "select * from memos", &table, &nrow, &ncolumn, &errormsg)) == SQLITE_OK)
-	{
-		printf("%s\n", table[0]);
-	}
-	assert_equal_
-	
+	assert_equal_str(db_results_column_name(results, 0), "subject");
+	assert_equal_str(db_results_column_name(results, 1), "body");
+
+	db_results_free(results);
 	db_close(mydb);
 	return 0;
 }
@@ -34,6 +28,7 @@ int main(int argc, char **argv)
 {
 	test_init();
 	test(&test_db);
+	test_finalize();
 	return 0;
 }
 

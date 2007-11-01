@@ -10,7 +10,6 @@ DB* db_open(char* filename)
 {
 	DB* db;
 	int rc;
-	char *errmsg = 0;
 
 	rc = sqlite3_open(filename, &db);
 	if( rc ){
@@ -31,32 +30,50 @@ DBResults *db_get_table(DB *db, const char *sql, char **errormsg)
 	char **data;
 	int nrow;
 	int ncolumn;
-	DBResults **results;
+	DBResults *results;
+	int code;
 	
-	if ((code = sqlite3_get_table(db, sql, &data, &nrow, &ncolumn, &errormsg)) != SQLITE_OK)
+	if ((code = sqlite3_get_table(db, sql, &data, &nrow, &ncolumn, errormsg)) != SQLITE_OK)
 	{
 		return NULL;
 	}
 
-	table = malloc(sizeof(table));
-	table->
-	return table;
+	results = malloc(sizeof(DBResults));
+	results->column_names = data;
+	results->table = data + ncolumn;
+	results->column_count = ncolumn;
+	results->row_count = ncolumn;
+	return results;
 }
 
-void db_free_results(DBResults *results)
+void db_results_free(DBResults *results)
 {
-	sqlite3_free_table(table->table);
-	free(table);
+	sqlite3_free_table(results->column_names); // column_names are actually the beginning of the sqlite3 allocated structure
+	results->table = NULL;
+	free(results);
+	results = NULL;
 }
 
-DBResultsList *db_get_list(DB *db, const char *sql, char **errormsg)
+char *db_results_table_lookup(DBResults *results, int row, int column)
+{
+	return results->table[row * results->column_count + column];
+}
+
+char *db_results_column_name(DBResults *results, int column)
+{
+	return results->column_names[column];
+}
+
+
+// incomplete
+DBResults *db_get_list(DB *db, const char *sql, char **errormsg)
 {
 	sqlite3_stmt *stmt;
-	char *unused_sql;
+	const char *unused_sql;
 	int result_code;
 	int column_count;
 	int i;
-	unsigned char *text;
+	const unsigned char *text;
 	unsigned char **row;
 	GSList *list = NULL;
 	DBResults *results;
@@ -72,7 +89,7 @@ DBResultsList *db_get_list(DB *db, const char *sql, char **errormsg)
 		{
 			text = sqlite3_column_text(stmt, i);
 			row[i] = malloc(sqlite3_column_bytes(stmt, i) + 1);
-			strcpy(row[i], text);
+			strcpy( ((char **)row)[i], (char *)text);
 		}
 		list = g_slist_prepend(list, row);
 		//printf("%s\n", ((unsigned char **)list->data)[0]);

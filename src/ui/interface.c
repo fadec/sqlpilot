@@ -2,6 +2,7 @@
 #include <ui/interface.h>
 #include <ui/callbacks.h>
 #include <gtk/gtk.h>
+#include <sqlite3.h>
 #include <libintl.h>
 
 
@@ -81,3 +82,15 @@ static void build_airport_manager(GtkWidget *container)
 
 };
 
+GtkListStore *create_list_store_from_sql(const char *sql)
+{
+}
+
+void create_list_store_columns(const char *sql, sqlite3_stmt stmt)
+{
+}
+
+void populate_list_store_from_sql(GtkListStore *model, const char *sql)
+{
+
+}
