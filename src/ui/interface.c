@@ -2,7 +2,7 @@
 #include <ui/interface.h>
 #include <ui/callbacks.h>
 #include <gtk/gtk.h>
-#include <sqlite3.h>
+#include <db/db.h>
 #include <libintl.h>
 
 
@@ -75,22 +75,59 @@ static void create_flight_cell(GtkWidget* container)
 
 }
 
-static void build_airport_manager(GtkWidget *container)
+void build_airport_manager(GtkWidget *container)
 {
 	GtkWidget *vbox;
-
-
-};
-
-GtkListStore *create_list_store_from_sql(const char *sql)
-{
 }
 
-void create_list_store_columns(const char *sql, sqlite3_stmt stmt)
+GtkListStore *create_list_store_from_sql(DB *db, const char *sql)
 {
+	GtkListStore *store;
+	DBStatement *stmt;
+	int ncolumns;
+	const char *unused_sql;
+
+	db_prepare(db, sql, &stmt, &unused_sql);
+	store = gtk_list_store_new(0);
+	set_list_store_columns_for_stmt(store, stmt);
+	populate_list_store_from_stmt(store, stmt);
+
+	db_finalize(stmt);
+	return store;
 }
 
-void populate_list_store_from_sql(GtkListStore *model, const char *sql)
+void set_list_store_columns_for_stmt(GtkListStore *store, DBStatement *stmt)
 {
+	GType *column_types;
+	int ncolumns, n;
+	
+	ncolumns = db_column_count(stmt);
+	column_types = malloc(sizeof(GType) * ncolumns);
+	for (n=0; n < ncolumns; n++)
+	{
+		column_types[n] = G_TYPE_STRING;
+	}
+	gtk_list_store_set_column_types(store, ncolumns, column_types);
+	fprintf(stderr, "here");
+	free(column_types);
+}
 
+void populate_list_store_from_stmt(GtkListStore *store, DBStatement *stmt)
+{
+	int result_code, row, i, ncolumns;
+	GtkTreeIter iter;
+	char *text;
+
+	ncolumns = db_column_count(stmt);
+
+	while ((result_code = db_step(stmt)) == DB_ROW)
+	{
+		row = malloc(sizeof(unsigned char*) * ncolumns);
+		for(i = 0; i < ncolumns; i++)
+		{
+			text = db_column_text(stmt, i);
+			gtk_list_store_append(store, &iter);
+			gtk_list_store_set_value(store, &iter, i, text);
+		}
+	}
 }

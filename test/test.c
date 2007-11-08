@@ -34,6 +34,7 @@ int test(void *test_function(void))
 {
 	ntests++;
 	test_function();
+	return 0;
 }
 
 int assert(int perhaps)

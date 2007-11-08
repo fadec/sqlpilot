@@ -64,7 +64,35 @@ char *db_results_column_name(DBResults *results, int column)
 	return results->column_names[column];
 }
 
+int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tail)
+{
+	return sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), (sqlite3_stmt **)stmt, sql_tail);
+}
 
+int db_column_count(DBStatement *stmt)
+{
+	return sqlite3_column_count((sqlite3_stmt*)stmt);
+}
+
+int db_finalize(DBStatement *stmt)
+{
+	return sqlite3_finalize(stmt);
+}
+
+int db_step(DBStatement *stmt)
+{
+	return sqlite3_step(stmt);
+}
+
+const unsigned char *db_column_text(DBStatement *stmt, int icolumn)
+{
+	return sqlite3_column_text((sqlite3_stmt *)stmt, icolumn);
+}
+
+int db_column_bytes(DBStatement *stmt, int icolumn)
+{
+	return sqlite3_column_bytes((sqlite3_stmt *)stmt, icolumn);
+}
 // incomplete
 DBResults *db_get_list(DB *db, const char *sql, char **errormsg)
 {

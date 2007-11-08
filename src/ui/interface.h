@@ -3,6 +3,8 @@
 #define INTERFACE_H
 
 #include <gtk/gtk.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 #define _(String) String
 

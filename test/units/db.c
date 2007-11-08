@@ -24,10 +24,23 @@ void test_db()
 	return 0;
 }
 
+void test_db_prepare()
+{
+	DB *db;
+	DBStatement *stmt;
+	const char *sql_tail;
+	db = db_open("test.db");
+	db_prepare(db, "select * from memos;", &stmt, &sql_tail);
+	assert_equal_str(sql_tail, "");
+	db_finalize(stmt);
+	db_close(db);
+}
+
 int main(int argc, char **argv)
 {
 	test_init();
-	test(&test_db);
+	test(test_db);
+	test(test_db_prepare);
 	test_finalize();
 	return 0;
 }
