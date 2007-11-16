@@ -69,6 +69,20 @@ int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tai
 	return sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), (sqlite3_stmt **)stmt, sql_tail);
 }
 
+DBStatement *db_prep(DB *db, const char *sql)
+{
+	const char *sql_tail;
+	sqlite3_stmt *stmt;
+	int err;
+	if ((err = sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), &stmt, &sql_tail)) != SQLITE_OK)
+	{
+		fprintf(stderr, "Error preparing statement for: %s\n", sql);
+		sqlite3_close(db);
+		exit(2);
+	}
+	return stmt;
+}
+
 int db_column_count(DBStatement *stmt)
 {
 	return sqlite3_column_count((sqlite3_stmt*)stmt);
@@ -93,6 +107,12 @@ int db_column_bytes(DBStatement *stmt, int icolumn)
 {
 	return sqlite3_column_bytes((sqlite3_stmt *)stmt, icolumn);
 }
+
+const char *db_column_name(DBStatement *stmt, int icolumn)
+{
+	return sqlite3_column_name((sqlite3_stmt *)stmt, icolumn);
+}
+
 // incomplete
 DBResults *db_get_list(DB *db, const char *sql, char **errormsg)
 {

@@ -31,6 +31,9 @@ sqlpilot: ${APP_OBJ}
 	${LD} -o $@ ${APP_OBJ} ${LDFLAGS}
 #	@strip $@
 
+segfault: sqlpilot
+	./sqlpilot
+
 clean:
 	-rm -f `find -name '*.o'`
 	-rm -f core sqlpilot *_test test.db
