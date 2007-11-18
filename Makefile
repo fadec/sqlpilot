@@ -1,6 +1,7 @@
 include config.mk
 
-SRC = src/db/db.c \
+SRC = src/store.c \
+      src/db/db.c \
       src/ui/interface.c \
       src/ui/callbacks.c
 
@@ -9,7 +10,8 @@ PROG_SRC = src/main.c ${SRC}
 # Example: make test db, make test-run db
 TEST_SRC = test/units/$(unit).c test/test.c ${SRC}
 
-HEADERS = src/db/db.h \
+HEADERS = src/store.h \
+	  src/db/db.h \
 	  src/ui/interface.h \
 	  src/ui/callbacks.h
 
@@ -31,7 +33,7 @@ sqlpilot: ${APP_OBJ}
 	${LD} -o $@ ${APP_OBJ} ${LDFLAGS}
 #	@strip $@
 
-segfault: sqlpilot
+run: sqlpilot
 	./sqlpilot
 
 clean:
