@@ -1,9 +1,9 @@
 CREATE TABLE flights (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,aircraft_id INTEGER
-	,role_id INTEGER
-	,departure_airport_id INTEGER
-	,arrival_airport_id INTEGER
+	,aircraft_ident VARCHAR
+	,role_ident VARCHAR
+	,departure_airport_ident VARCHAR
+	,arrival_airport_ident VARCHAR
 	,out_at DATETIME
 	,in_at DATETIME
 	,duration INTEGER
@@ -29,14 +29,10 @@ CREATE TABLE roles (
 	,name CHAR
 );
 
-CREATE TABLE role_tags (
+CREATE TABLE role_times (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,name CHAR
-);
-
-CREATE TABLE roles_role_tags (
-	role_id INTEGER
-	,role_tag_id INTEGER
+	,ident CHAR
+	,role_ident CHAR
 );
 
 CREATE TABLE aircraft (
@@ -51,14 +47,10 @@ CREATE TABLE types (
 	,name CHAR
 );
 
-CREATE TABLE types_type_tags (
+CREATE TABLE type_times (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,name CHAR
-);
-
-CREATE TABLE type_tags (
-	aircraft_type_id INTEGER
-	,aircraft_type_tag_id INTEGER
+	,ident CHAR
+	,type_ident CHAR
 );
 
 CREATE TABLE airports (
@@ -69,3 +61,10 @@ CREATE TABLE airports (
 	,name CHAR
 );
 
+select * from flights f
+left join aircraft a on f.aircraft_ident = a.ident
+left join types t on t.ident = a.type_ident
+left join type_times tt_mel on tt_mel.type_ident = t.ident AND tt_
+left join roles r on f.role_ident = r.ident
+left join role_times rt_pic on rt_pic.role_ident = rt.ident AND rt_pic.ident = 'PIC'
+left join role_times rt_sic on rt_sic.role_ident = r.ident AND rt_sic = 'SIC'
