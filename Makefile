@@ -33,6 +33,9 @@ sqlpilot: ${APP_OBJ}
 	${LD} -o $@ ${APP_OBJ} ${LDFLAGS}
 #	@strip $@
 
+etags:
+	etags `find -name "*.[h|c]"`
+
 run: sqlpilot
 	./sqlpilot
 

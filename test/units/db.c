@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <db/db.h>
 
-void test_db()
+void test_db(void)
 {
 	DB *mydb;
 	DBResults *results;
@@ -21,10 +21,9 @@ void test_db()
 
 	db_results_free(results);
 	db_close(mydb);
-	return 0;
 }
 
-void test_db_prepare()
+void test_db_prepare(void)
 {
 	DB *db;
 	DBStatement *stmt;
