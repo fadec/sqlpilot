@@ -10,20 +10,20 @@
 int main( int argc, char **argv )
 {
 	MainView* main_view;
-	//DB* db;
+	//Logbook *logbook;
 
 	gtk_init( &argc, &argv );
 
 	g_set_application_name ( _("Sql Pilot") );
 
-	//db = db_open("logbook.db");
+	//logbook = logbook_open("logbook.db");
 
 	main_view = interface_main_view_create();
 	gtk_widget_show ( main_view->window );
 	gtk_main();
 	interface_main_view_destroy(main_view);
 
-	//db_close(db);
+	//logbook_close(logbook);
 	return 0;
 }     
 
