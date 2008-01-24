@@ -2,10 +2,10 @@ CREATE TABLE flights (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,aircraft_ident VARCHAR
 	,role_ident VARCHAR
-	,departure_airport_ident VARCHAR
-	,arrival_airport_ident VARCHAR
-	,out_at DATETIME
-	,in_at DATETIME
+	,depart VARCHAR
+	,arrive VARCHAR
+	,out DATETIME
+	,in DATETIME
 	,duration INTEGER
 	,night INTEGER
 	,instrument INTEGER
@@ -21,18 +21,19 @@ CREATE TABLE flights (
 	,scheduled_out_at DATETIME
 	,scheduled_in_at DATETIME
 	,scheduled_duration INTEGER
+	,trip VARCHAR
 );
 
 CREATE TABLE roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ident CHAR
 	,name CHAR
-);
-
-CREATE TABLE role_times (
-	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,ident CHAR
-	,role_ident CHAR
+	,pic BOOLEAN
+	,sic BOOLEAN
+	,solo BOOLEAN
+	,dual_given BOOLEAN
+	,dual_received BOOLEAN
+	,total BOOLEAN
 );
 
 CREATE TABLE aircraft (
@@ -45,12 +46,23 @@ CREATE TABLE types (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ident CHAR
 	,name CHAR
-);
-
-CREATE TABLE type_times (
-	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,ident CHAR
-	,type_ident CHAR
+	,category VARCHAR
+	,class VARCHAR
+	,turbine BOOLEAN
+	,turbojet BOOLEAN
+	,turboprop BOOLEAN
+	,multi_engine BOOLEAN
+	,single_engline BOOLEAN
+	,high_performance BOOLEAN
+	,retractable BOOLEAN
+	,complex BOOLEAN
+	,pressurized BOOLEAN
+	,large BOOLEAN
+	,simulator BOOLEAN
+	,ftd BOOLEAN
+	,land BOOLEAN
+	,sea BOOLEAN
+	,total BOOLEAN
 );
 
 CREATE TABLE airports (
@@ -61,10 +73,3 @@ CREATE TABLE airports (
 	,name CHAR
 );
 
-select * from flights f
-left join aircraft a on f.aircraft_ident = a.ident
-left join types t on t.ident = a.type_ident
-left join type_times tt_mel on tt_mel.type_ident = t.ident AND tt_
-left join roles r on f.role_ident = r.ident
-left join role_times rt_pic on rt_pic.role_ident = rt.ident AND rt_pic.ident = 'PIC'
-left join role_times rt_sic on rt_sic.role_ident = r.ident AND rt_sic = 'SIC'

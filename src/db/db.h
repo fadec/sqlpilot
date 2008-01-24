@@ -52,7 +52,7 @@ struct DBResults {
 	};
 };
 
-DB* db_open(char*);
+DB* db_open(char*, ...);
 void db_close(DB*);
 
 void db_results_free(DBResults *);
