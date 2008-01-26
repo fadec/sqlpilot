@@ -1,45 +1,74 @@
 #include "sqlpilot.h"
 
-static GtkWidget *build_log_view(Interface *);
-static GtkWidget *build_edit_view(Interface *);
+static GtkWidget *build_log_view(Logbook *);
+static GtkWidget *build_edit_view(Logbook *);
 
-GtkWidget *build_flights_pane(Interface *iface)
+GtkWidget *build_flights_pane(Logbook *logbook)
 {
   GtkWidget *b_outer;
   GtkWidget *edit_pane;
   GtkWidget *log_pane;
 
   b_outer = gtk_hbox_new(FALSE, 0);
-  log_pane = build_log_view(iface);
+  log_pane = build_log_view(logbook);
   gtk_box_pack_end(GTK_BOX(b_outer), log_pane, TRUE, TRUE, 0);
 
-  edit_pane = build_edit_view(iface);
+  edit_pane = build_edit_view(logbook);
   gtk_box_pack_start(GTK_BOX(b_outer), edit_pane, FALSE, TRUE, 0);
 
   gtk_widget_show(b_outer);
 
+  logbook->flights_pane = b_outer;
+
   return b_outer;
 }
 
-static GtkWidget *build_log_view(Interface *iface)
+static void row_selection_changed(GtkTreeSelection *selection, gpointer logbook)
 {
-  DBStatement *stmt;
-  GtkWidget *view;
-  const char *sql = "select aircraft, depart, arrive, out_at, in_at, duration from flights order by out_at";
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  gchar *author;
 
-  stmt = db_prep(sqlpilot->logbook->db, sql);
-  view = build_query_stmt_widget(stmt);
-  db_finalize(stmt);
-  
-  iface->flights_log_sw = view;
-
-  return view;
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      gtk_tree_model_get (model, &iter, 0, &author, -1);
+      g_print ("You selected a book by %s\n", author);
+      g_free (author);
+    }
 }
 
-static GtkWidget *update_clicked (GtkButton* button, gpointer *iface)
+static GtkWidget *build_log_view(Logbook *logbook)
 {
-  printf("%s\n", gtk_entry_get_text(sqlpilot->interface->flights_aircraft_entry));
-  printf("%s\n", gtk_entry_get_text(sqlpilot->interface->flights_role_entry));
+  DBStatement *stmt;
+  GtkWidget *sw, *treeview;
+  GtkTreeModel *treemodel;
+  GtkTreeSelection *select;
+  const char *sql = "select aircraft, depart, arrive, out_at, in_at, duration from flights order by out_at";
+
+  stmt = db_prep(logbook->db, sql);
+  sw = build_query_stmt_widget(stmt, &treeview, &treemodel);
+  db_finalize(stmt);
+
+  // setup selection callback
+  select = gtk_tree_view_get_selection (GTK_TREE_VIEW (treeview));
+  gtk_tree_selection_set_mode (select, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (select), "changed",
+                  G_CALLBACK (row_selection_changed),
+                  NULL);
+
+
+  // side effects and return
+  logbook->flights_log_sw = sw;
+  logbook->flights_log_treemodel = treemodel;
+  logbook->flights_log_treeview = treeview;
+
+  return sw;
+}
+
+static void update_clicked (GtkButton* button, gpointer *logbook)
+{
+  printf("%s\n", gtk_entry_get_text(LOGBOOK(logbook)->flights_aircraft_entry));
+  printf("%s\n", gtk_entry_get_text(LOGBOOK(logbook)->flights_role_entry));
 }
 
 static GtkWidget *add_text_field(GtkWidget *table, int row, const char *label_text)
@@ -58,7 +87,7 @@ static GtkWidget *add_text_field(GtkWidget *table, int row, const char *label_te
   return entry;
 }
 
-static GtkWidget *build_edit_view(Interface *iface)
+static GtkWidget *build_edit_view(Logbook *logbook)
 {
   GtkWidget *vbox;
   GtkWidget *table;
@@ -71,8 +100,8 @@ static GtkWidget *build_edit_view(Interface *iface)
   table = gtk_table_new(8, 2, FALSE); // first arg = number of text fields!
   gtk_box_pack_start(GTK_BOX(vbox), table, FALSE, TRUE, 0);
 
-  iface->flights_aircraft_entry = add_text_field(table, row++, "Aircraft");
-  iface->flights_role_entry = add_text_field(table, row++, "Role");
+  logbook->flights_aircraft_entry = add_text_field(table, row++, "Aircraft");
+  logbook->flights_role_entry = add_text_field(table, row++, "Role");
   add_text_field(table, row++, "From");
   add_text_field(table, row++, "To");
   add_text_field(table, row++, "Out");
@@ -81,14 +110,19 @@ static GtkWidget *build_edit_view(Interface *iface)
   add_text_field(table, row++, "Instrument");
 
   /* Buttons */
-  buttons = gtk_hbox_new(TRUE, 0);
+  buttons = gtk_hbox_new(FALSE, 0);
   update = gtk_button_new_with_label("Update");
-  cancel = gtk_button_new_with_label("Revert");
+  cancel = gtk_button_new_with_label("Cancel");
+  add = gtk_button_new_with_label("Add");
+  new = gtk_button_new_with_label("New");
 
-  gtk_signal_connect(update, "clicked", update_clicked, sqlpilot->interface);
+
+  gtk_signal_connect(GTK_OBJECT(update), "clicked", GTK_SIGNAL_FUNC(update_clicked), logbook);
 
   gtk_box_pack_start(GTK_BOX(buttons), update, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(buttons), cancel, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons), new, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons), add, FALSE, FALSE, 0);
   gtk_box_pack_start(GTK_BOX(vbox), buttons, FALSE, FALSE, 0);
 
   gtk_widget_show_all(vbox);

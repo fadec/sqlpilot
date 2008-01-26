@@ -26,7 +26,6 @@ struct Interface {
 
 #define INTERFACE(x) ((Interface *)(x))
 
-Interface * interface_create();
-void interface_destroy(Interface *);
+void build_main_window(void);
 
 #endif

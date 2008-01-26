@@ -7,12 +7,9 @@ int main( int argc, char **argv )
 
 	sqlpilot_init();
 
- 	sqlpilot->interface = interface_create();
- 	gtk_widget_show ( sqlpilot->interface->window );
+ 	gtk_widget_show ( sqlpilot->window );
  	gtk_main();
  	
-	interface_destroy(sqlpilot->interface);
-
 	sqlpilot_finalize();
 	return 0;
 }     

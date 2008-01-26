@@ -62,37 +62,28 @@ GtkListStore *build_store_from_stmt(DBStatement *stmt)
 /********/
 /* View */
 /********/
-GtkTreeView *build_view_from_stmt(DBStatement *stmt)
+GtkWidget *build_view_from_stmt(DBStatement *stmt)
 {
 	GtkTreeModel *store;
-	GtkTreeView *view;
-	GtkWidget *sw;
+	GtkWidget *view;
 	
 	store = GTK_TREE_MODEL(build_store_from_stmt(stmt));
 
-	view = gtk_tree_view_new_with_model(store);
+	view = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
 	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW (view), TRUE);
 	gtk_tree_view_set_search_column(GTK_TREE_VIEW (view), 0);
 	
 	g_object_unref(store);
-	sw = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW (sw),
-			GTK_SHADOW_ETCHED_IN);
-	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW (sw),
-			GTK_POLICY_NEVER,
-			GTK_POLICY_AUTOMATIC);
-	gtk_container_add (GTK_CONTAINER(sw), view);
 
 	add_columns_from_stmt(GTK_TREE_VIEW(view), stmt);
 
-	gtk_widget_show_all(sw);
+	return view;
 }
 
 static void add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt)
 {
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
-	GtkTreeModel *model = gtk_tree_view_get_model (treeview);
 	const char *header;
 	int ncolumns, i;
 
@@ -111,16 +102,15 @@ static void add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt)
 	}
 }
 
-GtkWidget *build_query_stmt_widget(DBStatement *stmt)
+GtkWidget *build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkTreeModel **ret_store)
 {
-  DB *db;
-  GtkTreeStore *store;
-  GtkTreeView *view;
+  GtkListStore *store;
+  GtkWidget *view;
   GtkWidget *sw;
 	
   store = build_store_from_stmt(stmt);
 
-  view = gtk_tree_view_new_with_model (store);
+  view = gtk_tree_view_new_with_model (GTK_TREE_MODEL(store));
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
   gtk_tree_view_set_search_column (GTK_TREE_VIEW (view), 0);
 	
@@ -137,6 +127,8 @@ GtkWidget *build_query_stmt_widget(DBStatement *stmt)
 
   gtk_widget_show_all(sw);
 
+  *ret_view = view;
+  *ret_store = GTK_TREE_MODEL(store);
   return sw;
 }
 

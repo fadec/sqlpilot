@@ -1,7 +1,5 @@
 #include "sqlpilot.h"
 
-extern Sqlpilot *sqlpilot;
-
 #include <ui/interface.h>
 #include "ui/flights.h"
 #include "ui/callbacks.h"
@@ -10,37 +8,21 @@ extern Sqlpilot *sqlpilot;
 #include "store.h"
 #include <libintl.h>
 
-static void build_window(Interface*);
 
-void interface_destroy(Interface *interface)
+
+void build_main_window(void)
 {
-	g_free(interface);
-}
+  GtkWidget *window;
+  GtkWidget *vbox;
+	
+  window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+  gtk_signal_connect( GTK_OBJECT(window), "delete_event", gtk_main_quit, NULL );
 
-Interface* interface_create(void)
-{
-	Interface* result;
-	result = g_new0(Interface, 1);
+  vbox = gtk_vbox_new(TRUE, 0);
+  gtk_container_add( GTK_CONTAINER(window), vbox);
+  gtk_widget_show( vbox );
 	
-	build_window( result );
-	
-	return result;
-}
-
-static void build_window(Interface *iface)
-{
-	GtkWidget *vbox;
-	GtkWidget *flights_pane;
-	
-	iface->window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_signal_connect( GTK_OBJECT(iface->window), "delete_event", gtk_main_quit, NULL );
-
-	vbox = gtk_vbox_new(TRUE, 0);
-	gtk_container_add( GTK_CONTAINER(iface->window), vbox);
-	gtk_widget_show( vbox );
-	
-	flights_pane = build_flights_pane(iface);
-	gtk_container_add (GTK_CONTAINER(vbox), flights_pane);
-	//create_menu( vbox );
+  sqlpilot->window = window;
+  sqlpilot->pane_box = vbox;
 }
 

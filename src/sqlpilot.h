@@ -8,6 +8,7 @@
 #include "logbook.h"
 #include "store.h"
 #include "ui/interface.h"
+#include "ui/flights.h"
 
 #define EXIT_SUCESS 0
 #define EXIT_BARF  1
@@ -22,7 +23,8 @@ typedef enum {
 typedef struct Sqlpilot Sqlpilot;
 struct Sqlpilot {
   Logbook *logbook;
-  Interface *interface;
+  GtkWidget *window;
+  GtkWidget *pane_box;
 };
 
 Sqlpilot *sqlpilot; /* Main app global var */
