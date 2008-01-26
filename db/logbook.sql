@@ -1,11 +1,11 @@
 CREATE TABLE flights (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,aircraft_ident VARCHAR
-	,role_ident VARCHAR
+	,aircraft VARCHAR
+	,role VARCHAR
 	,depart VARCHAR
 	,arrive VARCHAR
-	,out DATETIME
-	,in DATETIME
+	,out_at DATETIME
+	,in_at DATETIME
 	,duration INTEGER
 	,night INTEGER
 	,instrument INTEGER

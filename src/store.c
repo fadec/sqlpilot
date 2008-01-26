@@ -1,9 +1,16 @@
 
 #include <gtk/gtk.h>
-#include <db/db.h>
-#include <store.h>
+#include "db/db.h"
+#include "sqlpilot.h"
 
-GtkTreeStore *new_store_from_stmt(DBStatement *stmt)
+static GtkListStore *new_store_from_stmt(DBStatement *stmt);
+static void populate_store_from_stmt(GtkListStore *store, DBStatement *stmt);
+static void add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt);
+
+/*********/
+/* Model */
+/*********/
+GtkListStore *new_store_from_stmt(DBStatement *stmt)
 {
 	GType *column_types;
 	GtkListStore *store;
@@ -20,12 +27,12 @@ GtkTreeStore *new_store_from_stmt(DBStatement *stmt)
 	store = gtk_list_store_newv(ncolumns, column_types);
 	free(column_types);
 
-	return GTK_TREE_MODEL(store);
+	return store;
 }
 
-void populate_store_from_stmt(GtkTreeStore *store, DBStatement *stmt)
+void populate_store_from_stmt(GtkListStore *store, DBStatement *stmt)
 {
-	int result_code, row, i, ncolumns;
+	int result_code, i, ncolumns;
 	GtkTreeIter iter;
 	const unsigned char *text;
 
@@ -42,17 +49,98 @@ void populate_store_from_stmt(GtkTreeStore *store, DBStatement *stmt)
 	}
 }
 
-GtkTreeStore *build_store_from_stmt(DBStatement *stmt)
+GtkListStore *build_store_from_stmt(DBStatement *stmt)
 {
 	GtkListStore *store;
 
 	store = new_store_from_stmt(stmt);
 	populate_store_from_stmt(store, stmt);
 
-	return GTK_TREE_MODEL(store);
+	return store;
 }
 
-/* Bad ideas
+/********/
+/* View */
+/********/
+GtkTreeView *build_view_from_stmt(DBStatement *stmt)
+{
+	GtkTreeModel *store;
+	GtkTreeView *view;
+	GtkWidget *sw;
+	
+	store = GTK_TREE_MODEL(build_store_from_stmt(stmt));
+
+	view = gtk_tree_view_new_with_model(store);
+	gtk_tree_view_set_rules_hint(GTK_TREE_VIEW (view), TRUE);
+	gtk_tree_view_set_search_column(GTK_TREE_VIEW (view), 0);
+	
+	g_object_unref(store);
+	sw = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW (sw),
+			GTK_SHADOW_ETCHED_IN);
+	gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW (sw),
+			GTK_POLICY_NEVER,
+			GTK_POLICY_AUTOMATIC);
+	gtk_container_add (GTK_CONTAINER(sw), view);
+
+	add_columns_from_stmt(GTK_TREE_VIEW(view), stmt);
+
+	gtk_widget_show_all(sw);
+}
+
+static void add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt)
+{
+	GtkCellRenderer *renderer;
+	GtkTreeViewColumn *column;
+	GtkTreeModel *model = gtk_tree_view_get_model (treeview);
+	const char *header;
+	int ncolumns, i;
+
+	ncolumns = db_column_count(stmt);
+	for (i = 0; i < ncolumns; i++)
+	{
+		renderer = gtk_cell_renderer_text_new();
+		header = db_column_name(stmt, i);
+		column = gtk_tree_view_column_new_with_attributes (header,
+				renderer,
+				"text",
+				i,
+				NULL);
+		gtk_tree_view_column_set_sort_column_id (column, i);
+		gtk_tree_view_append_column (treeview, column);
+	}
+}
+
+GtkWidget *build_query_stmt_widget(DBStatement *stmt)
+{
+  DB *db;
+  GtkTreeStore *store;
+  GtkTreeView *view;
+  GtkWidget *sw;
+	
+  store = build_store_from_stmt(stmt);
+
+  view = gtk_tree_view_new_with_model (store);
+  gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
+  gtk_tree_view_set_search_column (GTK_TREE_VIEW (view), 0);
+	
+  g_object_unref (store);
+  sw = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
+				       GTK_SHADOW_ETCHED_IN);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
+				  GTK_POLICY_NEVER,
+				  GTK_POLICY_AUTOMATIC);
+  gtk_container_add (GTK_CONTAINER (sw), view);
+
+  add_columns_from_stmt(GTK_TREE_VIEW (view), stmt);
+
+  gtk_widget_show_all(sw);
+
+  return sw;
+}
+
+/* lame
 GtkTreeStore *build_store_from_sql(DB *db, const char *sql)
 {
 	GtkListStore *store;

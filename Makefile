@@ -2,16 +2,21 @@ include config.mk
 
 SRC = src/store.c \
       src/db/db.c \
+      src/sqlpilot.c \
+      src/logbook.c \
       src/ui/interface.c \
-      src/ui/callbacks.c
+      src/ui/callbacks.c \
+      src/ui/flights.c
 
 PROG_SRC = src/main.c ${SRC}
 
 # Example: make test db, make test-run db
 TEST_SRC = test/units/$(unit).c test/test.c ${SRC}
 
-HEADERS = src/store.h \
+HEADERS = src/sqlpilot.h \
 	  src/db/db.h \
+          src/store.h \
+          src/logbook.h \
 	  src/ui/interface.h \
 	  src/ui/callbacks.h
 

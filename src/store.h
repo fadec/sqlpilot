@@ -1,6 +1,9 @@
+#include <gtk/gtk.h>
+#include "db/db.h"
 
-GtkTreeStore *new_store_from_stmt(DBStatement *stmt);
+GtkListStore *build_store_from_stmt(DBStatement *stmt);
 
-void populate_store_from_stmt(GtkTreeStore *store, DBStatement *stmt);
+GtkTreeView *build_view_from_stmt(DBStatement *stmt);
 
-GtkTreeStore *build_store_from_stmt(DBStatement *stmt);
+GtkWidget *build_query_stmt_widget(DBStatement *stmt);
+

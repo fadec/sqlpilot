@@ -1,3 +1,7 @@
+
+#ifndef _DB_H_
+#define _DB_H_
+
 #include <glib.h>
 #include <sqlite3.h>
 
@@ -52,7 +56,7 @@ struct DBResults {
 	};
 };
 
-DB* db_open(char*, ...);
+DB* db_open(const char *filename);
 void db_close(DB*);
 
 void db_results_free(DBResults *);
@@ -68,3 +72,5 @@ const unsigned char *db_column_text(DBStatement *stmt, int icolumn);
 int db_column_bytes(DBStatement *stmt, int icolumn);
 const char *db_column_name(DBStatement *stmt, int icolumn);
 const char **db_get_one(DB *db, const char *sql);
+
+#endif

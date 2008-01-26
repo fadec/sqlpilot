@@ -6,12 +6,17 @@
 #include <stdlib.h>
 #include <glib.h>
 
-DB* db_open(char* filename, int *error)
+DB* db_open(const char* filename)
 {
 	DB* db;
+	int rc;
 
-	*error = sqlite3_open(filename, &db);
-	if (*error) sqlite3_close(db);
+	rc = sqlite3_open(filename, &db);
+	if (rc) {
+	  sqlite3_close(db);
+	  fprintf(stderr, "Unable to open database\n");
+	  exit(1);
+	}
 
 	return db;
 }

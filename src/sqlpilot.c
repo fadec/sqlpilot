@@ -1,23 +1,20 @@
+#include "sqlpilot.h"
 
 void barf(const char *message)
 {
-  if (message) fprintf("Error: %", message);
+  if (message) fprintf(stderr, "Error: %s", message);
   exit(EXIT_BARF);
 }
 
-
-int sqlpilot_new(Sqlpilot **sqlpilot)
+void sqlpilot_init(void)
 {
-  Sqlpilot *sp;
-  
-  sp = malloc(sizeof(sqlpilot));
-  if (logbook_open(&sp->logbook, "mylog.db")) barf("Can't open logbook");
-
-  *sqlpilot = sp;  
-
+  sqlpilot = malloc(sizeof(Sqlpilot));
+  if (!(sqlpilot->logbook = logbook_open("db/logbook.db"))) {
+    barf("Can't open logbook");
+  }
 }
 
-void sqlpilot_finalize(Sqlpilot *sqlpilot)
+void sqlpilot_finalize(void)
 {
   logbook_close(sqlpilot->logbook);
   free(sqlpilot);

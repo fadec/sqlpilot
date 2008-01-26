@@ -15,21 +15,18 @@
 #define CONFRESP_CANCEL 4
 #define CONFRESP_ERROR 5
 
-typedef enum {
-    SQLPILOT_NO_ERROR = 0,
-    SQLPILOT_ERROR_INVALID_URI,
-    SQLPILOT_ERROR_SAVE_FAILED,
-    SQLPILOT_ERROR_OPEN_FAILED
-} SqlpilotError;
-
-typedef struct _MainView MainView;
-struct _MainView {
-	GtkWidget *window;
-	GtkWidget *menu;
-	GtkWidget *flight;
+typedef struct Interface Interface;
+struct Interface {
+  GtkWidget *window;
+  GtkWidget *flights_pane;
+  GtkWidget *flights_log_sw;
+  GtkWidget *flights_aircraft_entry;
+  GtkWidget *flights_role_entry;
 };
 
-MainView* interface_main_view_create();
-void interface_main_view_destroy(MainView *);
+#define INTERFACE(x) ((Interface *)(x))
+
+Interface * interface_create();
+void interface_destroy(Interface *);
 
 #endif
