@@ -1,12 +1,8 @@
 include config.mk
 
-SRC = src/store.c \
+SRC = src/sqlpilot.c \
       src/db/db.c \
-      src/sqlpilot.c \
-      src/logbook.c \
-      src/ui/interface.c \
-      src/ui/callbacks.c \
-      src/ui/flights.c
+      src/cb/window.c \
 
 PROG_SRC = src/main.c ${SRC}
 
@@ -15,10 +11,6 @@ TEST_SRC = test/units/$(unit).c test/test.c ${SRC}
 
 HEADERS = src/sqlpilot.h \
 	  src/db/db.h \
-          src/store.h \
-          src/logbook.h \
-	  src/ui/interface.h \
-	  src/ui/callbacks.h
 
 APP_HEADERS = src/sqlpilot.h ${HEADERS}
 
@@ -28,7 +20,7 @@ APP_OBJ = ${PROG_SRC:.c=.o}
 
 TEST_OBJ = ${TEST_SRC:.c=.o}
 
-app: sqlpilot
+app: sqlpilot ui
 
 ${APP_OBJ}: ${APP_HEADERS} config.mk
 
@@ -37,6 +29,11 @@ ${TEST_OBJ}: ${TEST_HEADERS} config.mk
 sqlpilot: ${APP_OBJ}
 	${LD} -o $@ ${APP_OBJ} ${LDFLAGS}
 #	@strip $@
+
+ui: data/ui/sqlpilot.xml
+
+data/ui/sqlpilot.xml: data/ui/sqlpilot.glade
+	gtk-builder-convert data/ui/sqlpilot.glade data/ui/sqlpilot.xml
 
 etags:
 	etags `find -name "*.[h|c]"`

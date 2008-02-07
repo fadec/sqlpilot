@@ -7,6 +7,7 @@ static GtkListStore *new_store_from_stmt(DBStatement *stmt);
 static void populate_store_from_stmt(GtkListStore *store, DBStatement *stmt);
 static void add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt);
 
+
 /*********/
 /* Model */
 /*********/
@@ -132,36 +133,89 @@ GtkWidget *build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkT
   return sw;
 }
 
-/* lame
-GtkTreeStore *build_store_from_sql(DB *db, const char *sql)
+
+// new
+
+static GtkWidget *add_text_field(GtkContainer *container, const char *label_text)
 {
-	GtkListStore *store;
-	DBStatement *stmt;
-	int ncolumns;
-	const char *unused_sql;
+  GtkWidget *entry;
+  GtkWidget *label;
+  GtkWidget *hbox;
+  entry = gtk_entry_new();
+  label = gtk_label_new(label_text);
 
-	db_prepare(db, sql, &stmt, &unused_sql);
-	build_store_from_stmt(stmt);
-
-	db_finalize(stmt);
-	return GTK_TREE_MODEL(store);
+  hbox = gtk_hbox_new(FALSE, 0);
+  gtk_box_pack_end(GTK_BOX(hbox), entry, FALSE, TRUE, 0);
+  gtk_box_pack_end(GTK_BOX(hbox), label, FALSE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container), hbox, FALSE, FALSE, 0);
+  return entry;
 }
 
-GtkTreeStore *build_store_from_file_sql(const char *filename, const char *sql)
+static GtkWidget *add_mtext_field(GtkContainer *container, const char *label_text)
 {
-	DB *db;
-	DBStatement *stmt;
-	GtkListStore *store;
-	const unsigned char *unused_sql;
+  GtkWidget *vbox, *label;
+  GtkWidget *view;
+  GtkTextBuffer *buffer;
 
-	db = db_open(filename);
-	db_prepare(db, sql, &stmt, &unused_sql);
+  label = gtk_label_new(label_text);
+  view = gtk_text_view_new ();
+  buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
 
-	store = build_store_from_stmt(stmt);
+  vbox = gtk_vbox_new(FALSE, 0);
+  gtk_box_pack_end(GTK_BOX(vbox), view, FALSE, TRUE, 0);
+  gtk_box_pack_end(GTK_BOX(vbox), label, FALSE, TRUE, 0);
+  gtk_box_pack_start(GTK_BOX(container), vbox, FALSE, FALSE, 0);
 
-	db_finalize(stmt);
-	db_close(db);
 
-	return GTK_TREE_MODEL(store);
+  //gtk_text_buffer_set_text (buffer, "Hello, this is some text", -1);
+  return view;
 }
-end of (useless) bad ideas */
+
+GtkWidget *build_edit_widget(DBStatement *stmt)
+{
+  GtkWidget *vbox;
+  GtkWidget *buttons, *update, *cancel, *new, *insert;
+  GtkWidget *entry;
+  int ncols, i;
+
+  ncols = db_column_count(stmt);
+  vbox = gtk_vbox_new(FALSE, 0);
+
+  for(i=0; i<ncols; i++) {
+    entry = add_text_field(GTK_CONTAINER(vbox), db_column_name(stmt, i));
+  }
+
+  /* Buttons */
+  buttons = gtk_hbox_new(FALSE, 0);
+  update = gtk_button_new_with_label("Update");
+  cancel = gtk_button_new_with_label("Cancel");
+  insert = gtk_button_new_with_label("Add");
+  new = gtk_button_new_with_label("New");
+
+  gtk_box_pack_start(GTK_BOX(buttons), update, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons), cancel, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons), new, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(buttons), insert, FALSE, FALSE, 0);
+  gtk_box_pack_start(GTK_BOX(vbox), buttons, FALSE, FALSE, 0);
+
+
+  return vbox;
+}
+
+GtkWidget *build_db_ui(DBStatement *stmt)
+{
+  GtkWidget *outer, *model, *treeview, *sw, *editor;
+
+  outer = gtk_hbox_new(FALSE, 0);
+  sw = build_query_stmt_widget(stmt, &treeview, &model);
+
+  gtk_box_pack_end(GTK_BOX(outer), sw, TRUE, TRUE, 0);
+
+  editor = build_edit_widget(stmt);
+  gtk_box_pack_start(GTK_BOX(outer), editor, FALSE, TRUE, 0);
+
+  gtk_widget_show_all(outer);
+
+  return outer;
+
+}

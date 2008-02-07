@@ -1,16 +1,18 @@
 #include "sqlpilot.h"
 
-int main( int argc, char **argv )
+#include <gtk/gtk.h>
+
+int
+main (int argc, char *argv[])
 {
-	gtk_init( &argc, &argv );
-	g_set_application_name ( _("Sql Pilot") );
+  Sqlpilot *sqlpilot;
+  
+  gtk_init (&argc, &argv);
 
-	sqlpilot_init();
+  if ((sqlpilot = sqlpilot_new()) == NULL) return 1;
+  gtk_widget_show (sqlpilot->window);
+  gtk_main ();
+  sqlpilot_finalize (sqlpilot);
 
- 	gtk_widget_show ( sqlpilot->window );
- 	gtk_main();
- 	
-	sqlpilot_finalize();
-	return 0;
-}     
-
+  return 0;
+}

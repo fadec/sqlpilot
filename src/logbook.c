@@ -1,6 +1,8 @@
 
 #include "sqlpilot.h"
 
+extern Sqlpilot *sqlpilot;
+
 Logbook *logbook_open(const char *filename)
 {
   Logbook *logb;
@@ -10,8 +12,7 @@ Logbook *logbook_open(const char *filename)
     barf("Couldn't open database.");
   }
   logb->db_filename = filename;
-  build_flights_pane(logb);
-
+  logbook_notebook_build(logb);
   return logb;
 }
 

@@ -1,4 +1,3 @@
-
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
@@ -15,17 +14,8 @@
 #define CONFRESP_CANCEL 4
 #define CONFRESP_ERROR 5
 
-typedef struct Interface Interface;
-struct Interface {
-  GtkWidget *window;
-  GtkWidget *flights_pane;
-  GtkWidget *flights_log_sw;
-  GtkWidget *flights_aircraft_entry;
-  GtkWidget *flights_role_entry;
-};
-
-#define INTERFACE(x) ((Interface *)(x))
-
+GtkWidget *logbook_notebook_build(Logbook *);
 void build_main_window(void);
+
 
 #endif

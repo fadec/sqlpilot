@@ -84,6 +84,21 @@ DBStatement *db_prep(DB *db, const char *sql)
 	return stmt;
 }
 
+int db_bind_text(DBStatement *stmt, int i, const char *text)
+{
+  return sqlite3_bind_text(stmt, i, text, strlen(text), SQLITE_TRANSIENT);
+}
+
+int db_bind_int(DBStatement *stmt, int i, int n)
+{
+  return sqlite3_bind_int(stmt, i, n);
+}
+
+int db_reset(DBStatement *stmt)
+{
+  return sqlite3_reset(stmt);
+}
+
 int db_column_count(DBStatement *stmt)
 {
 	return sqlite3_column_count((sqlite3_stmt*)stmt);
@@ -99,9 +114,24 @@ int db_step(DBStatement *stmt)
 	return sqlite3_step(stmt);
 }
 
+unsigned long db_last_insert_rowid(DB *db)
+{
+  return (unsigned long) sqlite3_last_insert_rowid(db);
+}
+
 const unsigned char *db_column_text(DBStatement *stmt, int icolumn)
 {
 	return sqlite3_column_text((sqlite3_stmt *)stmt, icolumn);
+}
+
+int db_column_int(DBStatement *stmt, int icolumn)
+{
+  return sqlite3_column_int(stmt, icolumn);
+}
+
+DBint64 db_column_int64(DBStatement *stmt, int i)
+{
+  return (DBint64) sqlite3_column_int64(stmt, i);
 }
 
 int db_column_bytes(DBStatement *stmt, int icolumn)
@@ -158,4 +188,15 @@ DBResults *db_get_list(DB *db, const char *sql, char **errormsg)
 
 const char **db_get_one(DB *db, const char *sql);
 
-
+int db_exec_simple(DB *db, const char *sql)
+{
+  char *errmsg;
+  int rc;
+  rc = sqlite3_exec((sqlite3*) db, sql, NULL, NULL, &errmsg);
+  if (errmsg) {
+    fprintf(stdout, "%s\n", errmsg);
+    sqlite3_free(errmsg);
+    //    exit(1);
+  }
+  return rc;
+}

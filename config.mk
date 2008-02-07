@@ -18,7 +18,7 @@ LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 `pkg-config gtk+-2.0 --libs`
 #CFLAGS = -Os ${INCS} -DVERSION=\"${VERSION}\"
 #LDFLAGS = ${LIBS}
 CFLAGS = -g3 -Wall -O0 ${INCS} -DVERSION=\"${VERSION}\"
-LDFLAGS = -g3 ${LIBS}
+LDFLAGS = -g3 -export-dynamic ${LIBS}
 
 # Solaris
 #CFLAGS = -fast ${INCS} -DVERSION=\"${VERSION}\"

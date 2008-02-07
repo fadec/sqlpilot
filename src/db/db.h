@@ -42,6 +42,7 @@
 
 typedef sqlite3 DB;
 typedef sqlite3_stmt DBStatement;
+typedef sqlite3_int64 DBint64;
 
 typedef struct DBResults DBResults;
 struct DBResults {
@@ -65,12 +66,19 @@ char *db_results_column_name(DBResults *results, int column);
 char *db_results_table_lookup(DBResults*, int row, int column);
 int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tail);
 DBStatement *db_prep(DB *db, const char *sql);
+int db_reset(DBStatement *stmt);
+int db_bind_text(DBStatement *stmt, int i, const char *text);
+int db_bind_int(DBStatement *stmt, int i, int n);
 int db_column_count(DBStatement *stmt);
 int db_finalize(DBStatement *stmt);
 int db_step(DBStatement *stmt);
+unsigned long db_last_insert_row_id(DB *);
 const unsigned char *db_column_text(DBStatement *stmt, int icolumn);
 int db_column_bytes(DBStatement *stmt, int icolumn);
+int db_column_int(DBStatement *stmt, int icolumn);
+DBint64 db_column_int64(DBStatement *stmt, int i);
 const char *db_column_name(DBStatement *stmt, int icolumn);
 const char **db_get_one(DB *db, const char *sql);
+int db_exec_simple(DB *db, const char *sql);
 
 #endif
