@@ -36,14 +36,14 @@ data/ui/sqlpilot.xml: data/ui/sqlpilot.glade
 	gtk-builder-convert data/ui/sqlpilot.glade data/ui/sqlpilot.xml
 
 etags:
-	etags `find -name "*.[h|c]"`
+	etags.emacs `find -name "*.[h|c]"`
 
 run: sqlpilot
 	./sqlpilot
 
 clean:
 	-rm -f `find -name '*.o'`
-	-rm -f core sqlpilot *_test test.db
+	-rm -f core sqlpilot *_test test.db data/ui/sqlpilot.xml
 
 # Remove units and directories that are not under source control - use with care
 scm-clean:

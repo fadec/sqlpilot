@@ -94,6 +94,11 @@ int db_bind_int(DBStatement *stmt, int i, int n)
   return sqlite3_bind_int(stmt, i, n);
 }
 
+int db_bind_int64(DBStatement *stmt, int i, int n)
+{
+  return sqlite3_bind_int64(stmt, i, n);
+}
+
 int db_reset(DBStatement *stmt)
 {
   return sqlite3_reset(stmt);
@@ -114,9 +119,9 @@ int db_step(DBStatement *stmt)
 	return sqlite3_step(stmt);
 }
 
-unsigned long db_last_insert_rowid(DB *db)
+DBint64 db_last_insert_rowid(DB *db)
 {
-  return (unsigned long) sqlite3_last_insert_rowid(db);
+  return sqlite3_last_insert_rowid(db);
 }
 
 const unsigned char *db_column_text(DBStatement *stmt, int icolumn)

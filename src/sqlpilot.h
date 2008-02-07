@@ -8,10 +8,6 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include "db/db.h"
-#include "logbook.h"
-#include "store.h"
-#include "ui/interface.h"
-#include "ui/flights.h"
 
 #define EXIT_SUCESS 0
 #define EXIT_BARF  1
@@ -24,6 +20,12 @@ typedef enum {
     SQLPILOT_ERROR_SAVE_FAILED,
     SQLPILOT_ERROR_OPEN_FAILED
 } SqlpilotError;
+
+#define FLIGHTS_INSERT \
+"insert into flights (aircraft_id, role_id, dep_id, arr_id, date, aout, ain, dur, night, " \
+"inst, siminst, hold, aprch, xc, dland, nland, crew, notes, fltno, sout, sin, sdur, trip) " \
+"values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+
 
 typedef struct Sqlpilot Sqlpilot;
 struct Sqlpilot {

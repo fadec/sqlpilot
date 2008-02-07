@@ -62,18 +62,22 @@ gchar *text_view_get_text(GtkTextView *tv)
   return gtk_text_buffer_get_text(buffer, &start, &end, FALSE);
 }
 
-/* find or create an aircraft by ident and return the id */
-DBint64 aircraft_id_of_ident(DB *db, const char *ident)
+/* find or create a record the value of a column and return the id */
+DBint64 id_of_with_insert(DB *db, const char *table, const char *column, const char *value)
 {
+  #define __sql_size 500
   DBStatement *select, *insert;
   DBint64 id;
+  char sql[__sql_size];
 
-  select = db_prep(db, "select id from aircraft where ident = ?");
-  db_bind_text(select, 1, ident);
+  snprintf(sql, __sql_size, "select id from %s where %s = ?;", table, column);
+  select = db_prep(db, sql);
+  db_bind_text(select, 1, value);
 
   if (db_step(select) == DB_DONE) {
-    insert = db_prep(db, "insert into aircraft (ident) values (?);");
-    db_bind_text(insert, 1, ident);
+    snprintf(sql, __sql_size, "insert into %s (%s) values (?);", table, column);
+    insert = db_prep(db, sql);
+    db_bind_text(insert, 1, value);
     db_step(insert);
     id = db_last_insert_rowid(db);
     db_finalize(insert);
@@ -84,8 +88,21 @@ DBint64 aircraft_id_of_ident(DB *db, const char *ident)
   db_finalize(select);
 
   return id;
+  #undef __sql_size
 }
 
+DBint64 aircraft_id_of_ident_with_insert(DB *db, const char *ident)
+{
+  return id_of_with_insert(db, "aircraft", "ident", ident);
+}
+DBint64 roles_id_of_ident_with_insert(DB *db, const char *ident)
+{
+  return id_of_with_insert(db, "roles", "ident", ident);
+}
+DBint64 airports_id_of_ident_with_insert(DB *db, const char *ident)
+{
+  return id_of_with_insert(db, "airports", "ident", ident);
+}
 
 void on_window_destroy(GtkObject *object, Sqlpilot *sqlpilot)
 {
@@ -108,6 +125,7 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     *aout,
     *ain,
     *dur,
+    *night,
     *inst,
     *siminst,
     *aprch,
@@ -122,7 +140,6 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   DBStatement *stmt;
   int i;
 
-  trip     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_trip));
   aircraft = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aircraft));
   role     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_role));
   dep      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
@@ -131,6 +148,7 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   aout     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aout));
   ain      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_ain));
   dur      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dur));
+  night    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_night));
   inst     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_inst));
   siminst  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_siminst));
   aprch    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aprch));
@@ -148,13 +166,34 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   
   i = 1;
   stmt = sqlpilot->flights_insert;
-  /* db_bind_int64(stmt, i++, aircraft_id_of_ident(sqlpilot->db, aircraft)); */
-/*   db_bind_int64(stmt, i++, role_id_of_ident(sqlpilot->db, role)); */
-/*   db_bind_int64(stmt, i++, airport_id_of_ident(sqlpilot->db, dep)); */
-/*   db_bind_int64(stmt, i++, airport_id_of_ident(sqlpilot->db, dep)); */
-  db_bind_text(sqlpilot->flights_insert, 2, trip);
-  db_step(sqlpilot->flights_insert);
-  db_reset(sqlpilot->flights_insert);
+  db_bind_int64(stmt, i++, aircraft_id_of_ident_with_insert(sqlpilot->db, aircraft));
+  db_bind_int64(stmt, i++, roles_id_of_ident_with_insert(sqlpilot->db, role));
+  db_bind_int64(stmt, i++, airports_id_of_ident_with_insert(sqlpilot->db, dep));
+  db_bind_int64(stmt, i++, airports_id_of_ident_with_insert(sqlpilot->db, arr));
+  db_bind_text(stmt, i++, date);
+  fprintf(stderr, "a");
+  db_bind_text(stmt, i++, aout);
+  db_bind_text(stmt, i++, ain);
+  db_bind_text(stmt, i++, dur);
+  db_bind_text(stmt, i++, night);
+  db_bind_text(stmt, i++, inst);
+  db_bind_text(stmt, i++, siminst);
+  fprintf(stderr, "5");
+  db_bind_int(stmt, i++, hold);
+  db_bind_text(stmt, i++, aprch);
+  db_bind_int(stmt, i++, xc);
+  db_bind_int(stmt, i++, dland);
+  db_bind_int(stmt, i++, nland);
+  db_bind_text(stmt, i++, crew);
+  db_bind_text(stmt, i++, notes);
+  db_bind_text(stmt, i++, fltno);
+  db_bind_text(stmt, i++, sout);
+  db_bind_text(stmt, i++, sin);
+  db_bind_text(stmt, i++, sdur);
+  db_bind_text(stmt, i++, trip);
+  fprintf(stderr, "d");
+  db_step(stmt);
+  db_reset(stmt);
 
   g_free(crew);
   g_free(notes);
