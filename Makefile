@@ -2,6 +2,7 @@ include config.mk
 
 SRC = src/sqlpilot.c \
       src/db/db.c \
+      src/store.c \
       src/cb/window.c \
 
 PROG_SRC = src/main.c ${SRC}
@@ -11,6 +12,8 @@ TEST_SRC = test/units/$(unit).c test/test.c ${SRC}
 
 HEADERS = src/sqlpilot.h \
 	  src/db/db.h \
+          src/store.h \
+	  src/cb/window.h \
 
 APP_HEADERS = src/sqlpilot.h ${HEADERS}
 

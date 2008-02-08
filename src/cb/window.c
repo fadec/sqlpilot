@@ -1,5 +1,62 @@
 #include "sqlpilot.h"
 
+
+static void flights_load_entries_from_selection(Sqlpilot *logb)
+{
+/*   GtkTreeIter iter; */
+/*   GtkTreeModel *model; */
+/*   gchar *id, *aircraft, *role, *depart, *arrive, *scheduled_out_at, *scheduled_in_at, */
+/*     *scheduled_duration, *out_at, *in_at, *duration, *night, *instrument; */
+
+/*   if (gtk_tree_selection_get_selected (logb->flights_log_selected_row, &model, &iter)) */
+/*     { */
+/*       gtk_tree_model_get(model, &iter, */
+/* 			 logb->flights_log_id_column, &id, */
+/* 			 logb->flights_log_aircraft_column, &aircraft, */
+/* 			 logb->flights_log_role_column, &role, */
+/* 			 logb->flights_log_depart_column, &depart, */
+/* 			 logb->flights_log_arrive_column, &arrive, */
+/* 			 logb->flights_log_out_at_column, &out_at, */
+/* 			 logb->flights_log_in_at_column, &in_at, */
+/* 			 logb->flights_log_duration_column, &duration, */
+/* 			 logb->flights_log_scheduled_out_at_column, &scheduled_out_at, */
+/* 			 logb->flights_log_scheduled_in_at_column, &scheduled_in_at, */
+/* 			 logb->flights_log_scheduled_duration_column, &scheduled_duration, */
+/* 			 logb->flights_log_night_column, &night, */
+/* 			 logb->flights_log_instrument_column, &instrument, */
+/* 			 -1); */
+
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_aircraft_entry), EMPTY_IF_NULL(aircraft)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_role_entry), EMPTY_IF_NULL(role)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_depart_entry), EMPTY_IF_NULL(depart)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_arrive_entry), EMPTY_IF_NULL(arrive)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_scheduled_out_at_entry), EMPTY_IF_NULL(scheduled_out_at)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_scheduled_in_at_entry), EMPTY_IF_NULL(scheduled_in_at)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_scheduled_duration_entry), EMPTY_IF_NULL(scheduled_duration)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_out_at_entry), EMPTY_IF_NULL(out_at)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_in_at_entry), EMPTY_IF_NULL(in_at)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_duration_entry), EMPTY_IF_NULL(duration)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_night_entry), EMPTY_IF_NULL(night)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_instrument_entry), EMPTY_IF_NULL(instrument)); */
+      
+/*       sscanf(id, "%u", &logb->flights_log_selected_id); */
+
+/*       g_free(id); */
+/*       g_free(aircraft); */
+/*       g_free(role); */
+/*       g_free(depart); */
+/*       g_free(arrive); */
+/*       g_free(scheduled_out_at); */
+/*       g_free(scheduled_in_at); */
+/*       g_free(scheduled_duration); */
+/*       g_free(out_at); */
+/*       g_free(in_at); */
+/*       g_free(duration); */
+/*       g_free(night); */
+/*       g_free(instrument); */
+/*     } */
+}
+
 void entry_clamp_text(GtkEntry *entry, int length, int setcase)
 {
   const gchar *text;
@@ -248,4 +305,16 @@ void on_flights_dur_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 void on_flights_sdur_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_format_time_partial(entry, '+');
+}
+
+void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
+{
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      logb->flights_selection = selection;
+      flights_load_entries_from_selection(logb);      
+    }
 }

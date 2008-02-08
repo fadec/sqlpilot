@@ -7,7 +7,9 @@
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <string.h>
 #include "db/db.h"
+#include "store.h"
 
 #define EXIT_SUCESS 0
 #define EXIT_BARF  1
@@ -21,10 +23,16 @@ typedef enum {
     SQLPILOT_ERROR_OPEN_FAILED
 } SqlpilotError;
 
+#define FLIGHTS_SELECT \
+  "select flights.id as rowid, aircraft.ident as aircraft from flights " \
+  "left join aircraft on flights.aircraft_id = aircraft.id " \
+  "left join airports da on flights.dep_id = da.id " \
+  "left join airports aa on flights.arr_id = aa.id;"
+
 #define FLIGHTS_INSERT \
-"insert into flights (aircraft_id, role_id, dep_id, arr_id, date, aout, ain, dur, night, " \
-"inst, siminst, hold, aprch, xc, dland, nland, crew, notes, fltno, sout, sin, sdur, trip) " \
-"values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+  "insert into flights (aircraft_id, role_id, dep_id, arr_id, date, aout, ain, dur, night, " \
+  "inst, siminst, hold, aprch, xc, dland, nland, crew, notes, fltno, sout, sin, sdur, trip) " \
+  "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 
 
 typedef struct Sqlpilot Sqlpilot;
@@ -34,6 +42,9 @@ struct Sqlpilot {
   DBStatement *flights_select;
   DBStatement *flights_insert;
   GtkWidget *flights_sw;
+  GtkTreeModel *flights_treemodel;
+  GtkTreeSelection *flights_selection;
+  GtkWidget *flights_treeview;
   GtkWidget *flights_aircraft;
   GtkWidget *flights_date;
   GtkWidget *flights_role;

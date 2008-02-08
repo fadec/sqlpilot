@@ -1,4 +1,5 @@
 #include "sqlpilot.h"
+#include "cb/window.h"
 
 void barf(const char *message)
 {
@@ -8,9 +9,9 @@ void barf(const char *message)
 
 Sqlpilot *sqlpilot_new(void)
 {
-  Sqlpilot        *sqlpilot;
-  GtkBuilder      *builder;
-  GError          *err;
+  Sqlpilot         *sqlpilot;
+  GtkBuilder       *builder;
+  GError           *err;
 
   /* Open Database */
   sqlpilot = g_slice_new0(Sqlpilot);
@@ -31,9 +32,9 @@ Sqlpilot *sqlpilot_new(void)
   gtk_builder_connect_signals(builder, sqlpilot);
 
   /* Set DB statements */
-  sqlpilot->flights_select = db_prep(sqlpilot->db, "select * from flights;");
+  sqlpilot->flights_select = db_prep(sqlpilot->db, FLIGHTS_SELECT);
   sqlpilot->flights_insert = db_prep(sqlpilot->db, FLIGHTS_INSERT);
-
+  
   /* Set UI components in Sqlpilot struct */
   #define __get_widget(x) GTK_WIDGET(gtk_builder_get_object(builder, (x)));
   sqlpilot->window           = __get_widget("window");
@@ -62,6 +63,18 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->flights_sdur     = __get_widget("flights_sdur");
   sqlpilot->flights_trip     = __get_widget("flights_trip");
   #undef __get_widget
+
+  /* Add treeview */
+  store_build_query_stmt_widget(sqlpilot->flights_select, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
+  gtk_widget_show_all(sqlpilot->flights_treeview);
+  gtk_container_add(GTK_CONTAINER(sqlpilot->flights_sw), sqlpilot->flights_treeview);
+
+  /* Setup treeview callbacks */
+  sqlpilot->flights_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->flights_treeview));
+  gtk_tree_selection_set_mode (sqlpilot->flights_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (sqlpilot->flights_selection), "changed",
+		    G_CALLBACK (on_flights_selection_changed),
+		    sqlpilot);
 
   g_object_unref (G_OBJECT (builder));
   return sqlpilot;
