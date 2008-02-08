@@ -171,14 +171,12 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   db_bind_int64(stmt, i++, airports_id_of_ident_with_insert(sqlpilot->db, dep));
   db_bind_int64(stmt, i++, airports_id_of_ident_with_insert(sqlpilot->db, arr));
   db_bind_text(stmt, i++, date);
-  fprintf(stderr, "a");
   db_bind_text(stmt, i++, aout);
   db_bind_text(stmt, i++, ain);
   db_bind_text(stmt, i++, dur);
   db_bind_text(stmt, i++, night);
   db_bind_text(stmt, i++, inst);
   db_bind_text(stmt, i++, siminst);
-  fprintf(stderr, "5");
   db_bind_int(stmt, i++, hold);
   db_bind_text(stmt, i++, aprch);
   db_bind_int(stmt, i++, xc);
@@ -191,7 +189,6 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   db_bind_text(stmt, i++, sin);
   db_bind_text(stmt, i++, sdur);
   db_bind_text(stmt, i++, trip);
-  fprintf(stderr, "d");
   db_step(stmt);
   db_reset(stmt);
 
