@@ -99,6 +99,11 @@ int db_bind_int64(DBStatement *stmt, int i, int n)
   return sqlite3_bind_int64(stmt, i, n);
 }
 
+int db_clear_bindings(DBStatement *stmt)
+{
+  return sqlite3_clear_bindings(stmt);
+}
+
 int db_reset(DBStatement *stmt)
 {
   return sqlite3_reset(stmt);

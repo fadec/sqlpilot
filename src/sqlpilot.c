@@ -34,6 +34,8 @@ Sqlpilot *sqlpilot_new(void)
   /* Set DB statements */
   sqlpilot->flights_select = db_prep(sqlpilot->db, FLIGHTS_SELECT);
   sqlpilot->flights_insert = db_prep(sqlpilot->db, FLIGHTS_INSERT);
+  sqlpilot->flights_update = db_prep(sqlpilot->db, FLIGHTS_UPDATE);
+  sqlpilot->flights_delete = db_prep(sqlpilot->db, FLIGHTS_DELETE);
   
   /* Set UI components in Sqlpilot struct */
   #define __get_widget(x) GTK_WIDGET(gtk_builder_get_object(builder, (x)));
@@ -63,6 +65,32 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->flights_sdur     = __get_widget("flights_sdur");
   sqlpilot->flights_trip     = __get_widget("flights_trip");
   #undef __get_widget
+
+  /* Types for model */
+  sqlpilot->flights_gtypes[FLIGHTS_COL_ID]       = G_TYPE_INT;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_DATE]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_AIRCRAFT] = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_ROLE]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_DEP]      = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_ARR]      = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_AOUT]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_AIN]      = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_DUR]      = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_NIGHT]    = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_INST]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_SIMINST]  = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_HOLD]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_APRCH]    = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_XC]       = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_DLAND]    = G_TYPE_INT;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_NLAND]    = G_TYPE_INT;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_CREW]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_NOTES]    = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_FLTNO]    = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_SOUT]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_SIN]      = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_SDUR]     = G_TYPE_STRING;
+  sqlpilot->flights_gtypes[FLIGHTS_COL_TRIP]     = G_TYPE_STRING;
 
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
