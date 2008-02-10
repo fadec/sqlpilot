@@ -2,7 +2,7 @@
 
 gboolean str_bool(const char *str)
 {
-  return strcmp("", str) && strcmp("0", str) && strcmp("F", str) && strcmp("f", str) ? 1 : 0;
+  return (str != NULL) && strcmp("", str) && strcmp("0", str) && strcmp("F", str) && strcmp("f", str) ? 1 : 0;
 }
 
 static void flights_load_entries_from_selection(Sqlpilot *logb)
@@ -78,16 +78,15 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_hold), str_bool(hold));
       gtk_entry_set_text(GTK_ENTRY(logb->flights_aprch), EMPTY_IF_NULL(aprch));
       gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_xc), str_bool(xc));
-      gtk_spin_button_set_value_as_int(
+       //gtk_spin_button_set_value_as_int(
 
-      gtk_entry_set_text(GTK_ENTRY(logb->flights_crew), EMPTY_IF_NULL(crew));
-      gtk_entry_set_text(GTK_ENTRY(logb->flights_notes), EMPTY_IF_NULL(notes));
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_crew), EMPTY_IF_NULL(crew)); */
+/*       gtk_entry_set_text(GTK_ENTRY(logb->flights_notes), EMPTY_IF_NULL(notes)); */
       gtk_entry_set_text(GTK_ENTRY(logb->flights_fltno), EMPTY_IF_NULL(fltno));
       gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
       gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sin));
       gtk_entry_set_text(GTK_ENTRY(logb->flights_sdur), EMPTY_IF_NULL(sdur));
       gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
-
       
       g_free(id);
       g_free(date);
@@ -161,9 +160,6 @@ void entry_format_time_partial(GtkEntry *entry, char separator)
 /*     gtk_editable_set_position(GTK_EDITABLE(entry), 4); */
 
   gtk_entry_set_text(entry, result);
-
-
-  fprintf(stderr, ".");
 }
 
 /* Returns an allocated string */
@@ -275,6 +271,7 @@ void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   crew     = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_crew));
   notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_notes));
   
+  /* Write entries to database */
   if (strcmp("0", id)) {
     stmt = sqlpilot->flights_update;
     db_bind_text(stmt, FLIGHTS_WRITE_ID, id);
@@ -292,9 +289,9 @@ void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   db_bind_text(stmt, FLIGHTS_WRITE_NIGHT, night);
   db_bind_text(stmt, FLIGHTS_WRITE_INST, inst);
   db_bind_text(stmt, FLIGHTS_WRITE_SIMINST, siminst);
-  db_bind_int(stmt, FLIGHTS_WRITE_HOLD, hold);
+  db_bind_int(stmt, FLIGHTS_WRITE_HOLD, hold ? 1 : 0);
   db_bind_text(stmt, FLIGHTS_WRITE_APRCH, aprch);
-  db_bind_int(stmt, FLIGHTS_WRITE_XC, xc);
+  db_bind_int(stmt, FLIGHTS_WRITE_XC, xc ? 1 : 0);
   db_bind_int(stmt, FLIGHTS_WRITE_DLAND, dland);
   db_bind_int(stmt, FLIGHTS_WRITE_NLAND, nland);
   db_bind_text(stmt, FLIGHTS_WRITE_CREW, crew);
@@ -303,8 +300,8 @@ void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   db_bind_text(stmt, FLIGHTS_WRITE_SOUT, sout);
   db_bind_text(stmt, FLIGHTS_WRITE_SIN, sin);
   db_bind_text(stmt, FLIGHTS_WRITE_SDUR, sdur);
-  db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);
-  
+  db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);  
+
   db_step(stmt);
   db_reset(stmt);
   db_clear_bindings(stmt);
@@ -315,20 +312,43 @@ void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
 
 void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
+  DBStatement *stmt;
+  GtkTreeIter iter;
+  DBint64 inserted_id;
+
   flights_write_entries(sqlpilot, "0");
+  inserted_id = db_last_insert_rowid(sqlpilot->db); 
+
+  /* Read row into treemodel */
+  stmt = sqlpilot->flights_select_by_id;
+  db_bind_int64(stmt, 1, inserted_id);
+  gtk_list_store_insert(GTK_LIST_STORE(sqlpilot->flights_treemodel), &iter, 0);
+  store_update_row(GTK_LIST_STORE(sqlpilot->flights_treemodel), &iter, stmt);
+  
+  db_reset(stmt);
+  db_clear_bindings(stmt);  
 }
 
 void on_flights_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
   GtkTreeIter iter;
   gchar *id;
+  DBStatement *stmt;
   
-  gtk_tree_selection_get_selected(sqlpilot->flights_selection, &sqlpilot->flights_treemodel, &iter);
-  gtk_tree_model_get(sqlpilot->flights_treemodel, &iter, FLIGHTS_COL_ID, &id, -1);
+  if (gtk_tree_selection_get_selected(sqlpilot->flights_selection, &sqlpilot->flights_treemodel, &iter)) {
+    gtk_tree_model_get(sqlpilot->flights_treemodel, &iter, FLIGHTS_COL_ID, &id, -1);
 
-  flights_write_entries(sqlpilot, id);
+    flights_write_entries(sqlpilot, id);
 
-  g_free(id);
+    /* Read row into treemodel */
+    stmt = sqlpilot->flights_select_by_id;
+    db_bind_text(stmt, 1, id);
+    store_update_row(GTK_LIST_STORE(sqlpilot->flights_treemodel), &iter, stmt);
+  
+    db_reset(stmt);
+    db_clear_bindings(stmt);
+    g_free(id);
+  }
 }
 
 void on_flights_delete_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -336,26 +356,29 @@ void on_flights_delete_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   GtkTreeIter iter;
   gchar *id;
   
-  gtk_tree_selection_get_selected(sqlpilot->flights_selection, &sqlpilot->flights_treemodel, &iter);
-  gtk_tree_model_get(sqlpilot->flights_treemodel, &iter, FLIGHTS_COL_ID, &id, -1);
+  if (gtk_tree_selection_get_selected(sqlpilot->flights_selection, &sqlpilot->flights_treemodel, &iter)) {
+    gtk_tree_model_get(sqlpilot->flights_treemodel, &iter, FLIGHTS_COL_ID, &id, -1);
+    
+    db_bind_text(sqlpilot->flights_delete, FLIGHTS_DELETE_ID, id);
 
-  db_bind_text(sqlpilot->flights_delete, FLIGHTS_DELETE_ID, id);
-
-  db_step(sqlpilot->flights_delete);
-  db_reset(sqlpilot->flights_delete);
-  db_clear_bindings(sqlpilot->flights_delete);
-
-  gtk_list_store_remove(GTK_LIST_STORE(sqlpilot->flights_treemodel), &iter);
-
-  g_free(id);
+    db_step(sqlpilot->flights_delete);
+    db_reset(sqlpilot->flights_delete);
+    db_clear_bindings(sqlpilot->flights_delete);
   
+    gtk_list_store_remove(GTK_LIST_STORE(sqlpilot->flights_treemodel), &iter);
+
+    g_free(id);
+  }
 }
+void on_flights_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+{
+  flights_load_entries_from_selection(sqlpilot);
+}  
 
 void on_flights_trip_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   const gchar *text;
   text = gtk_entry_get_text(entry);
-  fprintf(stderr, "%s\n", text);
 }
 
 void on_flights_aircraft_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
@@ -363,7 +386,6 @@ void on_flights_aircraft_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   const gchar *text;
   text = gtk_entry_get_text(entry);
   entry_clamp_text(entry, 6, 1);
-  //  fprintf(stderr, "%s\n", text);
 }
 void on_flights_dep_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
@@ -410,7 +432,6 @@ void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 
   if (gtk_tree_selection_get_selected (selection, &model, &iter))
     {
-      logb->flights_selection = selection;
       flights_load_entries_from_selection(logb);      
     }
 }

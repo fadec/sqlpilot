@@ -6,6 +6,49 @@
 #include <stdlib.h>
 #include <glib.h>
 
+
+/* Takes a numeric column representing minutes and converts it to a hh+mm string. */
+static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+  char z[30];
+  int m, hh, mm;
+  //assert(argc == 1);
+  switch (sqlite3_value_type(argv[0])) {
+  case SQLITE_NULL:
+  case SQLITE_TEXT:
+  case SQLITE_BLOB: m = 0;
+    break;
+  case SQLITE_FLOAT:
+  case SQLITE_INTEGER: m = sqlite3_value_int(argv[0]);
+  }
+  hh = m / 60;
+  mm = m - (hh * 60);
+  snprintf(z, 30, "%02d+%02d", hh, mm);
+  sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
+}
+
+/* Takes time string in hhhhhh+mm format and returns integer minutes */
+/* Integers, floats, and string integers */
+static void hhmm_to_m_func(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+  int hh=0, mm=0;
+  const char *str;
+  switch (sqlite3_value_type(argv[0])) {
+  case SQLITE_NULL:
+  case SQLITE_BLOB:
+    break;
+  case SQLITE_FLOAT:
+  case SQLITE_INTEGER:
+    
+    break;
+  case SQLITE_TEXT:
+    str = (char *)sqlite3_value_text(argv[0]);
+    sscanf(str, "%d+%d", &hh, &mm);
+    sqlite3_result_int(context, hh * 60 + mm);
+    break;
+  }
+}
+
 DB* db_open(const char* filename)
 {
 	DB* db;
@@ -18,6 +61,9 @@ DB* db_open(const char* filename)
 	  exit(1);
 	}
 
+	/* register custom functions */
+	sqlite3_create_function(db, "m_to_hhmm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
+	sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
 	return db;
 }
 

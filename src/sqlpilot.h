@@ -53,35 +53,38 @@ enum {
 };
 
 #define FLIGHTS_SELECT					\
-  "select f.id as rowid"				\
-  ", f.date as Date"					\
+  "select flights.id as rowid"				\
+  ", flights.date as Date"				\
   ", a.ident as Aircraft"				\
   ", r.ident as Role"					\
   ", dep.ident as Dep"					\
   ", arr.ident as Arr"					\
-  ", f.aout as AOut"					\
-  ", f.ain as AIn"					\
-  ", f.dur as Dur"					\
-  ", f.night as Night"					\
-  ", f.inst as Inst"					\
-  ", f.siminst as SimInst"				\
-  ", f.hold as Hold"					\
-  ", f.aprch as Aprch"					\
-  ", f.xc as XC"					\
-  ", f.dland as DLand"					\
-  ", f.nland as NLand"					\
-  ", f.crew as Crew"					\
-  ", f.notes as Notes"					\
-  ", f.fltno as FltNo"					\
-  ", f.sout as SOut"					\
-  ", f.sin as SIn"					\
-  ", f.sdur as SDur"					\
-  ", f.trip as Trip"					\
-  " from flights f"					\
-  " left join aircraft a on f.aircraft_id = a.id"	\
-  " left join roles r on f.role_id = r.id"		\
-  " left join airports dep on f.dep_id = dep.id"	\
-  " left join airports arr on f.arr_id = arr.id;"
+  ", flights.aout as AOut"				\
+  ", flights.ain as AIn"				\
+  ", m_to_hhmm(flights.dur) as Dur"			\
+  ", m_to_hhmm(flights.night) as Night"			\
+  ", m_to_hhmm(flights.inst) as Inst"			\
+  ", m_to_hhmm(flights.siminst) as SimInst"		\
+  ", flights.hold as Hold"				\
+  ", flights.aprch as Aprch"				\
+  ", flights.xc as XC"					\
+  ", flights.dland as DLand"				\
+  ", flights.nland as NLand"				\
+  ", flights.crew as Crew"				\
+  ", flights.notes as Notes"				\
+  ", flights.fltno as FltNo"				\
+  ", flights.sout as SOut"				\
+  ", flights.sin as SIn"				\
+  ", m_to_hhmm(flights.sdur) as SDur"			\
+  ", flights.trip as Trip"				\
+  " from flights"					\
+  " left join aircraft a on flights.aircraft_id = a.id"	\
+  " left join roles r on flights.role_id = r.id"	\
+  " left join airports dep on flights.dep_id = dep.id"	\
+  " left join airports arr on flights.arr_id = arr.id"
+
+#define FLIGHTS_WHERE_ID \
+  " where flights.id = ?;"
 
 /* Insert and update bindings */
 enum {
@@ -115,14 +118,15 @@ enum {
 #define FLIGHTS_INSERT							\
   "insert into flights (aircraft_id, role_id, dep_id, arr_id, date, aout, ain, dur, night, " \
   "inst, siminst, hold, aprch, xc, dland, nland, crew, notes, fltno, sout, sin, sdur, trip) " \
-  "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+  "values (?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), ?, ?, ?, " \
+  "?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
 
 #define FLIGHTS_UPDATE \
   "update flights set aircraft_id = ?, role_id = ?, dep_id = ?"	  \
-  ", arr_id = ?, date = ?, aout = ?, ain = ?, dur = ?, night = ?" \
-  ", inst = ?, siminst = ?, hold = ?, aprch = ?, xc = ?"	  \
+  ", arr_id = ?, date = ?, aout = ?, ain = ?, dur = hhmm_to_m(?), night = hhmm_to_m(?)" \
+  ", inst = hhmm_to_m(?), siminst = hhmm_to_m(?), hold = ?, aprch = ?, xc = ?"	  \
   ", dland = ?, nland = ?, crew = ?, notes = ?, fltno = ?"	  \
-  ", sout = ?, sin = ?, sdur = ?, trip = ?"			  \
+  ", sout = ?, sin = ?, sdur = hhmm_to_m(?), trip = ?"			  \
   " where id = ?;"
 
 enum {
@@ -137,6 +141,7 @@ struct Sqlpilot {
   DB *db;
   GtkWidget *window;
   DBStatement *flights_select;
+  DBStatement *flights_select_by_id;
   DBStatement *flights_insert;
   DBStatement *flights_update;
   DBStatement *flights_delete;

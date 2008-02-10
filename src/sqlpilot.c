@@ -32,7 +32,8 @@ Sqlpilot *sqlpilot_new(void)
   gtk_builder_connect_signals(builder, sqlpilot);
 
   /* Set DB statements */
-  sqlpilot->flights_select = db_prep(sqlpilot->db, FLIGHTS_SELECT);
+  sqlpilot->flights_select = db_prep(sqlpilot->db, FLIGHTS_SELECT ";");
+  sqlpilot->flights_select_by_id = db_prep(sqlpilot->db, FLIGHTS_SELECT FLIGHTS_WHERE_ID);
   sqlpilot->flights_insert = db_prep(sqlpilot->db, FLIGHTS_INSERT);
   sqlpilot->flights_update = db_prep(sqlpilot->db, FLIGHTS_UPDATE);
   sqlpilot->flights_delete = db_prep(sqlpilot->db, FLIGHTS_DELETE);

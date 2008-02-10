@@ -51,6 +51,23 @@ static void store_populate_from_stmt(GtkListStore *store, DBStatement *stmt)
 	}
 }
 
+int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
+{
+  int result_code, i, ncolumns;
+  const unsigned char *text;
+
+  ncolumns = db_column_count(stmt); // should also check list_store column width when not lazy
+
+  if ((result_code = db_step(stmt)) == DB_ROW) {
+    for(i = 0; i < ncolumns; i++) {
+      text = db_column_text(stmt, i);
+      gtk_list_store_set(store, iter, i, text, -1);
+    }
+  }
+
+  return result_code; // or whatever
+}
+
 static GtkListStore *store_from_stmt(DBStatement *stmt)
 {
 	GtkListStore *store;

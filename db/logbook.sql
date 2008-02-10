@@ -2,11 +2,11 @@ CREATE TABLE Flights (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,aircraft_id INTEGER
 	,role_id INTEGER
-	,dep_id VARCHAR
-	,arr_id VARCHAR
+	,dep_id INTEGER
+	,arr_id INTEGER
 	,Date DATE
-	,AOut INTEGER
-	,AIn INTEGER
+	,AOut TIME
+	,AIn TIME
 	,Dur INTEGER
 	,Night INTEGER
 	,Inst INTEGER
@@ -20,8 +20,8 @@ CREATE TABLE Flights (
 	,Notes TEXT
 	/* Schedule Stuff */
 	,FltNo VARCHAR
-	,SOut INTEGER
-	,SIn INTEGER
+	,SOut TIME
+	,SIn TIME
 	,SDur INTEGER
 	,Trip VARCHAR
 );
