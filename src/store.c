@@ -40,6 +40,8 @@ static void store_populate_from_stmt(GtkListStore *store, DBStatement *stmt)
 
 	ncolumns = db_column_count(stmt);
 
+	db_reset(stmt);
+
 	while ((result_code = db_step(stmt)) == DB_ROW)
 	{
 		gtk_list_store_append(store, &iter);
@@ -49,6 +51,14 @@ static void store_populate_from_stmt(GtkListStore *store, DBStatement *stmt)
 			gtk_list_store_set(store, &iter, i, text, -1);
 		}
 	}
+
+	db_reset(stmt);
+}
+
+void store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt)
+{
+  gtk_list_store_clear(store);
+  store_populate_from_stmt(store, stmt);
 }
 
 int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
@@ -92,7 +102,7 @@ static void store_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt
   for (i = 0; i < ncolumns; i++)
     {
       header = db_column_name(stmt, i);
-      if (strcmp(header, "rowid")) {
+      if (header[0] != '_') {
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes (header, renderer, "text", i, NULL);
 	gtk_tree_view_column_set_sort_column_id (column, i);

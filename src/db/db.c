@@ -8,6 +8,7 @@
 
 
 /* Takes a numeric column representing minutes and converts it to a hh+mm string. */
+/* Returns null if result would be 00+00 */
 static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **argv)
 {
   char z[30];
@@ -24,7 +25,7 @@ static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **a
   hh = m / 60;
   mm = m - (hh * 60);
   snprintf(z, 30, "%02d+%02d", hh, mm);
-  sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
+  if (hh && mm) sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
 }
 
 /* Takes time string in hhhhhh+mm format and returns integer minutes */
@@ -49,6 +50,29 @@ static void hhmm_to_m_func(sqlite3_context *context, int argc, sqlite3_value **a
   }
 }
 
+/* formats a column as a text bool "T" "F" */
+/* text [ "" | "0" | "F" | "f" ] = false, else true */
+static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+  int b=0;
+  const char *str;
+
+  switch (sqlite3_value_type(argv[0])) {
+  case SQLITE_NULL: b = 0;
+    break;
+  case SQLITE_FLOAT: b = (sqlite3_value_double(argv[0]) != 0.0);
+    break;
+  case SQLITE_INTEGER: b = sqlite3_value_int(argv[0]);
+    break;
+  case SQLITE_BLOB:
+  case SQLITE_TEXT:
+    str = (char *)sqlite3_value_text(argv[0]);
+    b = strcmp("", str) && strcmp("0", str) && strcmp("F", str) && strcmp("f", str);
+    break;
+  }
+  sqlite3_result_text(context, b ? "T" : "F", -1, SQLITE_STATIC);
+}
+
 DB* db_open(const char* filename)
 {
 	DB* db;
@@ -64,6 +88,7 @@ DB* db_open(const char* filename)
 	/* register custom functions */
 	sqlite3_create_function(db, "m_to_hhmm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
 	sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
+	sqlite3_create_function(db, "bool", 1, SQLITE_ANY, 0, bool_func, 0, 0);
 	return db;
 }
 
@@ -145,6 +170,11 @@ int db_bind_int64(DBStatement *stmt, int i, int n)
   return sqlite3_bind_int64(stmt, i, n);
 }
 
+int db_bind_null(DBStatement *stmt, int i)
+{
+  return sqlite3_bind_null(stmt, i);
+}
+
 int db_clear_bindings(DBStatement *stmt)
 {
   return sqlite3_clear_bindings(stmt);
@@ -153,6 +183,11 @@ int db_clear_bindings(DBStatement *stmt)
 int db_reset(DBStatement *stmt)
 {
   return sqlite3_reset(stmt);
+}
+
+DB *db_handle(DBStatement *stmt)
+{
+  return sqlite3_db_handle(stmt);
 }
 
 int db_column_count(DBStatement *stmt)
