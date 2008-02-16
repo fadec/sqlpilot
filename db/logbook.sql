@@ -34,7 +34,7 @@ CREATE TABLE Roles (
 	,SIC BOOLEAN
 	,Solo BOOLEAN
 	,Dual BOOLEAN
-	,FI BOOLEAN
+	,Instruct BOOLEAN
 	,Total BOOLEAN
 );
 
@@ -48,9 +48,9 @@ CREATE TABLE Aircraft (
 CREATE TABLE Types (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Ident CHAR
-	,Name CHAR
 	,Make CHAR
 	,Model CHAR
+	,Airplane BOOLEAN
 	,Turbine BOOLEAN
 	,Jet BOOLEAN
 	,Turboprop BOOLEAN

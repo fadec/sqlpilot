@@ -26,14 +26,9 @@ void text_view_set_text(GtkTextView *tv, const char *text)
   gtk_text_buffer_set_text(buffer, text, -1);
 }
 
-int char_okay_for_elapsed_time(char c)
+int is_time_char(char c)
 {
-  return 1;
-}
-
-int char_okay_for_time(char c)
-{
-  return 1;
+  return (c >= '0' && c <= '9') || c == '.' || c == ':' || c == '+';
 }
 
 int is_ident_char(char c)
@@ -69,5 +64,34 @@ void entry_clamp_text(GtkEntry *entry, int length, int setcase, int allowed(char
   gtk_entry_set_text(entry, clamped);
   g_free(clamped);
   /* *text need not be freed per gtk_entry_get_text docs */
+}
+
+
+int hmstr_to_m(const char *str)
+{
+  int h = 0, m = 0;
+  if (strchr(str, ':')) {
+    sscanf(str, "%d:%d", &h, &m);
+  } else if (strchr(str, '+')) {
+    sscanf(str, "%d+%d", &h, &m);
+  } else {
+    scanf(str, "%d", &m);
+  }
+  return h * 60 + m;
+}
+
+char *m_to_hmstr(int m)
+{
+  int hh, mm;
+  char *str;
+
+  hh = m / 60;
+  mm = m - (hh * 60);
+
+  str = g_strnfill(10, '\0');
+
+  snprintf(str, 10, "%d:%02d", hh, mm);
+
+  return str;
 }
 

@@ -24,7 +24,7 @@ static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **a
   }
   hh = m / 60;
   mm = m - (hh * 60);
-  snprintf(z, 30, "%02d+%02d", hh, mm);
+  snprintf(z, 30, "%d+%02d", hh, mm);
   if (hh && mm) sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
 }
 
