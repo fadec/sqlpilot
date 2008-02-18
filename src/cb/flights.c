@@ -5,20 +5,20 @@ void entry_format_date_on_focus_out(GtkEntry *entry)
   int yy=0, mm=0, dd=0;
   const char *text;
   char result[11]; 		/* strlen("yyyy-mm-dd\0") == 11 */
-  struct tm tm = {0}, gm_tm;
-  time_t time;
+  struct tm tm = {0};
 
   text = gtk_entry_get_text(entry);
   sscanf(text, "%d-%d-%d", &yy, &mm, &dd);
 
-  tm.tm_year = yy;
-  tm.tm_mon = mm;
+  tm.tm_year = yy - 1900;
+  tm.tm_mon = mm - 1;
   tm.tm_mday = dd;
 
-  time = mktime(&tm);
-  gmtime_r(&time, &gm_tm);
-
-  strftime(result, 11, "%Y-%m-%d", &gm_tm);
+  if (mktime(&tm) == -1) {
+    result[0] = '\0';
+  } else {
+    strftime(result, 11, "%Y-%m-%d", &tm);
+  }
 
   gtk_entry_set_text(entry, result);
 }
