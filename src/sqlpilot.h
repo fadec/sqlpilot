@@ -74,9 +74,9 @@ enum {
   ", m_to_hhmm(flights.night) as Night"			\
   ", m_to_hhmm(flights.inst) as Inst"			\
   ", m_to_hhmm(flights.siminst) as SimInst"		\
-  ", bool(flights.hold) as Hold"				\
+  ", bool(flights.hold) as Hold"			\
   ", flights.aprch as Aprch"				\
-  ", bool(flights.xc) as XC"					\
+  ", bool(flights.xc) as XC"				\
   ", flights.dland as DLand"				\
   ", flights.nland as NLand"				\
   ", flights.crew as _Crew"				\
@@ -131,16 +131,32 @@ enum {
   "?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
 
 #define FLIGHTS_UPDATE \
-  "update flights set aircraft_id = ?, role_id = ?, dep_id = ?"	  \
-  ", arr_id = ?, date = ?, aout = ?, ain = ?, dur = hhmm_to_m(?), night = hhmm_to_m(?)" \
-  ", inst = hhmm_to_m(?), siminst = hhmm_to_m(?), hold = ?, aprch = ?, xc = ?"	  \
-  ", dland = ?, nland = ?, crew = ?, notes = ?, fltno = ?"	  \
-  ", sout = ?, sin = ?, sdur = hhmm_to_m(?), trip = ?"			  \
+  "update flights set"				\
+  " aircraft_id = ?"				\
+  ", role_id = ?"				\
+  ", dep_id = ?"				\
+  ", arr_id = ?"				\
+  ", date = ?"					\
+  ", aout = ?"					\
+  ", ain = ?"					\
+  ", dur = hhmm_to_m(?)"			\
+  ", night = hhmm_to_m(?)"			\
+  ", inst = hhmm_to_m(?)"			\
+  ", siminst = hhmm_to_m(?)"			\
+  ", hold = ?"					\
+  ", aprch = ?"					\
+  ", xc = ?"					\
+  ", dland = ?"					\
+  ", nland = ?"					\
+  ", crew = ?"					\
+  ", notes = ?"					\
+  ", fltno = ?"					\
+  ", sout = ?"					\
+  ", sin = ?"					\
+  ", sdur = hhmm_to_m(?)"			\
+  ", trip = ?"					\
   " where id = ?;"
 
-enum {
-  FLIGHTS_DELETE_ID = 1
-};
 #define FLIGHTS_DELETE				\
   "delete from flights where id = ?;"
 
@@ -150,6 +166,7 @@ enum {
   ROLES_COL_NAME,
   ROLES_COL_PIC,
   ROLES_COL_SIC,
+  ROLES_COL_FE,
   ROLES_COL_SOLO,
   ROLES_COL_DUAL,
   ROLES_COL_INSTRUCT,
@@ -159,27 +176,31 @@ enum {
 
 #define ROLES_SELECT					\
   "select roles.id as _id"				\
-  ", ident as Ident"					\
-  ", name as Name"					\
-  ", pic as PIC"					\
-  ", sic as SIC"					\
-  ", solo as Solo"					\
-  ", dual as Dual"					\
-  ", instruct as Instruct"				\
+  ", roles.ident as Ident"				\
+  ", roles.name as Name"				\
+  ", roles.pic as PIC"					\
+  ", roles.sic as SIC"					\
+  ", roles.fe as FE"					\
+  ", roles.solo as Solo"				\
+  ", roles.dual as Dual"				\
+  ", roles.instruct as Instruct"			\
   ", count(flights.id) as Flights"			\
   ", m_to_hhmm(sum(flights.dur)) as Time"		\
   " from roles"						\
   " left join flights on flights.role_id = roles.id"	\
-  " group by roles.id;"
+
+#define ROLES_GROUP_BY \
+  " group by roles.id"
 
 #define ROLES_WHERE_ID \
-  " where roles.id = ?;"
+  " where roles.id = ?"
 
 enum {
   ROLES_WRITE_IDENT = 1,
   ROLES_WRITE_NAME,
   ROLES_WRITE_PIC,
   ROLES_WRITE_SIC,
+  ROLES_WRITE_FE,
   ROLES_WRITE_SOLO,
   ROLES_WRITE_DUAL,
   ROLES_WRITE_INSTRUCT,
@@ -187,10 +208,10 @@ enum {
 };
 
 #define ROLES_INSERT \
-  "insert into roles (ident, name, pic, sic, solo, dual, instruct) values (?, ?, ?, ?, ?, ?, ?);"
+  "insert into roles (ident, name, pic, sic, fe, solo, dual, instruct) values (?, ?, ?, ?, ?, ?, ?, ?);"
 
 #define ROLES_UPDATE \
-  "update roles set ident = ?, name = ?, pic = ?, sic = ?, solo = ?, dual = ?, instruct = ?" \
+  "update roles set ident = ?, name = ?, pic = ?, sic = ?, fe = ?, solo = ?, dual = ?, instruct = ?" \
   " where id = ?;"
 
 #define ROLES_DELETE \
@@ -200,6 +221,7 @@ enum {
   AIRCRAFT_COL_ID = 0,
   AIRCRAFT_COL_IDENT,
   AIRCRAFT_COL_TYPE,
+  AIRCRAFT_COL_NOTES,
   AIRCRAFT_COL_FLIGHTS,
   AIRCRAFT_COL_TIME
 };
@@ -214,10 +236,12 @@ enum {
   " from aircraft"						\
   " left join types on aircraft.type_id = types.id"		\
   " left join flights on flights.aircraft_id = aircraft.id"	\
-  " group by aircraft.id;"
+
+#define AIRCRAFT_GROUP_BY \
+  " group by aircraft.id"
 
 #define AIRCRAFT_WHERE_ID \
-  " where aircraft.id = ?;"
+  " where aircraft.id = ?"
 
 enum {
   AIRCRAFT_WRITE_IDENT = 1,
@@ -241,74 +265,154 @@ enum {
   TYPES_COL_MAKE,
   TYPES_COL_MODEL,
   TYPES_COL_AIRPLANE,
+  TYPES_COL_ROTORCRAFT,
+  TYPES_COL_GLIDER,
+  TYPES_COL_LTA,
+  TYPES_COL_POWEREDLIFT,
+  TYPES_COL_PPC,
+  TYPES_COL_WEIGHTSHIFT,
+  TYPES_COL_HELI,
+  TYPES_COL_GYRO,
+  TYPES_COL_AIRSHIP,
+  TYPES_COL_BALLOON,
+  TYPES_COL_SINGLE,
+  TYPES_COL_MULTI,
+  TYPES_COL_LAND,
+  TYPES_COL_SEA,
   TYPES_COL_TURBINE,
   TYPES_COL_JET,
-  TYPES_COL_TURBOPROP,
-  TYPES_COL_MULTI,
-  TYPES_COL_SINGLE,
+  TYPES_COL_PROP,
   TYPES_COL_HIGHPERF,
   TYPES_COL_RETRACT,
   TYPES_COL_COMPLEX,
   TYPES_COL_PRESSURIZED,
   TYPES_COL_LARGE,
+  TYPES_COL_SPORT,
+  TYPES_COL_ULTRULIGHT,
+  TYPES_COL_FOOTLAUNCH,
   TYPES_COL_SIM,
   TYPES_COL_FTD,
-  TYPES_COL_LAND,
-  TYPES_COL_SEA,
-  TYPES_COL_TOTAL
+  TYPES_COL_TOTAL,
 };
 
 #define TYPES_SELECT				\
   "select id as _id"				\
   ", ident as Ident"				\
-  ", airplane as Airplane"			\
-  ", turbine as Turbine"			\
-  ", jet as Jet"				\
-  ", turboprop as Turboprop"			\
-  ", multi as Multi"				\
-  ", single as Single"				\
-  ", highperf as HighPerf"			\
-  ", retract as Retract"			\
-  ", complex as Complex"			\
-  ", pressurized as Pressurized"		\
-  ", large as Large"				\
-  ", sim as Sim"				\
-  ", ftd as FTD"				\
-  ", land as FTD"				\
-  ", sea as Sea"				\
-  ", total as Total"				\
+  ", make as Make"				\
+  ", model as Model"				\
+  ", airplane as _Airplane"			\
+  ", rotorcraft as _Rotorcraft"			\
+  ", glider as _Glider"				\
+  ", lta as _LTA"				\
+  ", poweredlift as _Poweredlift"		\
+  ", ppc as _PPC"				\
+  ", weightshift as _Weightshift"		\
+  ", heli as _Heli"				\
+  ", gyro as _Gyro"				\
+  ", airship as _Airship"			\
+  ", balloon as _Balloon"			\
+  ", single as _Single"				\
+  ", multi as _Multi"				\
+  ", land as _Land"				\
+  ", sea as _Sea"				\
+  ", turbine as _Turbine"			\
+  ", jet as _Jet"				\
+  ", prop as _Prop"				\
+  ", highperf as _HighPerf"			\
+  ", retract as _Retract"			\
+  ", complex as _Complex"			\
+  ", pressurized as _Pressurized"		\
+  ", large as _Large"				\
+  ", sport as _Sport"				\
+  ", ultralight as _Ultralight"			\
+  ", footlaunch as _Footlaunch"			\
+  ", sim as _Sim"				\
+  ", ftd as _FTD"				\
+  ", total as _Total"				\
   " from types"
 
+#define TYPES_GROUP_BY \
+  " "
+
 #define TYPES_WHERE_ID \
-  " where id = ?;"
+  " where id = ?"
 
 enum {
   TYPES_WRITE_IDENT = 1,
   TYPES_WRITE_MAKE,
   TYPES_WRITE_MODEL,
   TYPES_WRITE_AIRPLANE,
+  TYPES_WRITE_ROTORCRAFT,
+  TYPES_WRITE_GLIDER,
+  TYPES_WRITE_LTA,
+  TYPES_WRITE_POWEREDLIFT,
+  TYPES_WRITE_PPC,
+  TYPES_WRITE_WEIGHTSHIFT,
+  TYPES_WRITE_HELI,
+  TYPES_WRITE_GYRO,
+  TYPES_WRITE_AIRSHIP,
+  TYPES_WRITE_BALLOON,
+  TYPES_WRITE_SINGLE,
+  TYPES_WRITE_MULTI,
+  TYPES_WRITE_LAND,
+  TYPES_WRITE_SEA,
   TYPES_WRITE_TURBINE,
   TYPES_WRITE_JET,
-  TYPES_WRITE_TURBOPROP,
-  TYPES_WRITE_MULTI,
-  TYPES_WRITE_SINGLE,
+  TYPES_WRITE_PROP,
   TYPES_WRITE_HIGHPERF,
   TYPES_WRITE_RETRACT,
   TYPES_WRITE_COMPLEX,
   TYPES_WRITE_PRESSURIZED,
   TYPES_WRITE_LARGE,
+  TYPES_WRITE_SPORT,
+  TYPES_WRITE_ULTRULIGHT,
+  TYPES_WRITE_FOOTLAUNCH,
   TYPES_WRITE_SIM,
   TYPES_WRITE_FTD,
-  TYPES_WRITE_LAND,
-  TYPES_WRITE_SEA,
   TYPES_WRITE_TOTAL,
   TYPES_WRITE_ID
 };
 
 #define TYPES_INSERT							\
-  "insert into types (ident, make, model, airplane, turbine, jet, turboprop, multi, " \
-  "single, highperf, retract, complex, pressurized, large, sim, ftd, land, sea, total) " \
-  "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+  "insert into types "							\
+  "( ident"								\
+  ", make"								\
+  ", model"								\
+  ", airplane"								\
+  ", rotorcraft"							\
+  ", glider"								\
+  ", lta"								\
+  ", poweredlift"							\
+  ", ppc"								\
+  ", weightshift"							\
+  ", heli"								\
+  ", gyro"								\
+  ", airship"								\
+  ", balloon"								\
+  ", single"								\
+  ", multi"								\
+  ", land"								\
+  ", sea"								\
+  ", turbine"								\
+  ", jet"								\
+  ", prop"								\
+  ", highperf"								\
+  ", retract"								\
+  ", complex"								\
+  ", pressurized"							\
+  ", large"								\
+  ", sport"								\
+  ", ultralight"							\
+  ", footlaunch"							\
+  ", sim"								\
+  ", ftd"								\
+  ", total)"								\
+  " values ("								\
+  "  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"					\
+  ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"					\
+  ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"					\
+  ", ?, ?"								\
+  " );"
 
 #define TYPES_UPDATE	  \
   "update types set"	  \
@@ -316,20 +420,33 @@ enum {
   ", make = ?"		  \
   ", model = ?"		  \
   ", airplane = ?"	  \
+  ", rotorcraft = ?"	  \
+  ", glider = ?"	  \
+  ", lta = ?"		  \
+  ", poweredlift = ?"	  \
+  ", ppc = ?"		  \
+  ", weightshift = ?"	  \
+  ", heli = ?"		  \
+  ", gyro = ?"		  \
+  ", airship = ?"	  \
+  ", balloon = ?"	  \
+  ", single = ?"	  \
+  ", multi = ?"		  \
+  ", land = ?"		  \
+  ", sea = ?"		  \
   ", turbine = ?"	  \
   ", jet = ?"		  \
-  ", turboprop = ?"	  \
-  ", multi = ?"		  \
-  ", single = ?"	  \
+  ", prop = ?"		  \
   ", highperf = ?"	  \
   ", retract = ?"	  \
   ", complex = ?"	  \
   ", pressurized = ?"	  \
   ", large = ?"		  \
+  ", sport = ?"		  \
+  ", ultralight = ?"	  \
+  ", footlaunch = ?"	  \
   ", sim = ?"		  \
   ", ftd = ?"		  \
-  ", land = ?"		  \
-  ", sea = ?"		  \
   ", total = ?"		  \
   "where id = ?;"
 
@@ -337,43 +454,54 @@ enum {
 #define TYPES_DELETE \
   "delete from types where id = ?;"
 
-
 enum {
   AIRPORTS_COL_ID = 0,
   AIRPORTS_COL_IDENT,
   AIRPORTS_COL_ICAO,
   AIRPORTS_COL_NAME,
   AIRPORTS_COL_OFFUTC,
-  AIRPORTS_COL_USEDST
+  AIRPORTS_COL_USEDST,
+  AIRPORTS_COL_NOTES,
+  AIRPORTS_COL_DEP,
+  AIRPORTS_COL_ARR
 };
 
-#define AIRPORTS_SELECT				\
-  "select id as _id"				\
-  ", ident as Ident"				\
-  ", icao as ICAO"				\
-  ", name as Name"				\
-  ", offutc as OffUTC"				\
-  ", usedst as UseDST"				\
-  " from airports"
+#define AIRPORTS_SELECT						\
+  "select airports.id as _id"					\
+  ", airports.ident as Ident"					\
+  ", airports.icao as ICAO"					\
+  ", airports.name as Name"					\
+  ", airports.offutc as OffUTC"					\
+  ", airports.usedst as UseDST"					\
+  ", airports.notes as _Notes"					\
+  ", count(distinct(fdep.id)) as Dep"				\
+  ", count(distinct(farr.id)) as Arr"				\
+  " from airports"						\
+  " left join flights fdep on fdep.dep_id = airports.id"	\
+  " left join flights farr on farr.arr_id = airports.id"
+
+#define AIRPORTS_GROUP_BY \
+  " group by airports.id"
 
 #define AIRPORTS_WHERE_ID \
-  " where id = ?;"
+  " where airports.id = ?"
 
 enum {
-  AIRPORTS_WRITE_IDENT,
+  AIRPORTS_WRITE_IDENT = 1,
   AIRPORTS_WRITE_ICAO,
   AIRPORTS_WRITE_NAME,
   AIRPORTS_WRITE_OFFUTC,
   AIRPORTS_WRITE_USEDST,
+  AIRPORTS_WRITE_NOTES,
   AIRPORTS_WRITE_ID
 };
 
 
 #define AIRPORTS_INSERT \
-  "insert into airports (ident, icao, name, offutc, usedst) values (?, ?, ?, ?, ?);"
+  "insert into airports (ident, icao, name, offutc, usedst, notes) values (?, ?, ?, ?, ?, ?);"
 
 #define AIRPORTS_UPDATE \
-  "update airports set ident = ?, icao = ?, name = ?, offutc = ?, usedst = ? where id = ?;"
+  "update airports set ident = ?, icao = ?, name = ?, offutc = ?, usedst = ?, notes = ? where id = ?;"
 
 #define AIRPORTS_DELETE \
   "delete from airports where id = ?;"
@@ -389,7 +517,6 @@ struct Sqlpilot {
   DBStatement *flights_insert;
   DBStatement *flights_update;
   DBStatement *flights_delete;
-  GType flights_gtypes[FLIGHTS_NUMCOL];
   GtkWidget *flights_sw;
   GtkTreeModel *flights_treemodel;
   GtkTreeSelection *flights_selection;
@@ -431,6 +558,7 @@ struct Sqlpilot {
   GtkWidget *roles_name;
   GtkWidget *roles_pic;
   GtkWidget *roles_sic;
+  GtkWidget *roles_fe;
   GtkWidget *roles_solo;
   GtkWidget *roles_dual;
   GtkWidget *roles_instruct;  
@@ -446,6 +574,7 @@ struct Sqlpilot {
   GtkWidget *aircraft_treeview;
   GtkWidget *aircraft_ident;
   GtkWidget *aircraft_type;
+  GtkWidget *aircraft_notes;
 
   DBStatement *types_select_all;
   DBStatement *types_select_by_id;
@@ -457,6 +586,37 @@ struct Sqlpilot {
   GtkTreeSelection *types_selection;
   GtkWidget *types_treeview;
   GtkWidget *types_ident;
+  GtkWidget *types_make;
+  GtkWidget *types_model;
+  GtkWidget *types_airplane;
+  GtkWidget *types_rotorcraft;
+  GtkWidget *types_glider;
+  GtkWidget *types_lta;
+  GtkWidget *types_poweredlift;
+  GtkWidget *types_ppc;
+  GtkWidget *types_weightshift;
+  GtkWidget *types_heli;
+  GtkWidget *types_gyro;
+  GtkWidget *types_airship;
+  GtkWidget *types_balloon;
+  GtkWidget *types_single;
+  GtkWidget *types_multi;
+  GtkWidget *types_land;
+  GtkWidget *types_sea;
+  GtkWidget *types_turbine;
+  GtkWidget *types_jet;
+  GtkWidget *types_prop;
+  GtkWidget *types_highperf;
+  GtkWidget *types_retract;
+  GtkWidget *types_complex;
+  GtkWidget *types_pressurized;
+  GtkWidget *types_large;
+  GtkWidget *types_sport;
+  GtkWidget *types_ultralight;
+  GtkWidget *types_footlaunch;
+  GtkWidget *types_sim;
+  GtkWidget *types_ftd;
+  GtkWidget *types_total;
 
   DBStatement *airports_select_all;
   DBStatement *airports_select_by_id;
@@ -468,7 +628,11 @@ struct Sqlpilot {
   GtkTreeSelection *airports_selection;
   GtkWidget *airports_treeview;
   GtkWidget *airports_ident;
-
+  GtkWidget *airports_icao;
+  GtkWidget *airports_name;
+  GtkWidget *airports_offutc;
+  GtkWidget *airports_usedst;
+  GtkWidget *airports_notes;
 };
 
 Sqlpilot *sqlpilot_new(void);

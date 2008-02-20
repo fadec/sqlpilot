@@ -66,6 +66,25 @@ void entry_clamp_text(GtkEntry *entry, int length, int setcase, int allowed(char
   /* *text need not be freed per gtk_entry_get_text docs */
 }
 
+void entry_clamp_roles_ident(GtkEntry *entry)
+{
+  entry_clamp_text(entry, 16, 1, is_ident_char);
+}
+
+void entry_clamp_aircraft_ident(GtkEntry *entry)
+{
+  entry_clamp_text(entry, 6, 1, is_ident_char);
+}
+
+void entry_clamp_types_ident(GtkEntry *entry)
+{
+  entry_clamp_text(entry, 16, 1, is_ident_char);
+}
+
+void entry_clamp_airports_ident(GtkEntry *entry)
+{
+  entry_clamp_text(entry, 4, 1, is_ident_char);
+}
 
 int hmstr_to_m(const char *str)
 {
@@ -93,5 +112,55 @@ char *m_to_hmstr(int m)
   snprintf(str, 10, "%d:%02d", hh, mm);
 
   return str;
+}
+
+/* Find or create a record the value of a column and return the id */
+DBint64 id_of_with_insert(DB *db, const char *table, const char *column, const char *value, int *inserted)
+{
+  #define __sql_size 500
+  DBStatement *select, *insert;
+  DBint64 id;
+  char sql[__sql_size];
+
+  snprintf(sql, __sql_size, "select id from %s where %s = ?;", table, column);
+  select = db_prep(db, sql);
+  db_bind_text(select, 1, value);
+
+  if (db_step(select) == DB_DONE) {
+    snprintf(sql, __sql_size, "insert into %s (%s) values (?);", table, column);
+    insert = db_prep(db, sql);
+    db_bind_text(insert, 1, value);
+    db_step(insert);
+    id = db_last_insert_rowid(db);
+    db_finalize(insert);
+    *inserted = TRUE;
+  } else {
+    id = db_column_int64(select, 0);
+    *inserted = FALSE;
+  }
+
+  db_finalize(select);
+
+  return id;
+  #undef __sql_size
+}
+
+/* Binds id of a row in a table with column matching a value to the i'th variable in stmt */
+/* Will insert into table if no row where column = value is found */
+/* Binds null when value is empty */
+/* Returns TRUE if row was inserted */
+int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, const char *value)
+{
+  DB *db;
+  int inserted;
+
+  db = db_handle(stmt);
+  if (value && strlen(value)) {
+    db_bind_int64(stmt, i, id_of_with_insert(db, table, column, value, &inserted));
+  } else {
+    db_bind_null(stmt, i);
+  }
+
+  return inserted;
 }
 

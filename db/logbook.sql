@@ -32,6 +32,7 @@ CREATE TABLE Roles (
 	,Name CHAR
 	,PIC BOOLEAN
 	,SIC BOOLEAN
+	,FE BOOLEAN
 	,Solo BOOLEAN
 	,Dual BOOLEAN
 	,Instruct BOOLEAN
@@ -51,20 +52,33 @@ CREATE TABLE Types (
 	,Make CHAR
 	,Model CHAR
 	,Airplane BOOLEAN
+	,Rotorcraft BOOLEAN
+	,Glider BOOLEAN
+	,LTA BOOLEAN
+	,PoweredLift BOOLEAN
+	,PPC BOOLEAN
+	,Weightshift BOOLEAN
+	,Heli BOOLEAN
+	,Gyro BOOLEAN
+	,Airship BOOLEAN
+	,Balloon BOOLEAN
+	,Single BOOLEAN
+	,Multi BOOLEAN
+	,Land BOOLEAN
+	,Sea BOOLEAN
 	,Turbine BOOLEAN
 	,Jet BOOLEAN
-	,Turboprop BOOLEAN
-	,Multi BOOLEAN
-	,Single BOOLEAN
+	,Prop BOOLEAN
 	,HighPerf BOOLEAN
 	,Retract BOOLEAN
 	,Complex BOOLEAN
 	,Pressurized BOOLEAN
 	,Large BOOLEAN
+	,Sport BOOLEAN
+	,Ultralight BOOLEAN
+	,Footlaunch BOOLEAN
 	,Sim BOOLEAN
 	,FTD BOOLEAN
-	,Land BOOLEAN
-	,Sea BOOLEAN
 	,Total BOOLEAN
 );
 
@@ -73,8 +87,9 @@ CREATE TABLE Airports (
 	,Ident CHAR
 	,ICAO CHAR
 	,Name CHAR
-	,OffUTC CHAR
+	,OffUTC FLOAT
 	,UseDST BOOLEAN
+	,Notes Text
 );
 
 CREATE TABLE Employers (

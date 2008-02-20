@@ -71,6 +71,7 @@ int db_reset(DBStatement *stmt);
 int db_bind_text(DBStatement *stmt, int i, const char *text);
 int db_bind_int(DBStatement *stmt, int i, int n);
 int db_bind_int64(DBStatement *, int, int);
+int db_bind_double(DBStatement *, int, double);
 int db_bind_null(DBStatement *, int);
 int db_column_count(DBStatement *stmt);
 int db_finalize(DBStatement *stmt);

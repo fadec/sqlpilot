@@ -1,5 +1,5 @@
 #include "sqlpilot.h"
-#include "cb/window.h"
+#include "cb/cb.h"
 
 void barf(const char *message)
 {
@@ -38,26 +38,26 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->flights_update       = db_prep(sqlpilot->db, FLIGHTS_UPDATE);
   sqlpilot->flights_delete       = db_prep(sqlpilot->db, FLIGHTS_DELETE);
 
-  sqlpilot->roles_select_all     = db_prep(sqlpilot->db, ROLES_SELECT ";");
-  sqlpilot->roles_select_by_id   = db_prep(sqlpilot->db, ROLES_SELECT ROLES_WHERE_ID);
+  sqlpilot->roles_select_all     = db_prep(sqlpilot->db, ROLES_SELECT ROLES_GROUP_BY ";");
+  sqlpilot->roles_select_by_id   = db_prep(sqlpilot->db, ROLES_SELECT ROLES_WHERE_ID ROLES_GROUP_BY ";");
   sqlpilot->roles_insert         = db_prep(sqlpilot->db, ROLES_INSERT);
   sqlpilot->roles_update         = db_prep(sqlpilot->db, ROLES_UPDATE);
   sqlpilot->roles_delete         = db_prep(sqlpilot->db, ROLES_DELETE);
 
-  sqlpilot->aircraft_select_all     = db_prep(sqlpilot->db, AIRCRAFT_SELECT ";");
-  sqlpilot->aircraft_select_by_id   = db_prep(sqlpilot->db, AIRCRAFT_SELECT AIRCRAFT_WHERE_ID);
+  sqlpilot->aircraft_select_all     = db_prep(sqlpilot->db, AIRCRAFT_SELECT AIRCRAFT_GROUP_BY ";");
+  sqlpilot->aircraft_select_by_id   = db_prep(sqlpilot->db, AIRCRAFT_SELECT AIRCRAFT_WHERE_ID AIRCRAFT_GROUP_BY ";");
   sqlpilot->aircraft_insert         = db_prep(sqlpilot->db, AIRCRAFT_INSERT);
   sqlpilot->aircraft_update         = db_prep(sqlpilot->db, AIRCRAFT_UPDATE);
   sqlpilot->aircraft_delete         = db_prep(sqlpilot->db, AIRCRAFT_DELETE);
 
-  sqlpilot->types_select_all     = db_prep(sqlpilot->db, TYPES_SELECT ";");
-  sqlpilot->types_select_by_id   = db_prep(sqlpilot->db, TYPES_SELECT TYPES_WHERE_ID);
+  sqlpilot->types_select_all     = db_prep(sqlpilot->db, TYPES_SELECT TYPES_GROUP_BY ";");
+  sqlpilot->types_select_by_id   = db_prep(sqlpilot->db, TYPES_SELECT TYPES_WHERE_ID TYPES_GROUP_BY ";");
   sqlpilot->types_insert         = db_prep(sqlpilot->db, TYPES_INSERT);
   sqlpilot->types_update         = db_prep(sqlpilot->db, TYPES_UPDATE);
   sqlpilot->types_delete         = db_prep(sqlpilot->db, TYPES_DELETE);
 
-  sqlpilot->airports_select_all     = db_prep(sqlpilot->db, AIRPORTS_SELECT ";");
-  sqlpilot->airports_select_by_id   = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_WHERE_ID);
+  sqlpilot->airports_select_all     = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_GROUP_BY ";");
+  sqlpilot->airports_select_by_id   = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_WHERE_ID AIRPORTS_GROUP_BY ";");
   sqlpilot->airports_insert         = db_prep(sqlpilot->db, AIRPORTS_INSERT);
   sqlpilot->airports_update         = db_prep(sqlpilot->db, AIRPORTS_UPDATE);
   sqlpilot->airports_delete         = db_prep(sqlpilot->db, AIRPORTS_DELETE);
@@ -94,43 +94,55 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->roles_name       = __get_widget("roles_name");
   sqlpilot->roles_pic        = __get_widget("roles_pic");
   sqlpilot->roles_sic        = __get_widget("roles_sic");
+  sqlpilot->roles_fe         = __get_widget("roles_fe");
   sqlpilot->roles_solo       = __get_widget("roles_solo");
-  sqlpilot->roles_dual       = __get_widget("dual");
-  sqlpilot->roles_instruct   = __get_widget("instruct");
+  sqlpilot->roles_dual       = __get_widget("roles_dual");
+  sqlpilot->roles_instruct   = __get_widget("roles_instruct");
   sqlpilot->aircraft_sw      = __get_widget("aircraft_sw");
   sqlpilot->aircraft_ident   = __get_widget("aircraft_ident");
+  sqlpilot->aircraft_type    = __get_widget("aircraft_type");
+  sqlpilot->aircraft_notes   = __get_widget("aircraft_notes");
   sqlpilot->types_sw         = __get_widget("types_sw");
   sqlpilot->types_ident      = __get_widget("types_ident");
-  sqlpilot->airports_sw      = __get_widget("airports_sw");
-  sqlpilot->airports_ident   = __get_widget("airports_ident");
-
+  sqlpilot->types_make       = __get_widget("types_make");
+  sqlpilot->types_model       = __get_widget("types_model");
+  sqlpilot->types_airplane    = __get_widget("types_airplane");
+  sqlpilot->types_rotorcraft  = __get_widget("types_rotorcraft");
+  sqlpilot->types_glider      = __get_widget("types_glider");
+  sqlpilot->types_lta         = __get_widget("types_lta");
+  sqlpilot->types_poweredlift = __get_widget("types_poweredlift");
+  sqlpilot->types_ppc         = __get_widget("types_ppc");
+  sqlpilot->types_weightshift = __get_widget("types_weightshift");
+  sqlpilot->types_heli        = __get_widget("types_heli");
+  sqlpilot->types_gyro        = __get_widget("types_gyro");
+  sqlpilot->types_airship     = __get_widget("types_airship");
+  sqlpilot->types_balloon     = __get_widget("types_balloon");
+  sqlpilot->types_single      = __get_widget("types_single");
+  sqlpilot->types_multi       = __get_widget("types_multi");
+  sqlpilot->types_land        = __get_widget("types_land");
+  sqlpilot->types_sea         = __get_widget("types_sea");
+  sqlpilot->types_turbine     = __get_widget("types_turbine");
+  sqlpilot->types_jet         = __get_widget("types_jet");
+  sqlpilot->types_prop        = __get_widget("types_prop");
+  sqlpilot->types_highperf    = __get_widget("types_highperf");
+  sqlpilot->types_retract     = __get_widget("types_retract");
+  sqlpilot->types_complex     = __get_widget("types_complex");
+  sqlpilot->types_pressurized = __get_widget("types_pressurized");
+  sqlpilot->types_large       = __get_widget("types_large");
+  sqlpilot->types_sport       = __get_widget("types_sport");
+  sqlpilot->types_ultralight  = __get_widget("types_ultralight");
+  sqlpilot->types_footlaunch  = __get_widget("types_footlaunch");
+  sqlpilot->types_sim         = __get_widget("types_sim");
+  sqlpilot->types_ftd         = __get_widget("types_ftd");
+  sqlpilot->types_total       = __get_widget("types_total");
+  sqlpilot->airports_sw       = __get_widget("airports_sw");
+  sqlpilot->airports_ident    = __get_widget("airports_ident");
+  sqlpilot->airports_icao     = __get_widget("airports_icao");
+  sqlpilot->airports_name     = __get_widget("airports_name");
+  sqlpilot->airports_offutc   = __get_widget("airports_offutc");
+  sqlpilot->airports_usedst   = __get_widget("airports_usedst");
+  sqlpilot->airports_notes    = __get_widget("airports_notes");
   #undef __get_widget
-
-  /* Types for model */
-  sqlpilot->flights_gtypes[FLIGHTS_COL_ID]       = G_TYPE_INT;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_DATE]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_AIRCRAFT] = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_ROLE]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_DEP]      = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_ARR]      = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_AOUT]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_AIN]      = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_DUR]      = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_NIGHT]    = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_INST]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_SIMINST]  = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_HOLD]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_APRCH]    = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_XC]       = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_DLAND]    = G_TYPE_INT;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_NLAND]    = G_TYPE_INT;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_CREW]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_NOTES]    = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_FLTNO]    = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_SOUT]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_SIN]      = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_SDUR]     = G_TYPE_STRING;
-  sqlpilot->flights_gtypes[FLIGHTS_COL_TRIP]     = G_TYPE_STRING;
 
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
@@ -159,6 +171,27 @@ Sqlpilot *sqlpilot_new(void)
   g_signal_connect (G_OBJECT (sqlpilot->flights_selection), "changed",
 		    G_CALLBACK (on_flights_selection_changed),
 		    sqlpilot);
+  sqlpilot->roles_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->roles_treeview));
+  gtk_tree_selection_set_mode (sqlpilot->roles_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (sqlpilot->roles_selection), "changed",
+		    G_CALLBACK (on_roles_selection_changed),
+		    sqlpilot);
+  sqlpilot->aircraft_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->aircraft_treeview));
+  gtk_tree_selection_set_mode (sqlpilot->aircraft_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (sqlpilot->aircraft_selection), "changed",
+		    G_CALLBACK (on_aircraft_selection_changed),
+		    sqlpilot);
+  sqlpilot->types_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->types_treeview));
+  gtk_tree_selection_set_mode (sqlpilot->types_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (sqlpilot->types_selection), "changed",
+		    G_CALLBACK (on_types_selection_changed),
+		    sqlpilot);
+  sqlpilot->airports_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->airports_treeview));
+  gtk_tree_selection_set_mode (sqlpilot->airports_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (sqlpilot->airports_selection), "changed",
+		    G_CALLBACK (on_airports_selection_changed),
+		    sqlpilot);
+
 
   g_object_unref (G_OBJECT (builder));
   return sqlpilot;

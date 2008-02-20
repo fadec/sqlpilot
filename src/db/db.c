@@ -22,10 +22,12 @@ static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **a
   case SQLITE_FLOAT:
   case SQLITE_INTEGER: m = sqlite3_value_int(argv[0]);
   }
-  hh = m / 60;
-  mm = m - (hh * 60);
-  snprintf(z, 30, "%d+%02d", hh, mm);
-  if (hh && mm) sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
+  if (m) {  
+    hh = m / 60;
+    mm = m - (hh * 60);
+    snprintf(z, 30, "%d+%02d", hh, mm);
+    sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
+  }
 }
 
 /* Takes time string in hhhhhh+mm format and returns integer minutes */
@@ -168,6 +170,11 @@ int db_bind_int(DBStatement *stmt, int i, int n)
 int db_bind_int64(DBStatement *stmt, int i, int n)
 {
   return sqlite3_bind_int64(stmt, i, n);
+}
+
+int db_bind_double(DBStatement *stmt, int i, double n)
+{
+  return sqlite3_bind_double(stmt, i, n);
 }
 
 int db_bind_null(DBStatement *stmt, int i)

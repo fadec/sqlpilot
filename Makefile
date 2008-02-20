@@ -20,7 +20,7 @@ HEADERS = src/sqlpilot.h \
 	  src/util.h \
 	  src/db/db.h \
           src/store.h \
-	  src/cb/window.h \
+	  src/cb/cb.h \
 
 APP_HEADERS = src/sqlpilot.h ${HEADERS}
 
