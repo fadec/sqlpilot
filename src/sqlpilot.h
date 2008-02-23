@@ -221,6 +221,7 @@ enum {
   AIRCRAFT_COL_ID = 0,
   AIRCRAFT_COL_IDENT,
   AIRCRAFT_COL_TYPE,
+  AIRCRAFT_COL_FLEETNO,
   AIRCRAFT_COL_NOTES,
   AIRCRAFT_COL_FLIGHTS,
   AIRCRAFT_COL_TIME
@@ -230,6 +231,7 @@ enum {
   "select aircraft.id as _id"					\
   ", aircraft.ident as Ident"					\
   ", types.ident as Type"					\
+  ", aircraft.fleetno as FleetNo"				\
   ", aircraft.notes as _Notes"					\
   ", count(flights.id) as Flights"				\
   ", m_to_hhmm(sum(flights.dur)) as Time"			\
@@ -246,15 +248,16 @@ enum {
 enum {
   AIRCRAFT_WRITE_IDENT = 1,
   AIRCRAFT_WRITE_TYPE,
+  AIRCRAFT_WRITE_FLEETNO,
   AIRCRAFT_WRITE_NOTES,
   AIRCRAFT_WRITE_ID
 };
 
 #define AIRCRAFT_INSERT \
-  "insert into aircraft (ident, type_id, notes) values (?, ?, ?);"
+  "insert into aircraft (ident, type_id, fleetno, notes) values (?, ?, ?, ?);"
 
 #define AIRCRAFT_UPDATE \
-  "update aircraft set ident = ?, type_id = ?, notes = ? where id = ?;"
+  "update aircraft set ident = ?, type_id = ?, fleetno = ?, notes = ? where id = ?;"
 
 #define AIRCRAFT_DELETE	\
   "delete from aircraft where id = ?;"
@@ -281,7 +284,6 @@ enum {
   TYPES_COL_SEA,
   TYPES_COL_TURBINE,
   TYPES_COL_JET,
-  TYPES_COL_PROP,
   TYPES_COL_HIGHPERF,
   TYPES_COL_RETRACT,
   TYPES_COL_COMPLEX,
@@ -295,47 +297,51 @@ enum {
   TYPES_COL_TOTAL,
 };
 
-#define TYPES_SELECT				\
-  "select id as _id"				\
-  ", ident as Ident"				\
-  ", make as Make"				\
-  ", model as Model"				\
-  ", airplane as _Airplane"			\
-  ", rotorcraft as _Rotorcraft"			\
-  ", glider as _Glider"				\
-  ", lta as _LTA"				\
-  ", poweredlift as _Poweredlift"		\
-  ", ppc as _PPC"				\
-  ", weightshift as _Weightshift"		\
-  ", heli as _Heli"				\
-  ", gyro as _Gyro"				\
-  ", airship as _Airship"			\
-  ", balloon as _Balloon"			\
-  ", single as _Single"				\
-  ", multi as _Multi"				\
-  ", land as _Land"				\
-  ", sea as _Sea"				\
-  ", turbine as _Turbine"			\
-  ", jet as _Jet"				\
-  ", prop as _Prop"				\
-  ", highperf as _HighPerf"			\
-  ", retract as _Retract"			\
-  ", complex as _Complex"			\
-  ", pressurized as _Pressurized"		\
-  ", large as _Large"				\
-  ", sport as _Sport"				\
-  ", ultralight as _Ultralight"			\
-  ", footlaunch as _Footlaunch"			\
-  ", sim as _Sim"				\
-  ", ftd as _FTD"				\
-  ", total as _Total"				\
-  " from types"
+#define TYPES_SELECT						\
+  "select types.id as _id"					\
+  ", types.ident as Ident"					\
+  ", types.make as Make"					\
+  ", types.model as Model"					\
+  ", types.airplane as _Airplane"				\
+  ", types.rotorcraft as _Rotorcraft"				\
+  ", types.glider as _Glider"					\
+  ", types.lta as _LTA"						\
+  ", types.poweredlift as _Poweredlift"				\
+  ", types.ppc as _PPC"						\
+  ", types.weightshift as _Weightshift"				\
+  ", types.heli as _Heli"					\
+  ", types.gyro as _Gyro"					\
+  ", types.airship as _Airship"					\
+  ", types.balloon as _Balloon"					\
+  ", types.single as _Single"					\
+  ", types.multi as _Multi"					\
+  ", types.land as _Land"					\
+  ", types.sea as _Sea"						\
+  ", types.turbine as _Turbine"					\
+  ", types.jet as _Jet"						\
+  ", types.highperf as _HighPerf"				\
+  ", types.retract as _Retract"					\
+  ", types.complex as _Complex"					\
+  ", types.pressurized as _Pressurized"				\
+  ", types.large as _Large"					\
+  ", types.sport as _Sport"					\
+  ", types.ultralight as _Ultralight"				\
+  ", types.footlaunch as _Footlaunch"				\
+  ", types.sim as _Sim"						\
+  ", types.ftd as _FTD"						\
+  ", types.total as _Total"					\
+  ", count(distinct(aircraft.id)) as Aircraft"			\
+  ", count(flights.id) as Flights"				\
+  ", m_to_hhmm(sum(flights.dur)) as Time"			\
+  " from types"							\
+  " left join aircraft on aircraft.type_id = types.id"		\
+  " left join flights on flights.aircraft_id = aircraft.id"
 
 #define TYPES_GROUP_BY \
-  " "
+  " group by types.id"
 
 #define TYPES_WHERE_ID \
-  " where id = ?"
+  " where types.id = ?"
 
 enum {
   TYPES_WRITE_IDENT = 1,
@@ -358,7 +364,6 @@ enum {
   TYPES_WRITE_SEA,
   TYPES_WRITE_TURBINE,
   TYPES_WRITE_JET,
-  TYPES_WRITE_PROP,
   TYPES_WRITE_HIGHPERF,
   TYPES_WRITE_RETRACT,
   TYPES_WRITE_COMPLEX,
@@ -373,45 +378,44 @@ enum {
   TYPES_WRITE_ID
 };
 
-#define TYPES_INSERT							\
-  "insert into types "							\
-  "( ident"								\
-  ", make"								\
-  ", model"								\
-  ", airplane"								\
-  ", rotorcraft"							\
-  ", glider"								\
-  ", lta"								\
-  ", poweredlift"							\
-  ", ppc"								\
-  ", weightshift"							\
-  ", heli"								\
-  ", gyro"								\
-  ", airship"								\
-  ", balloon"								\
-  ", single"								\
-  ", multi"								\
-  ", land"								\
-  ", sea"								\
-  ", turbine"								\
-  ", jet"								\
-  ", prop"								\
-  ", highperf"								\
-  ", retract"								\
-  ", complex"								\
-  ", pressurized"							\
-  ", large"								\
-  ", sport"								\
-  ", ultralight"							\
-  ", footlaunch"							\
-  ", sim"								\
-  ", ftd"								\
-  ", total)"								\
-  " values ("								\
-  "  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"					\
-  ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"					\
-  ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"					\
-  ", ?, ?"								\
+#define TYPES_INSERT				\
+  "insert into types "				\
+  "( ident"					\
+  ", make"					\
+  ", model"					\
+  ", airplane"					\
+  ", rotorcraft"				\
+  ", glider"					\
+  ", lta"					\
+  ", poweredlift"				\
+  ", ppc"					\
+  ", weightshift"				\
+  ", heli"					\
+  ", gyro"					\
+  ", airship"					\
+  ", balloon"					\
+  ", single"					\
+  ", multi"					\
+  ", land"					\
+  ", sea"					\
+  ", turbine"					\
+  ", jet"					\
+  ", highperf"					\
+  ", retract"					\
+  ", complex"					\
+  ", pressurized"				\
+  ", large"					\
+  ", sport"					\
+  ", ultralight"				\
+  ", footlaunch"				\
+  ", sim"					\
+  ", ftd"					\
+  ", total)"					\
+  " values ("					\
+  "  ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"		\
+  ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"		\
+  ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?"		\
+  ", ?"					\
   " );"
 
 #define TYPES_UPDATE	  \
@@ -436,7 +440,6 @@ enum {
   ", sea = ?"		  \
   ", turbine = ?"	  \
   ", jet = ?"		  \
-  ", prop = ?"		  \
   ", highperf = ?"	  \
   ", retract = ?"	  \
   ", complex = ?"	  \
@@ -512,12 +515,14 @@ struct Sqlpilot {
   DB *db;
   GtkWidget *window;
 
-  DBStatement *flights_select_all;
-  DBStatement *flights_select_by_id;
+  int flights_stale;		/* Model contains stale data as a result of updates to db elsewhere ... the model for the view is stale, not the db */
+  int flights_modified;		/* Entries have been modified but not committed to db */
+  DBStatement *flights_select_all; /* Select for tree model */
+  DBStatement *flights_select_by_id; /* Select for update a single treemodel row */
   DBStatement *flights_insert;
   DBStatement *flights_update;
   DBStatement *flights_delete;
-  GtkWidget *flights_sw;
+  GtkWidget *flights_sw;	/* Scrollable Window - contains the treeview */
   GtkTreeModel *flights_treemodel;
   GtkTreeSelection *flights_selection;
   GtkWidget *flights_treeview;
@@ -545,6 +550,8 @@ struct Sqlpilot {
   GtkWidget *flights_sdur;
   GtkWidget *flights_trip;
 
+  int roles_stale;
+  int roles_modified;
   DBStatement *roles_select_all;
   DBStatement *roles_select_by_id;
   DBStatement *roles_insert;
@@ -563,6 +570,8 @@ struct Sqlpilot {
   GtkWidget *roles_dual;
   GtkWidget *roles_instruct;  
 
+  int aircraft_stale;
+  int aircraft_modified;
   DBStatement *aircraft_select_all;
   DBStatement *aircraft_select_by_id;
   DBStatement *aircraft_insert;
@@ -574,8 +583,11 @@ struct Sqlpilot {
   GtkWidget *aircraft_treeview;
   GtkWidget *aircraft_ident;
   GtkWidget *aircraft_type;
+  GtkWidget *aircraft_fleetno;
   GtkWidget *aircraft_notes;
 
+  int types_stale;
+  int types_modified;
   DBStatement *types_select_all;
   DBStatement *types_select_by_id;
   DBStatement *types_insert;
@@ -605,7 +617,6 @@ struct Sqlpilot {
   GtkWidget *types_sea;
   GtkWidget *types_turbine;
   GtkWidget *types_jet;
-  GtkWidget *types_prop;
   GtkWidget *types_highperf;
   GtkWidget *types_retract;
   GtkWidget *types_complex;
@@ -618,6 +629,8 @@ struct Sqlpilot {
   GtkWidget *types_ftd;
   GtkWidget *types_total;
 
+  int airports_stale;
+  int airports_modified;
   DBStatement *airports_select_all;
   DBStatement *airports_select_by_id;
   DBStatement *airports_insert;

@@ -1,5 +1,14 @@
 #include "sqlpilot.h"
 
+/* Tabs whos view depends on flights because of joins need to be refreshed if the flights table changes */
+static void set_dependents_stale(Sqlpilot *sqlpilot)
+{
+  sqlpilot->roles_stale = TRUE;
+  sqlpilot->aircraft_stale = TRUE;
+  sqlpilot->types_stale = TRUE;
+  sqlpilot->airports_stale = TRUE;
+}
+
 void entry_format_date_on_focus_out(GtkEntry *entry)
 {
   int yy=0, mm=0, dd=0;
@@ -136,32 +145,32 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
   GtkTreeIter iter;
   GtkTreeModel *model;
   gchar
-    *id,
-    *aircraft,
-    *role,
-    *dep,
-    *arr,
-    *date,
-    *aout,
-    *ain,
-    *dur,
-    *night,
-    *inst,
-    *siminst,
-    *aprch,
-    *fltno,
-    *sout,
-    *sin,
-    *sdur,
-    *trip,
-    *crew,
-    *notes,
-    *dland,
-    *nland,
-    *xc,
-    *hold;
+    *id=NULL,
+    *aircraft=NULL,
+    *role=NULL,
+    *dep=NULL,
+    *arr=NULL,
+    *date=NULL,
+    *aout=NULL,
+    *ain=NULL,
+    *dur=NULL,
+    *night=NULL,
+    *inst=NULL,
+    *siminst=NULL,
+    *aprch=NULL,
+    *fltno=NULL,
+    *sout=NULL,
+    *sin=NULL,
+    *sdur=NULL,
+    *trip=NULL,
+    *crew=NULL,
+    *notes=NULL,
+    *dland=NULL,
+    *nland=NULL,
+    *xc=NULL,
+    *hold=NULL;
 
-  int _dland, _nland;
+  int _dland=0, _nland=0;
 
   if (gtk_tree_selection_get_selected (logb->flights_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
@@ -190,64 +199,63 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
 		       FLIGHTS_COL_SDUR, &sdur,
 		       FLIGHTS_COL_TRIP, &trip,
 		       -1);
-
     sscanf(EMPTY_IF_NULL(dland), "%d", &_dland);
     sscanf(EMPTY_IF_NULL(nland), "%d", &_nland);
-
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_aircraft), EMPTY_IF_NULL(aircraft));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_role), EMPTY_IF_NULL(role));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_dep), EMPTY_IF_NULL(dep));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_arr), EMPTY_IF_NULL(arr));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aout));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ain));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_dur), EMPTY_IF_NULL(dur));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_night), EMPTY_IF_NULL(night));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_inst), EMPTY_IF_NULL(inst));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_siminst), EMPTY_IF_NULL(siminst));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_hold), str_bool(hold));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_aprch), EMPTY_IF_NULL(aprch));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_xc), str_bool(xc));
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_dland), _dland);
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_nland), _nland);
-
-    text_view_set_text(GTK_TEXT_VIEW(logb->flights_crew), EMPTY_IF_NULL(crew));
-    text_view_set_text(GTK_TEXT_VIEW(logb->flights_notes), EMPTY_IF_NULL(notes));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_fltno), EMPTY_IF_NULL(fltno));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sin));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_sdur), EMPTY_IF_NULL(sdur));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
-      
-    g_free(id);
-    g_free(date);
-    g_free(aircraft);
-    g_free(role);
-    g_free(dep);
-    g_free(arr);
-    g_free(aout);
-    g_free(ain);
-    g_free(dur);
-    g_free(night);
-    g_free(inst);
-    g_free(siminst);
-    g_free(hold);
-    g_free(aprch);
-    g_free(xc);
-    g_free(dland);
-    g_free(nland);
-    g_free(crew);
-    g_free(notes);
-    g_free(fltno);
-    g_free(sout);
-    g_free(sin);
-    g_free(sdur);
-    g_free(trip);
   }
+
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_aircraft), EMPTY_IF_NULL(aircraft));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_role), EMPTY_IF_NULL(role));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_dep), EMPTY_IF_NULL(dep));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_arr), EMPTY_IF_NULL(arr));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aout));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ain));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_dur), EMPTY_IF_NULL(dur));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_night), EMPTY_IF_NULL(night));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_inst), EMPTY_IF_NULL(inst));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_siminst), EMPTY_IF_NULL(siminst));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_hold), str_bool(hold));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_aprch), EMPTY_IF_NULL(aprch));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_xc), str_bool(xc));
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_dland), _dland);
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_nland), _nland);
+
+  text_view_set_text(GTK_TEXT_VIEW(logb->flights_crew), EMPTY_IF_NULL(crew));
+  text_view_set_text(GTK_TEXT_VIEW(logb->flights_notes), EMPTY_IF_NULL(notes));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_fltno), EMPTY_IF_NULL(fltno));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sin));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_sdur), EMPTY_IF_NULL(sdur));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
+      
+  g_free(id);
+  g_free(date);
+  g_free(aircraft);
+  g_free(role);
+  g_free(dep);
+  g_free(arr);
+  g_free(aout);
+  g_free(ain);
+  g_free(dur);
+  g_free(night);
+  g_free(inst);
+  g_free(siminst);
+  g_free(hold);
+  g_free(aprch);
+  g_free(xc);
+  g_free(dland);
+  g_free(nland);
+  g_free(crew);
+  g_free(notes);
+  g_free(fltno);
+  g_free(sout);
+  g_free(sin);
+  g_free(sdur);
+  g_free(trip);
 }
 
 /* Writes stuff in entry portion of gui to db - if id is "0" it inserts, else updates */
-void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
+static void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
 {
   const gchar
     *aircraft,
@@ -335,6 +343,14 @@ void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   g_free(notes);
 }
 
+void flights_refresh(Sqlpilot *sqlpilot)
+{
+    store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->flights_treemodel), sqlpilot->flights_select_all);
+    flights_load_entries_from_selection(sqlpilot);
+    sqlpilot->flights_stale = FALSE;
+}
+
+
 void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
   DBStatement *stmt;
@@ -344,7 +360,6 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   flights_write_entries(sqlpilot, NULL);
   inserted_id = db_last_insert_rowid(sqlpilot->db); 
 
-  //treemodel_insert(sqlpilot->flights_treemodel, sqlpilot->flights_select_by_id, inserted_id);
   /* Read row into treemodel */
   stmt = sqlpilot->flights_select_by_id;
   db_bind_int64(stmt, 1, inserted_id);
@@ -352,7 +367,9 @@ void on_flights_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   store_update_row(GTK_LIST_STORE(sqlpilot->flights_treemodel), &iter, stmt);
   
   db_reset(stmt);
-  db_clear_bindings(stmt);  
+  db_clear_bindings(stmt);
+
+  set_dependents_stale(sqlpilot);
 }
 
 void on_flights_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -374,6 +391,8 @@ void on_flights_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     db_reset(stmt);
     db_clear_bindings(stmt);
     g_free(id);
+
+    set_dependents_stale(sqlpilot);
   }
 }
 
@@ -394,6 +413,8 @@ void on_flights_delete_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     gtk_list_store_remove(GTK_LIST_STORE(sqlpilot->flights_treemodel), &iter);
 
     g_free(id);
+
+    set_dependents_stale(sqlpilot);
   }
 }
 void on_flights_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -614,11 +635,5 @@ void on_flights_night_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 
 void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 {
-  GtkTreeIter iter;
-  GtkTreeModel *model;
-
-  if (gtk_tree_selection_get_selected (selection, &model, &iter))
-    {
-      flights_load_entries_from_selection(logb);      
-    }
+  flights_load_entries_from_selection(logb);
 }

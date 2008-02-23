@@ -101,6 +101,7 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->aircraft_sw      = __get_widget("aircraft_sw");
   sqlpilot->aircraft_ident   = __get_widget("aircraft_ident");
   sqlpilot->aircraft_type    = __get_widget("aircraft_type");
+  sqlpilot->aircraft_fleetno = __get_widget("aircraft_fleetno");
   sqlpilot->aircraft_notes   = __get_widget("aircraft_notes");
   sqlpilot->types_sw         = __get_widget("types_sw");
   sqlpilot->types_ident      = __get_widget("types_ident");
@@ -123,7 +124,6 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->types_sea         = __get_widget("types_sea");
   sqlpilot->types_turbine     = __get_widget("types_turbine");
   sqlpilot->types_jet         = __get_widget("types_jet");
-  sqlpilot->types_prop        = __get_widget("types_prop");
   sqlpilot->types_highperf    = __get_widget("types_highperf");
   sqlpilot->types_retract     = __get_widget("types_retract");
   sqlpilot->types_complex     = __get_widget("types_complex");

@@ -1,6 +1,11 @@
 #include "sqlpilot.h"
 
-void airports_write_entries(Sqlpilot *sqlpilot, const gchar *id)
+static void set_dependents_stale(Sqlpilot *sqlpilot)
+{
+  sqlpilot->flights_stale = TRUE;
+}
+
+static void airports_write_entries(Sqlpilot *sqlpilot, const gchar *id)
 {
   const gchar
     *ident,
@@ -40,18 +45,18 @@ void airports_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   g_free(notes);
 }
 
-void airports_load_entries_from_selection(Sqlpilot *logb)
+static void airports_load_entries_from_selection(Sqlpilot *logb)
 {
   GtkTreeIter iter;
   GtkTreeModel *model;
   gchar
-    *id,
-    *ident,
-    *icao,
-    *name,
-    *offutc,
-    *usedst,
-    *notes;
+    *id=NULL,
+    *ident=NULL,
+    *icao=NULL,
+    *name=NULL,
+    *offutc=NULL,
+    *usedst=NULL,
+    *notes=NULL;
   gdouble _offutc=0;
 
   if (gtk_tree_selection_get_selected (logb->airports_selection, &model, &iter)) {
@@ -66,22 +71,29 @@ void airports_load_entries_from_selection(Sqlpilot *logb)
 		       -1);
 
     sscanf(EMPTY_IF_NULL(offutc), "%lf", &_offutc);
-
-    gtk_entry_set_text(GTK_ENTRY(logb->airports_ident), EMPTY_IF_NULL(ident));
-    gtk_entry_set_text(GTK_ENTRY(logb->airports_icao), EMPTY_IF_NULL(icao));
-    gtk_entry_set_text(GTK_ENTRY(logb->airports_name), EMPTY_IF_NULL(name));
-    gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->airports_offutc), _offutc);
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->airports_usedst), str_bool(usedst));
-    text_view_set_text(GTK_TEXT_VIEW(logb->airports_notes), EMPTY_IF_NULL(notes));
-
-    g_free(id);
-    g_free(ident);
-    g_free(icao);
-    g_free(name);
-    g_free(offutc);
-    g_free(usedst);
-    g_free(notes);
   }
+  
+  gtk_entry_set_text(GTK_ENTRY(logb->airports_ident), EMPTY_IF_NULL(ident));
+  gtk_entry_set_text(GTK_ENTRY(logb->airports_icao), EMPTY_IF_NULL(icao));
+  gtk_entry_set_text(GTK_ENTRY(logb->airports_name), EMPTY_IF_NULL(name));
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->airports_offutc), _offutc);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->airports_usedst), str_bool(usedst));
+  text_view_set_text(GTK_TEXT_VIEW(logb->airports_notes), EMPTY_IF_NULL(notes));
+
+  g_free(id);
+  g_free(ident);
+  g_free(icao);
+  g_free(name);
+  g_free(offutc);
+  g_free(usedst);
+  g_free(notes);
+}
+
+void airports_refresh(Sqlpilot *sqlpilot)
+{
+    store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->airports_treemodel), sqlpilot->airports_select_all);
+    airports_load_entries_from_selection(sqlpilot);
+    sqlpilot->airports_stale = FALSE;
 }
 
 void on_airports_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
@@ -105,7 +117,9 @@ void on_airports_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   store_update_row(GTK_LIST_STORE(sqlpilot->airports_treemodel), &iter, stmt);
   
   db_reset(stmt);
-  db_clear_bindings(stmt);  
+  db_clear_bindings(stmt);
+
+  set_dependents_stale(sqlpilot);
 }
 
 void on_airports_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -127,6 +141,8 @@ void on_airports_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     db_reset(stmt);
     db_clear_bindings(stmt);
     g_free(id);
+
+    set_dependents_stale(sqlpilot);
   }
 }
 
@@ -147,6 +163,8 @@ void on_airports_delete_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     gtk_list_store_remove(GTK_LIST_STORE(sqlpilot->airports_treemodel), &iter);
 
     g_free(id);
+
+    set_dependents_stale(sqlpilot);
   }
 }
 void on_airports_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -156,12 +174,7 @@ void on_airports_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 
 void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 {
-  GtkTreeIter iter;
-  GtkTreeModel *model;
-
-  if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
-    airports_load_entries_from_selection(logb);
-  }
+  airports_load_entries_from_selection(logb);
 }
 
 

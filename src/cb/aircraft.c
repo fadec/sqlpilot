@@ -1,15 +1,23 @@
 #include "sqlpilot.h"
 
-void aircraft_write_entries(Sqlpilot *sqlpilot, const gchar *id)
+static void set_dependents_stale(Sqlpilot *sqlpilot)
+{
+  sqlpilot->flights_stale = TRUE;
+  sqlpilot->types_stale = TRUE;
+}
+
+static void aircraft_write_entries(Sqlpilot *sqlpilot, const gchar *id)
 {
   const gchar
     *ident,
-    *type;
+    *type,
+    *fleetno;
   gchar *notes;
   DBStatement *stmt;
 
   ident    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_ident));
   type     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_type));
+  fleetno  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_fleetno));
   notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->aircraft_notes));
   
   /* Write entries to database */
@@ -21,6 +29,7 @@ void aircraft_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   }
   db_bind_text(stmt, AIRCRAFT_WRITE_IDENT, ident);
   bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "ident", type);
+  db_bind_text(stmt, AIRCRAFT_WRITE_FLEETNO, fleetno);
   db_bind_text(stmt, AIRCRAFT_WRITE_NOTES, notes);
 
   db_step(stmt);
@@ -30,34 +39,44 @@ void aircraft_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   g_free(notes);
 }
 
-void aircraft_load_entries_from_selection(Sqlpilot *logb)
+static void aircraft_load_entries_from_selection(Sqlpilot *logb)
 {
   GtkTreeIter iter;
   GtkTreeModel *model;
   gchar
-    *id,
-    *ident,
-    *type,
-    *notes;
+    *id=NULL,
+    *ident=NULL,
+    *type=NULL,
+    *fleetno=NULL,
+    *notes=NULL;
 
   if (gtk_tree_selection_get_selected (logb->aircraft_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
 		       AIRCRAFT_COL_ID, &id,
 		       AIRCRAFT_COL_IDENT, &ident,
 		       AIRCRAFT_COL_TYPE, &type,
+		       AIRCRAFT_COL_FLEETNO, &fleetno,
 		       AIRCRAFT_COL_NOTES, &notes,
 		       -1);
-
-    gtk_entry_set_text(GTK_ENTRY(logb->aircraft_ident), EMPTY_IF_NULL(ident));
-    gtk_entry_set_text(GTK_ENTRY(logb->aircraft_type), EMPTY_IF_NULL(type));
-    text_view_set_text(GTK_TEXT_VIEW(logb->aircraft_notes), EMPTY_IF_NULL(notes));
-
-    g_free(id);
-    g_free(ident);
-    g_free(type);
-    g_free(notes);
-
   }
+
+  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_ident), EMPTY_IF_NULL(ident));
+  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_type), EMPTY_IF_NULL(type));
+  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_fleetno), EMPTY_IF_NULL(fleetno));  
+  text_view_set_text(GTK_TEXT_VIEW(logb->aircraft_notes), EMPTY_IF_NULL(notes));
+
+  g_free(id);
+  g_free(ident);
+  g_free(type);
+  g_free(fleetno);
+  g_free(notes);
+}
+
+void aircraft_refresh(Sqlpilot *sqlpilot)
+{
+    store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), sqlpilot->aircraft_select_all);
+    aircraft_load_entries_from_selection(sqlpilot);
+    sqlpilot->aircraft_stale = FALSE;
 }
 
 void on_aircraft_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
@@ -81,7 +100,9 @@ void on_aircraft_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   store_update_row(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), &iter, stmt);
   
   db_reset(stmt);
-  db_clear_bindings(stmt);  
+  db_clear_bindings(stmt);
+
+  set_dependents_stale(sqlpilot);
 }
 
 void on_aircraft_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -103,6 +124,8 @@ void on_aircraft_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     db_reset(stmt);
     db_clear_bindings(stmt);
     g_free(id);
+
+    set_dependents_stale(sqlpilot);
   }
 }
 
@@ -123,6 +146,8 @@ void on_aircraft_delete_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     gtk_list_store_remove(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), &iter);
 
     g_free(id);
+
+    set_dependents_stale(sqlpilot);
   }
 }
 void on_aircraft_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -132,12 +157,7 @@ void on_aircraft_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 
 void on_aircraft_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 {
-  GtkTreeIter iter;
-  GtkTreeModel *model;
-
-  if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
-    aircraft_load_entries_from_selection(logb);
-  }
+  aircraft_load_entries_from_selection(logb);
 }
 
 

@@ -1,5 +1,10 @@
 #include "sqlpilot.h"
 
+static void set_dependents_stale(Sqlpilot *sqlpilot)
+{
+  sqlpilot->flights_stale = TRUE;
+}
+
 void roles_write_entries(Sqlpilot *sqlpilot, const gchar *id)
 {
   const gchar
@@ -49,15 +54,15 @@ void roles_load_entries_from_selection(Sqlpilot *logb)
   GtkTreeIter iter;
   GtkTreeModel *model;
   gchar
-    *id,
-    *ident,
-    *name,
-    *pic,
-    *sic,
-    *fe,
-    *solo,
-    *dual,
-    *instruct;
+    *id=NULL,
+    *ident=NULL,
+    *name=NULL,
+    *pic=NULL,
+    *sic=NULL,
+    *fe=NULL,
+    *solo=NULL,
+    *dual=NULL,
+    *instruct=NULL;
 
   if (gtk_tree_selection_get_selected (logb->roles_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
@@ -71,26 +76,32 @@ void roles_load_entries_from_selection(Sqlpilot *logb)
 		       ROLES_COL_DUAL, &dual,
 		       ROLES_COL_INSTRUCT, &instruct,
 		       -1);
-
-    gtk_entry_set_text(GTK_ENTRY(logb->roles_ident), EMPTY_IF_NULL(ident));
-    gtk_entry_set_text(GTK_ENTRY(logb->roles_name), EMPTY_IF_NULL(name));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_pic), str_bool(pic));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_sic), str_bool(sic));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_fe), str_bool(fe));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_solo), str_bool(solo));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_dual), str_bool(dual));
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_instruct), str_bool(instruct));
-
-    g_free(id);
-    g_free(ident);
-    g_free(name);
-    g_free(pic);
-    g_free(sic);
-    g_free(fe);
-    g_free(solo);
-    g_free(dual);
-    g_free(instruct);
   }
+  gtk_entry_set_text(GTK_ENTRY(logb->roles_ident), EMPTY_IF_NULL(ident));
+  gtk_entry_set_text(GTK_ENTRY(logb->roles_name), EMPTY_IF_NULL(name));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_pic), str_bool(pic));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_sic), str_bool(sic));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_fe), str_bool(fe));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_solo), str_bool(solo));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_dual), str_bool(dual));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_instruct), str_bool(instruct));
+
+  g_free(id);
+  g_free(ident);
+  g_free(name);
+  g_free(pic);
+  g_free(sic);
+  g_free(fe);
+  g_free(solo);
+  g_free(dual);
+  g_free(instruct);
+}
+
+void roles_refresh(Sqlpilot *sqlpilot)
+{
+    store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->roles_treemodel), sqlpilot->roles_select_all);
+    roles_load_entries_from_selection(sqlpilot);
+    sqlpilot->roles_stale = FALSE;
 }
 
 void on_roles_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
@@ -114,7 +125,9 @@ void on_roles_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
   store_update_row(GTK_LIST_STORE(sqlpilot->roles_treemodel), &iter, stmt);
   
   db_reset(stmt);
-  db_clear_bindings(stmt);  
+  db_clear_bindings(stmt);
+
+  set_dependents_stale(sqlpilot);
 }
 
 void on_roles_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -136,6 +149,8 @@ void on_roles_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     db_reset(stmt);
     db_clear_bindings(stmt);
     g_free(id);
+    
+    set_dependents_stale(sqlpilot);
   }
 }
 
@@ -156,6 +171,8 @@ void on_roles_delete_clicked(GtkButton *button, Sqlpilot *sqlpilot)
     gtk_list_store_remove(GTK_LIST_STORE(sqlpilot->roles_treemodel), &iter);
 
     g_free(id);
+
+    set_dependents_stale(sqlpilot);
   }
 }
 void on_roles_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
@@ -165,10 +182,5 @@ void on_roles_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 
 void on_roles_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 {
-  GtkTreeIter iter;
-  GtkTreeModel *model;
-
-  if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
-    roles_load_entries_from_selection(logb);
-  }
+  roles_load_entries_from_selection(logb);
 }
