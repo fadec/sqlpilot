@@ -26,6 +26,14 @@ CREATE TABLE Flights (
 	,Trip VARCHAR
 );
 
+
+-- CREATE TABLE Routing (
+--        id INTEGER PRIMARY KEY AUTOINCREMENT
+--        ,flight_id INTEGER
+--        ,airport_id INTEGER
+--        ,seq INTEGER
+-- );
+
 CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Ident CHAR
@@ -43,6 +51,7 @@ CREATE TABLE Aircraft (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Ident CHAR
 	,type_id INTEGER
+	,FleetNo CHAR
 	,Notes TEXT
 );
 
@@ -68,7 +77,6 @@ CREATE TABLE Types (
 	,Sea BOOLEAN
 	,Turbine BOOLEAN
 	,Jet BOOLEAN
-	,Prop BOOLEAN
 	,HighPerf BOOLEAN
 	,Retract BOOLEAN
 	,Complex BOOLEAN
