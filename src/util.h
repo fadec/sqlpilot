@@ -23,4 +23,5 @@ int hmstr_to_m(const char *str);
 
 char *m_to_hmstr(int m);
 
+int row_exists(DB *db, const char *table, const char *column, const char *value);
 int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, const char *value);

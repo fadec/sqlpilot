@@ -202,6 +202,17 @@ int db_column_count(DBStatement *stmt)
 	return sqlite3_column_count((sqlite3_stmt*)stmt);
 }
 
+int db_stp_res_clr(DBStatement *stmt)
+{
+  int ret;
+
+  ret = db_step(stmt);
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+
+  return ret;
+}
+
 int db_finalize(DBStatement *stmt)
 {
 	return sqlite3_finalize(stmt);

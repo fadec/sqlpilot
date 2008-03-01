@@ -68,6 +68,7 @@ int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tai
 DBStatement *db_prep(DB *db, const char *sql);
 int db_clear_bindings(DBStatement *);
 int db_reset(DBStatement *stmt);
+int db_stp_res_clr(DBStatement *stmt);
 int db_bind_text(DBStatement *stmt, int i, const char *text);
 int db_bind_int(DBStatement *stmt, int i, int n);
 int db_bind_int64(DBStatement *, int, int);

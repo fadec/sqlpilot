@@ -10,9 +10,11 @@ SRC = src/sqlpilot.c \
       src/cb/roles.c \
       src/cb/aircraft.c \
       src/cb/types.c \
-      src/cb/airports.c \
+      src/cb/airports.c
 
-PROG_SRC = src/main.c ${SRC}
+APP_SRC = src/main.c ${SRC}
+
+IMPORTCSV_SRC = src/importcsv.c ${SRC}
 
 # Example: make test db, make test-run db
 TEST_SRC = test/units/$(unit).c test/test.c ${SRC}
@@ -26,15 +28,21 @@ HEADERS = src/sqlpilot.h \
 
 APP_HEADERS = src/sqlpilot.h ${HEADERS}
 
+IMPORTCSV_HEADERS = ${HEADERS}
+
 TEST_HEADERS = test/test.h ${HEADERS}
 
-APP_OBJ = ${PROG_SRC:.c=.o}
+APP_OBJ = ${APP_SRC:.c=.o}
+
+IMPORTCSV_OBJ = ${IMPORTCSV_SRC:.c=.o}
 
 TEST_OBJ = ${TEST_SRC:.c=.o}
 
-app: sqlpilot ui
+app: sqlpilot importcsv ui
 
 ${APP_OBJ}: ${APP_HEADERS} config.mk
+
+${IMPORTCSV_OBJ}: ${IMPORTCSV_HEADERS} config.mk
 
 ${TEST_OBJ}: ${TEST_HEADERS} config.mk
 
@@ -42,12 +50,16 @@ sqlpilot: ${APP_OBJ}
 	${LD} -o $@ ${APP_OBJ} ${LDFLAGS}
 #	@strip $@
 
+importcsv: ${IMPORTCSV_OBJ}
+	${LD} -o $@ ${IMPORTCSV_OBJ} ${LDFLAGS}
+#	@strip $@
+
 ui: data/ui/sqlpilot.xml
 
 data/ui/sqlpilot.xml: data/ui/sqlpilot.glade
 	gtk-builder-convert data/ui/sqlpilot.glade data/ui/sqlpilot.xml
 
-etags:
+ etags:
 	etags.emacs `find -name "*.[h|c]"`
 
 run: sqlpilot
@@ -73,7 +85,7 @@ test: $(unit)_test
 test-run: test
 	@printf "### Running $(unit)_test ###\n"
 	@rm -f test.db
-	@sqlite3 test.db "`cat test/fixtures/$(unit).sql`"
+	@if [ -f test/fixtures/$(unit).sql ]; then sqlite3 test.db "`cat test/fixtures/$(unit).sql`"; fi;
 	@./$(unit)_test
 	@printf "\n"
 

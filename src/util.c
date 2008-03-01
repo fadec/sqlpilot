@@ -114,6 +114,22 @@ char *m_to_hmstr(int m)
   return str;
 }
 
+int row_exists(DB *db, const char *table, const char *column, const char *value)
+{
+  DBStatement *select;
+  char sql[256];
+  int ret;
+
+  snprintf(sql, sizeof(sql), "select %s from %s where %s = ?;", column, table, column);
+  select = db_prep(db, sql);
+  db_bind_text(select, 1, value);
+
+  ret = (db_step(select) != DB_DONE);
+
+  db_finalize(select);
+  return ret;
+}
+
 /* Find or create a record the value of a column and return the id */
 DBint64 id_of_with_insert(DB *db, const char *table, const char *column, const char *value, int *inserted)
 {
@@ -162,5 +178,65 @@ int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, 
   }
 
   return inserted;
+}
+
+
+/* Parses base sixty of base ten segments (00:00.000:00:0) and returns value */
+/* Base10 fractionals are truncated to the nearest Base60 integer e.g. */
+/* parseB60("1.05:") ==  63, and parseB60("1.05") == 1 */
+int parseB60(const char *ts)
+{
+  long
+    dec=0,			/* decimal */
+    frac=0,			/* fractional part */
+    fracp=0,			/* 1/power of the frac part */
+    val=0;			/* value */
+  char c;
+  while ((c = *ts++)) {
+    if (c >= '0' && c <= '9') {
+      if (fracp) {
+	frac *= 10;
+	frac += c - '0';
+	fracp *= 10;
+      } else {
+	dec *= 10;
+	dec += c - '0';
+      }
+    }
+    else if (c == ':' || c == '+') {
+      val += dec;
+      val *= 60;
+      if (fracp) val += frac * 60 / fracp;
+      dec = frac = fracp = 0;
+    }
+    else if (c == '.') {
+      frac = 0;
+      fracp = 1;
+    }
+  }
+  val += dec;
+  if (fracp) val += frac / fracp;
+  return val;
+}
+
+
+int parsetime(const char *ts, int b60numerals)
+{
+  char s[32], *sp=s, c;
+  
+  strncpy(s, ts, sizeof(s));
+  s[sizeof(s) - 1] = '\0';
+
+  while (sp++) {
+    if (*sp == ':' || *sp == '+') --b60numerals;
+    if (!b60numerals) {
+      *sp = '\0';
+      break;
+    }
+  }
+
+  printf("%s\n", s);
+
+  return parseB60(s);
 }
 
