@@ -17,7 +17,7 @@ APP_SRC = src/main.c ${SRC}
 IMPORTCSV_SRC = src/importcsv.c ${SRC}
 
 # Example: make test db, make test-run db
-TEST_SRC = test/units/$(unit).c test/test.c ${SRC}
+TEST_SRC = test/units/$(unit)_test.c test/test.c ${SRC}
 
 HEADERS = src/sqlpilot.h \
 	  src/util.h \

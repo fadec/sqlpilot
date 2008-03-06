@@ -222,7 +222,7 @@ int parseB60(const char *ts)
 
 int parsetime(const char *ts, int b60numerals)
 {
-  char s[32], *sp=s, c;
+  char s[32], *sp=s;
   
   strncpy(s, ts, sizeof(s));
   s[sizeof(s) - 1] = '\0';

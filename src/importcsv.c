@@ -25,7 +25,7 @@ struct InCSV {
     dur,
     night,
     inst,
-    approach,
+    apprch,
     role,
     crew,
     notes,
@@ -53,7 +53,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   csv->dur = 10;
   csv->night = 11;
   csv->inst = 12;
-  csv->approach = 13;
+  csv->apprch = 13;
   csv->role = 15;
   csv->notes = 16;
   csv->crew = 17;
@@ -70,7 +70,13 @@ static void incsv_finalize(InCSV *incsv)
 void incsv_import(InCSV *incsv, DB *db)
 {
 
-  char date[11]; /* "2007-12-25\0" is 11 bytes */
+  char date[11];		/* "2007-12-25\0" is 11 bytes */
+  float fnight, finst;
+  int
+    dur,
+    sdur,
+    night,
+    inst;
   char *ptr;
   int nrow;
   DBStatement *flights_ins = db_prep(db, FLIGHTS_INSERT);
@@ -94,6 +100,15 @@ void incsv_import(InCSV *incsv, DB *db)
     }
     date[sizeof(date) - 1] = '\0';
 
+    dur = parseB60(csv_row[incsv->ain]) - parseB60(csv_row[incsv->aout]);
+    sdur = parseB60(csv_row[incsv->sin]) - parseB60(csv_row[incsv->sout]);
+    
+    sscanf(csv_row[incsv->night], "%f", &fnight);
+    night = fnight * 60;
+
+    sscanf(csv_row[incsv->inst], "%f", &finst);
+    inst = finst * 60;
+
     if (!row_exists(db, "aircraft", "ident", csv_row[incsv->aircraft])) {
       bind_id_of(aircraft_ins, AIRCRAFT_WRITE_TYPE, "types", "ident", csv_row[incsv->type]);
       db_bind_text(aircraft_ins, AIRCRAFT_WRITE_IDENT, csv_row[incsv->aircraft]);
@@ -106,6 +121,15 @@ void incsv_import(InCSV *incsv, DB *db)
     bind_id_of(flights_ins, FLIGHTS_WRITE_ARR, "airports", "ident", csv_row[incsv->arr]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_DATE, date);
     db_bind_text(flights_ins, FLIGHTS_WRITE_FLTNO, csv_row[incsv->fltno]);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_SOUT, csv_row[incsv->sout]);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_SIN, csv_row[incsv->sin]);
+    db_bind_int(flights_ins, FLIGHTS_WRITE_SDUR, sdur);
+    db_bind_int(flights_ins, FLIGHTS_WRITE_DUR, dur);
+    db_bind_int(flights_ins, FLIGHTS_WRITE_NIGHT, night);
+    db_bind_int(flights_ins, FLIGHTS_WRITE_INST, inst);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_APRCH, csv_row[incsv->apprch]);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_CREW, csv_row[incsv->crew]);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_NOTES, csv_row[incsv->notes]);
     db_stp_res_clr(flights_ins);
     nrow++;
   }
