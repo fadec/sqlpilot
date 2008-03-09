@@ -1,5 +1,6 @@
 #include <gtk/gtk.h>
 #include "db/db.h"
+#include "sqlpilot.h"
 
 #define ALLOWED_TEXT_ALPHA
 
@@ -12,6 +13,8 @@ void text_view_set_text(GtkTextView *, const char *);
 int is_ident_char(char);
 int is_time_char(char);
 
+int daywrap_minutes(int);
+
 void entry_clamp_text(GtkEntry *entry, int length, int setcase, int allowed(char));
 
 void entry_clamp_roles_ident(GtkEntry *);
@@ -19,14 +22,15 @@ void entry_clamp_aircraft_ident(GtkEntry *);
 void entry_clamp_types_ident(GtkEntry *);
 void entry_clamp_airports_ident(GtkEntry *);
 
-int hmstr_to_m(const char *str);
+int strtime_to_m(const char *str);
 
-char *m_to_hmstr(int m);
+void m_to_strtime(int m, char *str, int nstr, char sep);
+
 
 int row_exists(DB *db, const char *table, const char *column, const char *value);
 int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, const char *value);
 
 int parseB60(const char *ts);
 int parsetime(const char *ts, int b60numerals);
-
+void format_time(const char *input, char *out, char separator);
 

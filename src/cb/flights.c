@@ -34,36 +34,10 @@ void entry_format_date_on_focus_out(GtkEntry *entry)
 
 void entry_format_time_on_focus_out(GtkEntry *entry, char separator)
 {
-  char *str, *ptr;
-  char result[6]; 		/* "00:00\0" = 6 chars max */
-  int i = 0;
-
-  str = ptr = g_strreverse(g_strdup(gtk_entry_get_text(entry)));
-
-  if (strlen(str)) {
-    while (i < 5) {
-	if (i == 2) {
-	  result[i] = separator;
-	  i++;
-	}
-	if (*ptr >= '0' && *ptr <= '9') {
-	  result[i] = *ptr;
-	  i++;
-	}
-	if (*ptr == '\0') {
-	  /* format like (separator == ':') ? "%02d:%02d" : "%d:%02d */
-	  result[i] = (i < 4 || separator == ':') ? '0' : '\0';
-	  i++;
-	} else {
-	  ptr++;
-	}
-      }
-    result[i] = '\0';
-    g_strreverse(result);
-    gtk_entry_set_text(entry, result);
-    }
-
-  g_free(str);
+  char result[BUF_TIME];
+  format_time(gtk_entry_get_text(entry), result, separator);
+  m_to_strtime(daywrap_minutes(strtime_to_m(result)), result, BUF_TIME, separator);
+  gtk_entry_set_text(entry, result);
 }
 
 void entry_format_time_on_focus_in(GtkEntry *entry)
@@ -102,34 +76,32 @@ void reconcile_time_entries(GtkEntry *changed, GtkEntry *start, GtkEntry *end, G
 
   if (changed == start && strlen(tstart)) {
     if (strlen(tend)) {
-      m = hmstr_to_m(tend) - hmstr_to_m(tstart);
+      m = strtime_to_m(tend) - strtime_to_m(tstart);
       tochange = elapsed;
     } else if (strlen(telapsed)) {
-      m = hmstr_to_m(tstart) + hmstr_to_m(telapsed);
+      m = strtime_to_m(tstart) + strtime_to_m(telapsed);
       tochange = end;
     }
   } else if (changed == end && strlen(tend)) {
     if (strlen(tstart)) {
-      m = hmstr_to_m(tend) - hmstr_to_m(tstart);
+      m = strtime_to_m(tend) - strtime_to_m(tstart);
       tochange = elapsed;
     } else if (strlen(telapsed)) {
-      m = hmstr_to_m(tend) - hmstr_to_m(telapsed);
+      m = strtime_to_m(tend) - strtime_to_m(telapsed);
       tochange = start;
     }
   } else if (changed == elapsed && strlen(telapsed)) {
     if (strlen(tstart)) {
-      m = hmstr_to_m(tstart) + hmstr_to_m(telapsed);
+      m = strtime_to_m(tstart) + strtime_to_m(telapsed);
       tochange = end;
     } else if (strlen(tend)) {
-      m = hmstr_to_m(tend) - hmstr_to_m(telapsed);
+      m = strtime_to_m(tend) - strtime_to_m(telapsed);
       tochange = start;
     }
   }
 
   if (tochange) {
-    // Is this the only way to do an always positive machine independent modulus?
-    if (m < 0 || m >= 24 * 60) m %= (24 * 60);
-    if (m < 0) m += (24 * 60);
+    m = daywrap_minutes(m);
 
     hh = m / 60;
     mm = m - (hh * 60);

@@ -17,6 +17,9 @@
 
 #define EMPTY_IF_NULL(x) (x ? x : "")
 
+#define BUF_DATE 11		/* "YYYY-MM-DD\0" */
+#define BUF_TIME 6		/* "HH:MM\0" expecting no flight longer than 99 hours */
+
 typedef enum {
     SQLPILOT_NO_ERROR = 0,
     SQLPILOT_ERROR_INVALID_URI,

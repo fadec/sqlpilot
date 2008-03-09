@@ -86,7 +86,7 @@ void entry_clamp_airports_ident(GtkEntry *entry)
   entry_clamp_text(entry, 4, 1, is_ident_char);
 }
 
-int hmstr_to_m(const char *str)
+int strtime_to_m(const char *str)
 {
   int h = 0, m = 0;
   if (strchr(str, ':')) {
@@ -99,19 +99,25 @@ int hmstr_to_m(const char *str)
   return h * 60 + m;
 }
 
-char *m_to_hmstr(int m)
+void m_to_strtime(int m, char *str, int nstr, char sep)
 {
   int hh, mm;
-  char *str;
+  char *format;
 
   hh = m / 60;
   mm = m - (hh * 60);
 
-  str = g_strnfill(10, '\0');
+  format = (sep == ':') ? "%02d:%02d" : "%d+%02d";
+  snprintf(str, nstr, format, hh, mm);
+}
 
-  snprintf(str, 10, "%d:%02d", hh, mm);
-
-  return str;
+/* daywrap_minutes(25 * 60) = 1 * 60, daywrap_minutes(-1 * 60) = 23 * 60 */
+int daywrap_minutes(int m)
+{
+  // Is this the only way to do an always positive machine independent modulus?
+  if (m < 0 || m >= 24 * 60) m %= (24 * 60);
+  if (m < 0) m += (24 * 60);
+  return m;
 }
 
 int row_exists(DB *db, const char *table, const char *column, const char *value)
@@ -240,3 +246,38 @@ int parsetime(const char *ts, int b60numerals)
   return parseB60(s);
 }
 
+/* formats strings like 234 to 02:34 */
+/* out must be a buffer of at least length BUF_TIME */
+void format_time(const char *input, char *out, char separator)
+{
+  char str[BUF_TIME], *ptr;
+  int i = 0;
+
+  strncpy(str, input, BUF_TIME);
+  str[BUF_TIME] = '\0';
+  ptr = g_strreverse(str);
+
+  if (strlen(str)) {
+    while (i < BUF_TIME - 1) {
+	if (i == 2) {		/* BUF_TIME must be >= 4 */
+	  out[i] = separator;
+	  i++;
+	}
+	if (*ptr >= '0' && *ptr <= '9') {
+	  out[i] = *ptr;
+	  i++;
+	}
+	if (*ptr == '\0') {
+	  /* format like (separator == ':') ? "%02d:%02d" : "%d:%02d */
+	  out[i] = (i < 4 || separator == ':') ? '0' : '\0';
+	  i++;
+	} else {
+	  ptr++;
+	}
+      }
+    out[i] = '\0';
+    g_strreverse(out);
+  } else {
+    out[0] = '\0';
+  }
+}
