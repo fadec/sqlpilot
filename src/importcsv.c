@@ -3,8 +3,11 @@
 #include "sqlpilot.h"
 #include "util.h"
 
-#define CSV_BUFSIZE 1000
-#define CSV_COLS 100
+#define CSV_BUFSIZE 4096
+#define CSV_COLS 128
+
+#define INCSV_TIMEBASE_LOCAL 1
+#define INCSV_TIMEBASE_UTC   2
 
 char csv_buf[CSV_BUFSIZE];
 char *csv_row[CSV_COLS];
@@ -34,6 +37,7 @@ struct InCSV {
     trip,
     numcol;
   int sep;
+  int timebase;
 };
 
 
@@ -43,6 +47,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   if ((csv->fh = fopen(filename, "rb")) == NULL) return 1;
 
   csv->sep = ',';
+  csv->timebase = INCSV_TIMEBASE_LOCAL;
   csv->date = 0;
   csv->fltno = 1;
   csv->aircraft = 2;
@@ -87,12 +92,9 @@ void incsv_import(InCSV *incsv, DB *db)
   float fnight, finst;
   int dland, nland;
   char *ptr;
-  int nrow;
+  int nrow, ncol;
   DBStatement *flights_ins = db_prep(db, FLIGHTS_INSERT);
   DBStatement *aircraft_ins = db_prep(db, AIRCRAFT_INSERT);
-/*   DBStatement *types_ins = db_prep(db, TYPES_INSERT); */
-/*   DBStatement *roles_ins = db_prep(db, ROLES_INSERT); */
-/*   DBStatement *airports_ins = db_prep(db, AIRPORTS_INSERT); */
 
   nrow = 0;
   while (csv_row_fread(incsv->fh,
@@ -102,8 +104,15 @@ void incsv_import(InCSV *incsv, DB *db)
 		       CSV_COLS,
 		       incsv->sep,
 		       0) > 0) {
-
+    
     if (nrow == 0) { nrow++; continue; }	/* Skip CSV header */
+
+    for (ncol=0; ncol<incsv->numcol; ncol++) {
+      if (!csv_row[ncol]) {
+	csv_row[ncol] = "\0";
+	fprintf(stderr, "Warning: missing column %d in row %d\n", ncol+1, nrow);
+      }
+    }
 
     *date = *sout = *sin = *sdur = *aout = *ain = *dur = *night = *inst = '\0';
     fnight = finst = 0;
@@ -162,7 +171,7 @@ void incsv_import(InCSV *incsv, DB *db)
     db_bind_text(flights_ins, FLIGHTS_WRITE_NOTES, csv_row[incsv->notes]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_TRIP, csv_row[incsv->trip]);
     db_stp_res_clr(flights_ins);
-    fprintf(stderr, "%d\n", nrow);
+    fprintf(stderr, "%d: %s\n", nrow, date);
     nrow++;
   }
 }
