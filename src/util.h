@@ -23,9 +23,8 @@ void entry_clamp_types_ident(GtkEntry *);
 void entry_clamp_airports_ident(GtkEntry *);
 
 int strtime_to_m(const char *str);
-
 void m_to_strtime(int m, char *str, int nstr, char sep);
-
+void tm_read_strdatetime(struct tm *tm, const char *str);
 
 int row_exists(DB *db, const char *table, const char *column, const char *value);
 int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, const char *value);

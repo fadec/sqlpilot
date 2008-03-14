@@ -99,6 +99,7 @@ int strtime_to_m(const char *str)
   return h * 60 + m;
 }
 
+/* Format depends on sep */
 void m_to_strtime(int m, char *str, int nstr, char sep)
 {
   int hh, mm;
@@ -109,6 +110,57 @@ void m_to_strtime(int m, char *str, int nstr, char sep)
 
   format = (sep == ':') ? "%02d:%02d" : "%d+%02d";
   snprintf(str, nstr, format, hh, mm);
+}
+
+void tm_read_strdate(struct tm *tm, const char *str)
+{
+  int yy, mm, dd;
+  yy = mm = dd = 0;
+
+  sscanf(str, "%d-%d-%d", &yy, &mm, &dd);
+
+  tm.tm_year = yy - 1900;
+  tm.tm_mon = mm - 1;
+  tm.tm_mday = dd;
+}
+
+void tm_read_strtime(struct tm *tm, const char *str)
+{
+  int hh, mm, ss;
+  hh = mm = ss = 0;
+
+  sscanf(str, "%d:%d", &yy, &mm);
+
+  tm.tm_hour = hh;
+  tm.tm_min = mm;
+  tm.tm_sec = ss;
+  tm.tm_isdst = -1;		/* -1 to mean info not available (implementaions hopefully figure it out from other info) */
+}
+
+/* Not thread safe - sets time zone */
+time_t tmtz_mktime(struct tm *tm, const char *tz)
+{
+  static char tzsave[256] = {0};
+  time_t t;
+
+  strncpy(tzsave, getenv("TZ"), sizeof(tzsave));
+  if (tzsave[sizeof(tzsave)-1]) {
+    fprintf(stderr, "static char *tzsave not big enough\n");
+    exit(1);
+  }
+
+  if (setenv("TZ", tz, 1)) {
+    fprintf(stderr, "boom\n");
+    exit(1);
+  }
+
+  tzset();
+  t = mktime(tm);
+  if (setenv("TZ", tzsave, 1)) {
+    fprintf(stderr, "boom\n");
+  }
+
+  return t;
 }
 
 /* daywrap_minutes(25 * 60) = 1 * 60, daywrap_minutes(-1 * 60) = 23 * 60 */

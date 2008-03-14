@@ -4,9 +4,9 @@ CREATE TABLE Flights (
 	,role_id INTEGER
 	,dep_id INTEGER
 	,arr_id INTEGER
-	,Date DATE
-	,AOut TIME
-	,AIn TIME
+	,Date DATE		-- to depricate
+	,AOut DATETIME
+	,AIn DATETIME
 	,Dur INTEGER
 	,Night INTEGER
 	,Inst INTEGER
@@ -20,8 +20,8 @@ CREATE TABLE Flights (
 	,Notes TEXT
 	/* Schedule Stuff */
 	,FltNo VARCHAR
-	,SOut TIME
-	,SIn TIME
+	,SOut DATETIME
+	,SIn DATETIME
 	,SDur INTEGER
 	,Trip VARCHAR
 );
@@ -95,9 +95,10 @@ CREATE TABLE Airports (
 	,Ident CHAR
 	,ICAO CHAR
 	,Name CHAR
-	,OffUTC FLOAT
-	,UseDST BOOLEAN
-	,Notes Text
+	,OffUTC FLOAT		-- to depricate
+	,UseDST BOOLEAN		-- to depricate
+	,TZone CHAR
+	,Notes TEXT
 );
 
 CREATE TABLE Employers (
