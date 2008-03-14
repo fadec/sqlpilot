@@ -6,8 +6,11 @@
 #define CSV_BUFSIZE 4096
 #define CSV_COLS 128
 
-#define INCSV_TIMEBASE_LOCAL 1
-#define INCSV_TIMEBASE_UTC   2
+typedef enum {
+  INCSV_TIMEBASE_LOCAL,
+  INCSV_TIMEBASE_UTC,
+  INCSV_TIMEBASE_AIRPORT
+} InCSVTimebase;
 
 char csv_buf[CSV_BUFSIZE];
 char *csv_row[CSV_COLS];
@@ -47,7 +50,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   if ((csv->fh = fopen(filename, "rb")) == NULL) return 1;
 
   csv->sep = ',';
-  csv->timebase = INCSV_TIMEBASE_LOCAL;
+  csv->timebase = INCSV_TIMEBASE_AIRPORT;
   csv->date = 0;
   csv->fltno = 1;
   csv->aircraft = 2;
@@ -77,6 +80,35 @@ static void incsv_finalize(InCSV *incsv)
   fclose(incsv->fh);
 }
 
+time_t airport_mktime(DB *db, const char *airport, InCSVTimebase timebase, struct tm *tm)
+{
+  time_t t;
+  char tz[BUF_TZ] = "\0";
+
+  switch (timebase) {
+  default:
+    fprintf(stderr, "timebase not set\n");
+    exit(1);
+    break;
+  case INCSV_TIMEBASE_LOCAL:
+    t = mktime(tm);
+    break;
+  case INCSV_TIMEBASE_UTC:
+    t = tmtz_mktime(tm, "UTC");
+    break;
+  case INCSV_TIMEBASE_AIRPORT:
+    if (tz_of_airport_ident(db, airport, tz, BUF_TZ) && strlen(tz)) {
+      t = tmtz_mktime(tm, tz);
+    } else {
+      fprintf(stderr, "Warning: No timezone for airport %s. Assuming machine local time.\n", airport);
+      t = mktime(tm);
+    }
+    break;
+  }
+
+  return t;
+}
+
 void incsv_import(InCSV *incsv, DB *db)
 {
   char
@@ -88,7 +120,21 @@ void incsv_import(InCSV *incsv, DB *db)
     ain[BUF_TIME],
     dur[BUF_TIME],
     night[BUF_TIME],
-    inst[BUF_TIME];
+    inst[BUF_TIME],
+    sout_dt[BUF_DATETIME],
+    sin_dt[BUF_DATETIME],
+    aout_dt[BUF_DATETIME],
+    ain_dt[BUF_DATETIME];
+  struct tm
+    sout_tm,
+    sin_tm,
+    aout_tm,
+    ain_tm;
+  time_t
+    sout_t,
+    sin_t,
+    aout_t,
+    ain_t;
   float fnight, finst;
   int dland, nland;
   char *ptr;
@@ -104,9 +150,9 @@ void incsv_import(InCSV *incsv, DB *db)
 		       CSV_COLS,
 		       incsv->sep,
 		       0) > 0) {
-    
-    if (nrow == 0) { nrow++; continue; }	/* Skip CSV header */
 
+    /* CSV reading and checking */
+    if (nrow == 0) { nrow++; continue; }	/* Skip CSV header */
     for (ncol=0; ncol<incsv->numcol; ncol++) {
       if (!csv_row[ncol]) {
 	csv_row[ncol] = "\0";
@@ -114,7 +160,8 @@ void incsv_import(InCSV *incsv, DB *db)
       }
     }
 
-    *date = *sout = *sin = *sdur = *aout = *ain = *dur = *night = *inst = '\0';
+    /* Copy and reformat certain fields to internal formats */
+    *date = *sout = *sout_dt = *sin = *sin_dt = *sdur = *aout = *aout_dt = *ain = *ain_dt = *dur = *night = *inst = '\0';
     fnight = finst = 0;
     dland = nland = 0;
 
@@ -128,9 +175,37 @@ void incsv_import(InCSV *incsv, DB *db)
     format_time(csv_row[incsv->ain],  ain,  ':');
     format_time(csv_row[incsv->sout], sout, ':');
     format_time(csv_row[incsv->sin],  sin, ':');
-    m_to_strtime(daywrap_minutes(strtime_to_m(ain) - strtime_to_m(aout)), dur, BUF_TIME, '+');
-    m_to_strtime(daywrap_minutes(strtime_to_m(sin) - strtime_to_m(sout)), sdur, BUF_TIME, '+');
-    
+
+    tm_read_strdate(&sout_tm, date);
+    tm_read_strtime(&sout_tm, sout);
+    tm_read_strdate(&sin_tm, date);
+    tm_read_strtime(&sin_tm, sin);
+    tm_read_strdate(&aout_tm, date);
+    tm_read_strtime(&aout_tm, aout);
+    tm_read_strdate(&ain_tm, date);
+    tm_read_strtime(&ain_tm, ain);
+
+    sout_t = airport_mktime(db, csv_row[incsv->dep], incsv->timebase, &sout_tm);
+    sin_t = airport_mktime(db, csv_row[incsv->arr], incsv->timebase, &sin_tm);
+    aout_t = airport_mktime(db, csv_row[incsv->dep], incsv->timebase, &aout_tm);
+    ain_t = airport_mktime(db, csv_row[incsv->arr], incsv->timebase, &ain_tm);
+
+    gmtime_r(&sout_t, &sout_tm);
+    gmtime_r(&sin_t, &sin_tm);
+    gmtime_r(&aout_t, &aout_tm);
+    gmtime_r(&sin_t, &ain_tm);
+
+    strftime(sout_dt, BUF_DATETIME, "%Y-%m-%d %H:%M", &sout_tm);
+    strftime(sin_dt, BUF_DATETIME, "%Y-%m-%d %H:%M", &sin_tm);
+    strftime(aout_dt, BUF_DATETIME, "%Y-%m-%d %H:%M", &aout_tm);
+    strftime(ain_dt, BUF_DATETIME, "%Y-%m-%d %H:%M", &ain_tm);
+
+/*     m_to_strtime(daywrap_minutes(strtime_to_m(ain) - strtime_to_m(aout)), dur, BUF_TIME, '+'); */
+/*     m_to_strtime(daywrap_minutes(strtime_to_m(sin) - strtime_to_m(sout)), sdur, BUF_TIME, '+'); */
+    strncpy(sdur, "00:00", BUF_TIME);
+    strncpy(dur, "00:00", BUF_TIME);
+
+
     sscanf(csv_row[incsv->night], "%f", &fnight);
     fnight *= 60;
     if (fnight > strtime_to_m(dur)) fnight = strtime_to_m(dur);
@@ -144,23 +219,23 @@ void incsv_import(InCSV *incsv, DB *db)
     sscanf(csv_row[incsv->dland], "%d", &dland);
     sscanf(csv_row[incsv->nland], "%d", &nland);
 
+    /* Do DB inserts */
     if (!row_exists(db, "aircraft", "ident", csv_row[incsv->aircraft])) {
       bind_id_of(aircraft_ins, AIRCRAFT_WRITE_TYPE, "types", "ident", csv_row[incsv->type]);
       db_bind_text(aircraft_ins, AIRCRAFT_WRITE_IDENT, csv_row[incsv->aircraft]);
       db_stp_res_clr(aircraft_ins);
     }
-
     bind_id_of(flights_ins, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "ident", csv_row[incsv->aircraft]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_ROLE, "roles", "ident", csv_row[incsv->role]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_DEP, "airports", "ident", csv_row[incsv->dep]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_ARR, "airports", "ident", csv_row[incsv->arr]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_DATE, date);
     db_bind_text(flights_ins, FLIGHTS_WRITE_FLTNO, csv_row[incsv->fltno]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SOUT, sout);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SIN, sin);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_SOUT, sout_dt);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_SIN, sin_dt);
     db_bind_text(flights_ins, FLIGHTS_WRITE_SDUR, sdur);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AOUT, aout);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AIN, ain);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_AOUT, aout_dt);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_AIN, ain_dt);
     db_bind_text(flights_ins, FLIGHTS_WRITE_DUR, dur);
     db_bind_text(flights_ins, FLIGHTS_WRITE_NIGHT, night);
     db_bind_text(flights_ins, FLIGHTS_WRITE_INST, inst);

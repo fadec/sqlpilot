@@ -139,8 +139,7 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->airports_ident    = __get_widget("airports_ident");
   sqlpilot->airports_icao     = __get_widget("airports_icao");
   sqlpilot->airports_name     = __get_widget("airports_name");
-  sqlpilot->airports_offutc   = __get_widget("airports_offutc");
-  sqlpilot->airports_usedst   = __get_widget("airports_usedst");
+  sqlpilot->airports_tzone    = __get_widget("airports_tzone");
   sqlpilot->airports_notes    = __get_widget("airports_notes");
   #undef __get_widget
 

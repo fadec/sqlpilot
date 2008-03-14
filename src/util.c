@@ -119,9 +119,9 @@ void tm_read_strdate(struct tm *tm, const char *str)
 
   sscanf(str, "%d-%d-%d", &yy, &mm, &dd);
 
-  tm.tm_year = yy - 1900;
-  tm.tm_mon = mm - 1;
-  tm.tm_mday = dd;
+  tm->tm_year = yy - 1900;
+  tm->tm_mon = mm - 1;
+  tm->tm_mday = dd;
 }
 
 void tm_read_strtime(struct tm *tm, const char *str)
@@ -129,23 +129,26 @@ void tm_read_strtime(struct tm *tm, const char *str)
   int hh, mm, ss;
   hh = mm = ss = 0;
 
-  sscanf(str, "%d:%d", &yy, &mm);
+  sscanf(str, "%d:%d", &hh, &mm);
 
-  tm.tm_hour = hh;
-  tm.tm_min = mm;
-  tm.tm_sec = ss;
-  tm.tm_isdst = -1;		/* -1 to mean info not available (implementaions hopefully figure it out from other info) */
+  tm->tm_hour = hh;
+  tm->tm_min = mm;
+  tm->tm_sec = ss;
+  tm->tm_isdst = -1;		/* -1 to mean info not available (implementaions hopefully figure it out from other info) */
 }
 
 /* Not thread safe - sets time zone */
 time_t tmtz_mktime(struct tm *tm, const char *tz)
 {
-  static char tzsave[256] = {0};
+  char tzsave[256] = {0};
   time_t t;
 
-  strncpy(tzsave, getenv("TZ"), sizeof(tzsave));
+  if (getenv("TZ")) {
+    strncpy(tzsave, getenv("TZ"), sizeof(tzsave));
+  }
+
   if (tzsave[sizeof(tzsave)-1]) {
-    fprintf(stderr, "static char *tzsave not big enough\n");
+    fprintf(stderr, "static char tzsave[] not big enough\n");
     exit(1);
   }
 
@@ -170,6 +173,35 @@ int daywrap_minutes(int m)
   if (m < 0 || m >= 24 * 60) m %= (24 * 60);
   if (m < 0) m += (24 * 60);
   return m;
+}
+
+/* Returns 1 if ident found, otherwise 0 - places  */
+int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize)
+{
+  DBStatement *select;
+  char sql[] = "select tzone from airports where ident = ?;";
+  int found;
+  char *tztext;
+
+  select = db_prep(db, sql);
+
+  db_bind_text(select, 1, ident);
+
+  found = (db_step(select) != DB_DONE);
+
+  if (found) {
+    tz[tz_bufsize - 1] = 0;
+    tztext = (char *)db_column_text(select, 0);
+    if (tztext) strncpy(tz, tztext, tz_bufsize);
+    if (tz[tz_bufsize - 1] != 0) {
+      fprintf(stderr, "Timezone buffer passed to tz_of_airport_ident() too small\n");
+      exit(1);
+    }
+  }
+
+  db_stp_res_clr(select);
+
+  return found;
 }
 
 int row_exists(DB *db, const char *table, const char *column, const char *value)

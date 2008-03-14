@@ -95,8 +95,6 @@ CREATE TABLE Airports (
 	,Ident CHAR
 	,ICAO CHAR
 	,Name CHAR
-	,OffUTC FLOAT		-- to depricate
-	,UseDST BOOLEAN		-- to depricate
 	,TZone CHAR
 	,Notes TEXT
 );

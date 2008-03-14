@@ -19,6 +19,8 @@
 
 #define BUF_DATE 11		/* "YYYY-MM-DD\0" */
 #define BUF_TIME 6		/* "HH:MM\0" expecting no flight longer than 99 hours */
+#define BUF_DATETIME 17		/* "YYYY-MM-DD HH:MM\0" */
+#define BUF_TZ 256		/*  How ever big timezone names get??? */
 
 typedef enum {
     SQLPILOT_NO_ERROR = 0,
@@ -465,8 +467,7 @@ enum {
   AIRPORTS_COL_IDENT,
   AIRPORTS_COL_ICAO,
   AIRPORTS_COL_NAME,
-  AIRPORTS_COL_OFFUTC,
-  AIRPORTS_COL_USEDST,
+  AIRPORTS_COL_TZONE,
   AIRPORTS_COL_NOTES,
   AIRPORTS_COL_DEP,
   AIRPORTS_COL_ARR
@@ -477,8 +478,7 @@ enum {
   ", airports.ident as Ident"					\
   ", airports.icao as ICAO"					\
   ", airports.name as Name"					\
-  ", airports.offutc as OffUTC"					\
-  ", airports.usedst as UseDST"					\
+  ", airports.tzone as TZone"					\
   ", airports.notes as _Notes"					\
   ", count(distinct(fdep.id)) as Dep"				\
   ", count(distinct(farr.id)) as Arr"				\
@@ -496,18 +496,17 @@ enum {
   AIRPORTS_WRITE_IDENT = 1,
   AIRPORTS_WRITE_ICAO,
   AIRPORTS_WRITE_NAME,
-  AIRPORTS_WRITE_OFFUTC,
-  AIRPORTS_WRITE_USEDST,
+  AIRPORTS_WRITE_TZONE,
   AIRPORTS_WRITE_NOTES,
   AIRPORTS_WRITE_ID
 };
 
 
 #define AIRPORTS_INSERT \
-  "insert into airports (ident, icao, name, offutc, usedst, notes) values (?, ?, ?, ?, ?, ?);"
+  "insert into airports (ident, icao, name, tzone, notes) values (?, ?, ?, ?, ?);"
 
 #define AIRPORTS_UPDATE \
-  "update airports set ident = ?, icao = ?, name = ?, offutc = ?, usedst = ?, notes = ? where id = ?;"
+  "update airports set ident = ?, icao = ?, name = ?, tzone = ?, notes = ? where id = ?;"
 
 #define AIRPORTS_DELETE \
   "delete from airports where id = ?;"
@@ -646,8 +645,7 @@ struct Sqlpilot {
   GtkWidget *airports_ident;
   GtkWidget *airports_icao;
   GtkWidget *airports_name;
-  GtkWidget *airports_offutc;
-  GtkWidget *airports_usedst;
+  GtkWidget *airports_tzone;
   GtkWidget *airports_notes;
 };
 
