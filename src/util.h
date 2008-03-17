@@ -1,8 +1,17 @@
+#ifndef UTIL_H
+#define UTIL_H
+
 #include <gtk/gtk.h>
 #include "db/db.h"
 #include "sqlpilot.h"
 
 #define ALLOWED_TEXT_ALPHA
+
+typedef enum {
+  RECONCILE_TIME_BEGIN,
+  RECONCILE_TIME_END,
+  RECONCILE_TIME_ELAPSED
+} ReconcileTime;
 
 gboolean str_bool(const char *);
 
@@ -28,6 +37,7 @@ void tm_read_strdate(struct tm *tm, const char *str);
 void tm_read_strtime(struct tm *tm, const char *str);
 time_t tmtz_mktime(struct tm *tm, const char *tz);
 int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize);
+struct tm *localtime_tz(const time_t *timep, const char *tz, struct tm *retrn);
 int row_exists(DB *db, const char *table, const char *column, const char *value);
 int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, const char *value);
 
@@ -35,3 +45,4 @@ int parseB60(const char *ts);
 int parsetime(const char *ts, int b60numerals);
 void format_time(const char *input, char *out, char separator);
 
+#endif

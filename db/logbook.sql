@@ -4,9 +4,12 @@ CREATE TABLE Flights (
 	,role_id INTEGER
 	,dep_id INTEGER
 	,arr_id INTEGER
-	,Date DATE		-- to depricate
-	,AOut DATETIME
-	,AIn DATETIME
+	,Date DATE
+	,DateUTC DATE
+	,AOut TIME
+	,AOutUTC TIME
+	,AIn TIME
+	,AInUTC TIME
 	,Dur INTEGER
 	,Night INTEGER
 	,Inst INTEGER
@@ -20,8 +23,10 @@ CREATE TABLE Flights (
 	,Notes TEXT
 	/* Schedule Stuff */
 	,FltNo VARCHAR
-	,SOut DATETIME
-	,SIn DATETIME
+	,SOut TIME
+	,SOutUTC TIME
+	,SIn TIME
+	,SInUTC TIME
 	,SDur INTEGER
 	,Trip VARCHAR
 );

@@ -41,12 +41,15 @@ enum {
 enum {
   FLIGHTS_COL_ID = 0,
   FLIGHTS_COL_DATE,
+  FLIGHTS_COL_DATEUTC,
   FLIGHTS_COL_AIRCRAFT,
   FLIGHTS_COL_ROLE,
   FLIGHTS_COL_DEP,
   FLIGHTS_COL_ARR,
   FLIGHTS_COL_AOUT,
+  FLIGHTS_COL_AOUTUTC,
   FLIGHTS_COL_AIN,
+  FLIGHTS_COL_AINUTC,
   FLIGHTS_COL_DUR,
   FLIGHTS_COL_NIGHT,
   FLIGHTS_COL_INST,
@@ -60,7 +63,9 @@ enum {
   FLIGHTS_COL_NOTES,
   FLIGHTS_COL_FLTNO,
   FLIGHTS_COL_SOUT,
+  FLIGHTS_COL_SOUTUTC,
   FLIGHTS_COL_SIN,
+  FLIGHTS_COL_SINUTC,
   FLIGHTS_COL_SDUR,
   FLIGHTS_COL_TRIP,
   FLIGHTS_NUMCOL
@@ -69,12 +74,15 @@ enum {
 #define FLIGHTS_SELECT					\
   "select flights.id as _id"				\
   ", flights.date as Date"				\
+  ", flights.DateUTC as U_Date"				\
   ", a.ident as Aircraft"				\
   ", r.ident as Role"					\
   ", dep.ident as Dep"					\
   ", arr.ident as Arr"					\
   ", flights.aout as AOut"				\
+  ", flights.AOutUTC as U_AOut"				\
   ", flights.ain as AIn"				\
+  ", flights.AInUTC as U_AIn"				\
   ", m_to_hhmm(flights.dur) as Dur"			\
   ", m_to_hhmm(flights.night) as Night"			\
   ", m_to_hhmm(flights.inst) as Inst"			\
@@ -84,11 +92,13 @@ enum {
   ", bool(flights.xc) as XC"				\
   ", flights.dland as DLand"				\
   ", flights.nland as NLand"				\
-  ", flights.crew as _Crew"				\
+  ", flights.crew as U_Crew"				\
   ", flights.notes as _Notes"				\
   ", flights.fltno as FltNo"				\
   ", flights.sout as SOut"				\
+  ", flights.SOutUTC as U_SOut"				\
   ", flights.sin as SIn"				\
+  ", flights.SInUTC as U_SIn"				\
   ", m_to_hhmm(flights.sdur) as SDur"			\
   ", flights.trip as Trip"				\
   " from flights"					\
@@ -107,8 +117,11 @@ enum {
   FLIGHTS_WRITE_DEP,
   FLIGHTS_WRITE_ARR,
   FLIGHTS_WRITE_DATE,
+  FLIGHTS_WRITE_DATEUTC,
   FLIGHTS_WRITE_AOUT,
+  FLIGHTS_WRITE_AOUTUTC,
   FLIGHTS_WRITE_AIN,
+  FLIGHTS_WRITE_AINUTC,
   FLIGHTS_WRITE_DUR,
   FLIGHTS_WRITE_NIGHT,
   FLIGHTS_WRITE_INST,
@@ -122,7 +135,9 @@ enum {
   FLIGHTS_WRITE_NOTES,
   FLIGHTS_WRITE_FLTNO,
   FLIGHTS_WRITE_SOUT,
+  FLIGHTS_WRITE_SOUTUTC,
   FLIGHTS_WRITE_SIN,
+  FLIGHTS_WRITE_SINUTC,
   FLIGHTS_WRITE_SDUR,
   FLIGHTS_WRITE_TRIP,
   FLIGHTS_WRITE_ID
@@ -130,20 +145,50 @@ enum {
 
 
 #define FLIGHTS_INSERT							\
-  "insert into flights (aircraft_id, role_id, dep_id, arr_id, date, aout, ain, dur, night, " \
-  "inst, siminst, hold, aprch, xc, dland, nland, crew, notes, fltno, sout, sin, sdur, trip) " \
-  "values (?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), ?, ?, ?, " \
-  "?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
+  "insert into flights ("						\
+  "aircraft_id"								\
+  ",role_id"								\
+  ", dep_id"								\
+  ", arr_id"								\
+  ", date"								\
+  ", DateUTC"								\
+  ", aout"								\
+  ", AOutUTC"								\
+  ", ain"								\
+  ", AInUTC"								\
+  ", dur"								\
+  ", night"								\
+  ", inst"								\
+  ", siminst"								\
+  ", hold"								\
+  ", aprch"								\
+  ", xc"								\
+  ", dland"								\
+  ", nland"								\
+  ", crew"								\
+  ", notes"								\
+  ", fltno"								\
+  ", sout"								\
+  ", SOutUTC"								\
+  ", sin"								\
+  ", SInUTC"								\
+  ", sdur"								\
+  ", trip)"								\
+  " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), ?, ?, ?, " \
+  "?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
 
-#define FLIGHTS_UPDATE \
+#define FLIGHTS_UPDATE				\
   "update flights set"				\
   " aircraft_id = ?"				\
   ", role_id = ?"				\
   ", dep_id = ?"				\
   ", arr_id = ?"				\
   ", date = ?"					\
+  ", DateUTC = ?"				\
   ", aout = ?"					\
+  ", AOutUTC = ?"				\
   ", ain = ?"					\
+  ", AInUTC = ?"				\
   ", dur = hhmm_to_m(?)"			\
   ", night = hhmm_to_m(?)"			\
   ", inst = hhmm_to_m(?)"			\
@@ -157,7 +202,9 @@ enum {
   ", notes = ?"					\
   ", fltno = ?"					\
   ", sout = ?"					\
+  ", SOutUTC = ?"				\
   ", sin = ?"					\
+  ", SInUTC = ?"				\
   ", sdur = hhmm_to_m(?)"			\
   ", trip = ?"					\
   " where id = ?;"

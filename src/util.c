@@ -156,14 +156,67 @@ time_t tmtz_mktime(struct tm *tm, const char *tz)
     fprintf(stderr, "boom\n");
     exit(1);
   }
-
   tzset();
+
   t = mktime(tm);
+
   if (setenv("TZ", tzsave, 1)) {
     fprintf(stderr, "boom\n");
   }
+  tzset();
 
   return t;
+}
+
+struct tm *localtime_tz(const time_t *timep, const char *tz, struct tm *retrn)
+{
+  char tzsave[256] = {0};
+  struct tm *rt;
+
+  if (getenv("TZ")) {
+    strncpy(tzsave, getenv("TZ"), sizeof(tzsave));
+  }
+  if (tzsave[sizeof(tzsave)-1]) {
+    fprintf(stderr, "static char tzsave[] not big enough\n");
+    exit(1);
+  }
+  if (setenv("TZ", tz, 1)) {
+    fprintf(stderr, "boom\n");
+    exit(1);
+  }
+  tzset();
+
+  rt = localtime_r(timep, retrn);
+
+  if (setenv("TZ", tzsave, 1)) {
+    fprintf(stderr, "boom\n");
+  }
+  tzset();
+
+  return rt;
+}
+
+void reconcile_time(ReconcileTime rc, struct tm *t1, const char *tz1, struct tm *t2, const char *tz2, long *elapsed)
+{
+  time_t t1_t, t2_t;
+
+  switch (rc) {
+  case RECONCILE_TIME_BEGIN:
+    t2_t = tmtz_mktime(t2, tz2);
+    t1_t = t2_t - *elapsed;
+    localtime_tz(&t1_t, tz1, t1);
+    break;
+  case RECONCILE_TIME_END:
+    t1_t = tmtz_mktime(t1, tz1);
+    t2_t = t1_t + *elapsed;
+    localtime_tz(&t2_t, tz2, t2);
+    break;
+  case RECONCILE_TIME_ELAPSED:
+    t1_t = tmtz_mktime(t1, tz1);
+    t2_t = tmtz_mktime(t2, tz2);
+    *elapsed = t2_t - t1_t;
+    break;
+  }
 }
 
 /* daywrap_minutes(25 * 60) = 1 * 60, daywrap_minutes(-1 * 60) = 23 * 60 */
