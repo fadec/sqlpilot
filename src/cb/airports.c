@@ -167,4 +167,7 @@ void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
   airports_load_entries_from_selection(logb);
 }
 
-
+void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+{
+  entry_clamp_text(entry, 4, 1, is_ident_char);
+}

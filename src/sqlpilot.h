@@ -80,9 +80,9 @@ enum {
   ", dep.ident as Dep"					\
   ", arr.ident as Arr"					\
   ", flights.aout as AOut"				\
-  ", flights.AOutUTC as U_AOut"				\
+  ", flights.AOutUTC as AOutUTC"			\
   ", flights.ain as AIn"				\
-  ", flights.AInUTC as U_AIn"				\
+  ", flights.AInUTC as AInUTC"				\
   ", m_to_hhmm(flights.dur) as Dur"			\
   ", m_to_hhmm(flights.night) as Night"			\
   ", m_to_hhmm(flights.inst) as Inst"			\
@@ -92,13 +92,13 @@ enum {
   ", bool(flights.xc) as XC"				\
   ", flights.dland as DLand"				\
   ", flights.nland as NLand"				\
-  ", flights.crew as U_Crew"				\
+  ", flights.crew as _Crew"				\
   ", flights.notes as _Notes"				\
   ", flights.fltno as FltNo"				\
   ", flights.sout as SOut"				\
-  ", flights.SOutUTC as U_SOut"				\
+  ", flights.SOutUTC as SOutUTC"				\
   ", flights.sin as SIn"				\
-  ", flights.SInUTC as U_SIn"				\
+  ", flights.SInUTC as SInUTC"				\
   ", m_to_hhmm(flights.sdur) as SDur"			\
   ", flights.trip as Trip"				\
   " from flights"					\
@@ -108,7 +108,7 @@ enum {
   " left join airports arr on flights.arr_id = arr.id"
 
 #define FLIGHTS_WHERE_ID \
-  " where flights.id = ?;"
+  " where flights.id = ? order by Date;"
 
 /* Insert and update bindings */
 enum {
@@ -226,23 +226,23 @@ enum {
   ROLES_COL_TIME
 };
 
-#define ROLES_SELECT					\
-  "select roles.id as _id"				\
-  ", roles.ident as Ident"				\
-  ", roles.name as Name"				\
-  ", roles.pic as PIC"					\
-  ", roles.sic as SIC"					\
-  ", roles.fe as FE"					\
-  ", roles.solo as Solo"				\
-  ", roles.dual as Dual"				\
-  ", roles.instruct as Instruct"			\
-  ", count(flights.id) as Flights"			\
-  ", m_to_hhmm(sum(flights.dur)) as Time"		\
-  " from roles"						\
-  " left join flights on flights.role_id = roles.id"	\
+#define ROLES_SELECT						\
+  "select roles.id as _id"					\
+  ", roles.ident as Ident"					\
+  ", roles.name as Name"					\
+  ", bool(roles.pic) as PIC"					\
+  ", bool(roles.sic) as SIC"					\
+  ", bool(roles.fe) as FE"					\
+  ", bool(roles.solo) as Solo"					\
+  ", bool(roles.dual) as Dual"					\
+  ", bool(roles.instruct) as Instruct"				\
+  ", count(flights.id) as Flights"				\
+  ", m_to_hhmm(sum(flights.dur)) as Time"			\
+  " from roles"							\
+  " left join flights on flights.role_id = roles.id"		\
 
 #define ROLES_GROUP_BY \
-  " group by roles.id"
+  " group by roles.id order by roles.ident"
 
 #define ROLES_WHERE_ID \
   " where roles.id = ?"
@@ -292,7 +292,7 @@ enum {
   " left join flights on flights.aircraft_id = aircraft.id"	\
 
 #define AIRCRAFT_GROUP_BY \
-  " group by aircraft.id"
+  " group by aircraft.id order by flights desc"
 
 #define AIRCRAFT_WHERE_ID \
   " where aircraft.id = ?"
@@ -390,7 +390,7 @@ enum {
   " left join flights on flights.aircraft_id = aircraft.id"
 
 #define TYPES_GROUP_BY \
-  " group by types.id"
+  " group by types.id order by types.ident"
 
 #define TYPES_WHERE_ID \
   " where types.id = ?"
@@ -534,7 +534,7 @@ enum {
   " left join flights farr on farr.arr_id = airports.id"
 
 #define AIRPORTS_GROUP_BY \
-  " group by airports.id"
+  " group by airports.id order by airports.ident"
 
 #define AIRPORTS_WHERE_ID \
   " where airports.id = ?"
@@ -575,6 +575,8 @@ struct Sqlpilot {
   GtkTreeModel *flights_treemodel;
   GtkTreeSelection *flights_selection;
   GtkWidget *flights_treeview;
+  GtkWidget *flights_utc;
+  GtkWidget *flights_utc_lbl;
   GtkWidget *flights_aircraft;
   GtkWidget *flights_date;
   GtkWidget *flights_role;

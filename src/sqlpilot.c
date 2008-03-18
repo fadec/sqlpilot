@@ -67,6 +67,8 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->window           = __get_widget("window");
   sqlpilot->flights_sw       = __get_widget("flights_sw");
   sqlpilot->flights_aircraft = __get_widget("flights_aircraft");
+  sqlpilot->flights_utc      = __get_widget("flights_utc");
+  sqlpilot->flights_utc_lbl  = __get_widget("flights_utc_lbl");
   sqlpilot->flights_date     = __get_widget("flights_date");
   sqlpilot->flights_role     = __get_widget("flights_role");
   sqlpilot->flights_dep      = __get_widget("flights_dep");
@@ -191,6 +193,8 @@ Sqlpilot *sqlpilot_new(void)
 		    G_CALLBACK (on_airports_selection_changed),
 		    sqlpilot);
 
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc), FALSE);
+  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_utc_lbl), "Local");
 
   g_object_unref (G_OBJECT (builder));
   return sqlpilot;

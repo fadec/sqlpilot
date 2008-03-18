@@ -160,12 +160,28 @@ time_t tmtz_mktime(struct tm *tm, const char *tz)
 
   t = mktime(tm);
 
-  if (setenv("TZ", tzsave, 1)) {
-    fprintf(stderr, "boom\n");
+  if (strlen(tzsave)) {
+    if (setenv("TZ", tzsave, 1)) {
+      fprintf(stderr, "boom\n");
+    }
+  } else {
+    if (unsetenv("TZ") == -1) {
+      fprintf(stderr, "unsetenv failed\n");
+    }
   }
   tzset();
 
   return t;
+}
+
+time_t dtz_mktime(const char *date, const char *time, const char *tz)
+{
+  struct tm tm;
+
+  tm_read_strdate(&tm, date);
+  tm_read_strtime(&tm, time);
+
+  return tmtz_mktime(&tm, tz);
 }
 
 struct tm *localtime_tz(const time_t *timep, const char *tz, struct tm *retrn)
@@ -188,8 +204,14 @@ struct tm *localtime_tz(const time_t *timep, const char *tz, struct tm *retrn)
 
   rt = localtime_r(timep, retrn);
 
-  if (setenv("TZ", tzsave, 1)) {
-    fprintf(stderr, "boom\n");
+  if (strlen(tzsave)) {
+    if (setenv("TZ", tzsave, 1)) {
+      fprintf(stderr, "boom\n");
+    }
+  } else {
+    if (unsetenv("TZ") == -1) {
+      fprintf(stderr, "unsetenv failed\n");
+    }
   }
   tzset();
 

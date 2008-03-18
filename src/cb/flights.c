@@ -1,5 +1,32 @@
 #include "sqlpilot.h"
 
+
+/* strdate_r and strtime_r must be at least BUF_DATE AND BUF_TIME in size */
+void move_time(const char *fromtz, const char *totz, const char *strdate, const char *strtime, char *strdate_r, char *strtime_r)
+{
+  if (strtime && strlen(strtime)) {
+    time_t t;
+    struct tm tm;
+
+    if (strdate && strlen(strdate)) {
+      tm_read_strdate(&tm, strdate);
+    } else {
+      time(&t);
+      localtime_r(&t, &tm);
+    } 
+    tm_read_strtime(&tm, strtime);
+    
+    if ((t = tmtz_mktime(&tm, fromtz)) == -1) {
+      fprintf(stderr, "tmtz_mktime failed in move_time\n");
+      return;
+    }
+
+    localtime_tz(&t, totz, &tm);
+    strftime(strtime_r, BUF_TIME, "%H:%M", &tm);
+    strftime(strdate_r, BUF_DATE, "%Y-%m-%d", &tm);
+  }
+}
+
 /* Tabs whos view depends on flights because of joins need to be refreshed if the flights table changes */
 static void set_dependents_stale(Sqlpilot *sqlpilot)
 {
@@ -11,33 +38,42 @@ static void set_dependents_stale(Sqlpilot *sqlpilot)
 
 void entry_format_date_on_focus_out(GtkEntry *entry)
 {
-  int yy=0, mm=0, dd=0;
+  int yy=0, mm=1, dd=1;
   const char *text;
   char result[11]; 		/* strlen("yyyy-mm-dd\0") == 11 */
   struct tm tm = {0};
 
   text = gtk_entry_get_text(entry);
-  sscanf(text, "%d-%d-%d", &yy, &mm, &dd);
 
-  tm.tm_year = yy - 1900;
-  tm.tm_mon = mm - 1;
-  tm.tm_mday = dd;
+  if (text && strlen(text)) {
+    sscanf(text, "%d-%d-%d", &yy, &mm, &dd);
+    
+    tm.tm_year = yy - 1900;
+    tm.tm_mon = mm - 1;
+    tm.tm_mday = dd;
+    
+    if (mktime(&tm) == -1) {
+      result[0] = '\0';
+    } else {
+      strftime(result, 11, "%Y-%m-%d", &tm);
+    }
 
-  if (mktime(&tm) == -1) {
-    result[0] = '\0';
-  } else {
-    strftime(result, 11, "%Y-%m-%d", &tm);
+    gtk_entry_set_text(entry, result);
   }
 
-  gtk_entry_set_text(entry, result);
 }
 
 void entry_format_time_on_focus_out(GtkEntry *entry, char separator)
 {
-  char result[BUF_TIME];
-  format_time(gtk_entry_get_text(entry), result, separator);
-  m_to_strtime(daywrap_minutes(strtime_to_m(result)), result, BUF_TIME, separator);
-  gtk_entry_set_text(entry, result);
+  const char *txt;
+
+  txt = gtk_entry_get_text(entry);
+  if (txt && strlen(txt)) { 
+    char result[BUF_TIME];
+    format_time(txt, result, separator);
+    m_to_strtime(daywrap_minutes(strtime_to_m(result)), result, BUF_TIME, separator);
+    gtk_entry_set_text(entry, result);
+  }
 }
 
 void entry_format_time_on_focus_in(GtkEntry *entry)
@@ -63,11 +99,12 @@ void entry_format_time_on_focus_in(GtkEntry *entry)
   #undef __strmax
 }
 
+/* Changed is an alias to either start, end, or elapsed. */
 void reconcile_time_entries(GtkEntry *changed, GtkEntry *start, GtkEntry *end, GtkEntry *elapsed)
 {
   const char *tstart, *tend, *telapsed;
   GtkEntry *tochange = NULL;
-  int m = 0, hh, mm;
+  long m = 0, hh, mm;
   char result[30];
 
   tstart = gtk_entry_get_text(start);
@@ -106,7 +143,7 @@ void reconcile_time_entries(GtkEntry *changed, GtkEntry *start, GtkEntry *end, G
     hh = m / 60;
     mm = m - (hh * 60);
     
-    snprintf(result, 30, (tochange == elapsed) ? "%d+%02d" : "%02d:%02d", hh, mm);
+    snprintf(result, 30, (tochange == elapsed) ? "%ld+%02ld" : "%02ld:%02ld", hh, mm);
     gtk_entry_set_text(tochange, result);
   }
 
@@ -123,8 +160,11 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
     *dep=NULL,
     *arr=NULL,
     *date=NULL,
+    *dateutc=NULL,
     *aout=NULL,
+    *aoututc=NULL,
     *ain=NULL,
+    *ainutc=NULL,
     *dur=NULL,
     *night=NULL,
     *inst=NULL,
@@ -132,7 +172,9 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
     *aprch=NULL,
     *fltno=NULL,
     *sout=NULL,
+    *soututc=NULL,
     *sin=NULL,
+    *sinutc=NULL,
     *sdur=NULL,
     *trip=NULL,
     *crew=NULL,
@@ -148,12 +190,15 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
     gtk_tree_model_get(model, &iter,
 		       FLIGHTS_COL_ID, &id,
 		       FLIGHTS_COL_DATE, &date,
+		       FLIGHTS_COL_DATE, &dateutc,
 		       FLIGHTS_COL_AIRCRAFT, &aircraft,
 		       FLIGHTS_COL_ROLE, &role,
 		       FLIGHTS_COL_DEP, &dep,
 		       FLIGHTS_COL_ARR, &arr,
 		       FLIGHTS_COL_AOUT, &aout,
+		       FLIGHTS_COL_AOUTUTC, &aoututc,
 		       FLIGHTS_COL_AIN, &ain,
+		       FLIGHTS_COL_AINUTC, &ainutc,
 		       FLIGHTS_COL_DUR, &dur,
 		       FLIGHTS_COL_NIGHT, &night,
 		       FLIGHTS_COL_INST, &inst,
@@ -167,7 +212,9 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
 		       FLIGHTS_COL_NOTES, &notes,
 		       FLIGHTS_COL_FLTNO, &fltno,
 		       FLIGHTS_COL_SOUT, &sout,
+		       FLIGHTS_COL_SOUTUTC, &soututc,
 		       FLIGHTS_COL_SIN, &sin,
+		       FLIGHTS_COL_SINUTC, &sinutc,
 		       FLIGHTS_COL_SDUR, &sdur,
 		       FLIGHTS_COL_TRIP, &trip,
 		       -1);
@@ -175,13 +222,10 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
     sscanf(EMPTY_IF_NULL(nland), "%d", &_nland);
   }
 
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_aircraft), EMPTY_IF_NULL(aircraft));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_role), EMPTY_IF_NULL(role));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_dep), EMPTY_IF_NULL(dep));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_arr), EMPTY_IF_NULL(arr));
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aout));
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ain));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_dur), EMPTY_IF_NULL(dur));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_night), EMPTY_IF_NULL(night));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_inst), EMPTY_IF_NULL(inst));
@@ -195,19 +239,34 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
   text_view_set_text(GTK_TEXT_VIEW(logb->flights_crew), EMPTY_IF_NULL(crew));
   text_view_set_text(GTK_TEXT_VIEW(logb->flights_notes), EMPTY_IF_NULL(notes));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_fltno), EMPTY_IF_NULL(fltno));
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sin));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_sdur), EMPTY_IF_NULL(sdur));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_utc))) {
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(dateutc));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aoututc));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ainutc));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(soututc));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sinutc));
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aout));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ain));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sin));
+  }
       
   g_free(id);
   g_free(date);
+  g_free(dateutc);
   g_free(aircraft);
   g_free(role);
   g_free(dep);
   g_free(arr);
   g_free(aout);
+  g_free(aoututc);
   g_free(ain);
+  g_free(ainutc);
   g_free(dur);
   g_free(night);
   g_free(inst);
@@ -221,7 +280,9 @@ static void flights_load_entries_from_selection(Sqlpilot *logb)
   g_free(notes);
   g_free(fltno);
   g_free(sout);
+  g_free(soututc);
   g_free(sin);
+  g_free(sinutc);
   g_free(sdur);
   g_free(trip);
 }
@@ -248,25 +309,31 @@ static void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
     *sdur,
     *trip;
   gchar *crew, *notes;
+  char				/* For other timezone strings, local if flights_utc and vice versa */
+    _date[BUF_DATE],
+    _aout[BUF_TIME],
+    _ain[BUF_TIME],
+    _sout[BUF_TIME],
+    _sin[BUF_TIME],
+    deptz[BUF_TZ],
+    arrtz[BUF_TZ];
   gint dland, nland;
   gboolean xc, hold;
   DBStatement *stmt;
+  gboolean utc;
+
+  utc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc));
 
   aircraft = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aircraft));
   role     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_role));
   dep      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
   arr      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
-  date     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
-  aout     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aout));
-  ain      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_ain));
   dur      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dur));
   night    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_night));
   inst     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_inst));
   siminst  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_siminst));
   aprch    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aprch));
   fltno    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_fltno));
-  sout     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sout));
-  sin      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sin));
   sdur     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sdur));
   trip     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_trip));
   dland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_dland));
@@ -275,7 +342,28 @@ static void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   xc       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_xc));
   crew     = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_crew));
   notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_notes));
-  
+  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  aout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aout));
+  ain  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_ain));
+  sout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sout));
+  sin  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sin));
+
+
+  tz_of_airport_ident(sqlpilot->db, dep, deptz, sizeof(deptz));
+  tz_of_airport_ident(sqlpilot->db, arr, arrtz, sizeof(arrtz));  
+  if (utc) {
+    move_time("UTC", arrtz, date, ain, _date, _ain);
+    move_time("UTC", deptz, date, sout, _date, _sout);
+    move_time("UTC", arrtz, date, sin, _date, _sin);
+    /* Note: aout computed last because date represents actual out time, _date is modified */
+    move_time("UTC", deptz, date, aout, _date, _aout);
+  } else {
+    move_time(arrtz, "UTC", date, ain, _date, _ain);
+    move_time(deptz, "UTC", date, sout, _date, _sout);
+    move_time(arrtz, "UTC", date, sin, _date, _sin);
+    move_time(deptz, "UTC", date, aout, _date, _aout);
+  }
+
   /* Write entries to database */
   if (id) {
     stmt = sqlpilot->flights_update;
@@ -287,9 +375,6 @@ static void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", role);
   bind_id_of(stmt, FLIGHTS_WRITE_DEP , "airports", "ident", dep);
   bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "ident", arr);
-  db_bind_text(stmt, FLIGHTS_WRITE_DATE, date);
-  db_bind_text(stmt, FLIGHTS_WRITE_AOUT, aout);
-  db_bind_text(stmt, FLIGHTS_WRITE_AIN, ain);
   db_bind_text(stmt, FLIGHTS_WRITE_DUR, dur);
   db_bind_text(stmt, FLIGHTS_WRITE_NIGHT, night);
   db_bind_text(stmt, FLIGHTS_WRITE_INST, inst);
@@ -302,10 +387,19 @@ static void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   db_bind_text(stmt, FLIGHTS_WRITE_CREW, crew);
   db_bind_text(stmt, FLIGHTS_WRITE_NOTES, notes);
   db_bind_text(stmt, FLIGHTS_WRITE_FLTNO, fltno);
-  db_bind_text(stmt, FLIGHTS_WRITE_SOUT, sout);
-  db_bind_text(stmt, FLIGHTS_WRITE_SIN, sin);
   db_bind_text(stmt, FLIGHTS_WRITE_SDUR, sdur);
   db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);  
+
+  db_bind_text(stmt, FLIGHTS_WRITE_DATE, utc ? _date : date);
+  db_bind_text(stmt, FLIGHTS_WRITE_AOUT, utc ? _aout : aout);
+  db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain);
+  db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout);
+  db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin);
+  db_bind_text(stmt, FLIGHTS_WRITE_DATEUTC, utc ? date : _date);
+  db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout);
+  db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain);
+  db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout);
+  db_bind_text(stmt, FLIGHTS_WRITE_SINUTC,  utc ? sin  : _sin);
 
   db_step(stmt);
   db_reset(stmt);
@@ -429,17 +523,49 @@ void on_flights_aircraft_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   text = gtk_entry_get_text(entry);
   entry_clamp_aircraft_ident(entry);
 }
+
 void on_flights_dep_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   const gchar *text;
   text = gtk_entry_get_text(entry);
   entry_clamp_airports_ident(entry);
 }
+
+int on_flights_dep_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_sout),
+			   GTK_ENTRY(sqlpilot->flights_sout),
+			   GTK_ENTRY(sqlpilot->flights_sin),
+			   GTK_ENTRY(sqlpilot->flights_sdur));
+    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_aout),
+			   GTK_ENTRY(sqlpilot->flights_aout),
+			   GTK_ENTRY(sqlpilot->flights_ain),
+			   GTK_ENTRY(sqlpilot->flights_dur));
+  }
+  return FALSE;
+}
+
 void on_flights_arr_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   const gchar *text;
   text = gtk_entry_get_text(entry);
   entry_clamp_airports_ident(entry);
+}
+
+int on_flights_arr_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_sin),
+			   GTK_ENTRY(sqlpilot->flights_sout),
+			   GTK_ENTRY(sqlpilot->flights_sin),
+			   GTK_ENTRY(sqlpilot->flights_sdur));
+    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_ain),
+			   GTK_ENTRY(sqlpilot->flights_aout),
+			   GTK_ENTRY(sqlpilot->flights_ain),
+			   GTK_ENTRY(sqlpilot->flights_dur));
+  }
+  return FALSE;
 }
 
 int on_flights_sout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
@@ -608,4 +734,54 @@ void on_flights_night_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 {
   flights_load_entries_from_selection(logb);
+}
+
+void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
+{
+  char deptz[BUF_TZ], arrtz[BUF_TZ];
+  const char *dep, *arr, *date, *aout, *ain, *sout, *sin;
+  char strdate[BUF_DATE], strtime[BUF_TIME];
+
+  dep  = gtk_entry_get_text(GTK_ENTRY(logb->flights_dep));
+  arr  = gtk_entry_get_text(GTK_ENTRY(logb->flights_arr));
+  date = gtk_entry_get_text(GTK_ENTRY(logb->flights_date));
+  aout = gtk_entry_get_text(GTK_ENTRY(logb->flights_aout));
+  ain  = gtk_entry_get_text(GTK_ENTRY(logb->flights_ain));
+  sout = gtk_entry_get_text(GTK_ENTRY(logb->flights_sout));
+  sin  = gtk_entry_get_text(GTK_ENTRY(logb->flights_sin));
+
+  tz_of_airport_ident(logb->db, dep, deptz, sizeof(deptz));
+  tz_of_airport_ident(logb->db, arr, arrtz, sizeof(arrtz));
+
+  if (gtk_toggle_button_get_active(button)) { /* If switch to UTC */
+    move_time(deptz, "UTC", date, aout, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
+
+    move_time(arrtz, "UTC", date, ain, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
+
+    move_time(deptz, "UTC", date, sout, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
+
+    move_time(arrtz, "UTC", date, sin, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
+  } else {			/* else switch to airport local */
+    move_time("UTC", deptz, date, aout, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
+
+    move_time("UTC", arrtz, date, ain, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
+
+    move_time("UTC", deptz, date, sout, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
+
+    move_time("UTC", arrtz, date, sin, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
+  }
+
+  gtk_label_set_text(GTK_LABEL(logb->flights_utc_lbl),
+		     gtk_toggle_button_get_active(button) ? "UTC" : "Local");
+      
 }

@@ -84,6 +84,11 @@ void on_aircraft_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   entry_clamp_aircraft_ident(entry);
 }
 
+void on_aircraft_type_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+{
+  entry_clamp_types_ident(entry);
+}
+
 void on_aircraft_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
   DBStatement *stmt;

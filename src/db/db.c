@@ -72,7 +72,8 @@ static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
     b = strcmp("", str) && strcmp("0", str) && strcmp("F", str) && strcmp("f", str);
     break;
   }
-  sqlite3_result_text(context, b ? "T" : "F", -1, SQLITE_STATIC);
+  if (b) { sqlite3_result_text(context, "X", -1, SQLITE_STATIC); }
+  //sqlite3_result_text(context, b ? "T" : "F", -1, SQLITE_STATIC);
 }
 
 DB* db_open(const char* filename)
