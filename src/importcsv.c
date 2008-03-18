@@ -112,32 +112,32 @@ time_t incsv_mktime(DB *db, const char *airport, InCSVTimebase timebase, struct 
 /* Typical logbook has a departure date but no arrival date */
 /* This makes computing elapsed time sort of crazy considering DST */
 /* and timezones. */
-long elapsed_seconds(const char *d1, const char *t1, const char *tz1, const char *t2, const char *tz2)
-{
-  struct tm t1_tm, t2_tm;
-  time_t t1_t, t2_t;
-  long seconds;
+/* long elapsed_seconds(const char *d1, const char *t1, const char *tz1, const char *t2, const char *tz2) */
+/* { */
+/*   struct tm t1_tm, t2_tm; */
+/*   time_t t1_t, t2_t; */
+/*   long seconds; */
 
-  tm_read_strdate(&t1_tm, d1);
-  tm_read_strtime(&t1_tm, t1);
-  t1_t = tmtz_mktime(&t1_tm, tz1);
+/*   tm_read_strdate(&t1_tm, d1); */
+/*   tm_read_strtime(&t1_tm, t1); */
+/*   t1_t = tmtz_mktime(&t1_tm, tz1); */
 
-  tm_read_strdate(&t2_tm, d1);	/* Guess that t2 falls on d1 */
-  tm_read_strtime(&t2_tm, t2);
-  t2_t = tmtz_mktime(&t2_tm, tz2);
+/*   tm_read_strdate(&t2_tm, d1);	/\* Guess that t2 falls on d1 *\/ */
+/*   tm_read_strtime(&t2_tm, t2); */
+/*   t2_t = tmtz_mktime(&t2_tm, tz2); */
 
-  seconds = t2_t - t1_t;
-  if (seconds < 0) {		/* correct our assumption about t2 and d1 by assuming flights 0...22 hrs */
-    t2_tm.tm_mday += 1;
-    t2_t = tmtz_mktime(&t2_tm, tz2);
-  } else if (seconds > 22 * 3600) {
-    t2_tm.tm_mday -= 1;
-    t2_t = tmtz_mktime(&t2_tm, tz2);
-  }
+/*   seconds = t2_t - t1_t; */
+/*   if (seconds < 0) {		/\* correct our assumption about t2 and d1 by assuming flights 0...22 hrs *\/ */
+/*     t2_tm.tm_mday += 1; */
+/*     t2_t = tmtz_mktime(&t2_tm, tz2); */
+/*   } else if (seconds > 22 * 3600) { */
+/*     t2_tm.tm_mday -= 1; */
+/*     t2_t = tmtz_mktime(&t2_tm, tz2); */
+/*   } */
 
-  seconds = t2_t - t1_t;
-  return seconds;
-}
+/*   seconds = t2_t - t1_t; */
+/*   return seconds; */
+/* } */
   
 
 void incsv_import(InCSV *incsv, DB *db)

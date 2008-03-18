@@ -36,6 +36,7 @@ void m_to_strtime(int m, char *str, int nstr, char sep);
 void tm_read_strdate(struct tm *tm, const char *str);
 void tm_read_strtime(struct tm *tm, const char *str);
 time_t tmtz_mktime(struct tm *tm, const char *tz);
+time_t dtz_mktime(const char *date, const char *time, const char *tz);
 int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize);
 struct tm *localtime_tz(const time_t *timep, const char *tz, struct tm *retrn);
 int row_exists(DB *db, const char *table, const char *column, const char *value);

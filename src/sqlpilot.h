@@ -74,7 +74,7 @@ enum {
 #define FLIGHTS_SELECT					\
   "select flights.id as _id"				\
   ", flights.date as Date"				\
-  ", flights.DateUTC as U_Date"				\
+  ", flights.DateUTC as DateUTC"			\
   ", a.ident as Aircraft"				\
   ", r.ident as Role"					\
   ", dep.ident as Dep"					\
@@ -96,7 +96,7 @@ enum {
   ", flights.notes as _Notes"				\
   ", flights.fltno as FltNo"				\
   ", flights.sout as SOut"				\
-  ", flights.SOutUTC as SOutUTC"				\
+  ", flights.SOutUTC as SOutUTC"			\
   ", flights.sin as SIn"				\
   ", flights.SInUTC as SInUTC"				\
   ", m_to_hhmm(flights.sdur) as SDur"			\

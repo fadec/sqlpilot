@@ -71,7 +71,7 @@ void entry_format_time_on_focus_out(GtkEntry *entry, char separator)
   if (txt && strlen(txt)) { 
     char result[BUF_TIME];
     format_time(txt, result, separator);
-    m_to_strtime(daywrap_minutes(strtime_to_m(result)), result, BUF_TIME, separator);
+    if (separator == ':') m_to_strtime(daywrap_minutes(strtime_to_m(result)), result, BUF_TIME, separator);
     gtk_entry_set_text(entry, result);
   }
 }
@@ -99,51 +99,75 @@ void entry_format_time_on_focus_in(GtkEntry *entry)
   #undef __strmax
 }
 
-/* Changed is an alias to either start, end, or elapsed. */
-void reconcile_time_entries(GtkEntry *changed, GtkEntry *start, GtkEntry *end, GtkEntry *elapsed)
+long elapsed_seconds(const char *date, const char *t1, const char *tz1, const char *t2, const char *tz2)
 {
-  const char *tstart, *tend, *telapsed;
+  /* this will not correctly compute across a DST change */
+  return dtz_mktime(date, t2, tz2) - dtz_mktime(date, t1, tz1);
+}
+
+/* Changed is an alias to either start, end, or elapsed. */
+void reconcile_time_entries(Sqlpilot *logb,
+			    GtkEntry *changed,
+			    GtkEntry *start,
+			    GtkEntry *end,
+			    GtkEntry *elapsed)
+{
+  const char *tstart, *tend, *telapsed, *tdate, *tdep, *tarr;
   GtkEntry *tochange = NULL;
   long m = 0, hh, mm;
+  time_t t;
+  struct tm tm;
+  char deptz[BUF_TZ] = "UTC", arrtz[BUF_TZ] = "UTC";
   char result[30];
 
   tstart = gtk_entry_get_text(start);
   tend = gtk_entry_get_text(end);
   telapsed = gtk_entry_get_text(elapsed);
 
+  tdate = gtk_entry_get_text(GTK_ENTRY(logb->flights_date));
+  tdep = gtk_entry_get_text(GTK_ENTRY(logb->flights_dep));
+  tarr = gtk_entry_get_text(GTK_ENTRY(logb->flights_arr));
+
+  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_utc))) {
+    tz_of_airport_ident(logb->db, tdep, deptz, BUF_TZ);
+    tz_of_airport_ident(logb->db, tarr, arrtz, BUF_TZ);
+  }
+
   if (changed == start && strlen(tstart)) {
     if (strlen(tend)) {
-      m = strtime_to_m(tend) - strtime_to_m(tstart);
+      m = elapsed_seconds(tdate, tstart, deptz, tend, arrtz) / 60;
       tochange = elapsed;
     } else if (strlen(telapsed)) {
-      m = strtime_to_m(tstart) + strtime_to_m(telapsed);
+      t = dtz_mktime(tdate, tstart, deptz) + strtime_to_m(telapsed) * 60;
       tochange = end;
     }
   } else if (changed == end && strlen(tend)) {
     if (strlen(tstart)) {
-      m = strtime_to_m(tend) - strtime_to_m(tstart);
+      m = elapsed_seconds(tdate, tstart, deptz, tend, arrtz) / 60;
       tochange = elapsed;
     } else if (strlen(telapsed)) {
-      m = strtime_to_m(tend) - strtime_to_m(telapsed);
+      t = dtz_mktime(tdate, tend, arrtz) - strtime_to_m(telapsed) * 60;
       tochange = start;
     }
   } else if (changed == elapsed && strlen(telapsed)) {
     if (strlen(tstart)) {
-      m = strtime_to_m(tstart) + strtime_to_m(telapsed);
+      t = dtz_mktime(tdate, tstart, deptz) + strtime_to_m(telapsed) * 60;
       tochange = end;
     } else if (strlen(tend)) {
-      m = strtime_to_m(tend) - strtime_to_m(telapsed);
+      t = dtz_mktime(tdate, tend, arrtz) - strtime_to_m(telapsed) * 60;
       tochange = start;
     }
   }
 
   if (tochange) {
-    m = daywrap_minutes(m);
-
-    hh = m / 60;
-    mm = m - (hh * 60);
-    
-    snprintf(result, 30, (tochange == elapsed) ? "%ld+%02ld" : "%02ld:%02ld", hh, mm);
+    if (tochange == elapsed) {
+      hh = m / 60;
+      mm = m - (hh * 60);
+      snprintf(result, sizeof(result), "%ld+%02ld", hh, mm);
+    } else {
+      localtime_tz(&t, ((tochange == start) ? deptz : arrtz), &tm);
+      strftime(result, sizeof(result), "%H:%M", &tm);
+    }
     gtk_entry_set_text(tochange, result);
   }
 
@@ -534,11 +558,13 @@ void on_flights_dep_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 int on_flights_dep_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
-    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_sout),
+    reconcile_time_entries(sqlpilot,
+			   GTK_ENTRY(sqlpilot->flights_sout),
 			   GTK_ENTRY(sqlpilot->flights_sout),
 			   GTK_ENTRY(sqlpilot->flights_sin),
 			   GTK_ENTRY(sqlpilot->flights_sdur));
-    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_aout),
+    reconcile_time_entries(sqlpilot,
+			   GTK_ENTRY(sqlpilot->flights_aout),
 			   GTK_ENTRY(sqlpilot->flights_aout),
 			   GTK_ENTRY(sqlpilot->flights_ain),
 			   GTK_ENTRY(sqlpilot->flights_dur));
@@ -556,11 +582,13 @@ void on_flights_arr_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 int on_flights_arr_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
-    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_sin),
+    reconcile_time_entries(sqlpilot,
+			   GTK_ENTRY(sqlpilot->flights_sin),
 			   GTK_ENTRY(sqlpilot->flights_sout),
 			   GTK_ENTRY(sqlpilot->flights_sin),
 			   GTK_ENTRY(sqlpilot->flights_sdur));
-    reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_ain),
+    reconcile_time_entries(sqlpilot,
+			   GTK_ENTRY(sqlpilot->flights_ain),
 			   GTK_ENTRY(sqlpilot->flights_aout),
 			   GTK_ENTRY(sqlpilot->flights_ain),
 			   GTK_ENTRY(sqlpilot->flights_dur));
@@ -576,7 +604,8 @@ int on_flights_sout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 int on_flights_sout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   entry_format_time_on_focus_out(entry, ':');
-  reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_sout),
+  reconcile_time_entries(sqlpilot,
+			 GTK_ENTRY(sqlpilot->flights_sout),
 			 GTK_ENTRY(sqlpilot->flights_sout),
 			 GTK_ENTRY(sqlpilot->flights_sin),
 			 GTK_ENTRY(sqlpilot->flights_sdur));
@@ -595,7 +624,8 @@ int on_flights_sin_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilo
 int on_flights_sin_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   entry_format_time_on_focus_out(entry, ':');
-  reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_sin),
+  reconcile_time_entries(sqlpilot,
+			 GTK_ENTRY(sqlpilot->flights_sin),
 			 GTK_ENTRY(sqlpilot->flights_sout),
 			 GTK_ENTRY(sqlpilot->flights_sin),
 			 GTK_ENTRY(sqlpilot->flights_sdur));
@@ -614,7 +644,8 @@ int on_flights_sdur_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 int on_flights_sdur_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   entry_format_time_on_focus_out(entry, '+');
-  reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_sdur),
+  reconcile_time_entries(sqlpilot,
+			 GTK_ENTRY(sqlpilot->flights_sdur),
 			 GTK_ENTRY(sqlpilot->flights_sout),
 			 GTK_ENTRY(sqlpilot->flights_sin),
 			 GTK_ENTRY(sqlpilot->flights_sdur));
@@ -636,7 +667,8 @@ int on_flights_aout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 int on_flights_aout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   entry_format_time_on_focus_out(entry, ':');
-  reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_aout),
+  reconcile_time_entries(sqlpilot,
+			 GTK_ENTRY(sqlpilot->flights_aout),
 			 GTK_ENTRY(sqlpilot->flights_aout),
 			 GTK_ENTRY(sqlpilot->flights_ain),
 			 GTK_ENTRY(sqlpilot->flights_dur));
@@ -656,7 +688,8 @@ int on_flights_ain_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilo
 int on_flights_ain_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   entry_format_time_on_focus_out(entry, ':');
-  reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_ain),
+  reconcile_time_entries(sqlpilot,
+			 GTK_ENTRY(sqlpilot->flights_ain),
 			 GTK_ENTRY(sqlpilot->flights_aout),
 			 GTK_ENTRY(sqlpilot->flights_ain),
 			 GTK_ENTRY(sqlpilot->flights_dur));
@@ -675,7 +708,8 @@ int on_flights_dur_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilo
 int on_flights_dur_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
   entry_format_time_on_focus_out(entry, '+');
-  reconcile_time_entries(GTK_ENTRY(sqlpilot->flights_dur),
+  reconcile_time_entries(sqlpilot,
+			 GTK_ENTRY(sqlpilot->flights_dur),
 			 GTK_ENTRY(sqlpilot->flights_aout),
 			 GTK_ENTRY(sqlpilot->flights_ain),
 			 GTK_ENTRY(sqlpilot->flights_dur));
