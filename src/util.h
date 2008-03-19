@@ -22,7 +22,8 @@ void text_view_set_text(GtkTextView *, const char *);
 int is_ident_char(char);
 int is_time_char(char);
 
-int daywrap_minutes(int);
+long daywrap(long);
+long daywrap_minutes(long);
 
 void entry_clamp_text(GtkEntry *entry, int length, int setcase, int allowed(char));
 

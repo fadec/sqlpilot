@@ -24,15 +24,28 @@ void test_parsetime(void)
 {
   assert(parsetime("1+02", 2) == 62);
   assert(parsetime("1+02+05", 2) == 62);
-  printf("%d\n", parsetime("1+02", 2));
+}
+
+void test_daywrap(void)
+{
+  assert(daywrap(24 * 3600) == 0);
+  assert(daywrap(24 * 3600 + 1) == 1);
+  assert(daywrap(-1) == (24 * 3600 - 1));
+}
+
+void test_daywrap_minutes(void)
+{
+  assert(daywrap_minutes(-1) == (24 * 60 - 1));
 }
 
 int main(int argc, char **argv)
 {
-	test_init();
-	test(test_parseB60);
-       	test(test_parsetime);
-	test_finalize();
-	return 0;
+  test_init();
+  test(test_parseB60);
+  test(test_parsetime);
+  test(test_daywrap);
+  test(test_daywrap_minutes);
+  test_finalize();
+  return 0;
 }
 

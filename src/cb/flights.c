@@ -102,7 +102,7 @@ void entry_format_time_on_focus_in(GtkEntry *entry)
 long elapsed_seconds(const char *date, const char *t1, const char *tz1, const char *t2, const char *tz2)
 {
   /* this will not correctly compute across a DST change */
-  return dtz_mktime(date, t2, tz2) - dtz_mktime(date, t1, tz1);
+  return daywrap(dtz_mktime(date, t2, tz2) - dtz_mktime(date, t1, tz1));
 }
 
 /* Changed is an alias to either start, end, or elapsed. */

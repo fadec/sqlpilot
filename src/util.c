@@ -241,8 +241,14 @@ void reconcile_time(ReconcileTime rc, struct tm *t1, const char *tz1, struct tm 
   }
 }
 
+long daywrap(long m)
+{
+  if (m < 0 || m >= 24 * 3600) m %= (24 * 3600);
+  if (m < 0) m += (24 * 3600);
+  return m;
+}
 /* daywrap_minutes(25 * 60) = 1 * 60, daywrap_minutes(-1 * 60) = 23 * 60 */
-int daywrap_minutes(int m)
+long daywrap_minutes(long m)
 {
   // Is this the only way to do an always positive machine independent modulus?
   if (m < 0 || m >= 24 * 60) m %= (24 * 60);
@@ -400,7 +406,7 @@ int parsetime(const char *ts, int b60numerals)
     }
   }
 
-  printf("%s\n", s);
+  //printf("%s\n", s);
 
   return parseB60(s);
 }
