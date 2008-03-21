@@ -8,6 +8,7 @@
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "db/db.h"
 #include "util.h"
 #include "store.h"
@@ -56,11 +57,14 @@ enum {
   FLIGHTS_COL_SIMINST,
   FLIGHTS_COL_HOLD,
   FLIGHTS_COL_APRCH,
+  FLIGHTS_COL_APRCHN,
   FLIGHTS_COL_XC,
   FLIGHTS_COL_DLAND,
   FLIGHTS_COL_NLAND,
   FLIGHTS_COL_CREW,
+  FLIGHTS_COL_CREWN,
   FLIGHTS_COL_NOTES,
+  FLIGHTS_COL_NOTESN,
   FLIGHTS_COL_FLTNO,
   FLIGHTS_COL_SOUT,
   FLIGHTS_COL_SOUTUTC,
@@ -71,40 +75,45 @@ enum {
   FLIGHTS_NUMCOL
 };
 
-#define FLIGHTS_SELECT					\
-  "select flights.id as _id"				\
-  ", flights.date as Date"				\
-  ", flights.DateUTC as DateUTC"			\
-  ", a.ident as Aircraft"				\
-  ", r.ident as Role"					\
-  ", dep.ident as Dep"					\
-  ", arr.ident as Arr"					\
-  ", flights.aout as AOut"				\
-  ", flights.AOutUTC as AOutUTC"			\
-  ", flights.ain as AIn"				\
-  ", flights.AInUTC as AInUTC"				\
-  ", m_to_hhmm(flights.dur) as Dur"			\
-  ", m_to_hhmm(flights.night) as Night"			\
-  ", m_to_hhmm(flights.inst) as Inst"			\
-  ", m_to_hhmm(flights.siminst) as SimInst"		\
-  ", bool(flights.hold) as Hold"			\
-  ", flights.aprch as Aprch"				\
-  ", bool(flights.xc) as XC"				\
-  ", flights.dland as DLand"				\
-  ", flights.nland as NLand"				\
-  ", flights.crew as _Crew"				\
-  ", flights.notes as _Notes"				\
-  ", flights.fltno as FltNo"				\
-  ", flights.sout as SOut"				\
-  ", flights.SOutUTC as SOutUTC"			\
-  ", flights.sin as SIn"				\
-  ", flights.SInUTC as SInUTC"				\
-  ", m_to_hhmm(flights.sdur) as SDur"			\
-  ", flights.trip as Trip"				\
-  " from flights"					\
-  " left join aircraft a on flights.aircraft_id = a.id"	\
-  " left join roles r on flights.role_id = r.id"	\
-  " left join airports dep on flights.dep_id = dep.id"	\
+/* All columns must be selected for use during update queries */
+/* Column names preceded with a _ are get hidden in the treeview */
+#define FLIGHTS_SELECT						\
+  "select flights.id as _id"					\
+  ", flights.date as Date"					\
+  ", flights.DateUTC as DateUTC"				\
+  ", a.ident as Aircraft"					\
+  ", r.ident as Role"						\
+  ", dep.ident as Dep"						\
+  ", arr.ident as Arr"						\
+  ", flights.aout as AOut"					\
+  ", flights.AOutUTC as AOutUTC"				\
+  ", flights.ain as AIn"					\
+  ", flights.AInUTC as AInUTC"					\
+  ", m_to_hhmm(flights.dur) as Dur"				\
+  ", m_to_hhmm(flights.night) as Night"				\
+  ", m_to_hhmm(flights.inst) as Inst"				\
+  ", m_to_hhmm(flights.siminst) as SimInst"			\
+  ", bool(flights.hold) as Hold"				\
+  ", flights.aprch as _Aprch"					\
+  ", linecount(flights.aprch) as Aprch"				\
+  ", bool(flights.xc) as XC"					\
+  ", flights.dland as DLand"					\
+  ", flights.nland as NLand"					\
+  ", flights.crew as _Crew"					\
+  ", linecount(flights.crew) as Crw"				\
+  ", flights.notes as _Notes"					\
+  ", linecount(flights.notes) as Nts"				\
+  ", flights.fltno as FltNo"					\
+  ", flights.sout as SOut"					\
+  ", flights.SOutUTC as SOutUTC"				\
+  ", flights.sin as SIn"					\
+  ", flights.SInUTC as SInUTC"					\
+  ", m_to_hhmm(flights.sdur) as SDur"				\
+  ", flights.trip as Trip"					\
+  " from flights"						\
+  " left join aircraft a on flights.aircraft_id = a.id"		\
+  " left join roles r on flights.role_id = r.id"		\
+  " left join airports dep on flights.dep_id = dep.id"		\
   " left join airports arr on flights.arr_id = arr.id"
 
 #define FLIGHTS_WHERE_ID \
@@ -222,6 +231,7 @@ enum {
   ROLES_COL_SOLO,
   ROLES_COL_DUAL,
   ROLES_COL_INSTRUCT,
+  ROLES_COL_TOTAL,
   ROLES_COL_FLIGHTS,
   ROLES_COL_TIME
 };
@@ -236,6 +246,7 @@ enum {
   ", bool(roles.solo) as Solo"					\
   ", bool(roles.dual) as Dual"					\
   ", bool(roles.instruct) as Instruct"				\
+  ", bool(roles.total) as Total"				\
   ", count(flights.id) as Flights"				\
   ", m_to_hhmm(sum(flights.dur)) as Time"			\
   " from roles"							\
@@ -256,14 +267,15 @@ enum {
   ROLES_WRITE_SOLO,
   ROLES_WRITE_DUAL,
   ROLES_WRITE_INSTRUCT,
+  ROLES_WRITE_TOTAL,
   ROLES_WRITE_ID
 };
 
 #define ROLES_INSERT \
-  "insert into roles (ident, name, pic, sic, fe, solo, dual, instruct) values (?, ?, ?, ?, ?, ?, ?, ?);"
+  "insert into roles (ident, name, pic, sic, fe, solo, dual, instruct, total) values (?, ?, ?, ?, ?, ?, ?, ?, ?);"
 
 #define ROLES_UPDATE \
-  "update roles set ident = ?, name = ?, pic = ?, sic = ?, fe = ?, solo = ?, dual = ?, instruct = ?" \
+  "update roles set ident = ?, name = ?, pic = ?, sic = ?, fe = ?, solo = ?, dual = ?, instruct = ?, total = ?" \
   " where id = ?;"
 
 #define ROLES_DELETE \
@@ -515,45 +527,83 @@ enum {
   AIRPORTS_COL_ICAO,
   AIRPORTS_COL_NAME,
   AIRPORTS_COL_TZONE,
+  AIRPORTS_COL_LAT,
+  AIRPORTS_COL_LON,
+  AIRPORTS_COL_ELEV,
+  AIRPORTS_COL_CITY,
+  AIRPORTS_COL_PROVINCE,
+  AIRPORTS_COL_COUNTRY,
   AIRPORTS_COL_NOTES,
   AIRPORTS_COL_DEP,
   AIRPORTS_COL_ARR
 };
 
-#define AIRPORTS_SELECT						\
-  "select airports.id as _id"					\
-  ", airports.ident as Ident"					\
-  ", airports.icao as ICAO"					\
-  ", airports.name as Name"					\
-  ", airports.tzone as TZone"					\
-  ", airports.notes as _Notes"					\
-  ", count(distinct(fdep.id)) as Dep"				\
-  ", count(distinct(farr.id)) as Arr"				\
-  " from airports"						\
-  " left join flights fdep on fdep.dep_id = airports.id"	\
-  " left join flights farr on farr.arr_id = airports.id"
+#define AIRPORTS_SELECT					\
+  "select a._id as _id"					\
+  ", a.ident as Ident"					\
+  ", a.icao as ICAO"					\
+  ", a.name as Name"					\
+  ", a.tzone as TZone"					\
+  ", a.lat as Lat"					\
+  ", a.lon as Lon"					\
+  ", a.elev as Elev"					\
+  ", a.city as City"					\
+  ", a.province as Province"				\
+  ", a.country as Country"				\
+  ", a._notes as _Notes"				\
+  " from MyAirports a"					\
 
 #define AIRPORTS_GROUP_BY \
-  " group by airports.id order by airports.ident"
+  " group by a._id order by a.ident"
 
 #define AIRPORTS_WHERE_ID \
-  " where airports.id = ?"
+  " where a._id = ?"
 
 enum {
   AIRPORTS_WRITE_IDENT = 1,
   AIRPORTS_WRITE_ICAO,
   AIRPORTS_WRITE_NAME,
+  AIRPORTS_WRITE_CITY,
+  AIRPORTS_WRITE_PROVINCE,
+  AIRPORTS_WRITE_COUNTRY,
+  AIRPORTS_WRITE_LAT,
+  AIRPORTS_WRITE_LON,
+  AIRPORTS_WRITE_ELEV,
   AIRPORTS_WRITE_TZONE,
   AIRPORTS_WRITE_NOTES,
   AIRPORTS_WRITE_ID
 };
 
 
-#define AIRPORTS_INSERT \
-  "insert into airports (ident, icao, name, tzone, notes) values (?, ?, ?, ?, ?);"
+#define AIRPORTS_INSERT				\
+  "insert into airports "			\
+  "( ident"					\
+  ", icao"					\
+  ", name"					\
+  ", city"					\
+  ", province"					\
+  ", country"					\
+  ", lat"					\
+  ", lon"					\
+  ", elev"					\
+  ", tzone"					\
+  ", notes"					\
+  ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
 
-#define AIRPORTS_UPDATE \
-  "update airports set ident = ?, icao = ?, name = ?, tzone = ?, notes = ? where id = ?;"
+#define AIRPORTS_UPDATE				\
+  "update airports set"				\
+  "  ident = ?"					\
+  ", icao = ?"					\
+  ", name = ?"					\
+  ", city = ?"					\
+  ", province = ?"				\
+  ", country = ?"				\
+  ", lat = ?"					\
+  ", lon = ?"					\
+  ", elev = ?"					\
+  ", tzone = ?"					\
+  ", notes = ?"					\
+  " where id = ?;"
 
 #define AIRPORTS_DELETE \
   "delete from airports where id = ?;"
@@ -564,7 +614,7 @@ struct Sqlpilot {
   DB *db;
   GtkWidget *window;
 
-  int flights_stale;		/* Model contains stale data as a result of updates to db elsewhere ... the model for the view is stale, not the db */
+  int flights_stale;		/* Treemodel contains stale data as a result of updates to db elsewhere ... the model for the view is stale; it has nothing to do with the db */
   int flights_modified;		/* Entries have been modified but not committed to db */
   DBStatement *flights_select_all; /* Select for tree model */
   DBStatement *flights_select_by_id; /* Select for update a single treemodel row */
@@ -619,7 +669,8 @@ struct Sqlpilot {
   GtkWidget *roles_fe;
   GtkWidget *roles_solo;
   GtkWidget *roles_dual;
-  GtkWidget *roles_instruct;  
+  GtkWidget *roles_instruct;
+  GtkWidget *roles_total;
 
   int aircraft_stale;
   int aircraft_modified;
@@ -694,11 +745,17 @@ struct Sqlpilot {
   GtkWidget *airports_ident;
   GtkWidget *airports_icao;
   GtkWidget *airports_name;
+  GtkWidget *airports_city;
+  GtkWidget *airports_province;
+  GtkWidget *airports_country;
+  GtkWidget *airports_elev;
+  GtkWidget *airports_lat;
+  GtkWidget *airports_lon;
   GtkWidget *airports_tzone;
   GtkWidget *airports_notes;
 };
 
-Sqlpilot *sqlpilot_new(void);
+Sqlpilot *sqlpilot_new(const char *filename);
 void sqlpilot_finalize(Sqlpilot *);
 
 void barf(const char *message);

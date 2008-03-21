@@ -5,6 +5,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <glib.h>
+#include <ctype.h>
 
 
 /* Takes a numeric column representing minutes and converts it to a hh+mm string. */
@@ -76,6 +77,36 @@ static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
   //sqlite3_result_text(context, b ? "T" : "F", -1, SQLITE_STATIC);
 }
 
+/* Counts number of non-empty lines */
+static void linecount_func(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+  int n, isempty;
+  char *str;
+
+  switch (sqlite3_value_type(argv[0])) {
+  case SQLITE_NULL:
+    break;
+  case SQLITE_FLOAT:
+    break;
+  case SQLITE_INTEGER:
+    break;
+  case SQLITE_BLOB:
+  case SQLITE_TEXT:
+    for (str = (char *)sqlite3_value_text(argv[0]), n = 0, isempty = 1; *str; str++) {
+      if (isempty && !isspace(*str)) {
+	n++;
+	isempty = 0;
+      } 
+      if (*str == '\n') {
+	isempty = 1;
+      }
+    }
+    sqlite3_result_int(context, n);
+    break;
+  }
+}
+
+
 DB* db_open(const char* filename)
 {
 	DB* db;
@@ -92,6 +123,7 @@ DB* db_open(const char* filename)
 	sqlite3_create_function(db, "m_to_hhmm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
 	sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
 	sqlite3_create_function(db, "bool", 1, SQLITE_ANY, 0, bool_func, 0, 0);
+	sqlite3_create_function(db, "linecount", 1, SQLITE_ANY, 0, linecount_func, 0, 0);
 	return db;
 }
 

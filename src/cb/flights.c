@@ -24,6 +24,10 @@ void move_time(const char *fromtz, const char *totz, const char *strdate, const 
     localtime_tz(&t, totz, &tm);
     strftime(strtime_r, BUF_TIME, "%H:%M", &tm);
     strftime(strdate_r, BUF_DATE, "%Y-%m-%d", &tm);
+  } else {
+    *strtime_r = '\0';
+    strncpy(strdate_r, strdate, BUF_DATE);
+    strdate_r[BUF_DATE - 1] = '\0';
   }
 }
 
@@ -341,6 +345,7 @@ static void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
     _sin[BUF_TIME],
     deptz[BUF_TZ],
     arrtz[BUF_TZ];
+  char *deptz1, *deptz2, *arrtz1, *arrtz2;
   gint dland, nland;
   gboolean xc, hold;
   DBStatement *stmt;
@@ -374,20 +379,35 @@ static void flights_write_entries(Sqlpilot *sqlpilot, const gchar *id)
 
 
   tz_of_airport_ident(sqlpilot->db, dep, deptz, sizeof(deptz));
-  tz_of_airport_ident(sqlpilot->db, arr, arrtz, sizeof(arrtz));  
+  tz_of_airport_ident(sqlpilot->db, arr, arrtz, sizeof(arrtz));
+
   if (utc) {
-    move_time("UTC", arrtz, date, ain, _date, _ain);
-    move_time("UTC", deptz, date, sout, _date, _sout);
-    move_time("UTC", arrtz, date, sin, _date, _sin);
-    /* Note: aout computed last because date represents actual out time, _date is modified */
-    move_time("UTC", deptz, date, aout, _date, _aout);
+    /* to Local */
+    deptz1 = "UTC";
+    arrtz1 = "UTC";
+    deptz2 = deptz;
+    arrtz2 = arrtz;
+
   } else {
-    move_time(arrtz, "UTC", date, ain, _date, _ain);
-    move_time(deptz, "UTC", date, sout, _date, _sout);
-    move_time(arrtz, "UTC", date, sin, _date, _sin);
-    move_time(deptz, "UTC", date, aout, _date, _aout);
+    /* to UTC */
+    deptz1 = deptz;
+    arrtz1 = arrtz;
+    deptz2 = "UTC";
+    arrtz2 = "UTC";
   }
 
+  move_time(arrtz1, arrtz2, date, ain, _date, _ain);
+  move_time(arrtz1, arrtz2, date, sin, _date, _sin);
+  /* Adjusting order of calls _date right, preferring aout over sout */
+  /* Note that we depend on the behavior of move_time for _date if sout is funky */
+  if (strlen(aout)) {
+    move_time(deptz1, deptz2, date, sout, _date, _sout);
+    move_time(deptz1, deptz2, date, aout, _date, _aout);
+  } else {
+    move_time(deptz1, deptz2, date, aout, _date, _aout);
+    move_time(deptz1, deptz2, date, sout, _date, _sout);
+  }
+   
   /* Write entries to database */
   if (id) {
     stmt = sqlpilot->flights_update;
@@ -773,6 +793,7 @@ void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
 {
   char deptz[BUF_TZ], arrtz[BUF_TZ];
+  char *deptz1, *deptz2, *arrtz1, *arrtz2;
   const char *dep, *arr, *date, *aout, *ain, *sout, *sin;
   char strdate[BUF_DATE], strtime[BUF_TIME];
 
@@ -787,31 +808,39 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
   tz_of_airport_ident(logb->db, dep, deptz, sizeof(deptz));
   tz_of_airport_ident(logb->db, arr, arrtz, sizeof(arrtz));
 
-  if (gtk_toggle_button_get_active(button)) { /* If switch to UTC */
-    move_time(deptz, "UTC", date, aout, strdate, strtime);
+  if (gtk_toggle_button_get_active(button)) {
+    /* to UTC */
+    deptz1 = deptz;
+    arrtz1 = arrtz;
+    deptz2 = "UTC";
+    arrtz2 = "UTC";
+  } else {
+    /* to Local */
+    deptz1 = "UTC";
+    arrtz1 = "UTC";
+    deptz2 = deptz;
+    arrtz2 = arrtz;
+  }
+
+  /* Do the switch */
+  if (strlen(aout)) {
+    move_time(deptz1, deptz2, date, aout, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
-
-    move_time(arrtz, "UTC", date, ain, strdate, strtime);
+  }
+  
+  if (strlen(ain)) {
+    move_time(arrtz1, arrtz2, date, ain, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
-
-    move_time(deptz, "UTC", date, sout, strdate, strtime);
+  }
+  
+  if (strlen(sout)) {
+    move_time(deptz1, deptz2, date, sout, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
-
-    move_time(arrtz, "UTC", date, sin, strdate, strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
-  } else {			/* else switch to airport local */
-    move_time("UTC", deptz, date, aout, strdate, strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
-
-    move_time("UTC", arrtz, date, ain, strdate, strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
-
-    move_time("UTC", deptz, date, sout, strdate, strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
-
-    move_time("UTC", arrtz, date, sin, strdate, strtime);
+  }
+  
+  if (strlen(sin)) {
+    move_time(arrtz1, arrtz2, date, sin, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
   }
 

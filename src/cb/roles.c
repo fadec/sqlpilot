@@ -16,7 +16,8 @@ void roles_write_entries(Sqlpilot *sqlpilot, const gchar *id)
     fe,
     solo,
     dual,
-    instruct;
+    instruct,
+    total;
   DBStatement *stmt;
 
   ident    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->roles_ident));
@@ -27,6 +28,7 @@ void roles_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   solo     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_solo));
   dual     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_dual));
   instruct = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_instruct));
+  total    = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_total));
   
   /* Write entries to database */
   if (id) {
@@ -43,6 +45,7 @@ void roles_write_entries(Sqlpilot *sqlpilot, const gchar *id)
   db_bind_int(stmt, ROLES_WRITE_SOLO, solo ? 1 : 0);
   db_bind_int(stmt, ROLES_WRITE_DUAL, dual ? 1 : 0);
   db_bind_int(stmt, ROLES_WRITE_INSTRUCT, instruct ? 1 : 0);
+  db_bind_int(stmt, ROLES_WRITE_TOTAL, total ? 1 : 0);
 
   db_step(stmt);
   db_reset(stmt);
@@ -62,7 +65,8 @@ void roles_load_entries_from_selection(Sqlpilot *logb)
     *fe=NULL,
     *solo=NULL,
     *dual=NULL,
-    *instruct=NULL;
+    *instruct=NULL,
+    *total=NULL;
 
   if (gtk_tree_selection_get_selected (logb->roles_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
@@ -75,6 +79,7 @@ void roles_load_entries_from_selection(Sqlpilot *logb)
 		       ROLES_COL_SOLO, &solo,
 		       ROLES_COL_DUAL, &dual,
 		       ROLES_COL_INSTRUCT, &instruct,
+	       	       ROLES_COL_TOTAL, &total,
 		       -1);
   }
   gtk_entry_set_text(GTK_ENTRY(logb->roles_ident), EMPTY_IF_NULL(ident));
@@ -85,6 +90,7 @@ void roles_load_entries_from_selection(Sqlpilot *logb)
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_solo), str_bool(solo));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_dual), str_bool(dual));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_instruct), str_bool(instruct));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->roles_total), str_bool(total));
 
   g_free(id);
   g_free(ident);
@@ -95,6 +101,7 @@ void roles_load_entries_from_selection(Sqlpilot *logb)
   g_free(solo);
   g_free(dual);
   g_free(instruct);
+  g_free(total);
 }
 
 void roles_refresh(Sqlpilot *sqlpilot)

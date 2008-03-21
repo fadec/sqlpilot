@@ -36,6 +36,11 @@ int is_ident_char(char c)
   return (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || (c == '-');
 }
 
+int is_num_char(char c)
+{
+  return (isdigit(c) || (c == '.') || (c == '-'));
+}
+
 void entry_clamp_text(GtkEntry *entry, int length, int setcase, int allowed(char))
 {
   const gchar *text;

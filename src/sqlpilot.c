@@ -7,7 +7,7 @@ void barf(const char *message)
   exit(EXIT_BARF);
 }
 
-Sqlpilot *sqlpilot_new(void)
+Sqlpilot *sqlpilot_new(const char *filename)
 {
   Sqlpilot         *sqlpilot;
   GtkBuilder       *builder;
@@ -15,7 +15,7 @@ Sqlpilot *sqlpilot_new(void)
 
   /* Open Database */
   sqlpilot = g_slice_new0(Sqlpilot);
-  if (!(sqlpilot->db = db_open(DB_FILE))) {
+  if (!(sqlpilot->db = db_open(filename))) {
     barf ("Couldn't open database.");
     return NULL;
   }
@@ -57,7 +57,7 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->types_delete         = db_prep(sqlpilot->db, TYPES_DELETE);
 
   sqlpilot->airports_select_all     = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_GROUP_BY ";");
-  sqlpilot->airports_select_by_id   = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_WHERE_ID AIRPORTS_GROUP_BY ";");
+  sqlpilot->airports_select_by_id   = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_WHERE_ID ";");
   sqlpilot->airports_insert         = db_prep(sqlpilot->db, AIRPORTS_INSERT);
   sqlpilot->airports_update         = db_prep(sqlpilot->db, AIRPORTS_UPDATE);
   sqlpilot->airports_delete         = db_prep(sqlpilot->db, AIRPORTS_DELETE);
@@ -100,6 +100,7 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->roles_solo       = __get_widget("roles_solo");
   sqlpilot->roles_dual       = __get_widget("roles_dual");
   sqlpilot->roles_instruct   = __get_widget("roles_instruct");
+  sqlpilot->roles_total      = __get_widget("roles_total");
   sqlpilot->aircraft_sw      = __get_widget("aircraft_sw");
   sqlpilot->aircraft_ident   = __get_widget("aircraft_ident");
   sqlpilot->aircraft_type    = __get_widget("aircraft_type");
@@ -141,6 +142,12 @@ Sqlpilot *sqlpilot_new(void)
   sqlpilot->airports_ident    = __get_widget("airports_ident");
   sqlpilot->airports_icao     = __get_widget("airports_icao");
   sqlpilot->airports_name     = __get_widget("airports_name");
+  sqlpilot->airports_lat      = __get_widget("airports_lat");
+  sqlpilot->airports_lon      = __get_widget("airports_lon");
+  sqlpilot->airports_elev     = __get_widget("airports_elev");
+  sqlpilot->airports_city     = __get_widget("airports_city");
+  sqlpilot->airports_province = __get_widget("airports_province");
+  sqlpilot->airports_country  = __get_widget("airports_country");
   sqlpilot->airports_tzone    = __get_widget("airports_tzone");
   sqlpilot->airports_notes    = __get_widget("airports_notes");
   #undef __get_widget

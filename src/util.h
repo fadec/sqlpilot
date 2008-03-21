@@ -21,6 +21,7 @@ void text_view_set_text(GtkTextView *, const char *);
 
 int is_ident_char(char);
 int is_time_char(char);
+int is_num_char(char);
 
 long daywrap(long);
 long daywrap_minutes(long);

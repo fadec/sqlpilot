@@ -63,7 +63,7 @@ data/ui/sqlpilot.xml: data/ui/sqlpilot.glade
 	etags.emacs `find -name "*.[h|c]"`
 
 run: sqlpilot
-	./sqlpilot
+	./sqlpilot logbook.db
 
 clean:
 	-rm -f `find -name '*.o'`
@@ -77,8 +77,14 @@ wc:
 	@wc `find -name '*.c'` `find -name '*.h'`
 
 db-reset: db/logbook.sql
-	-rm -f db/logbook.db
-	sqlite3 -init db/logbook.sql db/logbook.db
+	-rm -f logbook.db
+	cat db/logbook.sql | sqlite3 logbook.db
+
+db-reload: db-reset
+	-awk -f db/airports/airports.awk db/airports/airports.csv | sqlite3 logbook.db
+	cat ~/logbook/save.sql | sqlite3 logbook.db
+	./importcsv ~/logbook/_finished.csv logbook.db
+
 
 test: $(unit)_test
 

@@ -1,0 +1,14 @@
+
+fix aircraft data
+fix trip and crew data
+make notes display an indication on table view if present
+remove cancel button
+make deletes more difficult
+fix update and delete buttons so they only work if it makes sence
+inserts that fail do to unique constraints fail silently and the table acts buggy thereafter
+do something about all the times in the flights table
+fix the airport data
+delete visual approaches
+allow multiline approach editing
+adjust airports select queries
+
