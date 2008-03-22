@@ -1,5 +1,74 @@
 #include "sqlpilot.h"
 
+void edstate_empty(Sqlpilot *sqlpilot)
+{
+  if (sqlpilot->flights_edstate == EDSTATE_EMPTY) return;
+  gtk_widget_set_sensitive(sqlpilot->flights_armdel_btn, 0);
+  sqlpilot->flights_edstate = EDSTATE_EMPTY;
+}
+
+void edstate_selected(Sqlpilot *sqlpilot)
+{
+  if (sqlpilot->flights_edstate == EDSTATE_SELECTED) return;
+  gtk_widget_set_sensitive(sqlpilot->flights_new_btn, 1);
+  gtk_widget_set_sensitive(sqlpilot->flights_armdel_btn, 1);
+  gtk_widget_set_sensitive(sqlpilot->flights_save_btn, 0);
+  gtk_widget_set_sensitive(sqlpilot->flights_del_btn, 0);
+  gtk_widget_set_sensitive(sqlpilot->flights_del_btn, 0);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_armdel_btn), 0);
+  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_todel_lbl), "");
+  sqlpilot->flights_edstate = EDSTATE_SELECTED;
+}
+
+void edstate_newmodified(Sqlpilot *sqlpilot)
+{
+
+}
+
+void edstate_selectedmodified(Sqlpilot *sqlpilot)
+{
+  if (sqlpilot->flights_edstate == EDSTATE_SELECTEDMODIFIED) return;
+  gtk_widget_set_sensitive(GTK_WIDGET(sqlpilot->flights_armdel_btn), 0);
+  gtk_widget_set_sensitive(GTK_WIDGET(sqlpilot->flights_del_btn), 0);
+  gtk_widget_set_sensitive(GTK_WIDGET(sqlpilot->flights_new_btn), 0);
+  gtk_widget_set_sensitive(GTK_WIDGET(sqlpilot->flights_save_btn), 1);
+  sqlpilot->flights_edstate = EDSTATE_SELECTEDMODIFIED;
+}
+
+void edstate_deletearmed(Sqlpilot *sqlpilot)
+{
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  gchar
+    *dep=NULL,
+    *arr=NULL,
+    *date=NULL;
+  char show[32] = "";	/* Enough for date + 2 idents and spaces */
+
+  if (gtk_tree_selection_get_selected (sqlpilot->flights_selection, &model, &iter)) {
+    gtk_tree_model_get(model, &iter,
+		       FLIGHTS_COL_DATE, &date,
+		       FLIGHTS_COL_DEP, &dep,
+		       FLIGHTS_COL_ARR, &arr,
+		       -1);
+
+    snprintf(show, sizeof(show), "%s %s-%s", date, dep, arr);
+
+    gtk_label_set_text(GTK_LABEL(sqlpilot->flights_todel_lbl), show);
+    gtk_widget_set_sensitive(sqlpilot->flights_del_btn, 1);
+  } else {
+    gtk_label_set_text(GTK_LABEL(sqlpilot->flights_todel_lbl), "");
+    gtk_widget_set_sensitive(sqlpilot->flights_del_btn, 0);
+  }
+
+  sqlpilot->flights_edstate = EDSTATE_DELETEARMED;
+}
+
+void modified(Sqlpilot *sqlpilot)
+{
+  /* set appropriate modified state */
+  edstate_selectedmodified(sqlpilot);
+}
 
 /* strdate_r and strtime_r must be at least BUF_DATE AND BUF_TIME in size */
 void move_time(const char *fromtz, const char *totz, const char *strdate, const char *strtime, char *strdate_r, char *strtime_r)
@@ -534,8 +603,7 @@ void on_flights_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 
 void on_flights_trip_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  const gchar *text;
-  text = gtk_entry_get_text(entry);
+  modified(sqlpilot);
 }
 
 int is_numeric_date_char(char c)
@@ -785,9 +853,18 @@ void on_flights_night_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   entry_clamp_text(entry, 5, 1, is_time_char);
 }
 
-void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
+void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
 {
-  flights_load_entries_from_selection(logb);
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+
+  flights_load_entries_from_selection(sqlpilot);
+
+  if (gtk_tree_selection_get_selected (sqlpilot->flights_selection, &model, &iter)) {
+    edstate_selected(sqlpilot);
+  } else {
+    edstate_empty(sqlpilot);
+  }
 }
 
 void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
@@ -827,18 +904,16 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
     move_time(deptz1, deptz2, date, aout, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
+  } 
+  if (strlen(sout)) {
+    move_time(deptz1, deptz2, date, sout, strdate, strtime);
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
+    if (!strlen(aout)) gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
   }
-  
   if (strlen(ain)) {
     move_time(arrtz1, arrtz2, date, ain, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
   }
-  
-  if (strlen(sout)) {
-    move_time(deptz1, deptz2, date, sout, strdate, strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
-  }
-  
   if (strlen(sin)) {
     move_time(arrtz1, arrtz2, date, sin, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
@@ -847,4 +922,28 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
   gtk_label_set_text(GTK_LABEL(logb->flights_utc_lbl),
 		     gtk_toggle_button_get_active(button) ? "UTC" : "Local");
       
+}
+
+void on_flights_armdel_btn_toggled(GtkToggleButton *button, Sqlpilot *sqlpilot)
+{
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_armdel_btn))) {
+    edstate_deletearmed(sqlpilot);
+  } else {
+    edstate_selected(sqlpilot);
+  }
+}
+
+void on_flights_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+{
+
+}
+
+void on_flights_new_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+{
+  edstate_empty(sqlpilot);
+}
+
+void on_flights_save_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+{
+
 }

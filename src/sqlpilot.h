@@ -38,6 +38,15 @@ enum {
   NOTEBOOK_PAGE_AIRPORTS
 };
 
+/* Editing states for view */
+typedef enum {
+  EDSTATE_EMPTY,
+  EDSTATE_NEWMODIFIED,
+  EDSTATE_SELECTED,
+  EDSTATE_SELECTEDMODIFIED,
+  EDSTATE_DELETEARMED
+} Edstate;
+
 /* Column numbers for treemodel and select statements */
 enum {
   FLIGHTS_COL_ID = 0,
@@ -614,8 +623,8 @@ struct Sqlpilot {
   DB *db;
   GtkWidget *window;
 
-  int flights_stale;		/* Treemodel contains stale data as a result of updates to db elsewhere ... the model for the view is stale; it has nothing to do with the db */
-  int flights_modified;		/* Entries have been modified but not committed to db */
+  int flights_stale;	   /* Treemodel contains stale data as a result of updates to db elsewhere ... the model for the view is stale; it has nothing to do with the db */
+  Edstate flights_edstate;
   DBStatement *flights_select_all; /* Select for tree model */
   DBStatement *flights_select_by_id; /* Select for update a single treemodel row */
   DBStatement *flights_insert;
@@ -650,6 +659,11 @@ struct Sqlpilot {
   GtkWidget *flights_sin;
   GtkWidget *flights_sdur;
   GtkWidget *flights_trip;
+  GtkWidget *flights_new_btn;
+  GtkWidget *flights_save_btn;
+  GtkWidget *flights_armdel_btn;
+  GtkWidget *flights_todel_lbl;
+  GtkWidget *flights_del_btn;
 
   int roles_stale;
   int roles_modified;

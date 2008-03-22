@@ -16,8 +16,12 @@ APP_SRC = src/main.c ${SRC}
 
 IMPORTCSV_SRC = src/importcsv.c ${SRC}
 
+SHELL_SRC = src/shell.c  src/db/db.c
+
 # Example: make test db, make test-run db
 TEST_SRC = test/units/$(unit)_test.c test/test.c ${SRC}
+
+
 
 HEADERS = src/sqlpilot.h \
 	  src/util.h \
@@ -30,21 +34,33 @@ APP_HEADERS = src/sqlpilot.h ${HEADERS}
 
 IMPORTCSV_HEADERS = ${HEADERS}
 
+SHELL_HEADERS = src/db/db.h
+
 TEST_HEADERS = test/test.h ${HEADERS}
+
+
 
 APP_OBJ = ${APP_SRC:.c=.o}
 
 IMPORTCSV_OBJ = ${IMPORTCSV_SRC:.c=.o}
 
+SHELL_OBJ = ${SHELL_SRC:.c=.o}
+
 TEST_OBJ = ${TEST_SRC:.c=.o}
 
-app: sqlpilot importcsv ui
+
+
+app: sqlpilot importcsv shell ui
 
 ${APP_OBJ}: ${APP_HEADERS} config.mk
 
 ${IMPORTCSV_OBJ}: ${IMPORTCSV_HEADERS} config.mk
 
+${SHELL_OBJ}: ${SHELL_HEADERS} config.mk
+
 ${TEST_OBJ}: ${TEST_HEADERS} config.mk
+
+
 
 sqlpilot: ${APP_OBJ}
 	${LD} -o $@ ${APP_OBJ} ${LDFLAGS}
@@ -52,6 +68,10 @@ sqlpilot: ${APP_OBJ}
 
 importcsv: ${IMPORTCSV_OBJ}
 	${LD} -o $@ ${IMPORTCSV_OBJ} ${LDFLAGS}
+#	@strip $@
+
+shell: ${SHELL_OBJ}
+	${LD} -o $@ ${SHELL_OBJ} ${LDFLAGS}
 #	@strip $@
 
 ui: data/ui/sqlpilot.xml
@@ -67,7 +87,7 @@ run: sqlpilot
 
 clean:
 	-rm -f `find -name '*.o'`
-	-rm -f core sqlpilot *_test test.db data/ui/sqlpilot.xml
+	-rm -f core sqlpilot shell importcsv *_test test.db data/ui/sqlpilot.xml
 
 # Remove units and directories that are not under source control - use with care
 scm-clean:

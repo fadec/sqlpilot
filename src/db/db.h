@@ -59,6 +59,7 @@ struct DBResults {
 
 DB* db_open(const char *filename);
 void db_close(DB*);
+void db_register_sqlpilot_functions(DB *db);
 
 void db_results_free(DBResults *);
 DBResults *db_get_table(DB *db, const char *sql, char **errormsg);

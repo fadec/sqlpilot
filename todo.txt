@@ -1,14 +1,20 @@
 
-fix aircraft data
-fix trip and crew data
+99 becomes 0+99, wtf .. also make it so I can type 300m and it will be 6+00, 3h -> 3+00, 300 should become 3+00
+funky thing happens with date and time entry around midnight and switching utc-local. it's correct but confusing
+find a way to keep row selected during refresh
+make views
+write difftime db function
+write greatcircle function
+delete visual approaches
 make notes display an indication on table view if present
 remove cancel button
 make deletes more difficult
+allow .5 in elapsed time fields to become 0+30
+make time be smart where 1000l = 10:00 local and 1000u = 10:00 UTC
 fix update and delete buttons so they only work if it makes sence
 inserts that fail do to unique constraints fail silently and the table acts buggy thereafter
 do something about all the times in the flights table
 fix the airport data
-delete visual approaches
 allow multiline approach editing
 adjust airports select queries
-
+fix column sorting

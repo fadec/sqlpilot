@@ -12,7 +12,7 @@ MANPREFIX = ${PREFIX}/share/man
 
 # includes and libs
 INCS = -Itest -Isrc -I${PREFIX}/include -I/usr/include `pkg-config gtk+-2.0 --cflags`
-LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 `pkg-config gtk+-2.0 --libs`
+LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 -lreadline `pkg-config gtk+-2.0 --libs`
 
 # flags
 #CFLAGS = -Os ${INCS} -DVERSION=\"${VERSION}\"

@@ -77,6 +77,21 @@ static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
   //sqlite3_result_text(context, b ? "T" : "F", -1, SQLITE_STATIC);
 }
 
+static void distance_func(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+  switch (sqlite3_value_type(argv[0])) {
+  case SQLITE_NULL:
+    break;
+  case SQLITE_FLOAT:
+  break;
+  case SQLITE_INTEGER:
+    break;
+  case SQLITE_BLOB:
+  case SQLITE_TEXT:
+    break;
+  }
+}
+
 /* Counts number of non-empty lines */
 static void linecount_func(sqlite3_context *context, int argc, sqlite3_value **argv)
 {
@@ -106,6 +121,14 @@ static void linecount_func(sqlite3_context *context, int argc, sqlite3_value **a
   }
 }
 
+void db_register_sqlpilot_functions(DB* db)
+{
+  /* register custom functions */
+  sqlite3_create_function(db, "m_to_hhmm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
+  sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
+  sqlite3_create_function(db, "bool", 1, SQLITE_ANY, 0, bool_func, 0, 0);
+  sqlite3_create_function(db, "linecount", 1, SQLITE_ANY, 0, linecount_func, 0, 0);
+}
 
 DB* db_open(const char* filename)
 {
@@ -118,12 +141,7 @@ DB* db_open(const char* filename)
 	  fprintf(stderr, "Unable to open database\n");
 	  exit(1);
 	}
-
-	/* register custom functions */
-	sqlite3_create_function(db, "m_to_hhmm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
-	sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
-	sqlite3_create_function(db, "bool", 1, SQLITE_ANY, 0, bool_func, 0, 0);
-	sqlite3_create_function(db, "linecount", 1, SQLITE_ANY, 0, linecount_func, 0, 0);
+	db_register_sqlpilot_functions(db);
 	return db;
 }
 

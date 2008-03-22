@@ -91,6 +91,11 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->flights_sin      = __get_widget("flights_sin");
   sqlpilot->flights_sdur     = __get_widget("flights_sdur");
   sqlpilot->flights_trip     = __get_widget("flights_trip");
+  sqlpilot->flights_new_btn  = __get_widget("flights_new_btn");
+  sqlpilot->flights_save_btn = __get_widget("flights_save_btn");
+  sqlpilot->flights_armdel_btn = __get_widget("flights_armdel_btn");
+  sqlpilot->flights_del_btn  = __get_widget("flights_del_btn");
+  sqlpilot->flights_todel_lbl = __get_widget("flights_todel_lbl");
   sqlpilot->roles_sw         = __get_widget("roles_sw");
   sqlpilot->roles_ident      = __get_widget("roles_ident");
   sqlpilot->roles_name       = __get_widget("roles_name");
@@ -151,6 +156,9 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->airports_tzone    = __get_widget("airports_tzone");
   sqlpilot->airports_notes    = __get_widget("airports_notes");
   #undef __get_widget
+
+  /* Edit States */
+  sqlpilot->flights_edstate = EDSTATE_EMPTY;
 
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
