@@ -64,7 +64,9 @@ Sqlpilot *sqlpilot_new(const char *filename)
   
   /* Set UI components in Sqlpilot struct */
   #define __get_widget(x) GTK_WIDGET(gtk_builder_get_object(builder, (x)));
-  sqlpilot->window           = __get_widget("window");
+#define get_widget(x) sqlpilot->x = GTK_WIDGET(gtk_builder_get_object(builder, (#x)));
+  get_widget(window);
+  //  sqlpilot->window           = __get_widget("window");
   sqlpilot->flights_sw       = __get_widget("flights_sw");
   sqlpilot->flights_aircraft = __get_widget("flights_aircraft");
   sqlpilot->flights_utc      = __get_widget("flights_utc");
@@ -106,6 +108,11 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->roles_dual       = __get_widget("roles_dual");
   sqlpilot->roles_instruct   = __get_widget("roles_instruct");
   sqlpilot->roles_total      = __get_widget("roles_total");
+  sqlpilot->roles_new_btn  = __get_widget("roles_new_btn");
+  sqlpilot->roles_save_btn = __get_widget("roles_save_btn");
+  sqlpilot->roles_armdel_btn = __get_widget("roles_armdel_btn");
+  sqlpilot->roles_del_btn  = __get_widget("roles_del_btn");
+  sqlpilot->roles_todel_lbl = __get_widget("roles_todel_lbl");
   sqlpilot->aircraft_sw      = __get_widget("aircraft_sw");
   sqlpilot->aircraft_ident   = __get_widget("aircraft_ident");
   sqlpilot->aircraft_type    = __get_widget("aircraft_type");
@@ -157,9 +164,6 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->airports_notes    = __get_widget("airports_notes");
   #undef __get_widget
 
-  /* Edit States */
-  sqlpilot->flights_edstate = EDSTATE_EMPTY;
-
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
   gtk_widget_show_all(sqlpilot->flights_treeview);
@@ -208,8 +212,90 @@ Sqlpilot *sqlpilot_new(const char *filename)
 		    G_CALLBACK (on_airports_selection_changed),
 		    sqlpilot);
 
+  /* Out of place code to init flights utc button */
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc), FALSE);
   gtk_label_set_text(GTK_LABEL(sqlpilot->flights_utc_lbl), "Local");
+
+  /* Edit Controls */
+  sqlpilot->flights_edctrl                 = &sqlpilot->_flights_edctrl;
+  sqlpilot->flights_edctrl->edstate        = EDSTATE_EMPTY;
+  sqlpilot->flights_edctrl->new_btn        = sqlpilot->flights_new_btn;
+  sqlpilot->flights_edctrl->save_btn       = sqlpilot->flights_save_btn;
+  sqlpilot->flights_edctrl->armdel_btn     = sqlpilot->flights_armdel_btn;
+  sqlpilot->flights_edctrl->todel_lbl      = sqlpilot->flights_todel_lbl;
+  sqlpilot->flights_edctrl->del_btn        = sqlpilot->flights_del_btn;
+  sqlpilot->flights_edctrl->selection      = sqlpilot->flights_selection;
+  sqlpilot->flights_edctrl->selection_show = flights_selection_show;
+  sqlpilot->flights_edctrl->can_delete     = flights_can_delete;
+  sqlpilot->flights_edctrl->delete_stmt    = sqlpilot->flights_delete;
+  sqlpilot->flights_edctrl->select_by_id_stmt    = sqlpilot->flights_select_by_id;
+  edctrl_register_save(sqlpilot->flights_edctrl, flights_write_entries, sqlpilot);
+  edctrl_register_after_change(sqlpilot->flights_edctrl, flights_after_change, sqlpilot);
+  edctrl_register_load_selection(sqlpilot->flights_edctrl, flights_load_selection, sqlpilot);
+
+  sqlpilot->roles_edctrl                 = &sqlpilot->_roles_edctrl;
+  sqlpilot->roles_edctrl->edstate        = EDSTATE_EMPTY;
+  sqlpilot->roles_edctrl->new_btn        = sqlpilot->roles_new_btn;
+  sqlpilot->roles_edctrl->save_btn       = sqlpilot->roles_save_btn;
+  sqlpilot->roles_edctrl->armdel_btn     = sqlpilot->roles_armdel_btn;
+  sqlpilot->roles_edctrl->todel_lbl      = sqlpilot->roles_todel_lbl;
+  sqlpilot->roles_edctrl->del_btn        = sqlpilot->roles_del_btn;
+  sqlpilot->roles_edctrl->selection      = sqlpilot->roles_selection;
+  sqlpilot->roles_edctrl->selection_show = roles_selection_show;
+  sqlpilot->roles_edctrl->can_delete     = roles_can_delete;
+  sqlpilot->roles_edctrl->delete_stmt    = sqlpilot->roles_delete;
+  sqlpilot->roles_edctrl->select_by_id_stmt    = sqlpilot->roles_select_by_id;
+  edctrl_register_save(sqlpilot->roles_edctrl, roles_write_entries, sqlpilot);
+  edctrl_register_after_change(sqlpilot->roles_edctrl, roles_after_change, sqlpilot);
+  edctrl_register_load_selection(sqlpilot->roles_edctrl, roles_load_selection, sqlpilot);
+
+/*   sqlpilot->aircraft_edctrl                 = &sqlpilot->_aircraft_edctrl; */
+/*   sqlpilot->aircraft_edctrl->edstate        = EDSTATE_EMPTY; */
+/*   sqlpilot->aircraft_edctrl->new_btn        = sqlpilot->aircraft_new_btn; */
+/*   sqlpilot->aircraft_edctrl->save_btn       = sqlpilot->aircraft_save_btn; */
+/*   sqlpilot->aircraft_edctrl->armdel_btn     = sqlpilot->aircraft_armdel_btn; */
+/*   sqlpilot->aircraft_edctrl->todel_lbl      = sqlpilot->aircraft_todel_lbl; */
+/*   sqlpilot->aircraft_edctrl->del_btn        = sqlpilot->aircraft_del_btn; */
+/*   sqlpilot->aircraft_edctrl->selection      = sqlpilot->aircraft_selection; */
+/*   sqlpilot->aircraft_edctrl->selection_show = aircraft_selection_show; */
+/*   sqlpilot->aircraft_edctrl->can_delete     = aircraft_can_delete; */
+/*   sqlpilot->aircraft_edctrl->delete_stmt    = sqlpilot->aircraft_delete; */
+/*   sqlpilot->aircraft_edctrl->select_by_id_stmt    = sqlpilot->aircraft_select_by_id; */
+/*   edctrl_register_save(sqlpilot->aircraft_edctrl, aircraft_write_entries, sqlpilot); */
+/*   edctrl_register_after_change(sqlpilot->aircraft_edctrl, aircraft_after_change, sqlpilot); */
+/*   edctrl_register_load_selection(sqlpilot->aircraft_edctrl, aircraft_load_selection, sqlpilot); */
+
+/*   sqlpilot->types_edctrl                 = &sqlpilot->_types_edctrl; */
+/*   sqlpilot->types_edctrl->edstate        = EDSTATE_EMPTY; */
+/*   sqlpilot->types_edctrl->new_btn        = sqlpilot->types_new_btn; */
+/*   sqlpilot->types_edctrl->save_btn       = sqlpilot->types_save_btn; */
+/*   sqlpilot->types_edctrl->armdel_btn     = sqlpilot->types_armdel_btn; */
+/*   sqlpilot->types_edctrl->todel_lbl      = sqlpilot->types_todel_lbl; */
+/*   sqlpilot->types_edctrl->del_btn        = sqlpilot->types_del_btn; */
+/*   sqlpilot->types_edctrl->selection      = sqlpilot->types_selection; */
+/*   sqlpilot->types_edctrl->selection_show = types_selection_show; */
+/*   sqlpilot->types_edctrl->can_delete     = types_can_delete; */
+/*   sqlpilot->types_edctrl->delete_stmt    = sqlpilot->types_delete; */
+/*   sqlpilot->types_edctrl->select_by_id_stmt    = sqlpilot->types_select_by_id; */
+/*   edctrl_register_save(sqlpilot->types_edctrl, types_write_entries, sqlpilot); */
+/*   edctrl_register_after_change(sqlpilot->types_edctrl, types_after_change, sqlpilot); */
+/*   edctrl_register_load_selection(sqlpilot->types_edctrl, types_load_selection, sqlpilot); */
+
+/*   sqlpilot->airports_edctrl                 = &sqlpilot->_airports_edctrl; */
+/*   sqlpilot->airports_edctrl->edstate        = EDSTATE_EMPTY; */
+/*   sqlpilot->airports_edctrl->new_btn        = sqlpilot->airports_new_btn; */
+/*   sqlpilot->airports_edctrl->save_btn       = sqlpilot->airports_save_btn; */
+/*   sqlpilot->airports_edctrl->armdel_btn     = sqlpilot->airports_armdel_btn; */
+/*   sqlpilot->airports_edctrl->todel_lbl      = sqlpilot->airports_todel_lbl; */
+/*   sqlpilot->airports_edctrl->del_btn        = sqlpilot->airports_del_btn; */
+/*   sqlpilot->airports_edctrl->selection      = sqlpilot->airports_selection; */
+/*   sqlpilot->airports_edctrl->selection_show = airports_selection_show; */
+/*   sqlpilot->airports_edctrl->can_delete     = airports_can_delete; */
+/*   sqlpilot->airports_edctrl->delete_stmt    = sqlpilot->airports_delete; */
+/*   sqlpilot->airports_edctrl->select_by_id_stmt    = sqlpilot->airports_select_by_id; */
+/*   edctrl_register_save(sqlpilot->airports_edctrl, airports_write_entries, sqlpilot); */
+/*   edctrl_register_after_change(sqlpilot->airports_edctrl, airports_after_change, sqlpilot); */
+/*   edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot); */
 
   g_object_unref (G_OBJECT (builder));
   return sqlpilot;

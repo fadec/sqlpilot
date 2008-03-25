@@ -348,3 +348,8 @@ void on_types_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 {
   types_load_entries_from_selection(logb);
 }
+
+void on_types_option_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+{
+  edctrl_set_modified(sqlpilot->types_edctrl);
+}

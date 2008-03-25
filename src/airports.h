@@ -1,0 +1,91 @@
+#ifndef AIRPORTS_H
+#define AIRPORTS_H
+
+enum {
+  AIRPORTS_COL_ID = COL_ID,
+  AIRPORTS_COL_IDENT,
+  AIRPORTS_COL_ICAO,
+  AIRPORTS_COL_NAME,
+  AIRPORTS_COL_TZONE,
+  AIRPORTS_COL_LAT,
+  AIRPORTS_COL_LON,
+  AIRPORTS_COL_ELEV,
+  AIRPORTS_COL_CITY,
+  AIRPORTS_COL_PROVINCE,
+  AIRPORTS_COL_COUNTRY,
+  AIRPORTS_COL_NOTES,
+  AIRPORTS_COL_DEP,
+  AIRPORTS_COL_ARR
+};
+
+#define AIRPORTS_SELECT					\
+  "select a._id as _id"					\
+  ", a.ident as Ident"					\
+  ", a.icao as ICAO"					\
+  ", a.name as Name"					\
+  ", a.tzone as TZone"					\
+  ", a.lat as Lat"					\
+  ", a.lon as Lon"					\
+  ", a.elev as Elev"					\
+  ", a.city as City"					\
+  ", a.province as Province"				\
+  ", a.country as Country"				\
+  ", a._notes as _Notes"				\
+  " from MyAirports a"					\
+
+#define AIRPORTS_GROUP_BY \
+  " group by a._id order by a.ident"
+
+#define AIRPORTS_WHERE_ID \
+  " where a._id = ?"
+
+enum {
+  AIRPORTS_WRITE_IDENT = 1,
+  AIRPORTS_WRITE_ICAO,
+  AIRPORTS_WRITE_NAME,
+  AIRPORTS_WRITE_CITY,
+  AIRPORTS_WRITE_PROVINCE,
+  AIRPORTS_WRITE_COUNTRY,
+  AIRPORTS_WRITE_LAT,
+  AIRPORTS_WRITE_LON,
+  AIRPORTS_WRITE_ELEV,
+  AIRPORTS_WRITE_TZONE,
+  AIRPORTS_WRITE_NOTES,
+  AIRPORTS_WRITE_ID
+};
+
+
+#define AIRPORTS_INSERT				\
+  "insert into airports "			\
+  "( ident"					\
+  ", icao"					\
+  ", name"					\
+  ", city"					\
+  ", province"					\
+  ", country"					\
+  ", lat"					\
+  ", lon"					\
+  ", elev"					\
+  ", tzone"					\
+  ", notes"					\
+  ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+
+#define AIRPORTS_UPDATE				\
+  "update airports set"				\
+  "  ident = ?"					\
+  ", icao = ?"					\
+  ", name = ?"					\
+  ", city = ?"					\
+  ", province = ?"				\
+  ", country = ?"				\
+  ", lat = ?"					\
+  ", lon = ?"					\
+  ", elev = ?"					\
+  ", tzone = ?"					\
+  ", notes = ?"					\
+  " where id = ?;"
+
+#define AIRPORTS_DELETE \
+  "delete from airports where id = ?;"
+
+#endif

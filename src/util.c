@@ -261,6 +261,36 @@ long daywrap_minutes(long m)
   return m;
 }
 
+/* strdate_r and strtime_r must be at least BUF_DATE AND BUF_TIME in size */
+void move_time(const char *fromtz, const char *totz, const char *strdate, const char *strtime, char *strdate_r, char *strtime_r)
+{
+  if (strtime && strlen(strtime)) {
+    time_t t;
+    struct tm tm;
+
+    if (strdate && strlen(strdate)) {
+      tm_read_strdate(&tm, strdate);
+    } else {
+      time(&t);
+      localtime_r(&t, &tm);
+    } 
+    tm_read_strtime(&tm, strtime);
+    
+    if ((t = tmtz_mktime(&tm, fromtz)) == -1) {
+      fprintf(stderr, "tmtz_mktime failed in move_time\n");
+      return;
+    }
+
+    localtime_tz(&t, totz, &tm);
+    strftime(strtime_r, BUF_TIME, "%H:%M", &tm);
+    strftime(strdate_r, BUF_DATE, "%Y-%m-%d", &tm);
+  } else {
+    *strtime_r = '\0';
+    strncpy(strdate_r, strdate, BUF_DATE);
+    strdate_r[BUF_DATE - 1] = '\0';
+  }
+}
+
 /* Returns 1 if ident found, otherwise 0 - places  */
 int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize)
 {

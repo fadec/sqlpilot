@@ -1,4 +1,10 @@
 
+2007-08-01 CLE-DAY is actually on 2007-08-02
+2007-08-08 SGF-MCI is actually on 2007-08-09
+make multiline text also make modified
+scroll to selected row on save
+make a copy button that works like new but takes fields
+stop changed signals from triggering modified state for utc/local switch
 99 becomes 0+99, wtf .. also make it so I can type 300m and it will be 6+00, 3h -> 3+00, 300 should become 3+00
 funky thing happens with date and time entry around midnight and switching utc-local. it's correct but confusing
 find a way to keep row selected during refresh

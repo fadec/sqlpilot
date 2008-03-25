@@ -10,7 +10,13 @@ SRC = src/sqlpilot.c \
       src/cb/roles.c \
       src/cb/aircraft.c \
       src/cb/types.c \
-      src/cb/airports.c
+      src/cb/airports.c \
+      src/edctrl.c \
+      src/flights.c \
+      src/roles.c \
+#      src/aircraft.c \
+#      src/types.c \
+#      src/airports.c
 
 APP_SRC = src/main.c ${SRC}
 
@@ -29,6 +35,12 @@ HEADERS = src/sqlpilot.h \
 	  src/db/db.h \
           src/store.h \
 	  src/cb/cb.h \
+	  src/edctrl.h \
+	  src/flights.h \
+	  src/roles.h \
+	  src/aircraft.h \
+	  src/types.h \
+	  src/airports.h
 
 APP_HEADERS = src/sqlpilot.h ${HEADERS}
 
