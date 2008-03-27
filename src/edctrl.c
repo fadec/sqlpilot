@@ -53,6 +53,13 @@ void edctrl_set_modified(Edctrl *ec)
   edctrl_show_record(ec);
 }
 
+void edctrl_set_invalid(Edctrl *ec)
+{
+  if (ec->edstate == EDSTATE_INVALID) return;
+  ec->edstate = EDSTATE_INVALID;
+  gtk_widget_set_sensitive(GTK_WIDGET(ec->save_btn), 0);
+}
+
 void edctrl_set_deletearmed(Edctrl *ec)
 {
   if (ec->edstate == EDSTATE_DELETEARMED) return;

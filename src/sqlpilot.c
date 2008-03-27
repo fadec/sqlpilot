@@ -172,6 +172,11 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->airports_country  = __get_widget("airports_country");
   sqlpilot->airports_tzone    = __get_widget("airports_tzone");
   sqlpilot->airports_notes    = __get_widget("airports_notes");
+  sqlpilot->airports_new_btn     = __get_widget("airports_new_btn");
+  sqlpilot->airports_save_btn    = __get_widget("airports_save_btn");
+  sqlpilot->airports_armdel_btn  = __get_widget("airports_armdel_btn");
+  sqlpilot->airports_del_btn     = __get_widget("airports_del_btn");
+  sqlpilot->airports_todel_lbl   = __get_widget("airports_todel_lbl");
   #undef __get_widget
 
   /* Add treeview */
@@ -275,37 +280,37 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_after_change(sqlpilot->aircraft_edctrl, aircraft_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->aircraft_edctrl, aircraft_load_selection, sqlpilot);
 
-/*   sqlpilot->types_edctrl                 = &sqlpilot->_types_edctrl; */
-/*   sqlpilot->types_edctrl->edstate        = EDSTATE_EMPTY; */
-/*   sqlpilot->types_edctrl->new_btn        = sqlpilot->types_new_btn; */
-/*   sqlpilot->types_edctrl->save_btn       = sqlpilot->types_save_btn; */
-/*   sqlpilot->types_edctrl->armdel_btn     = sqlpilot->types_armdel_btn; */
-/*   sqlpilot->types_edctrl->todel_lbl      = sqlpilot->types_todel_lbl; */
-/*   sqlpilot->types_edctrl->del_btn        = sqlpilot->types_del_btn; */
-/*   sqlpilot->types_edctrl->selection      = sqlpilot->types_selection; */
-/*   sqlpilot->types_edctrl->selection_show = types_selection_show; */
-/*   sqlpilot->types_edctrl->can_delete     = types_can_delete; */
-/*   sqlpilot->types_edctrl->delete_stmt    = sqlpilot->types_delete; */
-/*   sqlpilot->types_edctrl->select_by_id_stmt    = sqlpilot->types_select_by_id; */
-/*   edctrl_register_save(sqlpilot->types_edctrl, types_write_entries, sqlpilot); */
-/*   edctrl_register_after_change(sqlpilot->types_edctrl, types_after_change, sqlpilot); */
-/*   edctrl_register_load_selection(sqlpilot->types_edctrl, types_load_selection, sqlpilot); */
+  sqlpilot->types_edctrl                 = &sqlpilot->_types_edctrl;
+  sqlpilot->types_edctrl->edstate        = EDSTATE_EMPTY;
+  sqlpilot->types_edctrl->new_btn        = sqlpilot->types_new_btn;
+  sqlpilot->types_edctrl->save_btn       = sqlpilot->types_save_btn;
+  sqlpilot->types_edctrl->armdel_btn     = sqlpilot->types_armdel_btn;
+  sqlpilot->types_edctrl->todel_lbl      = sqlpilot->types_todel_lbl;
+  sqlpilot->types_edctrl->del_btn        = sqlpilot->types_del_btn;
+  sqlpilot->types_edctrl->selection      = sqlpilot->types_selection;
+  sqlpilot->types_edctrl->selection_show = types_selection_show;
+  sqlpilot->types_edctrl->can_delete     = types_can_delete;
+  sqlpilot->types_edctrl->delete_stmt    = sqlpilot->types_delete;
+  sqlpilot->types_edctrl->select_by_id_stmt    = sqlpilot->types_select_by_id;
+  edctrl_register_save(sqlpilot->types_edctrl, types_write_entries, sqlpilot);
+  edctrl_register_after_change(sqlpilot->types_edctrl, types_after_change, sqlpilot);
+  edctrl_register_load_selection(sqlpilot->types_edctrl, types_load_selection, sqlpilot);
 
-/*   sqlpilot->airports_edctrl                 = &sqlpilot->_airports_edctrl; */
-/*   sqlpilot->airports_edctrl->edstate        = EDSTATE_EMPTY; */
-/*   sqlpilot->airports_edctrl->new_btn        = sqlpilot->airports_new_btn; */
-/*   sqlpilot->airports_edctrl->save_btn       = sqlpilot->airports_save_btn; */
-/*   sqlpilot->airports_edctrl->armdel_btn     = sqlpilot->airports_armdel_btn; */
-/*   sqlpilot->airports_edctrl->todel_lbl      = sqlpilot->airports_todel_lbl; */
-/*   sqlpilot->airports_edctrl->del_btn        = sqlpilot->airports_del_btn; */
-/*   sqlpilot->airports_edctrl->selection      = sqlpilot->airports_selection; */
-/*   sqlpilot->airports_edctrl->selection_show = airports_selection_show; */
-/*   sqlpilot->airports_edctrl->can_delete     = airports_can_delete; */
-/*   sqlpilot->airports_edctrl->delete_stmt    = sqlpilot->airports_delete; */
-/*   sqlpilot->airports_edctrl->select_by_id_stmt    = sqlpilot->airports_select_by_id; */
-/*   edctrl_register_save(sqlpilot->airports_edctrl, airports_write_entries, sqlpilot); */
-/*   edctrl_register_after_change(sqlpilot->airports_edctrl, airports_after_change, sqlpilot); */
-/*   edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot); */
+  sqlpilot->airports_edctrl                 = &sqlpilot->_airports_edctrl;
+  sqlpilot->airports_edctrl->edstate        = EDSTATE_EMPTY;
+  sqlpilot->airports_edctrl->new_btn        = sqlpilot->airports_new_btn;
+  sqlpilot->airports_edctrl->save_btn       = sqlpilot->airports_save_btn;
+  sqlpilot->airports_edctrl->armdel_btn     = sqlpilot->airports_armdel_btn;
+  sqlpilot->airports_edctrl->todel_lbl      = sqlpilot->airports_todel_lbl;
+  sqlpilot->airports_edctrl->del_btn        = sqlpilot->airports_del_btn;
+  sqlpilot->airports_edctrl->selection      = sqlpilot->airports_selection;
+  sqlpilot->airports_edctrl->selection_show = airports_selection_show;
+  sqlpilot->airports_edctrl->can_delete     = airports_can_delete;
+  sqlpilot->airports_edctrl->delete_stmt    = sqlpilot->airports_delete;
+  sqlpilot->airports_edctrl->select_by_id_stmt    = sqlpilot->airports_select_by_id;
+  edctrl_register_save(sqlpilot->airports_edctrl, airports_write_entries, sqlpilot);
+  edctrl_register_after_change(sqlpilot->airports_edctrl, airports_after_change, sqlpilot);
+  edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot);
 
   g_object_unref (G_OBJECT (builder));
   return sqlpilot;

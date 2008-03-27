@@ -15,8 +15,8 @@ SRC = src/sqlpilot.c \
       src/flights.c \
       src/roles.c \
       src/aircraft.c \
-#      src/types.c \
-#      src/airports.c
+      src/types.c \
+      src/airports.c
 
 APP_SRC = src/main.c ${SRC}
 

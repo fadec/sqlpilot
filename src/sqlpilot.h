@@ -17,6 +17,7 @@ typedef enum {
   EDSTATE_EMPTY,
   EDSTATE_SELECTED,
   EDSTATE_MODIFIED,
+  EDSTATE_INVALID,
   EDSTATE_DELETEARMED
 } Edstate;
 
@@ -43,12 +44,12 @@ struct Edctrl {
   void *save_data;
 };
 
-
-#define BUF_ED_TODEL 64
+#define BUF_ED_TODEL 32
 
 void edctrl_set_empty(Edctrl *ec);
 void edctrl_set_selected(Edctrl *ec);
 void edctrl_set_modified(Edctrl *ec);
+void edctrl_set_invalid(Edctrl *ec);
 void edctrl_set_deletearmed(Edctrl *ec);
 
 void edctrl_selection_changed(Edctrl *ec);
@@ -78,13 +79,6 @@ void edctrl_armdel_btn_toggled(Edctrl *ec);
 #define BUF_TIME 6		/* "HH:MM\0" expecting no flight longer than 99 hours */
 #define BUF_DATETIME 17		/* "YYYY-MM-DD HH:MM\0" */
 #define BUF_TZ 256		/*  How ever big timezone names get??? */
-
-/* typedef enum { */
-/*     SQLPILOT_NO_ERROR = 0, */
-/*     SQLPILOT_ERROR_INVALID_URI, */
-/*     SQLPILOT_ERROR_SAVE_FAILED, */
-/*     SQLPILOT_ERROR_OPEN_FAILED */
-/* } SqlpilotError; */
 
 enum {
   NOTEBOOK_PAGE_FLIGHTS = 0,
@@ -260,6 +254,11 @@ struct Sqlpilot {
   GtkWidget *airports_lon;
   GtkWidget *airports_tzone;
   GtkWidget *airports_notes;
+  GtkWidget *airports_new_btn;
+  GtkWidget *airports_save_btn;
+  GtkWidget *airports_armdel_btn;
+  GtkWidget *airports_todel_lbl;
+  GtkWidget *airports_del_btn;
   Edctrl _airports_edctrl;
   Edctrl *airports_edctrl;
 };

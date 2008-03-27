@@ -1,6 +1,8 @@
 #ifndef AIRPORTS_H
 #define AIRPORTS_H
 
+#include <sqlpilot.h>
+
 enum {
   AIRPORTS_COL_ID = COL_ID,
   AIRPORTS_COL_IDENT,
@@ -19,7 +21,7 @@ enum {
 };
 
 #define AIRPORTS_SELECT					\
-  "select a._id as _id"					\
+  "select a.id as _id"					\
   ", a.ident as Ident"					\
   ", a.icao as ICAO"					\
   ", a.name as Name"					\
@@ -30,14 +32,14 @@ enum {
   ", a.city as City"					\
   ", a.province as Province"				\
   ", a.country as Country"				\
-  ", a._notes as _Notes"				\
-  " from MyAirports a"					\
+  ", a.notes as _Notes"					\
+  " from Airports a"					\
 
 #define AIRPORTS_GROUP_BY \
-  " group by a._id order by a.ident"
+  " group by a.id order by a.ident"
 
 #define AIRPORTS_WHERE_ID \
-  " where a._id = ?"
+  " where a.id = ?"
 
 enum {
   AIRPORTS_WRITE_IDENT = 1,
@@ -53,7 +55,6 @@ enum {
   AIRPORTS_WRITE_NOTES,
   AIRPORTS_WRITE_ID
 };
-
 
 #define AIRPORTS_INSERT				\
   "insert into airports "			\
@@ -87,5 +88,15 @@ enum {
 
 #define AIRPORTS_DELETE \
   "delete from airports where id = ?;"
+
+#include "airports.h"
+
+
+void airports_after_change(Sqlpilot *sqlpilot);
+DBint64 airports_write_entries(const gchar *id, Sqlpilot *sqlpilot);
+void airports_load_selection(Sqlpilot *logb);
+void airports_refresh(Sqlpilot *sqlpilot);
+int airports_selection_show(GtkTreeSelection *selection, char *show, size_t size);
+int airports_can_delete(GtkTreeSelection *selection);
 
 #endif

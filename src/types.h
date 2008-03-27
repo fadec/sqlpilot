@@ -1,6 +1,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#include "sqlpilot.h"
+
 enum {
   TYPES_COL_ID = COL_ID,
   TYPES_COL_IDENT,
@@ -34,6 +36,9 @@ enum {
   TYPES_COL_SIM,
   TYPES_COL_FTD,
   TYPES_COL_TOTAL,
+  TYPES_COL_AIRCRAFT,
+  TYPES_COL_FLIGHTS,
+  TYPES_COL_TIME
 };
 
 #define TYPES_SELECT						\
@@ -195,5 +200,12 @@ enum {
 
 #define TYPES_DELETE \
   "delete from types where id = ?;"
+
+int types_selection_show(GtkTreeSelection *selection, char *show, size_t size);
+int types_can_delete(GtkTreeSelection *selection);
+void types_after_change(Sqlpilot *sqlpilot);
+DBint64 types_write_entries(const gchar *id, Sqlpilot *sqlpilot);
+void types_load_selection(Sqlpilot *logb);
+void types_refresh(Sqlpilot *sqlpilot);
 
 #endif
