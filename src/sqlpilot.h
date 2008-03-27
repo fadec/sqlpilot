@@ -11,7 +11,59 @@
 #include "db/db.h"
 #include "util.h"
 #include "store.h"
-#include "edctrl.h"
+
+/* Editing states for view */
+typedef enum {
+  EDSTATE_EMPTY,
+  EDSTATE_SELECTED,
+  EDSTATE_MODIFIED,
+  EDSTATE_DELETEARMED
+} Edstate;
+
+typedef struct Sqlpilot Sqlpilot;
+
+typedef struct Edctrl Edctrl;
+struct Edctrl {
+  Edstate edstate;
+  GtkWidget *new_btn;
+  GtkWidget *save_btn;
+  GtkWidget *armdel_btn;
+  GtkWidget *todel_lbl;
+  GtkWidget *del_btn;
+  GtkTreeSelection *selection;
+  DBStatement *delete_stmt;
+  DBStatement *select_by_id_stmt;
+  void (*load_selection)(Sqlpilot *);
+  void *load_selection_data;
+  int (*selection_show)(GtkTreeSelection *, char *, size_t);
+  int (*can_delete)(GtkTreeSelection *);
+  void (*after_change)(Sqlpilot *);
+  void *after_change_data;
+  DBint64 (*save)(const char *id, Sqlpilot *);
+  void *save_data;
+};
+
+
+#define BUF_ED_TODEL 64
+
+void edctrl_set_empty(Edctrl *ec);
+void edctrl_set_selected(Edctrl *ec);
+void edctrl_set_modified(Edctrl *ec);
+void edctrl_set_deletearmed(Edctrl *ec);
+
+void edctrl_selection_changed(Edctrl *ec);
+void edctrl_new_btn_clicked(Edctrl *ec);
+void edctrl_save_btn_clicked(Edctrl *ec);
+void edctrl_del_btn_clicked(Edctrl *ec);
+
+void edctrl_register_load_selection(Edctrl *ec, void func(Sqlpilot *), Sqlpilot *);
+void edctrl_register_save(Edctrl *ec, DBint64 func(const char *, Sqlpilot *), Sqlpilot *);
+void edctrl_register_after_change(Edctrl *ec, void (Sqlpilot *), Sqlpilot *);
+
+void edctrl_armdel_btn_toggled(Edctrl *ec);
+
+
+//#include "edctrl.h"
 
 #define EXIT_SUCESS 0
 #define EXIT_BARF  1
@@ -42,7 +94,6 @@ enum {
   NOTEBOOK_PAGE_AIRPORTS
 };
 
-typedef struct Sqlpilot Sqlpilot;
 struct Sqlpilot {
   DB *db;
   GtkWidget *window;
@@ -131,6 +182,11 @@ struct Sqlpilot {
   GtkWidget *aircraft_type;
   GtkWidget *aircraft_fleetno;
   GtkWidget *aircraft_notes;
+  GtkWidget *aircraft_new_btn;
+  GtkWidget *aircraft_save_btn;
+  GtkWidget *aircraft_armdel_btn;
+  GtkWidget *aircraft_todel_lbl;
+  GtkWidget *aircraft_del_btn;
   Edctrl _aircraft_edctrl;
   Edctrl *aircraft_edctrl;
 
@@ -175,6 +231,11 @@ struct Sqlpilot {
   GtkWidget *types_sim;
   GtkWidget *types_ftd;
   GtkWidget *types_total;
+  GtkWidget *types_new_btn;
+  GtkWidget *types_save_btn;
+  GtkWidget *types_armdel_btn;
+  GtkWidget *types_todel_lbl;
+  GtkWidget *types_del_btn;
   Edctrl _types_edctrl;
   Edctrl *types_edctrl;
 

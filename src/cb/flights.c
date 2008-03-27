@@ -107,7 +107,7 @@ void on_flights_sout_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_text(entry, 5, 1, is_time_char);
   edctrl_set_modified(sqlpilot->flights_edctrl);
-  fprintf(stderr, "changed sout\n");
+  //fprintf(stderr, "changed sout\n");
 }
 
 int on_flights_sin_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
@@ -277,6 +277,7 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
   const char *dep, *arr, *date, *aout, *ain, *sout, *sin;
   char strdate[BUF_DATE], strtime[BUF_TIME];
 
+  dep  = gtk_entry_get_text(GTK_ENTRY(logb->flights_dep));
   arr  = gtk_entry_get_text(GTK_ENTRY(logb->flights_arr));
   date = gtk_entry_get_text(GTK_ENTRY(logb->flights_date));
   aout = gtk_entry_get_text(GTK_ENTRY(logb->flights_aout));
@@ -300,10 +301,12 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
     deptz2 = deptz;
     arrtz2 = arrtz;
   }
+  //printf("%s -> %s, %s -> %s\n", deptz1, deptz2, arrtz1, arrtz2);
 
   /* Do the switch */
   if (strlen(aout)) {
     move_time(deptz1, deptz2, date, aout, strdate, strtime);
+    //fprintf(stderr, "aout: %s %s -> %s %s\n", aout, deptz1, strtime, deptz2);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
   } 
@@ -314,13 +317,13 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
   }
   if (strlen(ain)) {
     move_time(arrtz1, arrtz2, date, ain, strdate, strtime);
+    //    fprintf(stderr, "ain: %s -> %s\n", aout, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
   }
   if (strlen(sin)) {
     move_time(arrtz1, arrtz2, date, sin, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
   }
-
   gtk_label_set_text(GTK_LABEL(logb->flights_utc_lbl),
 		     gtk_toggle_button_get_active(button) ? "UTC" : "Local");
       
@@ -346,7 +349,7 @@ void on_flights_dland_value_changed(GtkWidget *button, Sqlpilot *sqlpilot)
   edctrl_set_modified(sqlpilot->flights_edctrl);
 }
 
-void on_flights_nland_changed(GtkWidget *button, Sqlpilot *sqlpilot)
+void on_flights_nland_value_changed(GtkWidget *button, Sqlpilot *sqlpilot)
 {
   edctrl_set_modified(sqlpilot->flights_edctrl);
 }

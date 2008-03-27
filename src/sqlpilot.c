@@ -118,6 +118,11 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->aircraft_type    = __get_widget("aircraft_type");
   sqlpilot->aircraft_fleetno = __get_widget("aircraft_fleetno");
   sqlpilot->aircraft_notes   = __get_widget("aircraft_notes");
+  sqlpilot->aircraft_new_btn  = __get_widget("aircraft_new_btn");
+  sqlpilot->aircraft_save_btn = __get_widget("aircraft_save_btn");
+  sqlpilot->aircraft_armdel_btn = __get_widget("aircraft_armdel_btn");
+  sqlpilot->aircraft_del_btn  = __get_widget("aircraft_del_btn");
+  sqlpilot->aircraft_todel_lbl = __get_widget("aircraft_todel_lbl");
   sqlpilot->types_sw         = __get_widget("types_sw");
   sqlpilot->types_ident      = __get_widget("types_ident");
   sqlpilot->types_make       = __get_widget("types_make");
@@ -150,6 +155,11 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->types_sim         = __get_widget("types_sim");
   sqlpilot->types_ftd         = __get_widget("types_ftd");
   sqlpilot->types_total       = __get_widget("types_total");
+  sqlpilot->types_new_btn     = __get_widget("types_new_btn");
+  sqlpilot->types_save_btn    = __get_widget("types_save_btn");
+  sqlpilot->types_armdel_btn  = __get_widget("types_armdel_btn");
+  sqlpilot->types_del_btn     = __get_widget("types_del_btn");
+  sqlpilot->types_todel_lbl   = __get_widget("types_todel_lbl");
   sqlpilot->airports_sw       = __get_widget("airports_sw");
   sqlpilot->airports_ident    = __get_widget("airports_ident");
   sqlpilot->airports_icao     = __get_widget("airports_icao");
@@ -249,21 +259,21 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_after_change(sqlpilot->roles_edctrl, roles_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->roles_edctrl, roles_load_selection, sqlpilot);
 
-/*   sqlpilot->aircraft_edctrl                 = &sqlpilot->_aircraft_edctrl; */
-/*   sqlpilot->aircraft_edctrl->edstate        = EDSTATE_EMPTY; */
-/*   sqlpilot->aircraft_edctrl->new_btn        = sqlpilot->aircraft_new_btn; */
-/*   sqlpilot->aircraft_edctrl->save_btn       = sqlpilot->aircraft_save_btn; */
-/*   sqlpilot->aircraft_edctrl->armdel_btn     = sqlpilot->aircraft_armdel_btn; */
-/*   sqlpilot->aircraft_edctrl->todel_lbl      = sqlpilot->aircraft_todel_lbl; */
-/*   sqlpilot->aircraft_edctrl->del_btn        = sqlpilot->aircraft_del_btn; */
-/*   sqlpilot->aircraft_edctrl->selection      = sqlpilot->aircraft_selection; */
-/*   sqlpilot->aircraft_edctrl->selection_show = aircraft_selection_show; */
-/*   sqlpilot->aircraft_edctrl->can_delete     = aircraft_can_delete; */
-/*   sqlpilot->aircraft_edctrl->delete_stmt    = sqlpilot->aircraft_delete; */
-/*   sqlpilot->aircraft_edctrl->select_by_id_stmt    = sqlpilot->aircraft_select_by_id; */
-/*   edctrl_register_save(sqlpilot->aircraft_edctrl, aircraft_write_entries, sqlpilot); */
-/*   edctrl_register_after_change(sqlpilot->aircraft_edctrl, aircraft_after_change, sqlpilot); */
-/*   edctrl_register_load_selection(sqlpilot->aircraft_edctrl, aircraft_load_selection, sqlpilot); */
+  sqlpilot->aircraft_edctrl                        = &sqlpilot->_aircraft_edctrl;
+  sqlpilot->aircraft_edctrl->edstate               = EDSTATE_EMPTY;
+  sqlpilot->aircraft_edctrl->new_btn               = sqlpilot->aircraft_new_btn;
+  sqlpilot->aircraft_edctrl->save_btn              = sqlpilot->aircraft_save_btn;
+  sqlpilot->aircraft_edctrl->armdel_btn            = sqlpilot->aircraft_armdel_btn;
+  sqlpilot->aircraft_edctrl->todel_lbl             = sqlpilot->aircraft_todel_lbl;
+  sqlpilot->aircraft_edctrl->del_btn               = sqlpilot->aircraft_del_btn;
+  sqlpilot->aircraft_edctrl->selection             = sqlpilot->aircraft_selection;
+  sqlpilot->aircraft_edctrl->selection_show        = aircraft_selection_show;
+  sqlpilot->aircraft_edctrl->can_delete            = aircraft_can_delete;
+  sqlpilot->aircraft_edctrl->delete_stmt           = sqlpilot->aircraft_delete;
+  sqlpilot->aircraft_edctrl->select_by_id_stmt     = sqlpilot->aircraft_select_by_id;
+  edctrl_register_save(sqlpilot->aircraft_edctrl, aircraft_write_entries, sqlpilot);
+  edctrl_register_after_change(sqlpilot->aircraft_edctrl, aircraft_after_change, sqlpilot);
+  edctrl_register_load_selection(sqlpilot->aircraft_edctrl, aircraft_load_selection, sqlpilot);
 
 /*   sqlpilot->types_edctrl                 = &sqlpilot->_types_edctrl; */
 /*   sqlpilot->types_edctrl->edstate        = EDSTATE_EMPTY; */

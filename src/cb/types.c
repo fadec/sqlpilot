@@ -1,5 +1,52 @@
 #include "sqlpilot.h"
 
+
+#include "sqlpilot.h"
+
+/* void on_aircraft_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot) */
+/* { */
+/*   entry_clamp_aircraft_ident(entry); */
+/*   edctrl_set_modified(sqlpilot->aircraft_edctrl); */
+/* } */
+
+/* void on_aircraft_type_changed(GtkEntry *entry, Sqlpilot *sqlpilot) */
+/* { */
+/*   entry_clamp_types_ident(entry); */
+/*   edctrl_set_modified(sqlpilot->aircraft_edctrl); */
+/* } */
+
+/* void on_aircraft_fleetno_changed(GtkEntry *entry, Sqlpilot *sqlpilot) */
+/* { */
+/*   edctrl_set_modified(sqlpilot->aircraft_edctrl); */
+/* } */
+
+/* void on_aircraft_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot) */
+/* { */
+/*   edctrl_selection_changed(sqlpilot->aircraft_edctrl); */
+/* } */
+
+/* void on_aircraft_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot) */
+/* { */
+/*   edctrl_del_btn_clicked(sqlpilot->aircraft_edctrl); */
+/* } */
+
+/* void on_aircraft_save_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot) */
+/* { */
+/*   edctrl_save_btn_clicked(sqlpilot->aircraft_edctrl); */
+/* } */
+
+/* void on_aircraft_new_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot) */
+/* { */
+/*   edctrl_new_btn_clicked(sqlpilot->aircraft_edctrl); */
+/* } */
+
+/* void on_aircraft_armdel_btn_toggled(GtkButton *button, Sqlpilot *sqlpilot) */
+/* { */
+/*   edctrl_armdel_btn_toggled(sqlpilot->aircraft_edctrl); */
+/* } */
+
+
+
 static void set_dependents_stale(Sqlpilot *sqlpilot)
 {
   sqlpilot->flights_stale = TRUE;
@@ -195,6 +242,7 @@ static void types_load_entries_from_selection(Sqlpilot *logb)
 		       TYPES_COL_TOTAL, &total,
 		       -1);
   }
+
   gtk_entry_set_text(GTK_ENTRY(logb->types_ident), EMPTY_IF_NULL(ident));
   gtk_entry_set_text(GTK_ENTRY(logb->types_make), EMPTY_IF_NULL(make));
   gtk_entry_set_text(GTK_ENTRY(logb->types_model), EMPTY_IF_NULL(model));
@@ -351,5 +399,5 @@ void on_types_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
 
 void on_types_option_toggled(GtkButton *button, Sqlpilot *sqlpilot)
 {
-  edctrl_set_modified(sqlpilot->types_edctrl);
+  //edctrl_set_modified(sqlpilot->types_edctrl);
 }

@@ -22,12 +22,12 @@ int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size)
   }
 }
 
-void flights_after_change(void *data)
+void flights_after_change(Sqlpilot *sqlpilot)
 {
-  SQLPILOT(data)->roles_stale = TRUE;
-  SQLPILOT(data)->aircraft_stale = TRUE;
-  SQLPILOT(data)->types_stale = TRUE;
-  SQLPILOT(data)->airports_stale = TRUE;
+  sqlpilot->roles_stale = TRUE;
+  sqlpilot->aircraft_stale = TRUE;
+  sqlpilot->types_stale = TRUE;
+  sqlpilot->airports_stale = TRUE;
 }
 
 int flights_can_delete(GtkTreeSelection *selection)
@@ -37,9 +37,8 @@ int flights_can_delete(GtkTreeSelection *selection)
 }
 
 /* Writes stuff in entry portion of gui to db - if id is NULL it inserts, else updates */
-DBint64 flights_write_entries(const gchar *id, void *data)
+DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
 {
-  Sqlpilot *sqlpilot = SQLPILOT(data);
   const gchar
     *aircraft,
     *role,
@@ -317,9 +316,8 @@ void reconcile_time_entries(Sqlpilot *logb,
 
 }
 
-void flights_load_selection(void *data)
+void flights_load_selection(Sqlpilot *logb)
 {
-  Sqlpilot *logb = SQLPILOT(data);
   GtkTreeIter iter;
   GtkTreeModel *model;
   gchar

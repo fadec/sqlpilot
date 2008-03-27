@@ -24,3 +24,4 @@ fix the airport data
 allow multiline approach editing
 adjust airports select queries
 fix column sorting
+make fkey fields indicate if they will cause an insert

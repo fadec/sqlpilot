@@ -187,8 +187,8 @@ enum {
 
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int flights_can_delete(GtkTreeSelection *selection);
-void flights_after_change(void *data);
-DBint64 flights_write_entries(const gchar *id, void *data);
+void flights_after_change(Sqlpilot *data);
+DBint64 flights_write_entries(const gchar *id, Sqlpilot *);
 
 void entry_format_date_on_focus_out(GtkEntry *entry);
 void entry_format_time_on_focus_out(GtkEntry *entry, char separator);
@@ -199,7 +199,7 @@ void reconcile_time_entries(Sqlpilot *logb,
 			    GtkEntry *start,
 			    GtkEntry *end,
 			    GtkEntry *elapsed);
-void flights_load_selection(void *data);
+void flights_load_selection(Sqlpilot *);
 void flights_refresh(Sqlpilot *sqlpilot);
 
 #endif

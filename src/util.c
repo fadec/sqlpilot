@@ -280,7 +280,6 @@ void move_time(const char *fromtz, const char *totz, const char *strdate, const 
       fprintf(stderr, "tmtz_mktime failed in move_time\n");
       return;
     }
-
     localtime_tz(&t, totz, &tm);
     strftime(strtime_r, BUF_TIME, "%H:%M", &tm);
     strftime(strdate_r, BUF_DATE, "%Y-%m-%d", &tm);
@@ -289,6 +288,7 @@ void move_time(const char *fromtz, const char *totz, const char *strdate, const 
     strncpy(strdate_r, strdate, BUF_DATE);
     strdate_r[BUF_DATE - 1] = '\0';
   }
+  //fprintf(stderr, "move_time -- fromtz: %s, totz: %s\n", fromtz, totz);
 }
 
 /* Returns 1 if ident found, otherwise 0 - places  */

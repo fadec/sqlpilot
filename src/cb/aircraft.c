@@ -1,168 +1,43 @@
 #include "sqlpilot.h"
 
-static void set_dependents_stale(Sqlpilot *sqlpilot)
-{
-  sqlpilot->flights_stale = TRUE;
-  sqlpilot->types_stale = TRUE;
-}
-
-static void aircraft_write_entries(Sqlpilot *sqlpilot, const gchar *id)
-{
-  const gchar
-    *ident,
-    *type,
-    *fleetno;
-  gchar *notes;
-  DBStatement *stmt;
-
-  ident    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_ident));
-  type     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_type));
-  fleetno  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_fleetno));
-  notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->aircraft_notes));
-  
-  /* Write entries to database */
-  if (id) {
-    stmt = sqlpilot->aircraft_update;
-    db_bind_text(stmt, AIRCRAFT_WRITE_ID, id);
-  } else {
-    stmt = sqlpilot->aircraft_insert;
-  }
-  db_bind_text(stmt, AIRCRAFT_WRITE_IDENT, ident);
-  bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "ident", type);
-  db_bind_text(stmt, AIRCRAFT_WRITE_FLEETNO, fleetno);
-  db_bind_text(stmt, AIRCRAFT_WRITE_NOTES, notes);
-
-  db_step(stmt);
-  db_reset(stmt);
-  db_clear_bindings(stmt);
-
-  g_free(notes);
-}
-
-static void aircraft_load_entries_from_selection(Sqlpilot *logb)
-{
-  GtkTreeIter iter;
-  GtkTreeModel *model;
-  gchar
-    *id=NULL,
-    *ident=NULL,
-    *type=NULL,
-    *fleetno=NULL,
-    *notes=NULL;
-
-  if (gtk_tree_selection_get_selected (logb->aircraft_selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
-		       AIRCRAFT_COL_ID, &id,
-		       AIRCRAFT_COL_IDENT, &ident,
-		       AIRCRAFT_COL_TYPE, &type,
-		       AIRCRAFT_COL_FLEETNO, &fleetno,
-		       AIRCRAFT_COL_NOTES, &notes,
-		       -1);
-  }
-
-  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_ident), EMPTY_IF_NULL(ident));
-  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_type), EMPTY_IF_NULL(type));
-  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_fleetno), EMPTY_IF_NULL(fleetno));  
-  text_view_set_text(GTK_TEXT_VIEW(logb->aircraft_notes), EMPTY_IF_NULL(notes));
-
-  g_free(id);
-  g_free(ident);
-  g_free(type);
-  g_free(fleetno);
-  g_free(notes);
-}
-
-void aircraft_refresh(Sqlpilot *sqlpilot)
-{
-    store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), sqlpilot->aircraft_select_all);
-    aircraft_load_entries_from_selection(sqlpilot);
-    sqlpilot->aircraft_stale = FALSE;
-}
-
 void on_aircraft_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_aircraft_ident(entry);
+  edctrl_set_modified(sqlpilot->aircraft_edctrl);
 }
 
 void on_aircraft_type_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_types_ident(entry);
+  edctrl_set_modified(sqlpilot->aircraft_edctrl);
 }
 
-void on_aircraft_insert_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_aircraft_fleetno_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  DBStatement *stmt;
-  GtkTreeIter iter;
-  DBint64 inserted_id;
-
-  aircraft_write_entries(sqlpilot, NULL);
-  inserted_id = db_last_insert_rowid(sqlpilot->db); 
-
-  /* Read row into treemodel */
-  stmt = sqlpilot->aircraft_select_by_id;
-  db_bind_int64(stmt, 1, inserted_id);
-  gtk_list_store_insert(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), &iter, 0);
-  store_update_row(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), &iter, stmt);
-  
-  db_reset(stmt);
-  db_clear_bindings(stmt);
-
-  set_dependents_stale(sqlpilot);
+  edctrl_set_modified(sqlpilot->aircraft_edctrl);
 }
 
-void on_aircraft_update_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_aircraft_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
 {
-  GtkTreeIter iter;
-  gchar *id;
-  DBStatement *stmt;
-  
-  if (gtk_tree_selection_get_selected(sqlpilot->aircraft_selection, &sqlpilot->aircraft_treemodel, &iter)) {
-    gtk_tree_model_get(sqlpilot->aircraft_treemodel, &iter, AIRCRAFT_COL_ID, &id, -1);
-
-    aircraft_write_entries(sqlpilot, id);
-
-    /* Read row into treemodel */
-    stmt = sqlpilot->aircraft_select_by_id;
-    db_bind_text(stmt, 1, id);
-    store_update_row(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), &iter, stmt);
-  
-    db_reset(stmt);
-    db_clear_bindings(stmt);
-    g_free(id);
-
-    set_dependents_stale(sqlpilot);
-  }
+  edctrl_selection_changed(sqlpilot->aircraft_edctrl);
 }
 
-void on_aircraft_delete_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_aircraft_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
-  GtkTreeIter iter;
-  gchar *id;
-  
-  if (gtk_tree_selection_get_selected(sqlpilot->aircraft_selection, &sqlpilot->aircraft_treemodel, &iter)) {
-    gtk_tree_model_get(sqlpilot->aircraft_treemodel, &iter, AIRCRAFT_COL_ID, &id, -1);
-    
-    db_bind_text(sqlpilot->aircraft_delete, 1, id);
-
-    db_step(sqlpilot->aircraft_delete);
-    db_reset(sqlpilot->aircraft_delete);
-    db_clear_bindings(sqlpilot->aircraft_delete);
-  
-    gtk_list_store_remove(GTK_LIST_STORE(sqlpilot->aircraft_treemodel), &iter);
-
-    g_free(id);
-
-    set_dependents_stale(sqlpilot);
-  }
+  edctrl_del_btn_clicked(sqlpilot->aircraft_edctrl);
 }
-void on_aircraft_cancel_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+
+void on_aircraft_save_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
-  aircraft_load_entries_from_selection(sqlpilot);
+  edctrl_save_btn_clicked(sqlpilot->aircraft_edctrl);
 }
 
-void on_aircraft_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
+void on_aircraft_new_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
-  aircraft_load_entries_from_selection(logb);
+  edctrl_new_btn_clicked(sqlpilot->aircraft_edctrl);
 }
 
-
+void on_aircraft_armdel_btn_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+{
+  edctrl_armdel_btn_toggled(sqlpilot->aircraft_edctrl);
+}
