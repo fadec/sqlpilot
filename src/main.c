@@ -2,10 +2,11 @@
 
 #include <gtk/gtk.h>
 
+Sqlpilot *sqlpilot;
+
 int
 main (int argc, char *argv[])
 {
-  Sqlpilot *sqlpilot;
   char *dbfilename;
   int console=FALSE;
   

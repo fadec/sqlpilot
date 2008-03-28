@@ -193,7 +193,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="toggled" handler="on_flights_utc_toggled"/>
                                 <child>
                                   <widget class="GtkLabel" id="flights_utc_lbl">
@@ -755,7 +755,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">XC</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_flights_xc_toggled"/>
                                   </widget>
@@ -766,7 +766,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Hold</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                     <signal name="toggled" handler="on_flights_hold_toggled"/>
                                   </widget>
@@ -935,7 +935,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">New</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_flights_new_btn_clicked"/>
                               </widget>
                             </child>
@@ -947,7 +947,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Save</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_flights_save_btn_clicked"/>
                               </widget>
                               <packing>
@@ -991,7 +991,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Delete</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_flights_del_btn_clicked"/>
                               </widget>
                               <packing>
@@ -1006,7 +1006,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Arm</property>
-                                <property name="response_id">0</property>
+                                
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_flights_armdel_btn_toggled"/>
                               </widget>
@@ -1066,7 +1066,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <property name="response_id">0</property>
+                                
                                 <child>
                                   <widget class="GtkLabel" id="flights_view_utc_lbl">
                                     <property name="visible">True</property>
@@ -1096,7 +1096,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Date</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                 </child>
@@ -1106,7 +1106,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Actual</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1119,7 +1119,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Scheduled</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1132,7 +1132,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Flight Number</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1157,7 +1157,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Instrument</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                 </child>
@@ -1167,7 +1167,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Hood</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1180,7 +1180,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Approach</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1193,7 +1193,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Hold</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1216,7 +1216,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Night</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                 </child>
@@ -1226,7 +1226,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Cross Country</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1239,7 +1239,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Landings</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1252,7 +1252,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">checkbutton</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1275,7 +1275,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Crew</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                 </child>
@@ -1285,7 +1285,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Notes</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1298,7 +1298,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">Trip</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1311,7 +1311,7 @@
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <property name="label" translatable="yes">checkbutton</property>
-                                    <property name="response_id">0</property>
+                                    
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
@@ -1372,7 +1372,7 @@
                             <property name="receives_default">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Refresh</property>
-                            <property name="response_id">0</property>
+                            
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -1492,7 +1492,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">PIC</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_roles_pic_toggled"/>
                           </widget>
@@ -1506,7 +1506,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">SIC</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_roles_sic_toggled"/>
                           </widget>
@@ -1520,7 +1520,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">FE</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_roles_fe_toggled"/>
                           </widget>
@@ -1534,7 +1534,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Solo</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_roles_solo_toggled"/>
                           </widget>
@@ -1548,7 +1548,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Dual</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_roles_dual_toggled"/>
                           </widget>
@@ -1562,7 +1562,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Instruct</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_roles_instruct_toggled"/>
                           </widget>
@@ -1586,7 +1586,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Total</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_roles_total_toggled"/>
                           </widget>
@@ -1616,7 +1616,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">New</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_roles_new_btn_clicked"/>
                               </widget>
                             </child>
@@ -1628,7 +1628,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Save</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_roles_save_btn_clicked"/>
                               </widget>
                               <packing>
@@ -1672,7 +1672,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Delete</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_roles_del_btn_clicked"/>
                               </widget>
                               <packing>
@@ -1687,7 +1687,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Arm</property>
-                                <property name="response_id">0</property>
+                                
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_roles_armdel_btn_toggled"/>
                               </widget>
@@ -1906,7 +1906,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">New</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_aircraft_new_btn_clicked"/>
                               </widget>
                             </child>
@@ -1918,7 +1918,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Save</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_aircraft_save_btn_clicked"/>
                               </widget>
                               <packing>
@@ -1962,7 +1962,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Delete</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_aircraft_del_btn_clicked"/>
                               </widget>
                               <packing>
@@ -1977,7 +1977,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Arm</property>
-                                <property name="response_id">0</property>
+                                
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_aircraft_armdel_btn_toggled"/>
                               </widget>
@@ -2148,7 +2148,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Airplane</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2162,7 +2162,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Rotorcraft</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2177,7 +2177,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Glider</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2191,7 +2191,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">LTA</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2205,7 +2205,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">PoweredLift</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2219,7 +2219,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">PPC</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2233,7 +2233,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Weightshift</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2247,7 +2247,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Heli</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2261,7 +2261,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Gyro</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2275,7 +2275,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Airship</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2289,7 +2289,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Balloon</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2303,7 +2303,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Single</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2317,7 +2317,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Multi</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2331,7 +2331,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Land</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2345,7 +2345,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Sea</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2359,7 +2359,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Turbine</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2373,7 +2373,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Jet</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2387,7 +2387,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">HighPerf</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2401,7 +2401,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Retract</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2415,7 +2415,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Complex</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2429,7 +2429,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Pressurized</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2443,7 +2443,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Large</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2457,7 +2457,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Sport</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2471,7 +2471,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Ultralight</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2485,7 +2485,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Footlaunch</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2499,7 +2499,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Sim</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2513,7 +2513,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">FTD</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2537,7 +2537,7 @@
                             <property name="can_focus">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="label" translatable="yes">Total</property>
-                            <property name="response_id">0</property>
+                            
                             <property name="draw_indicator">True</property>
                             <signal name="toggled" handler="on_types_option_toggled"/>
                           </widget>
@@ -2567,7 +2567,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">New</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_types_new_btn_clicked"/>
                               </widget>
                             </child>
@@ -2579,7 +2579,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Save</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_types_save_btn_clicked"/>
                               </widget>
                               <packing>
@@ -2623,7 +2623,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Delete</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_types_del_btn_clicked"/>
                               </widget>
                               <packing>
@@ -2638,7 +2638,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Arm</property>
-                                <property name="response_id">0</property>
+                                
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_types_armdel_btn_toggled"/>
                               </widget>
@@ -3076,7 +3076,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">New</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_airports_new_btn_clicked"/>
                               </widget>
                             </child>
@@ -3088,7 +3088,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Save</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_airports_save_btn_clicked"/>
                               </widget>
                               <packing>
@@ -3132,7 +3132,7 @@
                                 <property name="receives_default">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Delete</property>
-                                <property name="response_id">0</property>
+                                
                                 <signal name="clicked" handler="on_airports_del_btn_clicked"/>
                               </widget>
                               <packing>
@@ -3147,7 +3147,7 @@
                                 <property name="can_focus">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="label" translatable="yes">Arm</property>
-                                <property name="response_id">0</property>
+                                
                                 <property name="draw_indicator">True</property>
                                 <signal name="toggled" handler="on_airports_armdel_btn_toggled"/>
                               </widget>

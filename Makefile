@@ -89,9 +89,10 @@ shell: ${SHELL_OBJ}
 ui: data/ui/sqlpilot.xml
 
 data/ui/sqlpilot.xml: data/ui/sqlpilot.glade
+	sed -i 's/<property name="response_id">0<\/property>//g' data/ui/sqlpilot.glade
 	gtk-builder-convert data/ui/sqlpilot.glade data/ui/sqlpilot.xml
 
- etags:
+etags:
 	etags.emacs `find -name "*.[h|c]"`
 
 run: sqlpilot

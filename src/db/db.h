@@ -42,7 +42,9 @@
 
 typedef sqlite3 DB;
 typedef sqlite3_stmt DBStatement;
-typedef sqlite3_int64 DBint64;
+/* Had trouble with sqlite3_int64 on Ubuntu ??? */
+//typedef sqlite3_int64 DBint64;
+typedef long long int DBint64;
 
 typedef struct DBResults DBResults;
 struct DBResults {
