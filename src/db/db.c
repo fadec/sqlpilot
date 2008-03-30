@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <glib.h>
 #include <ctype.h>
+#include <math.h>
 
 
 /* Takes a numeric column representing minutes and converts it to a hh+mm string. */
@@ -77,19 +78,40 @@ static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
   //sqlite3_result_text(context, b ? "T" : "F", -1, SQLITE_STATIC);
 }
 
-static void distance_func(sqlite3_context *context, int argc, sqlite3_value **argv)
+/* Compute according to Haversine Formula
+ * (from R.W. Sinnott, "Virtues of the Haversine", Sky and Telescope, vol. 68, no. 2, 1984, p. 159)
+ * dlon = lon2 - lon1
+ * dlat = lat2 - lat1
+ * a = sin^2(dlat/2) + cos(lat1) * cos(lat2) * sin^2(dlon/2)
+ * c = 2 * arcsin(min(1,sqrt(a)))
+ * d = R * c
+ */
+
+/* Parameters are lat and lon in radians */
+/* Returns great circle radians */
+static double great_circle(double lat1, double lon1, double lat2, double lon2)
 {
-  switch (sqlite3_value_type(argv[0])) {
-  case SQLITE_NULL:
-    break;
-  case SQLITE_FLOAT:
-  break;
-  case SQLITE_INTEGER:
-    break;
-  case SQLITE_BLOB:
-  case SQLITE_TEXT:
-    break;
-  }
+  double sin_dlon_ov2, sin_dlat_ov2, sqrt_a;
+  sin_dlat_ov2 = sin(lat2 - lat1) / 2;
+  sin_dlon_ov2 = sin(lon2 - lon1) / 2;
+  sqrt_a = sqrt(sin_dlat_ov2 * sin_dlat_ov2 + cos(lat1) * cos(lat2) * sin_dlon_ov2 * sin_dlon_ov2);
+  return 2 * asin(sqrt_a > 1.0 ? 1.0 : sqrt_a);
+}
+
+static void dist_nm(sqlite3_context *context, int argc, sqlite3_value **argv)
+{
+  double lat1, lat2, lon1, lon2, d, conv;
+
+  conv = 3.14159265 / 180;
+
+  lat1 = sqlite3_value_double(argv[0]) * conv;
+  lon1 = sqlite3_value_double(argv[1]) * conv;
+  lat2 = sqlite3_value_double(argv[2]) * conv;
+  lon2 = sqlite3_value_double(argv[3]) * conv;
+
+  d = 3437.74677143 * great_circle(lat1, lon1, lat2, lon2);
+
+  sqlite3_result_double(context, d);
 }
 
 /* Counts number of non-empty lines */
@@ -128,6 +150,7 @@ void db_register_sqlpilot_functions(DB* db)
   sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
   sqlite3_create_function(db, "bool", 1, SQLITE_ANY, 0, bool_func, 0, 0);
   sqlite3_create_function(db, "linecount", 1, SQLITE_ANY, 0, linecount_func, 0, 0);
+  sqlite3_create_function(db, "dist_nm", 4, SQLITE_ANY, 0, dist_nm, 0, 0);
 }
 
 DB* db_open(const char* filename)

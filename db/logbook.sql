@@ -31,12 +31,12 @@ CREATE TABLE Flights (
 	,Trip VARCHAR
 );
 
--- CREATE TABLE Routing (
---        id INTEGER PRIMARY KEY AUTOINCREMENT
---        ,flight_id INTEGER
---        ,airport_id INTEGER
---        ,seq INTEGER
--- );
+CREATE TABLE Routing (
+       id INTEGER PRIMARY KEY AUTOINCREMENT
+       ,flight_id INTEGER
+       ,airport_id INTEGER
+       ,Seq INTEGER
+);
 
 CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
@@ -181,11 +181,24 @@ LEFT JOIN types on aircraft.type_id = types.id;
 CREATE VIEW Experience AS
 SELECT flights.id as _id
 ,flights.date as Date
+,roles.ident as Role
 ,types.ident as Type
 ,aircraft.ident as Aircraft
+,aircraft.fleetno as FleetNo
 ,flights.dur as Dur
 ,dep_airports.ident as Dep
 ,arr_airports.ident as Arr
+,dep_airports.lat as DepLat
+,dep_airports.lon as DepLon
+,arr_airports.lat as ArrLat
+,arr_airports.lon as ArrLon
+,round(dist_nm(dep_airports.lat, dep_airports.lon, arr_airports.lat, arr_airports.lon), 1) as Dist
+,dep_airports.country as DepCountry
+,dep_airports.city as DepCity
+,dep_airports.province as DepProvince
+,arr_airports.country as ArrCountry
+,arr_airports.city as ArrCity
+,arr_airports.province as ArrProvice
 ,flights.night as Night
 ,flights.inst as Inst
 ,flights.siminst as SimInst

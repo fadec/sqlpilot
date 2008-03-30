@@ -1,4 +1,6 @@
 #include "flights.h"
+#define _GNU_SOURCE //for strcasestr
+#include <string.h>
 
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 {
@@ -177,33 +179,64 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   }
 }
 
-
-
 void entry_format_date_on_focus_out(GtkEntry *entry)
 {
-  int yy=0, mm=1, dd=1;
+  int d1=0, d2=0, d3=0;
   const char *text;
-  char result[11]; 		/* strlen("yyyy-mm-dd\0") == 11 */
+  char result[11];		/* strlen("yyyy-mm-dd\0") == 11 */
   struct tm tm = {0};
+  time_t t;
 
   text = gtk_entry_get_text(entry);
 
   if (text && strlen(text)) {
-    sscanf(text, "%d-%d-%d", &yy, &mm, &dd);
-    
-    tm.tm_year = yy - 1900;
-    tm.tm_mon = mm - 1;
-    tm.tm_mday = dd;
-    
+    if (time(&t) == -1) { exit(1); }
+    localtime_r(&t, &tm);
+    switch (sscanf(text, "%d-%d-%d", &d1, &d2, &d3)) {
+    case 3:
+      tm.tm_year = d1 - 1900;
+      tm.tm_mon = d2 - 1;
+      tm.tm_mday = d3;
+      break;
+    case 2:
+      tm.tm_mon = d1 - 1;
+      tm.tm_mday = d2;
+      break;
+    case 1:
+      tm.tm_mday = d1;
+      break;
+    }
     if (mktime(&tm) == -1) {
       result[0] = '\0';
     } else {
       strftime(result, 11, "%Y-%m-%d", &tm);
     }
-
     gtk_entry_set_text(entry, result);
   }
 
+}
+
+void entry_format_time_of_day(GtkEntry *entry, const char *local_tz, const char *to_tz, const char *date)
+{
+  const char *txt;
+
+  txt = gtk_entry_get_text(entry);
+  if (txt && strlen(txt)) {
+    char formed[BUF_TIME];
+    char moved[BUF_TIME];
+    char moveddate[BUF_DATE];
+    format_time(txt, formed, ':');
+    m_to_strtime(daywrap_minutes(strtime_to_m(formed)), formed, BUF_TIME, ':');
+    if (strcasestr(txt, "l")) {
+      move_time(local_tz, to_tz, date, formed, moveddate, moved);
+    } else if (strcasestr(txt, "u") || strcasestr(txt, "z")) {
+      move_time("UTC", to_tz, date, formed, moveddate, moved);
+    } else {
+      strncpy(moved, formed, BUF_TIME);
+      moved[BUF_TIME-1] = '\0';
+    }
+    gtk_entry_set_text(entry, moved);
+  }
 }
 
 void entry_format_time_on_focus_out(GtkEntry *entry, char separator)
@@ -214,22 +247,22 @@ void entry_format_time_on_focus_out(GtkEntry *entry, char separator)
   if (txt && strlen(txt)) { 
     char result[BUF_TIME];
     format_time(txt, result, separator);
-    if (separator == ':') m_to_strtime(daywrap_minutes(strtime_to_m(result)), result, BUF_TIME, separator);
+    if (separator == ':') {
+      m_to_strtime(daywrap_minutes(strtime_to_m(result)), result, BUF_TIME, separator);
+    }
     gtk_entry_set_text(entry, result);
   }
 }
 
 void entry_format_time_on_focus_in(GtkEntry *entry)
 {
-  #define __strmax 10
-
   const char *ptr;
-  char result[__strmax+1];
+  char result[BUF_TIME];
   int i = 0;
 
   ptr = gtk_entry_get_text(entry);
 
-  while (*ptr != '\0' && i < __strmax) {
+  while (*ptr != '\0' && i < BUF_TIME - 1) {
     if (*ptr >= '0' && *ptr <= '9') {
       result[i] = *ptr;
       i++;
@@ -239,7 +272,6 @@ void entry_format_time_on_focus_in(GtkEntry *entry)
   result[i] = '\0';
 
   gtk_entry_set_text(entry, result);
-  #undef __strmax
 }
 
 long elapsed_seconds(const char *date, const char *t1, const char *tz1, const char *t2, const char *tz2)
@@ -313,7 +345,6 @@ void reconcile_time_entries(Sqlpilot *logb,
     }
     gtk_entry_set_text(tochange, result);
   }
-
 }
 
 void flights_load_selection(Sqlpilot *logb)

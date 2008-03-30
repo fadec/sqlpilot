@@ -23,6 +23,7 @@ enum {
   FLIGHTS_COL_APRCH,
   FLIGHTS_COL_APRCHN,
   FLIGHTS_COL_XC,
+  FLIGHTS_COL_DIST,
   FLIGHTS_COL_DLAND,
   FLIGHTS_COL_NLAND,
   FLIGHTS_COL_CREW,
@@ -41,43 +42,44 @@ enum {
 
 /* All columns must be selected for use during update queries */
 /* Column names preceded with a _ are get hidden in the treeview */
-#define FLIGHTS_SELECT						\
-  "select flights.id as _id"					\
-  ", flights.date as Date"					\
-  ", flights.DateUTC as DateUTC"				\
-  ", a.ident as Aircraft"					\
-  ", r.ident as Role"						\
-  ", dep.ident as Dep"						\
-  ", arr.ident as Arr"						\
-  ", flights.aout as AOut"					\
-  ", flights.AOutUTC as AOutUTC"				\
-  ", flights.ain as AIn"					\
-  ", flights.AInUTC as AInUTC"					\
-  ", m_to_hhmm(flights.dur) as Dur"				\
-  ", m_to_hhmm(flights.night) as Night"				\
-  ", m_to_hhmm(flights.inst) as Inst"				\
-  ", m_to_hhmm(flights.siminst) as SimInst"			\
-  ", bool(flights.hold) as Hold"				\
-  ", flights.aprch as _Aprch"					\
-  ", linecount(flights.aprch) as Aprch"				\
-  ", bool(flights.xc) as XC"					\
-  ", flights.dland as DLand"					\
-  ", flights.nland as NLand"					\
-  ", flights.crew as _Crew"					\
-  ", linecount(flights.crew) as Crw"				\
-  ", flights.notes as _Notes"					\
-  ", linecount(flights.notes) as Nts"				\
-  ", flights.fltno as FltNo"					\
-  ", flights.sout as SOut"					\
-  ", flights.SOutUTC as SOutUTC"				\
-  ", flights.sin as SIn"					\
-  ", flights.SInUTC as SInUTC"					\
-  ", m_to_hhmm(flights.sdur) as SDur"				\
-  ", flights.trip as Trip"					\
-  " from flights"						\
-  " left join aircraft a on flights.aircraft_id = a.id"		\
-  " left join roles r on flights.role_id = r.id"		\
-  " left join airports dep on flights.dep_id = dep.id"		\
+#define FLIGHTS_SELECT							\
+  "select flights.id as _id"						\
+  ", flights.date as Date"						\
+  ", flights.DateUTC as DateUTC"					\
+  ", a.ident as Aircraft"						\
+  ", r.ident as Role"							\
+  ", dep.ident as Dep"							\
+  ", arr.ident as Arr"							\
+  ", flights.aout as AOut"						\
+  ", flights.AOutUTC as AOutUTC"					\
+  ", flights.ain as AIn"						\
+  ", flights.AInUTC as AInUTC"						\
+  ", m_to_hhmm(flights.dur) as Dur"					\
+  ", m_to_hhmm(flights.night) as Night"					\
+  ", m_to_hhmm(flights.inst) as Inst"					\
+  ", m_to_hhmm(flights.siminst) as SimInst"				\
+  ", bool(flights.hold) as Hold"					\
+  ", flights.aprch as _Aprch"						\
+  ", linecount(flights.aprch) as Aprch"					\
+  ", bool(flights.xc) as XC"						\
+  ", round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as Dist"	\
+  ", flights.dland as DLand"						\
+  ", flights.nland as NLand"						\
+  ", flights.crew as _Crew"						\
+  ", linecount(flights.crew) as Crw"					\
+  ", flights.notes as _Notes"						\
+  ", linecount(flights.notes) as Nts"					\
+  ", flights.fltno as FltNo"						\
+  ", flights.sout as SOut"						\
+  ", flights.SOutUTC as SOutUTC"					\
+  ", flights.sin as SIn"						\
+  ", flights.SInUTC as SInUTC"						\
+  ", m_to_hhmm(flights.sdur) as SDur"					\
+  ", flights.trip as Trip"						\
+  " from flights"							\
+  " left join aircraft a on flights.aircraft_id = a.id"			\
+  " left join roles r on flights.role_id = r.id"			\
+  " left join airports dep on flights.dep_id = dep.id"			\
   " left join airports arr on flights.arr_id = arr.id"
 
 #define FLIGHTS_WHERE_ID \
@@ -191,6 +193,7 @@ void flights_after_change(Sqlpilot *data);
 DBint64 flights_write_entries(const gchar *id, Sqlpilot *);
 
 void entry_format_date_on_focus_out(GtkEntry *entry);
+void entry_format_time_of_day(GtkEntry *entry, const char *local_tz, const char *to_tz, const char *date);
 void entry_format_time_on_focus_out(GtkEntry *entry, char separator);
 void entry_format_time_on_focus_in(GtkEntry *entry);
 long elapsed_seconds(const char *date, const char *t1, const char *tz1, const char *t2, const char *tz2);

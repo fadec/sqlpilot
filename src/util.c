@@ -28,7 +28,7 @@ void text_view_set_text(GtkTextView *tv, const char *text)
 
 int is_time_char(char c)
 {
-  return (c >= '0' && c <= '9') || c == '.' || c == ':' || c == '+';
+  return isdigit(c) || c == '.' || c == ':' || c == '+' || c == 'Z' || c == 'L' || c == 'U';
 }
 
 int is_ident_char(char c)
@@ -299,20 +299,20 @@ int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize)
   int found;
   char *tztext;
 
+  tz[tz_bufsize - 1] = 0;
   select = db_prep(db, sql);
-
   db_bind_text(select, 1, ident);
-
   found = (db_step(select) != DB_DONE);
 
   if (found) {
-    tz[tz_bufsize - 1] = 0;
     tztext = (char *)db_column_text(select, 0);
-    if (tztext) strncpy(tz, tztext, tz_bufsize);
-    if (tz[tz_bufsize - 1] != 0) {
-      fprintf(stderr, "Timezone buffer passed to tz_of_airport_ident() too small\n");
-      exit(1);
-    }
+  } else {
+    tztext = "UTC";
+  }
+  strncpy(tz, tztext, tz_bufsize);
+  if (tz[tz_bufsize - 1] != 0) {
+    fprintf(stderr, "Timezone buffer passed to tz_of_airport_ident() too small\n");
+    exit(1);
   }
 
   db_stp_res_clr(select);
@@ -425,7 +425,6 @@ int parseB60(const char *ts)
   return val;
 }
 
-
 int parsetime(const char *ts, int b60numerals)
 {
   char s[32], *sp=s;
@@ -450,34 +449,41 @@ int parsetime(const char *ts, int b60numerals)
 /* out must be a buffer of at least length BUF_TIME */
 void format_time(const char *input, char *out, char separator)
 {
-  char str[BUF_TIME], *ptr;
-  int i = 0;
-
-  strncpy(str, input, BUF_TIME);
-  str[BUF_TIME] = '\0';
-  ptr = g_strreverse(str);
-
-  if (strlen(str)) {
-    while (i < BUF_TIME - 1) {
+  if (strlen(input)) {
+    if (strstr(input, ".")) {
+      float hours;
+      sscanf(input, "%f", &hours);
+      m_to_strtime(hours * 60, out, BUF_TIME, separator);
+    } else {
+      char str[BUF_TIME], *ptr;
+      char str2[BUF_TIME];
+      int i = 0;
+      strncpy(str, input, BUF_TIME);
+      str[BUF_TIME-1] = '\0';
+      ptr = g_strreverse(str);
+      while (i < BUF_TIME - 1) {
 	if (i == 2) {		/* BUF_TIME must be >= 4 */
-	  out[i] = separator;
+	  str2[i] = separator;
 	  i++;
 	}
 	if (*ptr >= '0' && *ptr <= '9') {
-	  out[i] = *ptr;
+	  str2[i] = *ptr;
 	  i++;
 	}
 	if (*ptr == '\0') {
 	  /* format like (separator == ':') ? "%02d:%02d" : "%d:%02d */
-	  out[i] = (i < 4 || separator == ':') ? '0' : '\0';
+	  str2[i] = (i < 4 || separator == ':') ? '0' : '\0';
 	  i++;
 	} else {
 	  ptr++;
 	}
       }
-    out[i] = '\0';
-    g_strreverse(out);
-  } else {
+      str2[i] = '\0';
+      g_strreverse(str2);
+      m_to_strtime(strtime_to_m(str2), out, BUF_TIME, separator);
+    } 
+  }
+  else {
     out[0] = '\0';
   }
 }

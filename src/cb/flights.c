@@ -95,7 +95,23 @@ int on_flights_sout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 }
 int on_flights_sout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
-  entry_format_time_on_focus_out(entry, ':');
+  const gchar
+    *date,
+    *airport;
+  char local_tz[BUF_TZ], *to_tz;
+
+  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
+
+  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+    to_tz = "UTC";
+  } else {
+    to_tz = local_tz;
+  }
+
+  entry_format_time_of_day(entry, local_tz, to_tz, date);
   reconcile_time_entries(sqlpilot,
 			 GTK_ENTRY(sqlpilot->flights_sout),
 			 GTK_ENTRY(sqlpilot->flights_sout),
@@ -105,7 +121,8 @@ int on_flights_sout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpi
 }
 void on_flights_sout_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  entry_clamp_text(entry, 5, 1, is_time_char);
+  /* Clamp to six chars, eg 12:34z */
+  entry_clamp_text(entry, 6, 1, is_time_char);
   edctrl_set_modified(sqlpilot->flights_edctrl);
   //fprintf(stderr, "changed sout\n");
 }
@@ -117,7 +134,23 @@ int on_flights_sin_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilo
 }
 int on_flights_sin_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
-  entry_format_time_on_focus_out(entry, ':');
+  const gchar
+    *date,
+    *airport;
+  char local_tz[BUF_TZ], *to_tz;
+
+  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
+
+  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+    to_tz = "UTC";
+  } else {
+    to_tz = local_tz;
+  }
+
+  entry_format_time_of_day(entry, local_tz, to_tz, date);
   reconcile_time_entries(sqlpilot,
 			 GTK_ENTRY(sqlpilot->flights_sin),
 			 GTK_ENTRY(sqlpilot->flights_sout),
@@ -127,7 +160,7 @@ int on_flights_sin_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 }
 void on_flights_sin_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  entry_clamp_text(entry, 5, 1, is_time_char);
+  entry_clamp_text(entry, 6, 1, is_time_char);
   edctrl_set_modified(sqlpilot->flights_edctrl);
 }
 
@@ -160,7 +193,24 @@ int on_flights_aout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 }
 int on_flights_aout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
-  entry_format_time_on_focus_out(entry, ':');
+  const gchar
+    *date,
+    *airport;
+  char local_tz[BUF_TZ], *to_tz;
+
+  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
+
+  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+    to_tz = "UTC";
+  } else {
+    to_tz = local_tz;
+  }
+
+  entry_format_time_of_day(entry, local_tz, to_tz, date);
+
   reconcile_time_entries(sqlpilot,
 			 GTK_ENTRY(sqlpilot->flights_aout),
 			 GTK_ENTRY(sqlpilot->flights_aout),
@@ -170,7 +220,7 @@ int on_flights_aout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpi
 }
 void on_flights_aout_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  entry_clamp_text(entry, 5, 1, is_time_char);
+  entry_clamp_text(entry, 6, 1, is_time_char);
   edctrl_set_modified(sqlpilot->flights_edctrl);
 }
 
@@ -182,7 +232,24 @@ int on_flights_ain_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilo
 }
 int on_flights_ain_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
-  entry_format_time_on_focus_out(entry, ':');
+  const gchar
+    *date,
+    *airport;
+  char local_tz[BUF_TZ], *to_tz;
+
+  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
+
+  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+    to_tz = "UTC";
+  } else {
+    to_tz = local_tz;
+  }
+
+  entry_format_time_of_day(entry, local_tz, to_tz, date);
+
   reconcile_time_entries(sqlpilot,
 			 GTK_ENTRY(sqlpilot->flights_ain),
 			 GTK_ENTRY(sqlpilot->flights_aout),
@@ -213,7 +280,7 @@ int on_flights_dur_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 }
 void on_flights_dur_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  entry_clamp_text(entry, 5, 1, is_time_char);
+  entry_clamp_text(entry, 6, 1, is_time_char);
   edctrl_set_modified(sqlpilot->flights_edctrl);
 }
 
