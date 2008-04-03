@@ -1,9 +1,9 @@
 #!/usr/bin/env ruby
 class Rule
   def self.run
-    puts "#{self}"
+    #puts "#{self}"
     r = self.parse
-    puts "/#{self}"
+    #puts "/#{self}"
     r
   end
   def self.parse
@@ -34,7 +34,7 @@ end
 def match(regex)
   ln = getline
   if ln =~ regex
-    puts "  #{ln}"
+    #puts "  #{ln}"
     ln
   else
 #    puts "- #{ln}"
@@ -44,20 +44,18 @@ def match(regex)
 end
 
 def many(rule)
-  while rule.run do
+  if rule.class == Regexp
+    while match(rule) do
+    end
+  else
+    while rule.run do
+    end
   end
+  true
 end
 
 def one(rule)
   rule.run
-end
-
-def maybe(rule)
-  
-end
-
-def oneOf(rules)
-
 end
 
 class Schedule < Rule
@@ -73,10 +71,11 @@ class Junk < Rule
       match( /^Flt\s/ ) ||
       match( /^DT\s/ ) ||
       match( /^DH\s/ ) ||
-      match(  /^Bref\s/ ) ||
-      match(  /^Dbref\s/ ) ||
-      match(  /^Po\s/ ) ||
-      match(  /^Layo\s/ )
+      match( /^Bref\s/ ) ||
+      match( /^Dbref\s/ ) ||
+      match( /^Po\s/ ) ||
+      match( /^Layo\s/ ) ||
+      match( /^\s+City\s+Code/ )
   end
 end
 
@@ -85,19 +84,25 @@ class Trip < Rule
     (one TripInfo) &&
       (one Blank) &&
       (many Junk) &&
-      (many DutyPeriod)
+      (many DutyPeriod) &&
+      (one TripTotals) &&
+      (one TripFooter)
   end
 end
 
-class DutyPeriod
+class DutyPeriod < Rule
   def self.parse
-    many Flight
+    (many Flight) &&
+      (one Rest) &&
+      (one Blank) &&
+      (one Junk) &&
+      (one Hotel)
   end
 end
 
 class Blank < Rule
   def self.parse
-    match /\s.*/
+    match /^\s*$/
   end
 end
 
@@ -109,33 +114,55 @@ end
 
 class Flight < Rule
   def self.parse
-    one FlightInfo
-    one Blank
-    many Crew
+    (one FlightInfo) &&
+      (one Blank) &&
+      (one Junk) &&
+      (many Crew) &&
+      (((match /^Exception/) &&
+        (match /.*/)) || true)
   end
 end
 
 class FlightInfo < Rule
   def self.parse
-    match /^ [0-9]{4}\s/
+    ln = match /^ [0-9]{4}\s/
+    puts ln
+    ln
   end
 end
 
 class Rest < Rule
   def self.parse
-    match /^ DP[0-9]/
+    (match /^ DP[0-9]/) &&
+      ((match /^\s+[0-9]/ ) || true)
   end
 end
 
 class Crew < Rule
   def self.parse
-    match /^[0-9a-zA-Z]{5,}/
+    match /CA01|FO01|FA01/
   end
 end
 
 class Hotel < Rule
   def self.parse
-    match /^Hotel\s/
+    (match /^Hotel\s/) &&
+      (((match /^Limo\s/) && (match /^OPS\s/)) || true)
+  end
+end
+
+class TripTotals < Rule
+  def self.parse
+    (one Junk) &&
+      (match /^\s+[0-9]/)
+  end
+end
+
+class TripFooter < Rule
+  def self.parse
+      (match /^Crew Member/) &&
+      (match /^Pos /) &&
+      (many /Hotel|Limo|Ops/)
   end
 end
 
