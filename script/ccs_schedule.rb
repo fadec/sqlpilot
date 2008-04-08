@@ -111,8 +111,8 @@ class Trip < Parser
         (dps = many DutyPeriod) &&
         (one TripTotals) &&
         (one TripFooter)
-      ident, pos, date = ti.scan(/\w+/)
-      {:ident => ident, :date => date, :duty_periods => dps}
+      ident, pos, mon, day, year = ti.scan(/\w+/)
+      {:ident => ident, :date => "#{mon} #{day} #{year}", :duty_periods => dps}
     end
   end
 end
@@ -177,7 +177,13 @@ end
 class Crew < Parser
   def self.parse
     if (line = match /CA01|FO01|FA01/)
-      line
+      l = line.split "\t"
+      person = [l[2], l[6], l[7].scan(/\w+/).reverse.join(" ")].join " "
+      if l[3] =~ /D/
+        "DH " + person
+      else
+        person
+      end
     end
   end
 end
@@ -210,36 +216,54 @@ class TripFooter < Parser
   end
 end
 
-
-
 def make_date(strdate, strmday)
-  months = {"Aprl" => 4, "May" => 5}
-  mday = strmday.to_i
-  m, d, y = strdate.gsub(/,/, "").scan /\w+/
+  months = {"Jan" => 1, "Feb" => 2, "Mar" => 3, "Apr" => 4, "May" => 5, "Jun" => 6, "Jul" => 7, "Aug" => 8, "Sep" => 9, "Oct" => 10, "Nov" => 11, "Dec" => 12}
+  m, d, y = strdate.scan /\w+/
   m = months[m]
   d = d.to_i
   y = y.to_i + 2000
-  m += 1 if d > mday
-  #puts [y, m, mday]
-  #t = Time.mktime y, m, mday
-  #t.strftime "%Y-%m-%d"
-  "date"
+  if strmday
+    mday = strmday.to_i
+    m += 1 if d > mday
+  else
+    mday = d
+  end
+  t = Time.mktime y, m, mday
+  t.strftime "%Y-%m-%d"
 end
 
 for trip in Schedule.run
   for duty_period in trip[:duty_periods]
     for flight in duty_period[:flights]
-      puts "#{make_date trip[:date], flight[:mdate]} #{flight[:flightno]}: #{flight[:dep]} #{flight[:out]} - #{flight[:arr]} #{flight[:in]}"
-      for crew in flight[:crew]
-        #puts crew
-      end
+      puts [(make_date trip[:date], flight[:mday]),
+            flight[:flightno],
+            nil,
+            nil,
+            flight[:dep],
+            flight[:arr],
+            nil,
+            nil,
+            flight[:out],
+            flight[:in],
+            nil,
+            nil,
+            nil,
+            nil,
+            nil,
+            "CA",
+            nil,
+            nil,
+            nil,
+            flight[:crew].join('~'),
+            make_date(trip[:date], nil)
+           ].join(",")
     end
-    if (hotel = duty_period[:rest][:hotel])
-      puts hotel[:hotel_info]
-      if hotel[:limo]
-        puts hotel[:limo]
-      end
-    end
+    #if (hotel = duty_period[:rest][:hotel])
+      #puts hotel[:hotel_info]
+      #if hotel[:limo]
+        #puts hotel[:limo]
+      #end
+    #end
   end
 end
 
