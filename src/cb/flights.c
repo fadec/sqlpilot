@@ -25,6 +25,21 @@ void on_flights_date_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   edctrl_set_modified(sqlpilot->flights_edctrl);
 } 
 
+int on_flights_tripdate_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  return FALSE;
+}
+int on_flights_tripdate_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  entry_format_date_on_focus_out(entry);
+  return FALSE;
+}
+void on_flights_tripdate_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+{
+  entry_clamp_text(entry, 10, 0, is_numeric_date_char);
+  edctrl_set_modified(sqlpilot->flights_edctrl);
+} 
+
 void on_flights_role_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_roles_ident(entry);

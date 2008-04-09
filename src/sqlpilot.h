@@ -2,6 +2,7 @@
 #ifndef SQLPILOT_H
 #define SQLPILOT_H
 
+#define _GNU_SOURCE //for strcasestr
 #define UI_XML_FILE  "data/ui/sqlpilot.xml"
 
 #include <gtk/gtk.h>

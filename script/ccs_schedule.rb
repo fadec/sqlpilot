@@ -232,6 +232,7 @@ def make_date(strdate, strmday)
   t.strftime "%Y-%m-%d"
 end
 
+puts "" #header row
 for trip in Schedule.run
   for duty_period in trip[:duty_periods]
     for flight in duty_period[:flights]
@@ -248,14 +249,15 @@ for trip in Schedule.run
             nil,
             nil,
             nil,
+            1,
             nil,
             nil,
             "CA",
             nil,
             nil,
             nil,
-            flight[:crew].join('~'),
-            make_date(trip[:date], nil)
+            '"' + flight[:crew].join("\n") + '"',
+            trip[:ident]
            ].join(",")
     end
     #if (hotel = duty_period[:rest][:hotel])

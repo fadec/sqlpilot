@@ -32,7 +32,9 @@ struct InCSV {
     dur,
     night,
     inst,
+    xc,
     apprch,
+    hold,
     role,
     dland,
     nland,
@@ -51,7 +53,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   if ((csv->fh = fopen(filename, "rb")) == NULL) return 1;
 
   csv->sep = ',';
-  csv->timebase = INCSV_TIMEBASE_LOCAL;
+  csv->timebase = INCSV_TIMEBASE_AIRPORT;
   csv->date = 0;
   csv->fltno = 1;
   csv->aircraft = 2;
@@ -65,14 +67,16 @@ static int incsv_init(InCSV *csv, const char *filename)
   csv->dur = 10;
   csv->night = 11;
   csv->inst = 12;
-  csv->apprch = 13;
-  csv->role = 15;
-  csv->dland = 16;
-  csv->nland = 17;
-  csv->notes = 18;
-  csv->crew = 19;
-  csv->trip = 20;
-  csv->numcol = 21;
+  csv->xc   = 13;
+  csv->apprch = 14;
+  csv->hold  = 15;
+  csv->role = 16;
+  csv->dland = 17;
+  csv->nland = 18;
+  csv->notes = 19;
+  csv->crew = 20;
+  csv->trip = 21;
+  csv->numcol = 22;
   return 0;
 }
 
@@ -178,7 +182,7 @@ void incsv_import(InCSV *incsv, DB *db)
 		       (unsigned char **)csv_row,
 		       CSV_COLS,
 		       incsv->sep,
-		       0) > 0) {
+		       CSV_QUOTES) > 0) {
 
     /* CSV reading and checking */
     if (nrow == 0) { nrow++; continue; }	/* Skip CSV header */
@@ -189,7 +193,7 @@ void incsv_import(InCSV *incsv, DB *db)
       }
     }
 
-    *date = *sout = *soututc = *sin = *sinutc = *sdur = *aout = *aoututc = *ain = *ainutc = *dur = *night = *inst = '\0';
+    *date = *dateutc = *sout = *soututc = *sin = *sinutc = *sdur = *aout = *aoututc = *ain = *ainutc = *dur = *night = *inst = '\0';
     fnight = finst = 0;
     dland = nland = 0;
     aout_t = ain_t = sout_t = sin_t = -1;
@@ -296,27 +300,28 @@ void incsv_import(InCSV *incsv, DB *db)
     bind_id_of(flights_ins, FLIGHTS_WRITE_ROLE, "roles", "ident", csv_row[incsv->role]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_DEP, "airports", "ident", csv_row[incsv->dep]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_ARR, "airports", "ident", csv_row[incsv->arr]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_DATE, date);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_DATEUTC, dateutc);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_DATE, date);
+    //db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_TRIPDATE, dateutc);
     db_bind_text(flights_ins, FLIGHTS_WRITE_FLTNO, csv_row[incsv->fltno]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SOUT, sout);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SOUTUTC, soututc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SIN, sin);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SINUTC, sinutc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SDUR, sdur);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AOUT, aout);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AOUTUTC, aoututc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AIN, ain);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AINUTC, ainutc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_DUR, dur);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_NIGHT, night);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_INST, inst);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_SOUT, sout);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_SOUTUTC, soututc);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_SIN, sin);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_SINUTC, sinutc);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_SDUR, sdur);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_AOUT, aout);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_AOUTUTC, aoututc);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_AIN, ain);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_AINUTC, ainutc);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_DUR, dur);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_NIGHT, night);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_INST, inst);
+    db_bind_int(flights_ins, FLIGHTS_WRITE_XC, strlen(csv_row[incsv->xc]) ? 1 : 0);
     db_bind_int(flights_ins, FLIGHTS_WRITE_DLAND, dland);
     db_bind_int(flights_ins, FLIGHTS_WRITE_NLAND, nland);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_APRCH, csv_row[incsv->apprch]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_CREW, csv_row[incsv->crew]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_NOTES, csv_row[incsv->notes]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_TRIP, csv_row[incsv->trip]);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_APRCH, csv_row[incsv->apprch]);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_CREW, csv_row[incsv->crew]);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_NOTES, csv_row[incsv->notes]);
+    db_bind_text_unless_empty(flights_ins, FLIGHTS_WRITE_TRIP, csv_row[incsv->trip]);
     db_stp_res_clr(flights_ins);
     fprintf(stderr, "%d: %s\n", nrow, date);
     nrow++;

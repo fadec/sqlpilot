@@ -1,5 +1,4 @@
 #include "flights.h"
-#define _GNU_SOURCE //for strcasestr
 #include <string.h>
 
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size)
@@ -162,7 +161,7 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain);
   db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout);
   db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin);
-  db_bind_text(stmt, FLIGHTS_WRITE_DATEUTC, utc ? date : _date);
+  //db_bind_text(stmt, FLIGHTS_WRITE_TRIPDATE, utc ? date : _date);
   db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout);
   db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain);
   db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout);
@@ -358,7 +357,7 @@ void flights_load_selection(Sqlpilot *logb)
     *dep=NULL,
     *arr=NULL,
     *date=NULL,
-    *dateutc=NULL,
+    *tripdate=NULL,
     *aout=NULL,
     *aoututc=NULL,
     *ain=NULL,
@@ -388,7 +387,7 @@ void flights_load_selection(Sqlpilot *logb)
     gtk_tree_model_get(model, &iter,
 		       FLIGHTS_COL_ID, &id,
 		       FLIGHTS_COL_DATE, &date,
-		       FLIGHTS_COL_DATE, &dateutc,
+		       FLIGHTS_COL_TRIPDATE, &tripdate,
 		       FLIGHTS_COL_AIRCRAFT, &aircraft,
 		       FLIGHTS_COL_ROLE, &role,
 		       FLIGHTS_COL_DEP, &dep,
@@ -441,10 +440,10 @@ void flights_load_selection(Sqlpilot *logb)
   gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
 
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_utc))) {
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(dateutc));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aoututc));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ainutc));
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(soututc));
+    /* gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(dateutc)); */
+/*     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aoututc)); */
+/*     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ainutc)); */
+/*     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(soututc)); */
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sinutc));
   } else {
     gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
@@ -456,7 +455,7 @@ void flights_load_selection(Sqlpilot *logb)
       
   g_free(id);
   g_free(date);
-  g_free(dateutc);
+  g_free(tripdate);
   g_free(aircraft);
   g_free(role);
   g_free(dep);

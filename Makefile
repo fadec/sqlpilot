@@ -1,6 +1,7 @@
 include config.mk
 
 SRC = src/sqlpilot.c \
+      src/tmz.c \
       src/util.c \
       src/lib/csv.c \
       src/db/db.c \
@@ -28,8 +29,8 @@ SHELL_SRC = src/shell.c  src/db/db.c
 TEST_SRC = test/units/$(unit)_test.c test/test.c ${SRC}
 
 
-
 HEADERS = src/sqlpilot.h \
+	  src/tmz.h \
 	  src/util.h \
 	  src/lib/csv.h \
 	  src/db/db.h \
@@ -88,9 +89,9 @@ shell: ${SHELL_OBJ}
 
 ui: data/ui/sqlpilot.xml
 
-data/ui/sqlpilot.xml: data/ui/sqlpilot.glade
+data/ui/sqlpilot.xml: data/ui/sqlpilot.glade script/gtk-builder-convert
 	sed -i 's/<property name="response_id">0<\/property>//g' data/ui/sqlpilot.glade
-	gtk-builder-convert data/ui/sqlpilot.glade data/ui/sqlpilot.xml
+	script/gtk-builder-convert data/ui/sqlpilot.glade data/ui/sqlpilot.xml
 
 etags:
 	etags.emacs `find -name "*.[h|c]"`
@@ -111,7 +112,7 @@ wc:
 
 db-reset: db/logbook.sql
 	-rm -f logbook.db
-	cat db/logbook.sql | sqlite3 logbook.db
+	cat db/logbook.sql | ./shell logbook.db
 
 db-reload: db-reset
 	-awk -f db/airports/airports.awk db/airports/airports.csv | sqlite3 logbook.db

@@ -6,7 +6,7 @@
 enum {
   FLIGHTS_COL_ID = COL_ID,
   FLIGHTS_COL_DATE,
-  FLIGHTS_COL_DATEUTC,
+  FLIGHTS_COL_SEQ,
   FLIGHTS_COL_AIRCRAFT,
   FLIGHTS_COL_ROLE,
   FLIGHTS_COL_DEP,
@@ -37,6 +37,7 @@ enum {
   FLIGHTS_COL_SINUTC,
   FLIGHTS_COL_SDUR,
   FLIGHTS_COL_TRIP,
+  FLIGHTS_COL_TRIPDATE,
   FLIGHTS_NUMCOL
 };
 
@@ -45,15 +46,19 @@ enum {
 #define FLIGHTS_SELECT							\
   "select flights.id as _id"						\
   ", flights.date as Date"						\
-  ", flights.DateUTC as DateUTC"					\
+  ", flights.Seq as Seq"						\
   ", a.ident as Aircraft"						\
   ", r.ident as Role"							\
   ", dep.ident as Dep"							\
   ", arr.ident as Arr"							\
-  ", flights.aout as AOut"						\
-  ", flights.AOutUTC as AOutUTC"					\
-  ", flights.ain as AIn"						\
-  ", flights.AInUTC as AInUTC"						\
+  ", strftime(flights.aout, '%H:%M') as AOut"				\
+  ", date(flights.aout) as _AOutDate"					\
+  ", strftime(flights.AOutUTC, '%H:%M') as AOutUTC"			\
+  ", date(flights.AOutUTC) as _AOutUTCDate"				\
+  ", strftime(flights.ain, '%H:%M') as AIn"				\
+  ", date(flights.ain) as _AInDate"					\
+  ", strftime(flights.AInUTC, '%H:%M') as AInUTC"			\
+  ", date(flights.AInUTC) as _AInUTCDate"				\
   ", m_to_hhmm(flights.dur) as Dur"					\
   ", m_to_hhmm(flights.night) as Night"					\
   ", m_to_hhmm(flights.inst) as Inst"					\
@@ -70,10 +75,14 @@ enum {
   ", flights.notes as _Notes"						\
   ", linecount(flights.notes) as Nts"					\
   ", flights.fltno as FltNo"						\
-  ", flights.sout as SOut"						\
-  ", flights.SOutUTC as SOutUTC"					\
-  ", flights.sin as SIn"						\
-  ", flights.SInUTC as SInUTC"						\
+  ", strftime(flights.sout, '%H:%M') as SOut"				\
+  ", date(flights.sout) as _SOutDate"					\
+  ", strftime(flights.SOutUTC, '%H:%M') as SOutUTC"			\
+  ", date(flights.SOutUTC) as _SOutUTCDate"				\
+  ", strftime(flights.sin, '%H:%M') as SIn"				\
+  ", date(flights.sin) as _SInDate"					\
+  ", strftime(flights.SInUTC, '%H:%M') as SInUTC"			\
+  ", date(flights.SInUTC) as _SInUTCDate"				\
   ", m_to_hhmm(flights.sdur) as SDur"					\
   ", flights.trip as Trip"						\
   " from flights"							\
@@ -92,7 +101,8 @@ enum {
   FLIGHTS_WRITE_DEP,
   FLIGHTS_WRITE_ARR,
   FLIGHTS_WRITE_DATE,
-  FLIGHTS_WRITE_DATEUTC,
+  FLIGHTS_WRITE_SEQ,
+  FLIGHTS_WRITE_TRIPDATE,
   FLIGHTS_WRITE_AOUT,
   FLIGHTS_WRITE_AOUTUTC,
   FLIGHTS_WRITE_AIN,
@@ -125,8 +135,9 @@ enum {
   ",role_id"								\
   ", dep_id"								\
   ", arr_id"								\
-  ", date"								\
-  ", DateUTC"								\
+  ", Date"								\
+  ", Seq"								\
+  ", TripDate"								\
   ", aout"								\
   ", AOutUTC"								\
   ", ain"								\
@@ -158,8 +169,9 @@ enum {
   ", role_id = ?"				\
   ", dep_id = ?"				\
   ", arr_id = ?"				\
-  ", date = ?"					\
-  ", DateUTC = ?"				\
+  ", Date = ?"					\
+  ", Seq = ?"					\
+  ", TripDate = ?"				\
   ", aout = ?"					\
   ", AOutUTC = ?"				\
   ", ain = ?"					\
