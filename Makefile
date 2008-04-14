@@ -116,8 +116,8 @@ db-reset: db/logbook.sql
 
 db-reload: db-reset
 	-awk -f db/airports/airports.awk db/airports/airports.csv | sqlite3 logbook.db
-	cat ~/logbook/save.sql | sqlite3 logbook.db
-	./importcsv ~/logbook/_finished.csv logbook.db
+#	cat ~/logbook/save.sql | sqlite3 logbook.db
+#	./importcsv ~/logbook/_finished.csv logbook.db
 
 
 test: $(unit)_test

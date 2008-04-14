@@ -2,6 +2,7 @@
 #define FLIGHTS_H
 
 #include "sqlpilot.h"
+#include "tmz.h"
 /* Column numbers for treemodel and select statements */
 enum {
   FLIGHTS_COL_ID = COL_ID,
@@ -138,9 +139,9 @@ enum {
   ", Date"								\
   ", Seq"								\
   ", TripDate"								\
-  ", aout"								\
+  ", AOut"								\
   ", AOutUTC"								\
-  ", ain"								\
+  ", AIn"								\
   ", AInUTC"								\
   ", dur"								\
   ", night"								\
@@ -154,14 +155,14 @@ enum {
   ", crew"								\
   ", notes"								\
   ", fltno"								\
-  ", sout"								\
+  ", SOut"								\
   ", SOutUTC"								\
-  ", sin"								\
+  ", SIn"								\
   ", SInUTC"								\
-  ", sdur"								\
+  ", SDur"								\
   ", trip)"								\
   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), ?, ?, ?, " \
-  "?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
+  "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
 
 #define FLIGHTS_UPDATE				\
   "update flights set"				\

@@ -68,12 +68,12 @@ static void tmz_set_tz(Tmz *tmz, tmz_tz_str tz)
 
 static void tmz_set_tm(Tmz *tmz, int year, int mon, int mday, int hour, int min, int sec)
 {
-  tmz->tm.tm_year = year - 1900;
-  tmz->tm.tm_mon  = mon - 1;
-  tmz->tm.tm_mday = mday;
-  tmz->tm.tm_hour = hour;
-  tmz->tm.tm_min  = min;
-  tmz->tm.tm_sec  = sec;
+  if (year != -1) tmz->tm.tm_year = year - 1900;
+  if (mon != -1) tmz->tm.tm_mon  = mon - 1;
+  if (mday != -1) tmz->tm.tm_mday = mday;
+  if (hour != -1) tmz->tm.tm_hour = hour;
+  if (min != -1) tmz->tm.tm_min  = min;
+  if (sec != -1) tmz->tm.tm_sec  = sec;
 }
 
 time_t tmz_set(Tmz *tmz, int year, int mon, int mday, int hour, int min, int sec, tmz_tz_str tz)
@@ -121,7 +121,7 @@ size_t tmz_strftime(Tmz *tmz, const char *format, char *s, size_t max)
 
 int tmz_read_datetimetz(Tmz *tmz, const char *datetimetz)
 {
-  int year=-1, mon=1, mday=1, hour=0, min=0, sec=0;
+  int year=-1, mon=-1, mday=-1, hour=-1, min=-1, sec=-1;
   char *p = (char*)datetimetz, *tzstart;
 
   sscanf(datetimetz, "%d-%d-%d %d:%d:%d", &year, &mon, &mday, &hour, &min, &sec);
@@ -130,5 +130,14 @@ int tmz_read_datetimetz(Tmz *tmz, const char *datetimetz)
 
   tmz_set(tmz, year, mon, mday, hour, min, sec, tzstart);
 
+  return 0;
+}
+
+int tmz_read_date(Tmz *tmz, const char *date)
+{
+  int year=-1, mon=-1, mday=-1;
+  
+  scanf(date, "%d-%d-%d", &year, &mon, &mday);
+  tmz_set_tm(tmz, year, mon, mday, -1, -1, -1);
   return 0;
 }

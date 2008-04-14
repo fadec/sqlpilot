@@ -108,6 +108,7 @@ struct Sqlpilot {
   GtkWidget *flights_aircraft;
   GtkWidget *flights_date;
   GtkWidget *flights_role;
+  GtkWidget *flights_seq;
   GtkWidget *flights_dep;
   GtkWidget *flights_arr;
   GtkWidget *flights_aout;

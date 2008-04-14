@@ -46,6 +46,7 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     *dep,
     *arr,
     *date,
+    *tripdate,
     *aout,
     *ain,
     *dur,
@@ -59,24 +60,19 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     *sdur,
     *trip;
   gchar *crew, *notes;
-  char				/* For other timezone strings, local if flights_utc and vice versa */
-    _date[BUF_DATE],
-    _aout[BUF_TIME],
-    _ain[BUF_TIME],
-    _sout[BUF_TIME],
-    _sin[BUF_TIME],
-    deptz[BUF_TZ],
-    arrtz[BUF_TZ];
-  char *deptz1, *deptz2, *arrtz1, *arrtz2;
-  gint dland, nland;
+  gint dland, nland, seq;
   gboolean xc, hold;
   DBStatement *stmt;
   gboolean utc;
+  tmz_tz_str deptz, arrtz;
 
   utc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc));
 
+  date     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  tripdate = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
   aircraft = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aircraft));
   role     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_role));
+  seq      = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_seq));
   dep      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
   arr      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
   dur      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dur));
@@ -93,42 +89,14 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   xc       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_xc));
   crew     = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_crew));
   notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_notes));
-  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
   aout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aout));
   ain  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_ain));
   sout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sout));
   sin  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sin));
 
-
   tz_of_airport_ident(sqlpilot->db, dep, deptz, sizeof(deptz));
   tz_of_airport_ident(sqlpilot->db, arr, arrtz, sizeof(arrtz));
-
-  if (utc) {
-    /* to Local */
-    deptz1 = "UTC";
-    arrtz1 = "UTC";
-    deptz2 = deptz;
-    arrtz2 = arrtz;
-
-  } else {
-    /* to UTC */
-    deptz1 = deptz;
-    arrtz1 = arrtz;
-    deptz2 = "UTC";
-    arrtz2 = "UTC";
-  }
-
-  move_time(arrtz1, arrtz2, date, ain, _date, _ain);
-  move_time(arrtz1, arrtz2, date, sin, _date, _sin);
-  /* Adjusting order of calls _date right, preferring aout over sout */
-  /* Note that we depend on the behavior of move_time for _date if sout is funky */
-  if (strlen(aout)) {
-    move_time(deptz1, deptz2, date, sout, _date, _sout);
-    move_time(deptz1, deptz2, date, aout, _date, _aout);
-  } else {
-    move_time(deptz1, deptz2, date, aout, _date, _aout);
-    move_time(deptz1, deptz2, date, sout, _date, _sout);
-  }
+  
    
   /* Write entries to database */
   if (id) {
@@ -137,10 +105,14 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   } else {
     stmt = sqlpilot->flights_insert;
   }
+
+  db_bind_text(stmt, FLIGHTS_WRITE_DATE, date);
+  db_bind_text(stmt, FLIGHTS_WRITE_TRIPDATE, tripdate);
   bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "ident", aircraft);
   bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", role);
   bind_id_of(stmt, FLIGHTS_WRITE_DEP , "airports", "ident", dep);
   bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "ident", arr);
+  db_bind_int(stmt, FLIGHTS_WRITE_SEQ, seq);
   db_bind_text(stmt, FLIGHTS_WRITE_DUR, dur);
   db_bind_text(stmt, FLIGHTS_WRITE_NIGHT, night);
   db_bind_text(stmt, FLIGHTS_WRITE_INST, inst);
@@ -156,12 +128,10 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   db_bind_text(stmt, FLIGHTS_WRITE_SDUR, sdur);
   db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);  
 
-  db_bind_text(stmt, FLIGHTS_WRITE_DATE, utc ? _date : date);
   db_bind_text(stmt, FLIGHTS_WRITE_AOUT, utc ? _aout : aout);
   db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain);
   db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout);
   db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin);
-  //db_bind_text(stmt, FLIGHTS_WRITE_TRIPDATE, utc ? date : _date);
   db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout);
   db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain);
   db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout);

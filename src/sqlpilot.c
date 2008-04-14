@@ -73,6 +73,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->flights_utc_lbl  = __get_widget("flights_utc_lbl");
   sqlpilot->flights_date     = __get_widget("flights_date");
   sqlpilot->flights_role     = __get_widget("flights_role");
+  sqlpilot->flights_seq      = __get_widget("flights_seq");
   sqlpilot->flights_dep      = __get_widget("flights_dep");
   sqlpilot->flights_arr      = __get_widget("flights_arr");
   sqlpilot->flights_aout     = __get_widget("flights_aout");
