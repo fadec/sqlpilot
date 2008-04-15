@@ -306,10 +306,13 @@ int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize)
 
   if (found) {
     tztext = (char *)db_column_text(select, 0);
-  } else {
+  }
+  if (!tztext || !strlen(tztext)) {
     tztext = "UTC";
   }
+
   strncpy(tz, tztext, tz_bufsize);
+
   if (tz[tz_bufsize - 1] != 0) {
     fprintf(stderr, "Timezone buffer passed to tz_of_airport_ident() too small\n");
     exit(1);

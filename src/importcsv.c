@@ -33,6 +33,7 @@ struct InCSV {
     night,
     inst,
     apprch,
+    xc,
     role,
     dland,
     nland,
@@ -48,10 +49,11 @@ struct InCSV {
 static int incsv_init(InCSV *csv, const char *filename)
 {
 
-  if ((csv->fh = fopen(filename, "rb")) == NULL) return 1;
+  //  if ((csv->fh = fopen(filename, "rb")) == NULL) return 1;
+  csv->fh = stdin;
 
   csv->sep = ',';
-  csv->timebase = INCSV_TIMEBASE_LOCAL;
+  csv->timebase = INCSV_TIMEBASE_AIRPORT;
   csv->date = 0;
   csv->fltno = 1;
   csv->aircraft = 2;
@@ -66,11 +68,12 @@ static int incsv_init(InCSV *csv, const char *filename)
   csv->night = 11;
   csv->inst = 12;
   csv->apprch = 13;
+  csv->xc = 14;
   csv->role = 15;
   csv->dland = 16;
   csv->nland = 17;
-  csv->notes = 18;
-  csv->crew = 19;
+  csv->crew = 18;
+  csv->notes = 19;
   csv->trip = 20;
   csv->numcol = 21;
   return 0;
@@ -178,10 +181,11 @@ void incsv_import(InCSV *incsv, DB *db)
 		       (unsigned char **)csv_row,
 		       CSV_COLS,
 		       incsv->sep,
-		       0) > 0) {
+		       CSV_QUOTES) > 0) {
 
     /* CSV reading and checking */
     if (nrow == 0) { nrow++; continue; }	/* Skip CSV header */
+
     for (ncol=0; ncol<incsv->numcol; ncol++) {
       if (!csv_row[ncol]) {
 	csv_row[ncol] = "\0";
@@ -189,7 +193,7 @@ void incsv_import(InCSV *incsv, DB *db)
       }
     }
 
-    *date = *sout = *soututc = *sin = *sinutc = *sdur = *aout = *aoututc = *ain = *ainutc = *dur = *night = *inst = '\0';
+    *date = *dateutc = *sout = *soututc = *sin = *sinutc = *sdur = *aout = *aoututc = *ain = *ainutc = *dur = *night = *inst = '\0';
     fnight = finst = 0;
     dland = nland = 0;
     aout_t = ain_t = sout_t = sin_t = -1;
@@ -311,6 +315,7 @@ void incsv_import(InCSV *incsv, DB *db)
     db_bind_text(flights_ins, FLIGHTS_WRITE_DUR, dur);
     db_bind_text(flights_ins, FLIGHTS_WRITE_NIGHT, night);
     db_bind_text(flights_ins, FLIGHTS_WRITE_INST, inst);
+    db_bind_int(flights_ins, FLIGHTS_WRITE_XC, str_bool(csv_row[incsv->xc]));
     db_bind_int(flights_ins, FLIGHTS_WRITE_DLAND, dland);
     db_bind_int(flights_ins, FLIGHTS_WRITE_NLAND, nland);
     db_bind_text(flights_ins, FLIGHTS_WRITE_APRCH, csv_row[incsv->apprch]);
@@ -328,17 +333,17 @@ int main(int argc, char **argv)
   InCSV incsv;
   DB *db;
 
-  if (argc < 3) {
-    printf("Usage: importcsv file.csv logbook.db\n");
+  if (argc < 2) {
+    printf("Usage: cat my.csv | importcsv logbook.db\n");
     return 1;
   }
 
-  if (incsv_init(&incsv, argv[1])) {
+  if (incsv_init(&incsv, "")) {
     printf("Failed to init csv file\n");
     return 1;
   }
 
-  if ((db = db_open(argv[2])) == NULL) {
+  if ((db = db_open(argv[1])) == NULL) {
     printf("Failed to open database\n");
     return 1;
   }

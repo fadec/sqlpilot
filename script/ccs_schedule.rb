@@ -232,31 +232,62 @@ def make_date(strdate, strmday)
   t.strftime "%Y-%m-%d"
 end
 
+def csvrow(columns, data)
+  columns.map { |c| data[c] }.join(',');
+end
+
+
+columns = [
+  :date,
+  :fltno,
+  :aircraft,
+  :type,
+  :dep,
+  :arr,
+  :aout,
+  :ain,
+  :sout,
+  :sin,
+  :dur,
+  :night,
+  :inst,
+  :apprch,
+  :xc,
+  :role,
+  :dland,
+  :nland,
+  :crew,
+  :notes,
+  :trip]
+
+puts columns.join(',')
 for trip in Schedule.run
   for duty_period in trip[:duty_periods]
     for flight in duty_period[:flights]
-      puts [(make_date trip[:date], flight[:mday]),
-            flight[:flightno],
-            nil,
-            nil,
-            flight[:dep],
-            flight[:arr],
-            nil,
-            nil,
-            flight[:out],
-            flight[:in],
-            nil,
-            nil,
-            nil,
-            nil,
-            nil,
-            "CA",
-            nil,
-            nil,
-            nil,
-            flight[:crew].join('~'),
-            make_date(trip[:date], nil)
-           ].join(",")
+      puts csvrow(columns, {
+        :date     => (make_date trip[:date], flight[:mday]),
+        :fltno    => flight[:flightno],
+        :aircraft => nil,
+        :type     => nil,
+        :dep      => flight[:dep],
+        :arr      => flight[:arr],
+        :aout     => nil,
+        :ain      => nil,
+        :sout     => flight[:out],
+        :sin      => flight[:in],
+        :dur      => nil,
+        :night    => nil,
+        :inst     => nil,
+        :apprch   => nil,
+        :xc       => 1,
+        :role     => "CA",
+        :dland    => nil,
+        :nland    => nil,
+        :notes    => nil,
+        :crew     => '"' + flight[:crew].join("\n") + '"',
+        :trip     => trip[:ident]
+      })
+      
     end
     #if (hotel = duty_period[:rest][:hotel])
       #puts hotel[:hotel_info]
