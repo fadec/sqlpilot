@@ -29,7 +29,7 @@ CREATE TABLE Flights (
 	,SInUTC DATETIME
 	,SDur INTEGER
 	,Trip VARCHAR
-	,TripDate VARCHAR
+	,TripDate DATE
 );
 
 CREATE TABLE Routing (

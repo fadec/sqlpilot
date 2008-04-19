@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <gtk/gtk.h>
+#include "tmz.h"
 #include "db/db.h"
 #include "sqlpilot.h"
 

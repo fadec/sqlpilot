@@ -20,9 +20,14 @@ struct tmz {
 };
 
 time_t tmz_set(Tmz *tmz, int year, int mon, int mday, int hour, int min, int sec, tmz_tz_str tz);
+time_t tmz_mktime(Tmz *tmz);
+void tmz_set_tz(Tmz *tmz, tmz_tz_str tz);
 int tmz_move(Tmz *tmz, tmz_tz_str totz);
 void tmz_datetimetz(Tmz *tmz, tmz_datetimetz_str datetimetz);
 size_t tmz_strftime(Tmz *tmz, const char *format, char *s, size_t max);
 int tmz_read_datetimetz(Tmz *tmz, const char *datetimetz);
+int tmz_read_date(Tmz *tmz, const char *);
+int tmz_read_time(Tmz *tmz, const char *);
+
 
 #endif

@@ -487,3 +487,37 @@ void format_time(const char *input, char *out, char separator)
     out[0] = '\0';
   }
 }
+
+time_t date_time_disjoint_tz(const char *strdate, const char *strtime, const char *date_tz, const char *time_tz)
+{
+  Tmz tmz, tmz_moved;
+  time_t t;
+  const char strdate_moved[BUF_DATE];
+
+  tmz_read_date(&tmz, strdate);
+  tmz_read_time(&tmz, strtime);
+  tmz_set_tz(&tmz, time_tz);
+  t = tmz_mktime(&tmz);
+  tmz_moved = tmz;
+  tmz_move(&tmz_moved, date_tz);
+  tmz_strftime(&tmz_moved, "%Y-%m-%d", strdate_moved, BUF_DATE);
+
+  if (strcmp(strdate_moved, strdate) < 0) {
+    tmz.tm.tm_mday += 1;
+    t = tmz_mktime(&tmz);
+  } else if (strcmp(strdate_moved, strdate) > 0) {
+    tmz.tm.tm_mday -= 1;
+    t = tmz_mktime(&tmz);
+  }
+
+  return t;
+}
+
+/* given a time and a list of times that occured before,
+ * returns the earliest possible time that is not before
+ * the latest in the list.
+ */
+time_t tmz_seq_time(const char *time, time_t befores[BUF_SEQ])
+{
+  
+}

@@ -128,14 +128,14 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   db_bind_text(stmt, FLIGHTS_WRITE_SDUR, sdur);
   db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);  
 
-  db_bind_text(stmt, FLIGHTS_WRITE_AOUT, utc ? _aout : aout);
-  db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain);
-  db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout);
-  db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin);
-  db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout);
-  db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain);
-  db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout);
-  db_bind_text(stmt, FLIGHTS_WRITE_SINUTC,  utc ? sin  : _sin);
+/*   db_bind_text(stmt, FLIGHTS_WRITE_AOUT, utc ? _aout : aout); */
+/*   db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain); */
+/*   db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout); */
+/*   db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin); */
+/*   db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout); */
+/*   db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain); */
+/*   db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout); */
+/*   db_bind_text(stmt, FLIGHTS_WRITE_SINUTC,  utc ? sin  : _sin); */
 
   db_stp_res_clr(stmt);
   g_free(crew);

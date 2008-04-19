@@ -51,7 +51,17 @@ static int tz_pop(void)
   return 0;
 }
 
-static time_t tmz_mktime(Tmz *tmz)
+static void tmz_set_tm(Tmz *tmz, int year, int mon, int mday, int hour, int min, int sec)
+{
+  if (year != -1) tmz->tm.tm_year = year - 1900;
+  if (mon != -1) tmz->tm.tm_mon  = mon - 1;
+  if (mday != -1) tmz->tm.tm_mday = mday;
+  if (hour != -1) tmz->tm.tm_hour = hour;
+  if (min != -1) tmz->tm.tm_min  = min;
+  if (sec != -1) tmz->tm.tm_sec  = sec;
+}
+
+time_t tmz_mktime(Tmz *tmz)
 {
   time_t t;
   tz_push(tmz->tz);
@@ -61,19 +71,9 @@ static time_t tmz_mktime(Tmz *tmz)
   return t;
 }
 
-static void tmz_set_tz(Tmz *tmz, tmz_tz_str tz)
+void tmz_set_tz(Tmz *tmz, tmz_tz_str tz)
 {
   memcpy(tmz->tz, tz, sizeof(tmz_tz_str));
-}
-
-static void tmz_set_tm(Tmz *tmz, int year, int mon, int mday, int hour, int min, int sec)
-{
-  if (year != -1) tmz->tm.tm_year = year - 1900;
-  if (mon != -1) tmz->tm.tm_mon  = mon - 1;
-  if (mday != -1) tmz->tm.tm_mday = mday;
-  if (hour != -1) tmz->tm.tm_hour = hour;
-  if (min != -1) tmz->tm.tm_min  = min;
-  if (sec != -1) tmz->tm.tm_sec  = sec;
 }
 
 time_t tmz_set(Tmz *tmz, int year, int mon, int mday, int hour, int min, int sec, tmz_tz_str tz)
@@ -139,5 +139,15 @@ int tmz_read_date(Tmz *tmz, const char *date)
   
   scanf(date, "%d-%d-%d", &year, &mon, &mday);
   tmz_set_tm(tmz, year, mon, mday, -1, -1, -1);
+  return 0;
+}
+
+int tmz_read_time(Tmz *tmz, const char *time)
+{
+  int hour=-1, min=-1, sec=-1;
+  
+  sscanf(time, "%d:%d:%d", &hour, &min, &sec);
+
+  tmz_set_tm(tmz, -1, -1, -1, hour, min, sec);
   return 0;
 }
