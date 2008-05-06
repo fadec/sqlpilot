@@ -19,7 +19,7 @@ module Parse
   end
 
   def text
-    @@text ||= File.read "/home/sam/schedule.txt"
+    @@text ||= STDIN.read
   end
 
   def getline
