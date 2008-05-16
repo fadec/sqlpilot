@@ -136,7 +136,7 @@ end
 
 class TripInfo < Parser
   def self.parse
-    if (ln = match /^ [a-zA-Z0-9]{5,}/)
+    if ln = (match /^ |A\s+[a-zA-Z0-9]{5,}/)
       ln
     end
   end
