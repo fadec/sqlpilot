@@ -6,7 +6,7 @@
 enum {
   FLIGHTS_COL_ID = COL_ID,
   FLIGHTS_COL_DATE,
-  FLIGHTS_COL_DATEUTC,
+  FLIGHTS_COL_LEG,
   FLIGHTS_COL_AIRCRAFT,
   FLIGHTS_COL_ROLE,
   FLIGHTS_COL_DEP,
@@ -37,6 +37,7 @@ enum {
   FLIGHTS_COL_SINUTC,
   FLIGHTS_COL_SDUR,
   FLIGHTS_COL_TRIP,
+  FLIGHTS_COL_TRIPDATE,
   FLIGHTS_NUMCOL
 };
 
@@ -44,8 +45,8 @@ enum {
 /* Column names preceded with a _ are get hidden in the treeview */
 #define FLIGHTS_SELECT							\
   "select flights.id as _id"						\
-  ", flights.date as Date"						\
-  ", flights.DateUTC as DateUTC"					\
+  ", flights.Date as Date"						\
+  ", flights.Leg as Leg"						\
   ", a.ident as Aircraft"						\
   ", r.ident as Role"							\
   ", dep.ident as Dep"							\
@@ -76,14 +77,18 @@ enum {
   ", flights.SInUTC as SInUTC"						\
   ", m_to_hhmm(flights.sdur) as SDur"					\
   ", flights.trip as Trip"						\
+  ", flights.TripDate as TripDate"					\
   " from flights"							\
   " left join aircraft a on flights.aircraft_id = a.id"			\
   " left join roles r on flights.role_id = r.id"			\
   " left join airports dep on flights.dep_id = dep.id"			\
   " left join airports arr on flights.arr_id = arr.id"
 
+#define FLIGHTS_ORDER \
+  " order by Date, Leg ASC"
+
 #define FLIGHTS_WHERE_ID \
-  " where flights.id = ? order by Date;"
+  " where flights.id = ?;"
 
 /* Insert and update bindings */
 enum {
@@ -92,7 +97,7 @@ enum {
   FLIGHTS_WRITE_DEP,
   FLIGHTS_WRITE_ARR,
   FLIGHTS_WRITE_DATE,
-  FLIGHTS_WRITE_DATEUTC,
+  FLIGHTS_WRITE_LEG,
   FLIGHTS_WRITE_AOUT,
   FLIGHTS_WRITE_AOUTUTC,
   FLIGHTS_WRITE_AIN,
@@ -115,6 +120,7 @@ enum {
   FLIGHTS_WRITE_SINUTC,
   FLIGHTS_WRITE_SDUR,
   FLIGHTS_WRITE_TRIP,
+  FLIGHTS_WRITE_TRIPDATE,
   FLIGHTS_WRITE_ID
 };
 
@@ -125,8 +131,8 @@ enum {
   ",role_id"								\
   ", dep_id"								\
   ", arr_id"								\
-  ", date"								\
-  ", DateUTC"								\
+  ", Date"								\
+  ", Leg"								\
   ", aout"								\
   ", AOutUTC"								\
   ", ain"								\
@@ -148,9 +154,10 @@ enum {
   ", sin"								\
   ", SInUTC"								\
   ", sdur"								\
-  ", trip)"								\
+  ", Trip"								\
+  ", TripDate)"								\
   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), ?, ?, ?, " \
-  "?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
+  "?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?, ?);"
 
 #define FLIGHTS_UPDATE				\
   "update flights set"				\
@@ -158,8 +165,8 @@ enum {
   ", role_id = ?"				\
   ", dep_id = ?"				\
   ", arr_id = ?"				\
-  ", date = ?"					\
-  ", DateUTC = ?"				\
+  ", Date = ?"					\
+  ", Leg = ?"					\
   ", aout = ?"					\
   ", AOutUTC = ?"				\
   ", ain = ?"					\
@@ -181,7 +188,8 @@ enum {
   ", sin = ?"					\
   ", SInUTC = ?"				\
   ", sdur = hhmm_to_m(?)"			\
-  ", trip = ?"					\
+  ", Trip = ?"					\
+  ", TripDate = ?"				\
   " where id = ?;"
 
 #define FLIGHTS_DELETE				\

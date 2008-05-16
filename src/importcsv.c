@@ -301,7 +301,7 @@ void incsv_import(InCSV *incsv, DB *db)
     bind_id_of(flights_ins, FLIGHTS_WRITE_DEP, "airports", "ident", csv_row[incsv->dep]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_ARR, "airports", "ident", csv_row[incsv->arr]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_DATE, date);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_DATEUTC, dateutc);
+    //db_bind_text(flights_ins, FLIGHTS_WRITE_LEG, leg);
     db_bind_text(flights_ins, FLIGHTS_WRITE_FLTNO, csv_row[incsv->fltno]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_SOUT, sout);
     db_bind_text(flights_ins, FLIGHTS_WRITE_SOUTUTC, soututc);

@@ -58,7 +58,8 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     *sout,
     *sin,
     *sdur,
-    *trip;
+    *trip,
+    *tripdate;
   gchar *crew, *notes;
   char				/* For other timezone strings, local if flights_utc and vice versa */
     _date[BUF_DATE],
@@ -69,7 +70,7 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     deptz[BUF_TZ],
     arrtz[BUF_TZ];
   char *deptz1, *deptz2, *arrtz1, *arrtz2;
-  gint dland, nland;
+  gint dland, nland, leg;
   gboolean xc, hold;
   DBStatement *stmt;
   gboolean utc;
@@ -88,18 +89,19 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   fltno    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_fltno));
   sdur     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sdur));
   trip     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_trip));
+  tripdate = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_tripdate));
   dland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_dland));
   nland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_nland));
   hold     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_hold));
   xc       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_xc));
   crew     = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_crew));
   notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_notes));
-  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  date     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  leg      = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_leg)); 
   aout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aout));
   ain  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_ain));
   sout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sout));
   sin  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sin));
-
 
   tz_of_airport_ident(sqlpilot->db, dep, deptz, sizeof(deptz));
   tz_of_airport_ident(sqlpilot->db, arr, arrtz, sizeof(arrtz));
@@ -119,17 +121,10 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     arrtz2 = "UTC";
   }
 
+  move_time(deptz1, deptz2, date, aout, _date, _aout);
+  move_time(deptz1, deptz2, date, sout, _date, _sout);
   move_time(arrtz1, arrtz2, date, ain, _date, _ain);
   move_time(arrtz1, arrtz2, date, sin, _date, _sin);
-  /* Adjusting order of calls _date right, preferring aout over sout */
-  /* Note that we depend on the behavior of move_time for _date if sout is funky */
-  if (strlen(aout)) {
-    move_time(deptz1, deptz2, date, sout, _date, _sout);
-    move_time(deptz1, deptz2, date, aout, _date, _aout);
-  } else {
-    move_time(deptz1, deptz2, date, aout, _date, _aout);
-    move_time(deptz1, deptz2, date, sout, _date, _sout);
-  }
    
   /* Write entries to database */
   if (id) {
@@ -155,14 +150,15 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   db_bind_text(stmt, FLIGHTS_WRITE_NOTES, notes);
   db_bind_text(stmt, FLIGHTS_WRITE_FLTNO, fltno);
   db_bind_text(stmt, FLIGHTS_WRITE_SDUR, sdur);
-  db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);  
+  db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);
+  db_bind_text(stmt, FLIGHTS_WRITE_TRIPDATE, tripdate);
 
-  db_bind_text(stmt, FLIGHTS_WRITE_DATE, utc ? _date : date);
+  db_bind_text(stmt, FLIGHTS_WRITE_DATE, date);
+  db_bind_int(stmt, FLIGHTS_WRITE_LEG, leg);
   db_bind_text(stmt, FLIGHTS_WRITE_AOUT, utc ? _aout : aout);
   db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain);
   db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout);
   db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin);
-  db_bind_text(stmt, FLIGHTS_WRITE_DATEUTC, utc ? date : _date);
   db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout);
   db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain);
   db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout);
@@ -358,7 +354,7 @@ void flights_load_selection(Sqlpilot *logb)
     *dep=NULL,
     *arr=NULL,
     *date=NULL,
-    *dateutc=NULL,
+    *leg=NULL,
     *aout=NULL,
     *aoututc=NULL,
     *ain=NULL,
@@ -375,6 +371,7 @@ void flights_load_selection(Sqlpilot *logb)
     *sinutc=NULL,
     *sdur=NULL,
     *trip=NULL,
+    *tripdate=NULL,
     *crew=NULL,
     *notes=NULL,
     *dland=NULL,
@@ -382,13 +379,13 @@ void flights_load_selection(Sqlpilot *logb)
     *xc=NULL,
     *hold=NULL;
 
-  int _dland=0, _nland=0;
+  int _dland=0, _nland=0, _leg=0;
 
   if (gtk_tree_selection_get_selected (logb->flights_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
 		       FLIGHTS_COL_ID, &id,
 		       FLIGHTS_COL_DATE, &date,
-		       FLIGHTS_COL_DATE, &dateutc,
+		       FLIGHTS_COL_LEG, &leg,
 		       FLIGHTS_COL_AIRCRAFT, &aircraft,
 		       FLIGHTS_COL_ROLE, &role,
 		       FLIGHTS_COL_DEP, &dep,
@@ -415,9 +412,11 @@ void flights_load_selection(Sqlpilot *logb)
 		       FLIGHTS_COL_SINUTC, &sinutc,
 		       FLIGHTS_COL_SDUR, &sdur,
 		       FLIGHTS_COL_TRIP, &trip,
+		       FLIGHTS_COL_TRIPDATE, &tripdate,
 		       -1);
     sscanf(EMPTY_IF_NULL(dland), "%d", &_dland);
     sscanf(EMPTY_IF_NULL(nland), "%d", &_nland);
+    sscanf(EMPTY_IF_NULL(leg),   "%d", &_leg);
   }
 
   gtk_entry_set_text(GTK_ENTRY(logb->flights_aircraft), EMPTY_IF_NULL(aircraft));
@@ -433,6 +432,7 @@ void flights_load_selection(Sqlpilot *logb)
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_xc), str_bool(xc));
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_dland), _dland);
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_nland), _nland);
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_leg), _leg);
 
   text_view_set_text(GTK_TEXT_VIEW(logb->flights_crew), EMPTY_IF_NULL(crew));
   text_view_set_text(GTK_TEXT_VIEW(logb->flights_notes), EMPTY_IF_NULL(notes));
@@ -440,14 +440,13 @@ void flights_load_selection(Sqlpilot *logb)
   gtk_entry_set_text(GTK_ENTRY(logb->flights_sdur), EMPTY_IF_NULL(sdur));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
 
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_utc))) {
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(dateutc));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aoututc));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ainutc));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(soututc));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sinutc));
   } else {
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aout));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ain));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
@@ -456,7 +455,7 @@ void flights_load_selection(Sqlpilot *logb)
       
   g_free(id);
   g_free(date);
-  g_free(dateutc);
+  g_free(leg);
   g_free(aircraft);
   g_free(role);
   g_free(dep);
@@ -483,6 +482,7 @@ void flights_load_selection(Sqlpilot *logb)
   g_free(sinutc);
   g_free(sdur);
   g_free(trip);
+  g_free(tripdate);
 }
 
 void flights_refresh(Sqlpilot *sqlpilot)

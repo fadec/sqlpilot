@@ -5,7 +5,7 @@ CREATE TABLE Flights (
 	,dep_id INTEGER
 	,arr_id INTEGER
 	,Date DATE
-	,DateUTC DATE
+	,Leg INTEGER
 	,AOut TIME
 	,AOutUTC TIME
 	,AIn TIME
@@ -29,6 +29,7 @@ CREATE TABLE Flights (
 	,SInUTC TIME
 	,SDur INTEGER
 	,Trip VARCHAR
+	,TripDate DATE
 );
 
 CREATE TABLE Routing (
