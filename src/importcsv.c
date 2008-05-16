@@ -20,6 +20,7 @@ typedef struct InCSV InCSV;
 struct InCSV {
   FILE *fh;
   int date,
+    leg,
     fltno,
     aircraft,
     type,
@@ -40,6 +41,7 @@ struct InCSV {
     crew,
     notes,
     trip,
+    tripdate,
     numcol;
   int sep;
   int timebase;
@@ -48,34 +50,35 @@ struct InCSV {
 
 static int incsv_init(InCSV *csv, const char *filename)
 {
-
-  //  if ((csv->fh = fopen(filename, "rb")) == NULL) return 1;
+  int i = 0;
   csv->fh = stdin;
 
   csv->sep = ',';
   csv->timebase = INCSV_TIMEBASE_AIRPORT;
-  csv->date = 0;
-  csv->fltno = 1;
-  csv->aircraft = 2;
-  csv->type = 3;
-  csv->dep = 4;
-  csv->arr = 5;
-  csv->aout = 6;
-  csv->ain = 7;
-  csv->sout = 8;
-  csv->sin = 9;
-  csv->dur = 10;
-  csv->night = 11;
-  csv->inst = 12;
-  csv->apprch = 13;
-  csv->xc = 14;
-  csv->role = 15;
-  csv->dland = 16;
-  csv->nland = 17;
-  csv->crew = 18;
-  csv->notes = 19;
-  csv->trip = 20;
-  csv->numcol = 21;
+  csv->date = i++;
+  csv->leg = i++;
+  csv->fltno = i++;
+  csv->aircraft = i++;
+  csv->type = i++;
+  csv->dep = i++;
+  csv->arr = i++;
+  csv->aout = i++;
+  csv->ain = i++;
+  csv->sout = i++;
+  csv->sin = i++;
+  csv->dur = i++;
+  csv->night = i++;
+  csv->inst = i++;
+  csv->apprch = i++;
+  csv->xc = i++;
+  csv->role = i++;
+  csv->dland = i++;
+  csv->nland = i++;
+  csv->crew = i++;
+  csv->notes = i++;
+  csv->trip = i++;
+  csv->tripdate = i++;
+  csv->numcol = i;
   return 0;
 }
 
@@ -147,7 +150,6 @@ void incsv_import(InCSV *incsv, DB *db)
 {
   char
     date[BUF_DATE],
-    dateutc[BUF_DATE],
     sout[BUF_TIME],
     sin[BUF_TIME],
     sdur[BUF_TIME],
@@ -168,7 +170,7 @@ void incsv_import(InCSV *incsv, DB *db)
     aout_t,
     ain_t;
   float fnight, finst;
-  int dland, nland;
+  int dland, nland, leg;
   char *ptr;
   int nrow, ncol;
   DBStatement *flights_ins = db_prep(db, FLIGHTS_INSERT);
@@ -193,9 +195,10 @@ void incsv_import(InCSV *incsv, DB *db)
       }
     }
 
-    *date = *dateutc = *sout = *soututc = *sin = *sinutc = *sdur = *aout = *aoututc = *ain = *ainutc = *dur = *night = *inst = '\0';
+    *date = *sout = *soututc = *sin = *sinutc = *sdur = *aout = *aoututc = *ain = *ainutc = *dur = *night = *inst = '\0';
     fnight = finst = 0;
     dland = nland = 0;
+    leg = 0;
     aout_t = ain_t = sout_t = sin_t = -1;
 
     /* Copy and reformat certain fields to internal formats */
@@ -217,7 +220,6 @@ void incsv_import(InCSV *incsv, DB *db)
       strftime(aout, BUF_TIME, "%H:%M", &tm);
       gmtime_r(&aout_t, &tm);
       strftime(aoututc, BUF_TIME, "%H:%M", &tm);
-      strftime(dateutc, BUF_DATE, "%Y-%m-%d", &tm);
     }
     if (strlen(csv_row[incsv->ain])) {
       format_time(csv_row[incsv->ain],  ain,  ':');
@@ -242,9 +244,6 @@ void incsv_import(InCSV *incsv, DB *db)
       strftime(sout, BUF_TIME, "%H:%M", &tm);
       gmtime_r(&sout_t, &tm);
       strftime(soututc, BUF_TIME, "%H:%M", &tm);
-      if (!strlen(dateutc)) {	/* If not already set by actual out time */
-	strftime(dateutc, BUF_DATE, "%Y-%m-%d", &tm);
-      }
     }
     if (strlen(csv_row[incsv->sin])) {
       format_time(csv_row[incsv->sin],  sin, ':');
@@ -257,9 +256,6 @@ void incsv_import(InCSV *incsv, DB *db)
       strftime(sin, BUF_TIME, "%H:%M", &tm);
       gmtime_r(&sin_t, &tm);
       strftime(sinutc, BUF_TIME, "%H:%M", &tm);
-    }
-    if (!strlen(dateutc)) {
-      strncpy(dateutc, date, BUF_DATE);
     }
 
     /* Compute actual and scheduled durations */
@@ -301,7 +297,7 @@ void incsv_import(InCSV *incsv, DB *db)
     bind_id_of(flights_ins, FLIGHTS_WRITE_DEP, "airports", "ident", csv_row[incsv->dep]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_ARR, "airports", "ident", csv_row[incsv->arr]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_DATE, date);
-    //db_bind_text(flights_ins, FLIGHTS_WRITE_LEG, leg);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_LEG, leg);
     db_bind_text(flights_ins, FLIGHTS_WRITE_FLTNO, csv_row[incsv->fltno]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_SOUT, sout);
     db_bind_text(flights_ins, FLIGHTS_WRITE_SOUTUTC, soututc);
@@ -322,6 +318,7 @@ void incsv_import(InCSV *incsv, DB *db)
     db_bind_text(flights_ins, FLIGHTS_WRITE_CREW, csv_row[incsv->crew]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_NOTES, csv_row[incsv->notes]);
     db_bind_text(flights_ins, FLIGHTS_WRITE_TRIP, csv_row[incsv->trip]);
+    db_bind_text(flights_ins, FLIGHTS_WRITE_TRIPDATE, csv_row[incsv->tripdate]);
     db_stp_res_clr(flights_ins);
     fprintf(stderr, "%d: %s\n", nrow, date);
     nrow++;
