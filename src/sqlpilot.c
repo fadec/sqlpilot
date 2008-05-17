@@ -32,7 +32,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   gtk_builder_connect_signals(builder, sqlpilot);
 
   /* Set DB statements */
-  sqlpilot->flights_select_all   = db_prep(sqlpilot->db, FLIGHTS_SELECT ";");
+  sqlpilot->flights_select_all   = db_prep(sqlpilot->db, FLIGHTS_SELECT FLIGHTS_ORDER ";");
   sqlpilot->flights_select_by_id = db_prep(sqlpilot->db, FLIGHTS_SELECT FLIGHTS_WHERE_ID);
   sqlpilot->flights_insert       = db_prep(sqlpilot->db, FLIGHTS_INSERT);
   sqlpilot->flights_update       = db_prep(sqlpilot->db, FLIGHTS_UPDATE);
@@ -72,6 +72,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->flights_utc      = __get_widget("flights_utc");
   sqlpilot->flights_utc_lbl  = __get_widget("flights_utc_lbl");
   sqlpilot->flights_date     = __get_widget("flights_date");
+  sqlpilot->flights_leg      = __get_widget("flights_leg");
   sqlpilot->flights_role     = __get_widget("flights_role");
   sqlpilot->flights_dep      = __get_widget("flights_dep");
   sqlpilot->flights_arr      = __get_widget("flights_arr");
@@ -93,6 +94,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->flights_sin      = __get_widget("flights_sin");
   sqlpilot->flights_sdur     = __get_widget("flights_sdur");
   sqlpilot->flights_trip     = __get_widget("flights_trip");
+  sqlpilot->flights_tripdate = __get_widget("flights_tripdate");
   sqlpilot->flights_new_btn  = __get_widget("flights_new_btn");
   sqlpilot->flights_save_btn = __get_widget("flights_save_btn");
   sqlpilot->flights_armdel_btn = __get_widget("flights_armdel_btn");

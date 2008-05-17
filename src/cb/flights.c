@@ -25,6 +25,26 @@ void on_flights_date_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   edctrl_set_modified(sqlpilot->flights_edctrl);
 } 
 
+void on_flights_leg_value_changed(GtkWidget *button, Sqlpilot *sqlpilot)
+{
+  edctrl_set_modified(sqlpilot->flights_edctrl);
+}
+
+int on_flights_tripdate_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  return FALSE;
+}
+int on_flights_tripdate_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  entry_format_date_on_focus_out(entry);
+  return FALSE;
+}
+void on_flights_tripdate_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+{
+  entry_clamp_text(entry, 10, 0, is_numeric_date_char);
+  edctrl_set_modified(sqlpilot->flights_edctrl);
+} 
+
 void on_flights_role_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_roles_ident(entry);
@@ -368,23 +388,18 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
     deptz2 = deptz;
     arrtz2 = arrtz;
   }
-  //printf("%s -> %s, %s -> %s\n", deptz1, deptz2, arrtz1, arrtz2);
 
   /* Do the switch */
   if (strlen(aout)) {
     move_time(deptz1, deptz2, date, aout, strdate, strtime);
-    //fprintf(stderr, "aout: %s %s -> %s %s\n", aout, deptz1, strtime, deptz2);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
   } 
   if (strlen(sout)) {
     move_time(deptz1, deptz2, date, sout, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
-    if (!strlen(aout)) gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
   }
   if (strlen(ain)) {
     move_time(arrtz1, arrtz2, date, ain, strdate, strtime);
-    //    fprintf(stderr, "ain: %s -> %s\n", aout, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
   }
   if (strlen(sin)) {
