@@ -87,7 +87,7 @@ shell: ${SHELL_OBJ}
 
 ui: data/ui/sqlpilot.xml
 
-data/ui/sqlpilot.xml: data/ui/sqlpilot.glade
+data/ui/sqlpilot.xml: $(UI_GLADE)
 	sed 's/<property name="response_id">0<\/property>//g' $(UI_GLADE) > data/ui/sqlpilot.glade.fixed
 	$(PYTHON) `which gtk-builder-convert` data/ui/sqlpilot.glade.fixed data/ui/sqlpilot.xml
 
