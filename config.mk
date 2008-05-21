@@ -1,10 +1,11 @@
 ## Makefile configuration
 
 # sqlpilot version
-VERSION = 0.0
+VERSION_MAJOR = 0
+VERSION_MINOR = 0
+VERSION_TINY  = 0
 
 # Customize below to fit your system
-TARGET_OS=CHINOOK
 
 UI_GLADE=data/ui/nokia.glade
 PYTHON=python2.5
