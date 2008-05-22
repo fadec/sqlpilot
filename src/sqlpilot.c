@@ -1,6 +1,14 @@
 #include "sqlpilot.h"
 #include "cb/cb.h"
 
+#ifdef USING_GTK_BUILDER
+#define pull_widget(x) sqlpilot->x = GTK_WIDGET(gtk_builder_get_object(builder, (#x)));
+#else // fall back on libglade
+#include <glade/glade-xml.h>
+#define pull_widget(x) sqlpilot->x = GTK_WIDGET(glade_xml_get_widget(gxml, (#x)));
+#endif
+
+
 void barf(const char *message)
 {
   if (message) fprintf(stderr, "Error: %s", message);
@@ -10,8 +18,6 @@ void barf(const char *message)
 Sqlpilot *sqlpilot_new(const char *filename)
 {
   Sqlpilot         *sqlpilot;
-  GtkBuilder       *builder;
-  GError           *err;
 
   /* Open Database */
   sqlpilot = g_slice_new0(Sqlpilot);
@@ -21,6 +27,9 @@ Sqlpilot *sqlpilot_new(const char *filename)
   }
 
   /* Build UI from XML */
+#ifdef USING_GTK_BUILDER
+  GtkBuilder       *builder;
+  GError           *err;
   builder = gtk_builder_new ();
   if (gtk_builder_add_from_file (builder, UI_XML_FILE, &err) == 0) {
     barf (err->message);
@@ -30,6 +39,15 @@ Sqlpilot *sqlpilot_new(const char *filename)
 
   /* Connect Signals */
   gtk_builder_connect_signals(builder, sqlpilot);
+
+#else
+  GladeXML *gxml;
+  gxml = glade_xml_new(UI_XML_FILE, "window", NULL);
+  if (!gxml) {
+    barf ("Can't load glade xml file\n");
+    return NULL;
+  }
+#endif
 
   /* Set DB statements */
   sqlpilot->flights_select_all   = db_prep(sqlpilot->db, FLIGHTS_SELECT FLIGHTS_ORDER ";");
@@ -62,124 +80,119 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->airports_update         = db_prep(sqlpilot->db, AIRPORTS_UPDATE);
   sqlpilot->airports_delete         = db_prep(sqlpilot->db, AIRPORTS_DELETE);
   
-  /* Set UI components in Sqlpilot struct */
-  #define __get_widget(x) GTK_WIDGET(gtk_builder_get_object(builder, (x)));
-#define get_widget(x) sqlpilot->x = GTK_WIDGET(gtk_builder_get_object(builder, (#x)));
-  get_widget(window);
-  //  sqlpilot->window           = __get_widget("window");
-  sqlpilot->flights_sw       = __get_widget("flights_sw");
-  sqlpilot->flights_aircraft = __get_widget("flights_aircraft");
-  sqlpilot->flights_utc      = __get_widget("flights_utc");
-  sqlpilot->flights_utc_lbl  = __get_widget("flights_utc_lbl");
-  sqlpilot->flights_date     = __get_widget("flights_date");
-  sqlpilot->flights_leg      = __get_widget("flights_leg");
-  sqlpilot->flights_role     = __get_widget("flights_role");
-  sqlpilot->flights_dep      = __get_widget("flights_dep");
-  sqlpilot->flights_arr      = __get_widget("flights_arr");
-  sqlpilot->flights_aout     = __get_widget("flights_aout");
-  sqlpilot->flights_ain      = __get_widget("flights_ain");
-  sqlpilot->flights_dur      = __get_widget("flights_dur");
-  sqlpilot->flights_night    = __get_widget("flights_night");
-  sqlpilot->flights_inst     = __get_widget("flights_inst");
-  sqlpilot->flights_siminst  = __get_widget("flights_siminst");
-  sqlpilot->flights_hold     = __get_widget("flights_hold");
-  sqlpilot->flights_aprch    = __get_widget("flights_aprch");
-  sqlpilot->flights_xc       = __get_widget("flights_xc");
-  sqlpilot->flights_dland    = __get_widget("flights_dland");
-  sqlpilot->flights_nland    = __get_widget("flights_nland");
-  sqlpilot->flights_crew     = __get_widget("flights_crew");
-  sqlpilot->flights_notes    = __get_widget("flights_notes");
-  sqlpilot->flights_fltno    = __get_widget("flights_fltno");
-  sqlpilot->flights_sout     = __get_widget("flights_sout");
-  sqlpilot->flights_sin      = __get_widget("flights_sin");
-  sqlpilot->flights_sdur     = __get_widget("flights_sdur");
-  sqlpilot->flights_trip     = __get_widget("flights_trip");
-  sqlpilot->flights_tripdate = __get_widget("flights_tripdate");
-  sqlpilot->flights_new_btn  = __get_widget("flights_new_btn");
-  sqlpilot->flights_save_btn = __get_widget("flights_save_btn");
-  sqlpilot->flights_armdel_btn = __get_widget("flights_armdel_btn");
-  sqlpilot->flights_del_btn  = __get_widget("flights_del_btn");
-  sqlpilot->flights_todel_lbl = __get_widget("flights_todel_lbl");
-  sqlpilot->roles_sw         = __get_widget("roles_sw");
-  sqlpilot->roles_ident      = __get_widget("roles_ident");
-  sqlpilot->roles_name       = __get_widget("roles_name");
-  sqlpilot->roles_pic        = __get_widget("roles_pic");
-  sqlpilot->roles_sic        = __get_widget("roles_sic");
-  sqlpilot->roles_fe         = __get_widget("roles_fe");
-  sqlpilot->roles_solo       = __get_widget("roles_solo");
-  sqlpilot->roles_dual       = __get_widget("roles_dual");
-  sqlpilot->roles_instruct   = __get_widget("roles_instruct");
-  sqlpilot->roles_total      = __get_widget("roles_total");
-  sqlpilot->roles_new_btn  = __get_widget("roles_new_btn");
-  sqlpilot->roles_save_btn = __get_widget("roles_save_btn");
-  sqlpilot->roles_armdel_btn = __get_widget("roles_armdel_btn");
-  sqlpilot->roles_del_btn  = __get_widget("roles_del_btn");
-  sqlpilot->roles_todel_lbl = __get_widget("roles_todel_lbl");
-  sqlpilot->aircraft_sw      = __get_widget("aircraft_sw");
-  sqlpilot->aircraft_ident   = __get_widget("aircraft_ident");
-  sqlpilot->aircraft_type    = __get_widget("aircraft_type");
-  sqlpilot->aircraft_fleetno = __get_widget("aircraft_fleetno");
-  sqlpilot->aircraft_notes   = __get_widget("aircraft_notes");
-  sqlpilot->aircraft_new_btn  = __get_widget("aircraft_new_btn");
-  sqlpilot->aircraft_save_btn = __get_widget("aircraft_save_btn");
-  sqlpilot->aircraft_armdel_btn = __get_widget("aircraft_armdel_btn");
-  sqlpilot->aircraft_del_btn  = __get_widget("aircraft_del_btn");
-  sqlpilot->aircraft_todel_lbl = __get_widget("aircraft_todel_lbl");
-  sqlpilot->types_sw         = __get_widget("types_sw");
-  sqlpilot->types_ident      = __get_widget("types_ident");
-  sqlpilot->types_make       = __get_widget("types_make");
-  sqlpilot->types_model       = __get_widget("types_model");
-  sqlpilot->types_airplane    = __get_widget("types_airplane");
-  sqlpilot->types_rotorcraft  = __get_widget("types_rotorcraft");
-  sqlpilot->types_glider      = __get_widget("types_glider");
-  sqlpilot->types_lta         = __get_widget("types_lta");
-  sqlpilot->types_poweredlift = __get_widget("types_poweredlift");
-  sqlpilot->types_ppc         = __get_widget("types_ppc");
-  sqlpilot->types_weightshift = __get_widget("types_weightshift");
-  sqlpilot->types_heli        = __get_widget("types_heli");
-  sqlpilot->types_gyro        = __get_widget("types_gyro");
-  sqlpilot->types_airship     = __get_widget("types_airship");
-  sqlpilot->types_balloon     = __get_widget("types_balloon");
-  sqlpilot->types_single      = __get_widget("types_single");
-  sqlpilot->types_multi       = __get_widget("types_multi");
-  sqlpilot->types_land        = __get_widget("types_land");
-  sqlpilot->types_sea         = __get_widget("types_sea");
-  sqlpilot->types_turbine     = __get_widget("types_turbine");
-  sqlpilot->types_jet         = __get_widget("types_jet");
-  sqlpilot->types_highperf    = __get_widget("types_highperf");
-  sqlpilot->types_retract     = __get_widget("types_retract");
-  sqlpilot->types_complex     = __get_widget("types_complex");
-  sqlpilot->types_pressurized = __get_widget("types_pressurized");
-  sqlpilot->types_large       = __get_widget("types_large");
-  sqlpilot->types_sport       = __get_widget("types_sport");
-  sqlpilot->types_ultralight  = __get_widget("types_ultralight");
-  sqlpilot->types_footlaunch  = __get_widget("types_footlaunch");
-  sqlpilot->types_sim         = __get_widget("types_sim");
-  sqlpilot->types_ftd         = __get_widget("types_ftd");
-  sqlpilot->types_total       = __get_widget("types_total");
-  sqlpilot->types_new_btn     = __get_widget("types_new_btn");
-  sqlpilot->types_save_btn    = __get_widget("types_save_btn");
-  sqlpilot->types_armdel_btn  = __get_widget("types_armdel_btn");
-  sqlpilot->types_del_btn     = __get_widget("types_del_btn");
-  sqlpilot->types_todel_lbl   = __get_widget("types_todel_lbl");
-  sqlpilot->airports_sw       = __get_widget("airports_sw");
-  sqlpilot->airports_ident    = __get_widget("airports_ident");
-  sqlpilot->airports_icao     = __get_widget("airports_icao");
-  sqlpilot->airports_name     = __get_widget("airports_name");
-  sqlpilot->airports_lat      = __get_widget("airports_lat");
-  sqlpilot->airports_lon      = __get_widget("airports_lon");
-  sqlpilot->airports_elev     = __get_widget("airports_elev");
-  sqlpilot->airports_city     = __get_widget("airports_city");
-  sqlpilot->airports_province = __get_widget("airports_province");
-  sqlpilot->airports_country  = __get_widget("airports_country");
-  sqlpilot->airports_tzone    = __get_widget("airports_tzone");
-  sqlpilot->airports_notes    = __get_widget("airports_notes");
-  sqlpilot->airports_new_btn     = __get_widget("airports_new_btn");
-  sqlpilot->airports_save_btn    = __get_widget("airports_save_btn");
-  sqlpilot->airports_armdel_btn  = __get_widget("airports_armdel_btn");
-  sqlpilot->airports_del_btn     = __get_widget("airports_del_btn");
-  sqlpilot->airports_todel_lbl   = __get_widget("airports_todel_lbl");
-  #undef __get_widget
+  pull_widget(window);
+  pull_widget(flights_sw);
+  pull_widget(flights_aircraft);
+  pull_widget(flights_utc);
+  pull_widget(flights_utc_lbl);
+  pull_widget(flights_date);
+  pull_widget(flights_leg);
+  pull_widget(flights_role);
+  pull_widget(flights_dep);
+  pull_widget(flights_arr);
+  pull_widget(flights_aout);
+  pull_widget(flights_ain);
+  pull_widget(flights_dur);
+  pull_widget(flights_night);
+  pull_widget(flights_inst);
+  pull_widget(flights_siminst);
+  pull_widget(flights_hold);
+  pull_widget(flights_aprch);
+  pull_widget(flights_xc);
+  pull_widget(flights_dland);
+  pull_widget(flights_nland);
+  pull_widget(flights_crew);
+  pull_widget(flights_notes);
+  pull_widget(flights_fltno);
+  pull_widget(flights_sout);
+  pull_widget(flights_sin);
+  pull_widget(flights_sdur);
+  pull_widget(flights_trip);
+  pull_widget(flights_tripdate);
+  pull_widget(flights_new_btn);
+  pull_widget(flights_save_btn);
+  pull_widget(flights_armdel_btn);
+  pull_widget(flights_del_btn);
+  pull_widget(flights_todel_lbl);
+  pull_widget(roles_sw);
+  pull_widget(roles_ident);
+  pull_widget(roles_name);
+  pull_widget(roles_pic);
+  pull_widget(roles_sic);
+  pull_widget(roles_fe);
+  pull_widget(roles_solo);
+  pull_widget(roles_dual);
+  pull_widget(roles_instruct);
+  pull_widget(roles_total);
+  pull_widget(roles_new_btn);
+  pull_widget(roles_save_btn);
+  pull_widget(roles_armdel_btn);
+  pull_widget(roles_del_btn);
+  pull_widget(roles_todel_lbl);
+  pull_widget(aircraft_sw);
+  pull_widget(aircraft_ident);
+  pull_widget(aircraft_type);
+  pull_widget(aircraft_fleetno);
+  pull_widget(aircraft_notes);
+  pull_widget(aircraft_new_btn);
+  pull_widget(aircraft_save_btn);
+  pull_widget(aircraft_armdel_btn);
+  pull_widget(aircraft_del_btn);
+  pull_widget(aircraft_todel_lbl);
+  pull_widget(types_sw);
+  pull_widget(types_ident);
+  pull_widget(types_make);
+  pull_widget(types_model);
+  pull_widget(types_airplane);
+  pull_widget(types_rotorcraft);
+  pull_widget(types_glider);
+  pull_widget(types_lta);
+  pull_widget(types_poweredlift);
+  pull_widget(types_ppc);
+  pull_widget(types_weightshift);
+  pull_widget(types_heli);
+  pull_widget(types_gyro);
+  pull_widget(types_airship);
+  pull_widget(types_balloon);
+  pull_widget(types_single);
+  pull_widget(types_multi);
+  pull_widget(types_land);
+  pull_widget(types_sea);
+  pull_widget(types_turbine);
+  pull_widget(types_jet);
+  pull_widget(types_highperf);
+  pull_widget(types_retract);
+  pull_widget(types_complex);
+  pull_widget(types_pressurized);
+  pull_widget(types_large);
+  pull_widget(types_sport);
+  pull_widget(types_ultralight);
+  pull_widget(types_footlaunch);
+  pull_widget(types_sim);
+  pull_widget(types_ftd);
+  pull_widget(types_total);
+  pull_widget(types_new_btn);
+  pull_widget(types_save_btn);
+  pull_widget(types_armdel_btn);
+  pull_widget(types_del_btn);
+  pull_widget(types_todel_lbl);
+  pull_widget(airports_sw);
+  pull_widget(airports_ident);
+  pull_widget(airports_icao);
+  pull_widget(airports_name);
+  pull_widget(airports_lat);
+  pull_widget(airports_lon);
+  pull_widget(airports_elev);
+  pull_widget(airports_city);
+  pull_widget(airports_province);
+  pull_widget(airports_country);
+  pull_widget(airports_tzone);
+  pull_widget(airports_notes);
+  pull_widget(airports_new_btn);
+  pull_widget(airports_save_btn);
+  pull_widget(airports_armdel_btn);
+  pull_widget(airports_del_btn);
+  pull_widget(airports_todel_lbl);
 
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
@@ -314,7 +327,12 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_after_change(sqlpilot->airports_edctrl, airports_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot);
 
+#ifdef USING_GTK_BUILDER
   g_object_unref (G_OBJECT (builder));
+#else
+  g_object_unref (G_OBJECT(gxml));
+#endif
+
   return sqlpilot;
 }
 

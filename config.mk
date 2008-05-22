@@ -3,7 +3,10 @@ VERSION_MAJOR = 0
 VERSION_MINOR = 0
 VERSION_TINY  = 0
 
-HILDON=true
+USING_HILDON=true
+USING_GTK_BUILDER=false
+
+PACKAGES = gtk+-2.0 libglade-2.0 hildon-libs
 
 # for gtk-builder-convert
 PYTHON=python2.5
@@ -13,13 +16,8 @@ PREFIX = /usr/local
 CONFPREFIX = ${PREFIX}/etc
 MANPREFIX = ${PREFIX}/share/man
 
-ifeq ($(HILDON),true)
-  INCS = -Itest -Isrc -I${PREFIX}/include -I/usr/include `pkg-config hildon-1 --cflags`
-  LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 -lreadline `pkg-config hildon-1 --libs`
-else
-  INCS = -Itest -Isrc -I${PREFIX}/include -I/usr/include `pkg-config gtk+-2.0 --cflags`
-  LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 -lreadline `pkg-config gtk+-2.0 --libs`
-endif
+INCS = -Itest -Isrc -I${PREFIX}/include -I/usr/include `pkg-config $(PACKAGES) --cflags`
+LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 -lreadline `pkg-config $(PACKAGES) --libs`
 
 # includes and libs
 

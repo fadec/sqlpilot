@@ -1,7 +1,7 @@
 #include "sqlpilot.h"
 
-#ifdef HILDON
-#include <hildon/hildon-program.h>
+#ifdef USING_HILDON
+#include <hildon-widgets/hildon-program.h>
 #include <locale.h>
 #include <libintl.h>
 #include <libintl.h>
@@ -18,7 +18,7 @@ main (int argc, char *argv[])
   char *dbfilename;
   int console=FALSE;
 
-#ifdef HILDON
+#ifdef USING_HILDON
   HildonProgram *program;
   GtkWidget *container;
   GtkWidget *main_menu;
@@ -53,7 +53,7 @@ main (int argc, char *argv[])
     gtk_init (&argc, &argv);
     if ((sqlpilot = sqlpilot_new(dbfilename)) == NULL) exit(1);
 
-#ifdef HILDON
+#ifdef USING_HILDON
     /*  */
     program = HILDON_PROGRAM(hildon_program_get_instance());
     container = sqlpilot->window;

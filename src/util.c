@@ -1,5 +1,6 @@
 #include "util.h"
 #include <string.h>
+#include <time.h>
 
 gboolean str_bool(const char *str)
 {

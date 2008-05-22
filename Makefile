@@ -57,7 +57,7 @@ SHELL_OBJ = ${SHELL_SRC:.c=.o}
 
 TEST_OBJ = ${TEST_SRC:.c=.o}
 
-ifeq ($(HILDON),true)
+ifeq ($(USING_HILDON),true)
   UI_GLADE=data/ui/hildon_nokia.glade
 else
   UI_GLADE=data/ui/gtk_full.glade
@@ -71,7 +71,8 @@ src/config.h: config.mk
 	@echo "#define VERSION_MINOR $(VERSION_MINOR)"      >> src/config.h
 	@echo "#define VERSION_TINY  $(VERSION_TINY)"       >> src/config.h
 	@echo "#define VERSION_STRING \"$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_TINY)\"" >> src/config.h
-	@if [ '$(HILDON)' == 'true' ]; then echo "#define HILDON" >> src/config.h; fi;
+	@if [ '$(USING_HILDON)' == 'true' ]; then echo "#define USING_HILDON" >> src/config.h; fi;
+	@if [ '$(USING_GTK_BUILDER)' == 'true' ]; then echo "#define USING_GTK_BUILDER" >> src/config.h; fi;
 	@echo Generated config.h
 
 ${APP_OBJ}: ${APP_HEADERS} config.mk
@@ -110,6 +111,7 @@ run: sqlpilot
 clean:
 	-rm -f `find -name '*.o'`
 	-rm -f core sqlpilot shell importcsv *_test test.db data/ui/sqlpilot.xml
+	-rm src/config.h
 
 wc:
 	@wc `find -name '*.c'` `find -name '*.h'`

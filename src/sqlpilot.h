@@ -2,13 +2,14 @@
 #ifndef SQLPILOT_H
 #define SQLPILOT_H
 
-#define UI_XML_FILE  "data/ui/sqlpilot.xml"
+#define UI_XML_FILE  "data/ui/gtk_full.glade"
 #include "config.h"
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "db/db.h"
 #include "util.h"
 #include "store.h"
