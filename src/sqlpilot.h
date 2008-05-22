@@ -3,6 +3,7 @@
 #define SQLPILOT_H
 
 #define UI_XML_FILE  "data/ui/sqlpilot.xml"
+#include "config.h"
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
