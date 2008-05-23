@@ -42,7 +42,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
 
 #else
   GladeXML *gxml;
-  gxml = glade_xml_new(UI_XML_FILE, "window", NULL);
+  gxml = glade_xml_new(UI_XML_FILE, NULL, NULL);
   if (!gxml) {
     barf ("Can't load glade xml file\n");
     return NULL;

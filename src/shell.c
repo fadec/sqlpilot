@@ -19,12 +19,12 @@
 #define SQLITE_OMIT_LOAD_EXTENSION
 #define HAVE_READLINE 1
 #include "db/db.h"
+#include "db/sqlite3.h"
 
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <assert.h>
-#include <sqlite3.h>
 #include <ctype.h>
 #include <stdarg.h>
 

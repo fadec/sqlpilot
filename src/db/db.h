@@ -3,7 +3,7 @@
 #define _DB_H_
 
 #include <glib.h>
-#include <sqlite3.h>
+#include "db/sqlite3.h"
 
 /* Ripped shamefully from sqlite3 docs and s/SQLITE/DB/g, */
 #define DB_OK           0   /* Successful result */

@@ -3,6 +3,7 @@ include config.mk
 SRC = src/sqlpilot.c \
       src/util.c \
       src/lib/csv.c \
+      src/db/sqlite3.c \
       src/db/db.c \
       src/store.c \
       src/cb/window.c \
@@ -22,7 +23,7 @@ APP_SRC = src/main.c ${SRC}
 
 IMPORTCSV_SRC = src/importcsv.c ${SRC}
 
-SHELL_SRC = src/shell.c  src/db/db.c
+SHELL_SRC = src/shell.c src/db/db.c src/db/sqlite3.c
 
 # Example: make test db, make test-run db
 TEST_SRC = test/units/$(unit)_test.c test/test.c ${SRC}
@@ -31,6 +32,7 @@ HEADERS = src/config.h \
 	  src/sqlpilot.h \
 	  src/util.h \
 	  src/lib/csv.h \
+	  src/db/sqlite3.h \
 	  src/db/db.h \
           src/store.h \
 	  src/cb/cb.h \
@@ -95,12 +97,17 @@ shell: ${SHELL_OBJ}
 	${LD} -o $@ ${SHELL_OBJ} ${LDFLAGS}
 #	@strip $@
 
-ui: data/ui/sqlpilot.xml
+ui: data/ui/interface.xml
 
-data/ui/sqlpilot.xml: $(UI_GLADE) config.mk
-	sed 's/<property name="response_id">0<\/property>//g' $(UI_GLADE) > data/ui/sqlpilot.glade.tmp
-	$(PYTHON) `which gtk-builder-convert` data/ui/sqlpilot.glade.tmp data/ui/sqlpilot.xml
-	rm data/ui/sqlpilot.glade.tmp
+data/ui/interface.xml: $(UI_GLADE) config.mk
+ifeq ($(USING_GTK_BUILDER),true)
+	sed 's/<property name="response_id">0<\/property>//g' $(UI_GLADE) > data/ui/sqlpilot.glade.tmp;
+	$(PYTHON) `which gtk-builder-convert` data/ui/sqlpilot.glade.tmp data/ui/interface.xml;
+	rm data/ui/sqlpilot.glade.tmp;
+else
+	cp $(UI_GLADE) data/ui/interface.xml;
+endif
+
 
 etags:
 	etags.emacs `find -name "*.[h|c]"`
@@ -110,7 +117,7 @@ run: sqlpilot
 
 clean:
 	-rm -f `find -name '*.o'`
-	-rm -f core sqlpilot shell importcsv *_test test.db data/ui/sqlpilot.xml
+	-rm -f core sqlpilot shell importcsv *_test test.db data/ui/interface.xml
 	-rm src/config.h
 
 wc:

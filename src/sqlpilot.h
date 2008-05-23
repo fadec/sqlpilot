@@ -2,7 +2,8 @@
 #ifndef SQLPILOT_H
 #define SQLPILOT_H
 
-#define UI_XML_FILE  "data/ui/gtk_full.glade"
+#define UI_XML_FILE  "data/ui/interface.xml"
+
 #include "config.h"
 
 #include <gtk/gtk.h>

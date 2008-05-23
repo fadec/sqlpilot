@@ -17,7 +17,7 @@ CONFPREFIX = ${PREFIX}/etc
 MANPREFIX = ${PREFIX}/share/man
 
 INCS = -Itest -Isrc -I${PREFIX}/include -I/usr/include `pkg-config $(PACKAGES) --cflags`
-LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lsqlite3 -lreadline `pkg-config $(PACKAGES) --libs`
+LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lreadline `pkg-config $(PACKAGES) --libs`
 
 # includes and libs
 
