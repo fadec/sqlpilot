@@ -17,7 +17,11 @@
 
 /* Modified for sqlpilot */
 #define SQLITE_OMIT_LOAD_EXTENSION
+
+#ifdef USING_READLINE
 #define HAVE_READLINE 1
+#endif
+
 #include "db/db.h"
 #include "db/sqlite3.h"
 
