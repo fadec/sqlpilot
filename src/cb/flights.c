@@ -1,3 +1,22 @@
+/************************************************************************/
+/* Copyright (C) 2008  Sam Danielson                                    */
+/*                                                                      */
+/* This file is part of Sqlpilot.				        */
+/* 								        */
+/* Sqlpilot is free software: you can redistribute it and/or modify     */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.				        */
+/* 								        */
+/* Sqlpilot is distributed in the hope that it will be useful,	        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.			        */
+/* 								        */
+/* You should have received a copy of the GNU General Public License    */
+/* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
+/************************************************************************/
+
 #include "sqlpilot.h"
 #include "flights.h"
 
@@ -24,6 +43,11 @@ void on_flights_date_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   entry_clamp_text(entry, 10, 0, is_numeric_date_char);
   edctrl_set_modified(sqlpilot->flights_edctrl);
 } 
+
+void on_flights_leg_value_changed(GtkWidget *button, Sqlpilot *sqlpilot)
+{
+  edctrl_set_modified(sqlpilot->flights_edctrl);
+}
 
 int on_flights_tripdate_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
@@ -383,23 +407,18 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
     deptz2 = deptz;
     arrtz2 = arrtz;
   }
-  //printf("%s -> %s, %s -> %s\n", deptz1, deptz2, arrtz1, arrtz2);
 
   /* Do the switch */
   if (strlen(aout)) {
     move_time(deptz1, deptz2, date, aout, strdate, strtime);
-    //fprintf(stderr, "aout: %s %s -> %s %s\n", aout, deptz1, strtime, deptz2);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), strtime);
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
   } 
   if (strlen(sout)) {
     move_time(deptz1, deptz2, date, sout, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), strtime);
-    if (!strlen(aout)) gtk_entry_set_text(GTK_ENTRY(logb->flights_date), strdate);
   }
   if (strlen(ain)) {
     move_time(arrtz1, arrtz2, date, ain, strdate, strtime);
-    //    fprintf(stderr, "ain: %s -> %s\n", aout, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), strtime);
   }
   if (strlen(sin)) {

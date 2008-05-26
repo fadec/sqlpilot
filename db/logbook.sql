@@ -1,3 +1,22 @@
+--------------------------------------------------------------------------
+-- Copyright (C) 2008  Sam Danielson				        --
+--                                                                      --
+-- This file is part of Sqlpilot.				        --
+-- 								        --
+-- Sqlpilot is free software: you can redistribute it and/or modify     --
+-- it under the terms of the GNU General Public License as published by --
+-- the Free Software Foundation, either version 3 of the License, or    --
+-- (at your option) any later version.				        --
+-- 								        --
+-- Sqlpilot is distributed in the hope that it will be useful,	        --
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of       --
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        --
+-- GNU General Public License for more details.			        --
+-- 								        --
+-- You should have received a copy of the GNU General Public License    --
+-- along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    --
+--------------------------------------------------------------------------
+
 CREATE TABLE Flights (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,aircraft_id INTEGER
@@ -5,11 +24,11 @@ CREATE TABLE Flights (
 	,dep_id INTEGER
 	,arr_id INTEGER
 	,Date DATE
-	,Seq INTEGER
-	,AOut DATETIME
-	,AOutUTC DATETIME
-	,AIn DATETIME
-	,AInUTC DATETIME
+	,Leg INTEGER
+	,AOut TIME
+	,AOutUTC TIME
+	,AIn TIME
+	,AInUTC TIME
 	,Dur INTEGER
 	,Night INTEGER
 	,Inst INTEGER
@@ -23,10 +42,10 @@ CREATE TABLE Flights (
 	,Notes TEXT
 	/* Schedule Stuff */
 	,FltNo VARCHAR
-	,SOut DATETIME
-	,SOutUTC DATETIME
-	,SIn DATETIME
-	,SInUTC DATETIME
+	,SOut TIME
+	,SOutUTC TIME
+	,SIn TIME
+	,SInUTC TIME
 	,SDur INTEGER
 	,Trip VARCHAR
 	,TripDate DATE

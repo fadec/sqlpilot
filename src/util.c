@@ -1,5 +1,25 @@
+/************************************************************************/
+/* Copyright (C) 2008  Sam Danielson                                    */
+/*                                                                      */
+/* This file is part of Sqlpilot.				        */
+/* 								        */
+/* Sqlpilot is free software: you can redistribute it and/or modify     */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.				        */
+/* 								        */
+/* Sqlpilot is distributed in the hope that it will be useful,	        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.			        */
+/* 								        */
+/* You should have received a copy of the GNU General Public License    */
+/* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
+/************************************************************************/
+
 #include "util.h"
 #include <string.h>
+#include <time.h>
 
 gboolean str_bool(const char *str)
 {
@@ -306,10 +326,13 @@ int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize)
 
   if (found) {
     tztext = (char *)db_column_text(select, 0);
-  } else {
+  }
+  if (!tztext || !strlen(tztext)) {
     tztext = "UTC";
   }
+
   strncpy(tz, tztext, tz_bufsize);
+
   if (tz[tz_bufsize - 1] != 0) {
     fprintf(stderr, "Timezone buffer passed to tz_of_airport_ident() too small\n");
     exit(1);
@@ -486,38 +509,4 @@ void format_time(const char *input, char *out, char separator)
   else {
     out[0] = '\0';
   }
-}
-
-time_t date_time_disjoint_tz(const char *strdate, const char *strtime, const char *date_tz, const char *time_tz)
-{
-  Tmz tmz, tmz_moved;
-  time_t t;
-  const char strdate_moved[BUF_DATE];
-
-  tmz_read_date(&tmz, strdate);
-  tmz_read_time(&tmz, strtime);
-  tmz_set_tz(&tmz, time_tz);
-  t = tmz_mktime(&tmz);
-  tmz_moved = tmz;
-  tmz_move(&tmz_moved, date_tz);
-  tmz_strftime(&tmz_moved, "%Y-%m-%d", strdate_moved, BUF_DATE);
-
-  if (strcmp(strdate_moved, strdate) < 0) {
-    tmz.tm.tm_mday += 1;
-    t = tmz_mktime(&tmz);
-  } else if (strcmp(strdate_moved, strdate) > 0) {
-    tmz.tm.tm_mday -= 1;
-    t = tmz_mktime(&tmz);
-  }
-
-  return t;
-}
-
-/* given a time and a list of times that occured before,
- * returns the earliest possible time that is not before
- * the latest in the list.
- */
-time_t tmz_seq_time(const char *time, time_t befores[BUF_SEQ])
-{
-  
 }

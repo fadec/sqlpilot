@@ -1,4 +1,24 @@
+/************************************************************************/
+/* Copyright (C) 2008  Sam Danielson                                    */
+/*                                                                      */
+/* This file is part of Sqlpilot.				        */
+/* 								        */
+/* Sqlpilot is free software: you can redistribute it and/or modify     */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.				        */
+/* 								        */
+/* Sqlpilot is distributed in the hope that it will be useful,	        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.			        */
+/* 								        */
+/* You should have received a copy of the GNU General Public License    */
+/* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
+/************************************************************************/
+
 #include "flights.h"
+#define _GNU_SOURCE //for strcasestr
 #include <string.h>
 
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size)
@@ -46,7 +66,6 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     *dep,
     *arr,
     *date,
-    *tripdate,
     *aout,
     *ain,
     *dur,
@@ -58,21 +77,27 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     *sout,
     *sin,
     *sdur,
-    *trip;
+    *trip,
+    *tripdate;
   gchar *crew, *notes;
-  gint dland, nland, seq;
+  char				/* For other timezone strings, local if flights_utc and vice versa */
+    _date[BUF_DATE],
+    _aout[BUF_TIME],
+    _ain[BUF_TIME],
+    _sout[BUF_TIME],
+    _sin[BUF_TIME],
+    deptz[BUF_TZ],
+    arrtz[BUF_TZ];
+  char *deptz1, *deptz2, *arrtz1, *arrtz2;
+  gint dland, nland, leg;
   gboolean xc, hold;
   DBStatement *stmt;
   gboolean utc;
-  tmz_tz_str deptz, arrtz;
 
   utc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc));
 
-  date     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
-  tripdate = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
   aircraft = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aircraft));
   role     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_role));
-  seq      = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_seq));
   dep      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
   arr      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
   dur      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dur));
@@ -83,12 +108,15 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   fltno    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_fltno));
   sdur     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sdur));
   trip     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_trip));
+  tripdate = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_tripdate));
   dland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_dland));
   nland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_nland));
   hold     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_hold));
   xc       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_xc));
   crew     = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_crew));
   notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_notes));
+  date     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
+  leg      = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_leg)); 
   aout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aout));
   ain  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_ain));
   sout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sout));
@@ -96,7 +124,26 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
 
   tz_of_airport_ident(sqlpilot->db, dep, deptz, sizeof(deptz));
   tz_of_airport_ident(sqlpilot->db, arr, arrtz, sizeof(arrtz));
-  
+
+  if (utc) {
+    /* to Local */
+    deptz1 = "UTC";
+    arrtz1 = "UTC";
+    deptz2 = deptz;
+    arrtz2 = arrtz;
+
+  } else {
+    /* to UTC */
+    deptz1 = deptz;
+    arrtz1 = arrtz;
+    deptz2 = "UTC";
+    arrtz2 = "UTC";
+  }
+
+  move_time(deptz1, deptz2, date, aout, _date, _aout);
+  move_time(deptz1, deptz2, date, sout, _date, _sout);
+  move_time(arrtz1, arrtz2, date, ain, _date, _ain);
+  move_time(arrtz1, arrtz2, date, sin, _date, _sin);
    
   /* Write entries to database */
   if (id) {
@@ -105,14 +152,10 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   } else {
     stmt = sqlpilot->flights_insert;
   }
-
-  db_bind_text(stmt, FLIGHTS_WRITE_DATE, date);
-  db_bind_text(stmt, FLIGHTS_WRITE_TRIPDATE, tripdate);
   bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "ident", aircraft);
   bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", role);
   bind_id_of(stmt, FLIGHTS_WRITE_DEP , "airports", "ident", dep);
   bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "ident", arr);
-  db_bind_int(stmt, FLIGHTS_WRITE_SEQ, seq);
   db_bind_text(stmt, FLIGHTS_WRITE_DUR, dur);
   db_bind_text(stmt, FLIGHTS_WRITE_NIGHT, night);
   db_bind_text(stmt, FLIGHTS_WRITE_INST, inst);
@@ -126,16 +169,19 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   db_bind_text(stmt, FLIGHTS_WRITE_NOTES, notes);
   db_bind_text(stmt, FLIGHTS_WRITE_FLTNO, fltno);
   db_bind_text(stmt, FLIGHTS_WRITE_SDUR, sdur);
-  db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);  
+  db_bind_text(stmt, FLIGHTS_WRITE_TRIP, trip);
+  db_bind_text(stmt, FLIGHTS_WRITE_TRIPDATE, tripdate);
 
-/*   db_bind_text(stmt, FLIGHTS_WRITE_AOUT, utc ? _aout : aout); */
-/*   db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain); */
-/*   db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout); */
-/*   db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin); */
-/*   db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout); */
-/*   db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain); */
-/*   db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout); */
-/*   db_bind_text(stmt, FLIGHTS_WRITE_SINUTC,  utc ? sin  : _sin); */
+  db_bind_text(stmt, FLIGHTS_WRITE_DATE, date);
+  db_bind_int(stmt, FLIGHTS_WRITE_LEG, leg);
+  db_bind_text(stmt, FLIGHTS_WRITE_AOUT, utc ? _aout : aout);
+  db_bind_text(stmt, FLIGHTS_WRITE_AIN,  utc ? _ain  : ain);
+  db_bind_text(stmt, FLIGHTS_WRITE_SOUT, utc ? _sout : sout);
+  db_bind_text(stmt, FLIGHTS_WRITE_SIN,  utc ? _sin  : sin);
+  db_bind_text(stmt, FLIGHTS_WRITE_AOUTUTC, utc ? aout : _aout);
+  db_bind_text(stmt, FLIGHTS_WRITE_AINUTC,  utc ? ain  : _ain);
+  db_bind_text(stmt, FLIGHTS_WRITE_SOUTUTC, utc ? sout : _sout);
+  db_bind_text(stmt, FLIGHTS_WRITE_SINUTC,  utc ? sin  : _sin);
 
   db_stp_res_clr(stmt);
   g_free(crew);
@@ -327,7 +373,7 @@ void flights_load_selection(Sqlpilot *logb)
     *dep=NULL,
     *arr=NULL,
     *date=NULL,
-    *tripdate=NULL,
+    *leg=NULL,
     *aout=NULL,
     *aoututc=NULL,
     *ain=NULL,
@@ -344,6 +390,7 @@ void flights_load_selection(Sqlpilot *logb)
     *sinutc=NULL,
     *sdur=NULL,
     *trip=NULL,
+    *tripdate=NULL,
     *crew=NULL,
     *notes=NULL,
     *dland=NULL,
@@ -351,13 +398,13 @@ void flights_load_selection(Sqlpilot *logb)
     *xc=NULL,
     *hold=NULL;
 
-  int _dland=0, _nland=0;
+  int _dland=0, _nland=0, _leg=0;
 
   if (gtk_tree_selection_get_selected (logb->flights_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
 		       FLIGHTS_COL_ID, &id,
 		       FLIGHTS_COL_DATE, &date,
-		       FLIGHTS_COL_TRIPDATE, &tripdate,
+		       FLIGHTS_COL_LEG, &leg,
 		       FLIGHTS_COL_AIRCRAFT, &aircraft,
 		       FLIGHTS_COL_ROLE, &role,
 		       FLIGHTS_COL_DEP, &dep,
@@ -384,9 +431,11 @@ void flights_load_selection(Sqlpilot *logb)
 		       FLIGHTS_COL_SINUTC, &sinutc,
 		       FLIGHTS_COL_SDUR, &sdur,
 		       FLIGHTS_COL_TRIP, &trip,
+		       FLIGHTS_COL_TRIPDATE, &tripdate,
 		       -1);
     sscanf(EMPTY_IF_NULL(dland), "%d", &_dland);
     sscanf(EMPTY_IF_NULL(nland), "%d", &_nland);
+    sscanf(EMPTY_IF_NULL(leg),   "%d", &_leg);
   }
 
   gtk_entry_set_text(GTK_ENTRY(logb->flights_aircraft), EMPTY_IF_NULL(aircraft));
@@ -402,6 +451,7 @@ void flights_load_selection(Sqlpilot *logb)
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logb->flights_xc), str_bool(xc));
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_dland), _dland);
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_nland), _nland);
+  gtk_spin_button_set_value(GTK_SPIN_BUTTON(logb->flights_leg), _leg);
 
   text_view_set_text(GTK_TEXT_VIEW(logb->flights_crew), EMPTY_IF_NULL(crew));
   text_view_set_text(GTK_TEXT_VIEW(logb->flights_notes), EMPTY_IF_NULL(notes));
@@ -409,14 +459,13 @@ void flights_load_selection(Sqlpilot *logb)
   gtk_entry_set_text(GTK_ENTRY(logb->flights_sdur), EMPTY_IF_NULL(sdur));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
 
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_utc))) {
-    /* gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(dateutc)); */
-/*     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aoututc)); */
-/*     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ainutc)); */
-/*     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(soututc)); */
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aoututc));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ainutc));
+    gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(soututc));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sinutc));
   } else {
-    gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_aout), EMPTY_IF_NULL(aout));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_ain), EMPTY_IF_NULL(ain));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
@@ -425,7 +474,7 @@ void flights_load_selection(Sqlpilot *logb)
       
   g_free(id);
   g_free(date);
-  g_free(tripdate);
+  g_free(leg);
   g_free(aircraft);
   g_free(role);
   g_free(dep);
@@ -452,6 +501,7 @@ void flights_load_selection(Sqlpilot *logb)
   g_free(sinutc);
   g_free(sdur);
   g_free(trip);
+  g_free(tripdate);
 }
 
 void flights_refresh(Sqlpilot *sqlpilot)

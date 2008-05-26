@@ -1,13 +1,31 @@
+/************************************************************************/
+/* Copyright (C) 2008  Sam Danielson                                    */
+/*                                                                      */
+/* This file is part of Sqlpilot.				        */
+/* 								        */
+/* Sqlpilot is free software: you can redistribute it and/or modify     */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.				        */
+/* 								        */
+/* Sqlpilot is distributed in the hope that it will be useful,	        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.			        */
+/* 								        */
+/* You should have received a copy of the GNU General Public License    */
+/* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
+/************************************************************************/
+
 #ifndef FLIGHTS_H
 #define FLIGHTS_H
 
 #include "sqlpilot.h"
-#include "tmz.h"
 /* Column numbers for treemodel and select statements */
 enum {
   FLIGHTS_COL_ID = COL_ID,
   FLIGHTS_COL_DATE,
-  FLIGHTS_COL_SEQ,
+  FLIGHTS_COL_LEG,
   FLIGHTS_COL_AIRCRAFT,
   FLIGHTS_COL_ROLE,
   FLIGHTS_COL_DEP,
@@ -46,20 +64,16 @@ enum {
 /* Column names preceded with a _ are get hidden in the treeview */
 #define FLIGHTS_SELECT							\
   "select flights.id as _id"						\
-  ", flights.date as Date"						\
-  ", flights.Seq as Seq"						\
+  ", flights.Date as Date"						\
+  ", flights.Leg as Leg"						\
   ", a.ident as Aircraft"						\
   ", r.ident as Role"							\
   ", dep.ident as Dep"							\
   ", arr.ident as Arr"							\
-  ", strftime(flights.aout, '%H:%M') as AOut"				\
-  ", date(flights.aout) as _AOutDate"					\
-  ", strftime(flights.AOutUTC, '%H:%M') as AOutUTC"			\
-  ", date(flights.AOutUTC) as _AOutUTCDate"				\
-  ", strftime(flights.ain, '%H:%M') as AIn"				\
-  ", date(flights.ain) as _AInDate"					\
-  ", strftime(flights.AInUTC, '%H:%M') as AInUTC"			\
-  ", date(flights.AInUTC) as _AInUTCDate"				\
+  ", flights.aout as AOut"						\
+  ", flights.AOutUTC as AOutUTC"					\
+  ", flights.ain as AIn"						\
+  ", flights.AInUTC as AInUTC"						\
   ", m_to_hhmm(flights.dur) as Dur"					\
   ", m_to_hhmm(flights.night) as Night"					\
   ", m_to_hhmm(flights.inst) as Inst"					\
@@ -76,24 +90,24 @@ enum {
   ", flights.notes as _Notes"						\
   ", linecount(flights.notes) as Nts"					\
   ", flights.fltno as FltNo"						\
-  ", strftime(flights.sout, '%H:%M') as SOut"				\
-  ", date(flights.sout) as _SOutDate"					\
-  ", strftime(flights.SOutUTC, '%H:%M') as SOutUTC"			\
-  ", date(flights.SOutUTC) as _SOutUTCDate"				\
-  ", strftime(flights.sin, '%H:%M') as SIn"				\
-  ", date(flights.sin) as _SInDate"					\
-  ", strftime(flights.SInUTC, '%H:%M') as SInUTC"			\
-  ", date(flights.SInUTC) as _SInUTCDate"				\
+  ", flights.sout as SOut"						\
+  ", flights.SOutUTC as SOutUTC"					\
+  ", flights.sin as SIn"						\
+  ", flights.SInUTC as SInUTC"						\
   ", m_to_hhmm(flights.sdur) as SDur"					\
   ", flights.trip as Trip"						\
+  ", flights.TripDate as TripDate"					\
   " from flights"							\
   " left join aircraft a on flights.aircraft_id = a.id"			\
   " left join roles r on flights.role_id = r.id"			\
   " left join airports dep on flights.dep_id = dep.id"			\
   " left join airports arr on flights.arr_id = arr.id"
 
+#define FLIGHTS_ORDER \
+  " order by Date, Leg ASC"
+
 #define FLIGHTS_WHERE_ID \
-  " where flights.id = ? order by Date;"
+  " where flights.id = ?;"
 
 /* Insert and update bindings */
 enum {
@@ -102,8 +116,7 @@ enum {
   FLIGHTS_WRITE_DEP,
   FLIGHTS_WRITE_ARR,
   FLIGHTS_WRITE_DATE,
-  FLIGHTS_WRITE_SEQ,
-  FLIGHTS_WRITE_TRIPDATE,
+  FLIGHTS_WRITE_LEG,
   FLIGHTS_WRITE_AOUT,
   FLIGHTS_WRITE_AOUTUTC,
   FLIGHTS_WRITE_AIN,
@@ -126,6 +139,7 @@ enum {
   FLIGHTS_WRITE_SINUTC,
   FLIGHTS_WRITE_SDUR,
   FLIGHTS_WRITE_TRIP,
+  FLIGHTS_WRITE_TRIPDATE,
   FLIGHTS_WRITE_ID
 };
 
@@ -137,11 +151,10 @@ enum {
   ", dep_id"								\
   ", arr_id"								\
   ", Date"								\
-  ", Seq"								\
-  ", TripDate"								\
-  ", AOut"								\
+  ", Leg"								\
+  ", aout"								\
   ", AOutUTC"								\
-  ", AIn"								\
+  ", ain"								\
   ", AInUTC"								\
   ", dur"								\
   ", night"								\
@@ -155,14 +168,15 @@ enum {
   ", crew"								\
   ", notes"								\
   ", fltno"								\
-  ", SOut"								\
+  ", sout"								\
   ", SOutUTC"								\
-  ", SIn"								\
+  ", sin"								\
   ", SInUTC"								\
-  ", SDur"								\
-  ", trip)"								\
+  ", sdur"								\
+  ", Trip"								\
+  ", TripDate)"								\
   " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), hhmm_to_m(?), ?, ?, ?, " \
-  "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?);"
+  "?, ?, ?, ?, ?, ?, ?, ?, ?, hhmm_to_m(?), ?, ?);"
 
 #define FLIGHTS_UPDATE				\
   "update flights set"				\
@@ -171,8 +185,7 @@ enum {
   ", dep_id = ?"				\
   ", arr_id = ?"				\
   ", Date = ?"					\
-  ", Seq = ?"					\
-  ", TripDate = ?"				\
+  ", Leg = ?"					\
   ", aout = ?"					\
   ", AOutUTC = ?"				\
   ", ain = ?"					\
@@ -194,7 +207,8 @@ enum {
   ", sin = ?"					\
   ", SInUTC = ?"				\
   ", sdur = hhmm_to_m(?)"			\
-  ", trip = ?"					\
+  ", Trip = ?"					\
+  ", TripDate = ?"				\
   " where id = ?;"
 
 #define FLIGHTS_DELETE				\

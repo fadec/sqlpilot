@@ -1,14 +1,35 @@
+/************************************************************************/
+/* Copyright (C) 2008  Sam Danielson                                    */
+/*                                                                      */
+/* This file is part of Sqlpilot.				        */
+/* 								        */
+/* Sqlpilot is free software: you can redistribute it and/or modify     */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.				        */
+/* 								        */
+/* Sqlpilot is distributed in the hope that it will be useful,	        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.			        */
+/* 								        */
+/* You should have received a copy of the GNU General Public License    */
+/* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
+/************************************************************************/
+
 
 #ifndef SQLPILOT_H
 #define SQLPILOT_H
 
-#define _GNU_SOURCE //for strcasestr
-#define UI_XML_FILE  "data/ui/sqlpilot.xml"
+#define UI_XML_FILE  "data/ui/interface.xml"
+
+#include "config.h"
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <time.h>
 #include "db/db.h"
 #include "util.h"
 #include "store.h"
@@ -107,8 +128,8 @@ struct Sqlpilot {
   GtkWidget *flights_utc_lbl;
   GtkWidget *flights_aircraft;
   GtkWidget *flights_date;
+  GtkWidget *flights_leg;
   GtkWidget *flights_role;
-  GtkWidget *flights_seq;
   GtkWidget *flights_dep;
   GtkWidget *flights_arr;
   GtkWidget *flights_aout;
@@ -129,6 +150,7 @@ struct Sqlpilot {
   GtkWidget *flights_sin;
   GtkWidget *flights_sdur;
   GtkWidget *flights_trip;
+  GtkWidget *flights_tripdate;
   GtkWidget *flights_new_btn;
   GtkWidget *flights_save_btn;
   GtkWidget *flights_armdel_btn;

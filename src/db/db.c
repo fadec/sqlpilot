@@ -1,4 +1,23 @@
-#include <sqlite3.h>
+/************************************************************************/
+/* Copyright (C) 2008  Sam Danielson                                    */
+/*                                                                      */
+/* This file is part of Sqlpilot.				        */
+/* 								        */
+/* Sqlpilot is free software: you can redistribute it and/or modify     */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.				        */
+/* 								        */
+/* Sqlpilot is distributed in the hope that it will be useful,	        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.			        */
+/* 								        */
+/* You should have received a copy of the GNU General Public License    */
+/* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
+/************************************************************************/
+
+#include "db/sqlite3.h"
 #include "db/db.h"
 
 #include <stdio.h>
@@ -254,15 +273,6 @@ int db_bind_double(DBStatement *stmt, int i, double n)
 int db_bind_null(DBStatement *stmt, int i)
 {
   return sqlite3_bind_null(stmt, i);
-}
-
-int db_bind_text_unless_empty(DBStatement *stmt, int i, const char *text)
-{
-  if (text && strlen(text)) {
-    return db_bind_text(stmt, i, text);
-  } else {
-    return DB_OK;
-  }
 }
 
 int db_clear_bindings(DBStatement *stmt)

@@ -1,9 +1,28 @@
+/************************************************************************/
+/* Copyright (C) 2008  Sam Danielson                                    */
+/*                                                                      */
+/* This file is part of Sqlpilot.				        */
+/* 								        */
+/* Sqlpilot is free software: you can redistribute it and/or modify     */
+/* it under the terms of the GNU General Public License as published by */
+/* the Free Software Foundation, either version 3 of the License, or    */
+/* (at your option) any later version.				        */
+/* 								        */
+/* Sqlpilot is distributed in the hope that it will be useful,	        */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of       */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the        */
+/* GNU General Public License for more details.			        */
+/* 								        */
+/* You should have received a copy of the GNU General Public License    */
+/* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
+/************************************************************************/
+
 
 #ifndef _DB_H_
 #define _DB_H_
 
 #include <glib.h>
-#include <sqlite3.h>
+#include "db/sqlite3.h"
 
 /* Ripped shamefully from sqlite3 docs and s/SQLITE/DB/g, */
 #define DB_OK           0   /* Successful result */
@@ -77,7 +96,6 @@ int db_bind_int(DBStatement *stmt, int i, int n);
 int db_bind_int64(DBStatement *, int, int);
 int db_bind_double(DBStatement *, int, double);
 int db_bind_null(DBStatement *, int);
-int db_bind_text_unless_empty(DBStatement *stmt, int i, const char *text);
 int db_column_count(DBStatement *stmt);
 int db_finalize(DBStatement *stmt);
 int db_step(DBStatement *stmt);

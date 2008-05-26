@@ -1,10 +1,4 @@
 
- - time of day fields aout and sout become datetimes
- - added sequence number (Flights.Seq) for flights on a date
- - Flights.Date will no longer be associated with aout or sout and will not change with out times, it's a duty date
- - date, seq, other flights on a given date will be used to determine correct date for local and utc out times
- - added trip date (Flights.TripDate) for grouping of flights into trips
-
 2007-08-01 CLE-DAY is actually on 2007-08-02
 2007-08-08 SGF-MCI is actually on 2007-08-09
 make multiline text also make modified
@@ -12,10 +6,12 @@ scroll to selected row on save
 make a copy button that works like new but takes fields
 stop changed signals from triggering modified state for utc/local switch
 99 becomes 0+99, wtf .. also make it so I can type 300m and it will be 6+00, 3h -> 3+00, 300 should become 3+00
-funky thing happens with date and time entry around midnight and switching utc-local. it seems to step backwards
+funky thing happens with date and time entry around midnight and switching utc-local. it's correct but confusing
 find a way to keep row selected during refresh
 make views
 write difftime db function
+write greatcircle function
+delete visual approaches
 make notes display an indication on table view if present
 remove cancel button
 make deletes more difficult

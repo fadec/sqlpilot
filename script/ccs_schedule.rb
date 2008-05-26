@@ -1,5 +1,24 @@
 #!/usr/bin/env ruby
 
+########################################################################
+# Copyright (C) 2008  Sam Danielson				       #
+#                                                                      #
+# This file is part of Sqlpilot.				       #
+# 								       #
+# Sqlpilot is free software: you can redistribute it and/or modify     #
+# it under the terms of the GNU General Public License as published by #
+# the Free Software Foundation, either version 3 of the License, or    #
+# (at your option) any later version.				       #
+# 								       #
+# Sqlpilot is distributed in the hope that it will be useful,	       #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of       #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the	       #
+# GNU General Public License for more details.			       #
+# 								       #
+# You should have received a copy of the GNU General Public License    #
+# along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    #
+########################################################################
+
 module Parse
   @@n_current_line = 0
   def run
@@ -19,7 +38,7 @@ module Parse
   end
 
   def text
-    @@text ||= File.read "/home/sam/schedule.txt"
+    @@text ||= STDIN.read
   end
 
   def getline
@@ -136,7 +155,7 @@ end
 
 class TripInfo < Parser
   def self.parse
-    if (ln = match /^ [a-zA-Z0-9]{5,}/)
+    if ln = (match /^ |A\s+[a-zA-Z0-9]{5,}/)
       ln
     end
   end
@@ -232,33 +251,62 @@ def make_date(strdate, strmday)
   t.strftime "%Y-%m-%d"
 end
 
-puts "" #header row
+def csvrow(columns, data)
+  columns.map { |c| data[c] }.join(',');
+end
+
+
+columns = [
+  :date,
+  :fltno,
+  :aircraft,
+  :type,
+  :dep,
+  :arr,
+  :aout,
+  :ain,
+  :sout,
+  :sin,
+  :dur,
+  :night,
+  :inst,
+  :apprch,
+  :xc,
+  :role,
+  :dland,
+  :nland,
+  :crew,
+  :notes,
+  :trip]
+
+puts columns.join(',')
 for trip in Schedule.run
   for duty_period in trip[:duty_periods]
     for flight in duty_period[:flights]
-      puts [(make_date trip[:date], flight[:mday]),
-            flight[:flightno],
-            nil,
-            nil,
-            flight[:dep],
-            flight[:arr],
-            nil,
-            nil,
-            flight[:out],
-            flight[:in],
-            nil,
-            nil,
-            nil,
-            1,
-            nil,
-            nil,
-            "CA",
-            nil,
-            nil,
-            nil,
-            '"' + flight[:crew].join("\n") + '"',
-            trip[:ident]
-           ].join(",")
+      puts csvrow(columns, {
+        :date     => (make_date trip[:date], flight[:mday]),
+        :fltno    => flight[:flightno],
+        :aircraft => nil,
+        :type     => nil,
+        :dep      => flight[:dep],
+        :arr      => flight[:arr],
+        :aout     => nil,
+        :ain      => nil,
+        :sout     => flight[:out],
+        :sin      => flight[:in],
+        :dur      => nil,
+        :night    => nil,
+        :inst     => nil,
+        :apprch   => nil,
+        :xc       => 1,
+        :role     => "CA",
+        :dland    => nil,
+        :nland    => nil,
+        :notes    => nil,
+        :crew     => '"' + flight[:crew].join("\n") + '"',
+        :trip     => trip[:ident]
+      })
+      
     end
     #if (hotel = duty_period[:rest][:hotel])
       #puts hotel[:hotel_info]
