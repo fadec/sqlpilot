@@ -1,0 +1,13 @@
+SqlPilot is logbook software for the professional pilot.
+
+It requires gtk2, sqlite3, and python to build.
+Edit config.mk to tune the build if needed.
+
+To see it run you can:
+
+  make
+  make db-reset
+  ./sqlpilot logbook.db
+
+
+See COPYING for license.
