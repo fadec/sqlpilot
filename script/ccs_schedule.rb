@@ -235,7 +235,7 @@ class TripFooter < Parser
   end
 end
 
-def make_date(strdate, strmday)
+def make_date(strdate, strmday = nil)
   months = {"Jan" => 1, "Feb" => 2, "Mar" => 3, "Apr" => 4, "May" => 5, "Jun" => 6, "Jul" => 7, "Aug" => 8, "Sep" => 9, "Oct" => 10, "Nov" => 11, "Dec" => 12}
   m, d, y = strdate.scan /\w+/
   m = months[m]
@@ -258,6 +258,7 @@ end
 
 columns = [
   :date,
+  :leg,
   :fltno,
   :aircraft,
   :type,
@@ -277,14 +278,18 @@ columns = [
   :nland,
   :crew,
   :notes,
-  :trip]
+  :trip,
+  :tripdate]
 
 puts columns.join(',')
 for trip in Schedule.run
   for duty_period in trip[:duty_periods]
+    leg = 0
     for flight in duty_period[:flights]
+      leg += 1
       puts csvrow(columns, {
         :date     => (make_date trip[:date], flight[:mday]),
+        :leg      => leg,
         :fltno    => flight[:flightno],
         :aircraft => nil,
         :type     => nil,
@@ -304,7 +309,8 @@ for trip in Schedule.run
         :nland    => nil,
         :notes    => nil,
         :crew     => '"' + flight[:crew].join("\n") + '"',
-        :trip     => trip[:ident]
+        :trip     => trip[:ident],
+        :tripdate => make_date(trip[:date])
       })
       
     end
