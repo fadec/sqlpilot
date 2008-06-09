@@ -19,13 +19,15 @@
 # along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    #
 ########################################################################
 
+SHOW_THOUGHTS = false
+
 module Parse
   @@n_current_line = 0
   def run
     n = nline
-    #puts "#{self}"
+    puts "#{self}" if SHOW_THOUGHTS
     r = parse
-    #puts "/#{self}"
+    puts "/#{self}" if SHOW_THOUGHTS
     r || (seekline(n) && nil)
   end
 
@@ -60,7 +62,7 @@ module Parse
     n = nline
     ln = getline
     if ln =~ regex
-      #puts ln
+      puts ln if SHOW_THOUGHTS
       ln
     else
       seekline(n)
@@ -101,7 +103,6 @@ end
 
 class Schedule < Parser
   def self.parse
-    many Junk
     many Trip
   end
 end
@@ -116,7 +117,8 @@ class Junk < Parser
         match( /^Dbref\s/ ) ||
         match( /^Po\s/ ) ||
         match( /^Layo\s/ ) ||
-        match( /^\s+City\s+Code/ )
+        match( /^\s+City\s+Code/ ) ||
+        match( /^SS\s/)
       ""
     end
   end
@@ -124,14 +126,15 @@ end
 
 class Trip < Parser
   def self.parse
-    if (ti = one TripInfo) &&
+    if (many Junk) &&
+        (ti = one TripInfo) &&
         (one Blank) &&
         (many Junk) &&
         (dps = many DutyPeriod) &&
         (one TripTotals) &&
         (one TripFooter)
-      ident, pos, mon, day, year = ti.scan(/\w+/)
-      {:ident => ident, :date => "#{mon} #{day} #{year}", :duty_periods => dps}
+
+      {:ident => ti[:ident], :date => "#{ti[:mon]} #{ti[:day]} #{ti[:year]}", :duty_periods => dps}
     end
   end
 end
@@ -156,7 +159,8 @@ end
 class TripInfo < Parser
   def self.parse
     if ln = (match /^ |A\s+[a-zA-Z0-9]{5,}/)
-      ln
+      ident, pos, mon, day, year = ln.gsub(/^A\s+|^\s+/, '').split(/\t/)
+      {:ident => ident, :pos => pos, :mon => mon, :day => day, :year => year}
     end
   end
 end
@@ -247,6 +251,7 @@ def make_date(strdate, strmday = nil)
   else
     mday = d
   end
+
   t = Time.mktime y, m, mday
   t.strftime "%Y-%m-%d"
 end
@@ -310,7 +315,7 @@ for trip in Schedule.run
         :notes    => nil,
         :crew     => '"' + flight[:crew].join("\n") + '"',
         :trip     => trip[:ident],
-        :tripdate => make_date(trip[:date])
+        :tripdate => (make_date(trip[:date]) rescue nil)
       })
       
     end
