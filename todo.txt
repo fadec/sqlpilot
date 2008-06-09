@@ -1,6 +1,5 @@
+MUST see about TZ for CUU ELP
 
-2007-08-01 CLE-DAY is actually on 2007-08-02
-2007-08-08 SGF-MCI is actually on 2007-08-09
 make multiline text also make modified
 scroll to selected row on save
 make a copy button that works like new but takes fields
@@ -11,14 +10,11 @@ find a way to keep row selected during refresh
 make views
 write difftime db function
 write greatcircle function
-delete visual approaches
-make notes display an indication on table view if present
-remove cancel button
 utc/local time weird if no date
 inserts that fail do to unique constraints fail silently and the table acts buggy thereafter
 do something about all the times in the flights table
 fix the airport data
-allow multiline approach editing
+allow multiline approach editing - or use CSV
 adjust airports select queries
 fix column sorting
 make fkey fields indicate if they will cause an insert

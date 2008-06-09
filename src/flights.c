@@ -458,6 +458,7 @@ void flights_load_selection(Sqlpilot *logb)
   gtk_entry_set_text(GTK_ENTRY(logb->flights_fltno), EMPTY_IF_NULL(fltno));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_sdur), EMPTY_IF_NULL(sdur));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_trip), EMPTY_IF_NULL(trip));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_tripdate), EMPTY_IF_NULL(tripdate));
 
   gtk_entry_set_text(GTK_ENTRY(logb->flights_date), EMPTY_IF_NULL(date));
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_utc))) {
