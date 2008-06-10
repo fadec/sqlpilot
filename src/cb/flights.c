@@ -81,6 +81,12 @@ void on_flights_aircraft_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   edctrl_set_modified(sqlpilot->flights_edctrl);
 }
 
+int on_flights_aircraft_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  flights_refresh_aircraft_utilized(sqlpilot);
+  return FALSE;
+}
+
 void on_flights_dep_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_airports_ident(entry);

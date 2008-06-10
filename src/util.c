@@ -359,20 +359,40 @@ int row_exists(DB *db, const char *table, const char *column, const char *value)
   return ret;
 }
 
-/* Find or create a record the value of a column and return the id */
-DBint64 id_of_with_insert(DB *db, const char *table, const char *column, const char *value, int *inserted)
+int find_row_id(DB *db, const char *table, const char *column, const char *value, DBint64 *r_id)
 {
-  #define __sql_size 500
-  DBStatement *select, *insert;
-  DBint64 id;
-  char sql[__sql_size];
+  DBStatement *select;
+  char sql[256];
 
-  snprintf(sql, __sql_size, "select id from %s where %s = ?;", table, column);
+  snprintf(sql, sizeof(sql), "select id from %s where %s = ?;", table, column);
   select = db_prep(db, sql);
   db_bind_text(select, 1, value);
 
   if (db_step(select) == DB_DONE) {
-    snprintf(sql, __sql_size, "insert into %s (%s) values (?);", table, column);
+    /* No row found */
+    return 0;
+  } else {
+    *r_id = db_column_int64(select, 0);
+  }
+
+  db_finalize(select);
+
+  return 1;
+}
+
+/* Find or create a record the value of a column and return the id */
+DBint64 id_of_with_insert(DB *db, const char *table, const char *column, const char *value, int *inserted)
+{
+  DBStatement *select, *insert;
+  DBint64 id;
+  char sql[256];
+
+  snprintf(sql, sizeof(sql), "select id from %s where %s = ?;", table, column);
+  select = db_prep(db, sql);
+  db_bind_text(select, 1, value);
+
+  if (db_step(select) == DB_DONE) {
+    snprintf(sql, sizeof(sql), "insert into %s (%s) values (?);", table, column);
     insert = db_prep(db, sql);
     db_bind_text(insert, 1, value);
     db_step(insert);
@@ -387,7 +407,6 @@ DBint64 id_of_with_insert(DB *db, const char *table, const char *column, const c
   db_finalize(select);
 
   return id;
-  #undef __sql_size
 }
 
 /* Binds id of a row in a table with column matching a value to the i'th variable in stmt */

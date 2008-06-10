@@ -127,6 +127,7 @@ struct Sqlpilot {
   GtkWidget *flights_utc;
   GtkWidget *flights_utc_lbl;
   GtkWidget *flights_aircraft;
+  GtkWidget *flights_aircraft_utilized;
   GtkWidget *flights_date;
   GtkWidget *flights_leg;
   GtkWidget *flights_role;
@@ -192,6 +193,7 @@ struct Sqlpilot {
   DBStatement *aircraft_insert;
   DBStatement *aircraft_update;
   DBStatement *aircraft_delete;
+  DBStatement *aircraft_count_flights;
   GtkWidget *aircraft_sw;
   GtkTreeModel *aircraft_treemodel;
   GtkTreeSelection *aircraft_selection;

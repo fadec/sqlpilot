@@ -49,6 +49,8 @@ void flights_after_change(Sqlpilot *sqlpilot)
   sqlpilot->aircraft_stale = TRUE;
   sqlpilot->types_stale = TRUE;
   sqlpilot->airports_stale = TRUE;
+
+  flights_load_selection(sqlpilot);
 }
 
 int flights_can_delete(GtkTreeSelection *selection)
@@ -362,6 +364,7 @@ void reconcile_time_entries(Sqlpilot *logb,
   }
 }
 
+/* Load the selected line into fields */
 void flights_load_selection(Sqlpilot *logb)
 {
   GtkTreeIter iter;
@@ -472,7 +475,8 @@ void flights_load_selection(Sqlpilot *logb)
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sout), EMPTY_IF_NULL(sout));
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), EMPTY_IF_NULL(sin));
   }
-      
+  flights_refresh_aircraft_utilized(logb);
+
   g_free(id);
   g_free(date);
   g_free(leg);
@@ -510,4 +514,19 @@ void flights_refresh(Sqlpilot *sqlpilot)
   store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->flights_treemodel), sqlpilot->flights_select_all);
   flights_load_selection(sqlpilot);
   sqlpilot->flights_stale = FALSE;
+}
+
+void flights_refresh_aircraft_utilized(Sqlpilot *sqlpilot)
+{
+  DBint64 id;
+
+  char txt[16];
+
+  if (find_row_id(sqlpilot->db, "Aircraft", "Ident", gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aircraft)), &id)) {
+    snprintf(txt, sizeof(txt), "(%d)", aircraft_count_flights(sqlpilot, id));
+  } else {
+    snprintf(txt, sizeof(txt), "(?)");
+  }
+
+  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_aircraft_utilized), txt);
 }

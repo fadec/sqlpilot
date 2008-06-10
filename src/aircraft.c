@@ -139,3 +139,23 @@ void aircraft_refresh(Sqlpilot *sqlpilot)
   aircraft_load_selection(sqlpilot);
   sqlpilot->aircraft_stale = FALSE;
 }
+
+int aircraft_count_flights(Sqlpilot *sqlpilot, DBint64 id)
+{
+  DBStatement *stmt;
+  int c;
+
+  stmt = sqlpilot->aircraft_count_flights;
+
+  db_bind_int64(stmt, 1, id);
+  if (db_step(stmt) == DB_ROW) {
+    c = db_column_int(stmt,0);
+  } else {
+    c = 0;
+  }
+
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+  
+  return c;
+}

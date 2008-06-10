@@ -86,6 +86,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->aircraft_insert         = db_prep(sqlpilot->db, AIRCRAFT_INSERT);
   sqlpilot->aircraft_update         = db_prep(sqlpilot->db, AIRCRAFT_UPDATE);
   sqlpilot->aircraft_delete         = db_prep(sqlpilot->db, AIRCRAFT_DELETE);
+  sqlpilot->aircraft_count_flights  = db_prep(sqlpilot->db, AIRCRAFT_COUNT_FLIGHTS);
 
   sqlpilot->types_select_all     = db_prep(sqlpilot->db, TYPES_SELECT TYPES_GROUP_BY ";");
   sqlpilot->types_select_by_id   = db_prep(sqlpilot->db, TYPES_SELECT TYPES_WHERE_ID TYPES_GROUP_BY ";");
@@ -102,6 +103,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(window);
   pull_widget(flights_sw);
   pull_widget(flights_aircraft);
+  pull_widget(flights_aircraft_utilized);
   pull_widget(flights_utc);
   pull_widget(flights_utc_lbl);
   pull_widget(flights_date);
@@ -351,6 +353,12 @@ Sqlpilot *sqlpilot_new(const char *filename)
 #else
   g_object_unref (G_OBJECT(gxml));
 #endif
+
+  flights_load_selection(sqlpilot);
+  roles_load_selection(sqlpilot);
+  aircraft_load_selection(sqlpilot);
+  types_load_selection(sqlpilot);
+  aircraft_load_selection(sqlpilot);
 
   return sqlpilot;
 }

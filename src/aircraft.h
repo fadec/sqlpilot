@@ -67,10 +67,14 @@ enum {
 #define AIRCRAFT_DELETE	\
   "delete from aircraft where id = ?;"
 
+#define AIRCRAFT_COUNT_FLIGHTS \
+  "select count(id) from Flights where Flights.aircraft_id = ?;"
+
 int aircraft_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 void aircraft_after_change(Sqlpilot *sqlpilot);
 int aircraft_can_delete(GtkTreeSelection *selection);
 DBint64 aircraft_write_entries(const gchar *id, Sqlpilot *sqlpilot);
 void aircraft_load_selection(Sqlpilot *logb);
+int aircraft_count_flights(Sqlpilot *, DBint64 id);
 
 #endif
