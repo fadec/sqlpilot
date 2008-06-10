@@ -70,6 +70,12 @@ void on_flights_role_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   edctrl_set_modified(sqlpilot->flights_edctrl);
 }
 
+int on_flights_role_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+{
+  flights_refresh_role_utilized(sqlpilot);
+  return FALSE;
+}
+
 void on_flights_fltno_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   edctrl_set_modified(sqlpilot->flights_edctrl);
@@ -107,6 +113,7 @@ int on_flights_dep_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 			   GTK_ENTRY(sqlpilot->flights_ain),
 			   GTK_ENTRY(sqlpilot->flights_dur));
   }
+  flights_refresh_dep_utilized(sqlpilot);
   return FALSE;
 }
 
@@ -130,6 +137,7 @@ int on_flights_arr_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 			   GTK_ENTRY(sqlpilot->flights_ain),
 			   GTK_ENTRY(sqlpilot->flights_dur));
   }
+  flights_refresh_arr_utilized(sqlpilot);
   return FALSE;
 }
 

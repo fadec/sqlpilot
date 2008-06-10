@@ -231,5 +231,9 @@ void reconcile_time_entries(Sqlpilot *logb,
 			    GtkEntry *elapsed);
 void flights_load_selection(Sqlpilot *);
 void flights_refresh(Sqlpilot *sqlpilot);
+void flights_refresh_utilization(Sqlpilot *sqlpilot);
 void flights_refresh_aircraft_utilized(Sqlpilot *sqlpilot);
+void flights_refresh_role_utilized(Sqlpilot *sqlpilot);
+void flights_refresh_dep_utilized(Sqlpilot *sqlpilot);
+void flights_refresh_arr_utilized(Sqlpilot *sqlpilot);
 #endif

@@ -109,8 +109,11 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(flights_date);
   pull_widget(flights_leg);
   pull_widget(flights_role);
+  pull_widget(flights_role_utilized);
   pull_widget(flights_dep);
+  pull_widget(flights_dep_utilized);
   pull_widget(flights_arr);
+  pull_widget(flights_arr_utilized);
   pull_widget(flights_aout);
   pull_widget(flights_ain);
   pull_widget(flights_dur);

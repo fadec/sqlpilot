@@ -33,7 +33,7 @@ static void edctrl_show_record(Edctrl *ec)
     snprintf(labeltext, sizeof(labeltext), "%s%s", (ec->edstate == EDSTATE_MODIFIED) ? "* " : "", show);
     gtk_label_set_text(GTK_LABEL(ec->todel_lbl), labeltext);
   } else {
-    gtk_label_set_text(GTK_LABEL(ec->todel_lbl), (ec->edstate == EDSTATE_MODIFIED) ? "* New" : "New" );
+    gtk_label_set_text(GTK_LABEL(ec->todel_lbl), (ec->edstate == EDSTATE_MODIFIED) ? "* New Record" : "New Record" );
   }
 }
 
