@@ -86,7 +86,7 @@ void db_results_free(DBResults *);
 DBResults *db_get_table(DB *db, const char *sql, char **errormsg);
 char *db_results_column_name(DBResults *results, int column);
 char *db_results_table_lookup(DBResults*, int row, int column);
-int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tail);
+int db_prepare(DB *db, const char *sql, DBStatement **stmt);
 DBStatement *db_prep(DB *db, const char *sql);
 int db_clear_bindings(DBStatement *);
 int db_reset(DBStatement *stmt);

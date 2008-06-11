@@ -20,6 +20,19 @@
 #include "sqlpilot.h"
 #include "flights.h"
 
+void on_flights_refresh_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+{
+  flights_refresh(sqlpilot);
+}
+
+void on_flights_view_date_toggled(GtkToggleButton *button, Sqlpilot *sqlpilot)
+{
+  GtkTreeViewColumn *col;
+
+  col = gtk_tree_view_get_column(GTK_TREE_VIEW(sqlpilot->flights_treeview), 1);
+  gtk_tree_view_column_set_visible(col, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_view_date)));
+}
+
 void on_flights_trip_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   edctrl_set_modified(sqlpilot->flights_edctrl);

@@ -231,23 +231,29 @@ char *db_results_column_name(DBResults *results, int column)
 	return results->column_names[column];
 }
 
-int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tail)
+/* int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tail) */
+/* { */
+/* 	return sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), (sqlite3_stmt **)stmt, sql_tail); */
+/* } */
+
+int db_prepare(DB *db, const char *sql, DBStatement **stmt)
 {
-	return sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), (sqlite3_stmt **)stmt, sql_tail);
+  const char *sql_tail;
+  return sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), (sqlite3_stmt**)stmt, &sql_tail);
 }
 
 DBStatement *db_prep(DB *db, const char *sql)
 {
-	const char *sql_tail;
-	sqlite3_stmt *stmt;
-	int err;
-	if ((err = sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), &stmt, &sql_tail)) != SQLITE_OK)
-	{
-		fprintf(stderr, "Error preparing statement for: %s\n", sql);
-		sqlite3_close(db);
-		exit(2);
-	}
-	return stmt;
+  const char *sql_tail;
+  sqlite3_stmt *stmt;
+  int err;
+  if ((err = sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), &stmt, &sql_tail)) != SQLITE_OK)
+    {
+      fprintf(stderr, "Error preparing statement for: %s\n", sql);
+      sqlite3_close(db);
+      exit(2);
+    }
+  return stmt;
 }
 
 int db_bind_text(DBStatement *stmt, int i, const char *text)

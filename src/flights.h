@@ -63,7 +63,7 @@ enum {
 /* All columns must be selected for use during update queries */
 /* Column names preceded with a _ are get hidden in the treeview */
 #define FLIGHTS_SELECT							\
-  "select flights.id as _id"						\
+  "select flights.id as id"						\
   ", flights.Date as Date"						\
   ", flights.Leg as Leg"						\
   ", a.ident as Aircraft"						\
@@ -79,15 +79,15 @@ enum {
   ", m_to_hhmm(flights.inst) as Inst"					\
   ", m_to_hhmm(flights.siminst) as SimInst"				\
   ", bool(flights.hold) as Hold"					\
-  ", flights.aprch as _Aprch"						\
+  ", flights.aprch as Aprch"						\
   ", linecount(flights.aprch) as Aprch"					\
   ", bool(flights.xc) as XC"						\
   ", round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as Dist"	\
   ", flights.dland as DLand"						\
   ", flights.nland as NLand"						\
-  ", flights.crew as _Crew"						\
+  ", flights.crew as Crew"						\
   ", linecount(flights.crew) as Crw"					\
-  ", flights.notes as _Notes"						\
+  ", flights.notes as Notes"						\
   ", linecount(flights.notes) as Nts"					\
   ", flights.fltno as FltNo"						\
   ", flights.sout as SOut"						\

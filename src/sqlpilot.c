@@ -101,7 +101,11 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->airports_delete         = db_prep(sqlpilot->db, AIRPORTS_DELETE);
   
   pull_widget(window);
+  pull_widget(flights_where);
+  pull_widget(flights_refresh);
+  pull_widget(flights_results_summary);
   pull_widget(flights_sw);
+  pull_widget(flights_view_date);
   pull_widget(flights_aircraft);
   pull_widget(flights_aircraft_utilized);
   pull_widget(flights_utc);
@@ -356,6 +360,14 @@ Sqlpilot *sqlpilot_new(const char *filename)
 #else
   g_object_unref (G_OBJECT(gxml));
 #endif
+
+  sqlpilot->flights_stale = 0;
+  flights_refresh(sqlpilot);
+  sqlpilot->roles_stale = 1;
+  sqlpilot->aircraft_stale = 1;
+  sqlpilot->types_stale = 1;
+  sqlpilot->airports_stale = 1;
+  
 
   flights_load_selection(sqlpilot);
   roles_load_selection(sqlpilot);

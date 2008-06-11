@@ -51,33 +51,38 @@ static GtkListStore *store_new_from_stmt(DBStatement *stmt)
 	return store;
 }
 
-static void store_populate_from_stmt(GtkListStore *store, DBStatement *stmt)
+static long store_populate_from_stmt(GtkListStore *store, DBStatement *stmt)
 {
-	int result_code, i, ncolumns;
-	GtkTreeIter iter;
-	const unsigned char *text;
-
-	ncolumns = db_column_count(stmt);
-
-	db_reset(stmt);
-
-	while ((result_code = db_step(stmt)) == DB_ROW)
-	{
-		gtk_list_store_append(store, &iter);
-		for(i = 0; i < ncolumns; i++)
-		{
-			text = db_column_text(stmt, i);
-			gtk_list_store_set(store, &iter, i, text, -1);
-		}
-	}
-
-	db_reset(stmt);
+  int result_code, i, ncolumns;
+  long nrows=0;
+  GtkTreeIter iter;
+  const unsigned char *text;
+  
+  ncolumns = db_column_count(stmt);
+  
+  db_reset(stmt);
+  
+  while ((result_code = db_step(stmt)) == DB_ROW) {
+    gtk_list_store_append(store, &iter);
+    for(i = 0; i < ncolumns; i++) {
+      text = db_column_text(stmt, i);
+      gtk_list_store_set(store, &iter, i, text, -1);
+    }
+    nrows++;
+    while (!(nrows % 256) && gtk_events_pending()) {
+      gtk_main_iteration();
+    }
+    gtk_main_iteration_do(FALSE);
+  }
+  
+  db_reset(stmt);
+  return nrows;
 }
 
-void store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt)
+long store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt)
 {
   gtk_list_store_clear(store);
-  store_populate_from_stmt(store, stmt);
+  return store_populate_from_stmt(store, stmt);
 }
 
 int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
@@ -95,16 +100,6 @@ int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
   }
 
   return result_code; // or whatever
-}
-
-static GtkListStore *store_from_stmt(DBStatement *stmt)
-{
-	GtkListStore *store;
-
-	store = store_new_from_stmt(stmt);
-	store_populate_from_stmt(store, stmt);
-
-	return store;
 }
 
 /********/
@@ -125,6 +120,8 @@ static void store_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt
 	renderer = gtk_cell_renderer_text_new();
 	column = gtk_tree_view_column_new_with_attributes (header, renderer, "text", i, NULL);
 	gtk_tree_view_column_set_sort_column_id (column, i);
+	gtk_tree_view_column_set_reorderable(column, TRUE);
+	gtk_tree_view_column_set_resizable(column, TRUE);
 	gtk_tree_view_append_column (treeview, column);
       }
     }
@@ -135,7 +132,7 @@ void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkT
   GtkListStore *store;
   GtkWidget *view;
 	
-  store = store_from_stmt(stmt);
+  store = store_new_from_stmt(stmt);
 
   view = gtk_tree_view_new_with_model (GTK_TREE_MODEL(store));
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
