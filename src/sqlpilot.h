@@ -64,6 +64,7 @@ struct Edctrl {
   void *after_change_data;
   DBint64 (*save)(const char *id, Sqlpilot *);
   void *save_data;
+  int ignore_modifications;
 };
 
 #define BUF_ED_TODEL 32
@@ -73,6 +74,7 @@ void edctrl_set_selected(Edctrl *ec);
 void edctrl_set_modified(Edctrl *ec);
 void edctrl_set_invalid(Edctrl *ec);
 void edctrl_set_deletearmed(Edctrl *ec);
+void edctrl_set_ignore_modifications(Edctrl *ec, int bool);
 
 void edctrl_selection_changed(Edctrl *ec);
 void edctrl_new_btn_clicked(Edctrl *ec);

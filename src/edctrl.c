@@ -61,9 +61,14 @@ void edctrl_set_selected(Edctrl *ec)
   edctrl_show_record(ec);
 }
 
+void edctrl_set_ignore_modifications(Edctrl *ec, int bool)
+{
+  ec->ignore_modifications = bool;
+}
+
 void edctrl_set_modified(Edctrl *ec)
 {
-  if (ec->edstate == EDSTATE_MODIFIED) return;
+  if (ec->edstate == EDSTATE_MODIFIED || ec->ignore_modifications) return;
   ec->edstate = EDSTATE_MODIFIED;
   gtk_widget_set_sensitive(GTK_WIDGET(ec->armdel_btn), 0);
   gtk_widget_set_sensitive(GTK_WIDGET(ec->del_btn), 0);

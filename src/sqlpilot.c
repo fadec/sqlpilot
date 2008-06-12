@@ -270,6 +270,16 @@ Sqlpilot *sqlpilot_new(const char *filename)
 		    G_CALLBACK (on_airports_selection_changed),
 		    sqlpilot);
 
+  /* Setup text view buffer callbacks */
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->flights_crew))), "changed",
+		   G_CALLBACK(on_flights_crew_changed), sqlpilot);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->flights_notes))), "changed",
+		   G_CALLBACK(on_flights_notes_changed), sqlpilot);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->aircraft_notes))), "changed",
+		   G_CALLBACK(on_aircraft_notes_changed), sqlpilot);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->airports_notes))), "changed",
+		   G_CALLBACK(on_airports_notes_changed), sqlpilot);
+
   /* Out of place code to init flights utc button */
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc), FALSE);
   gtk_label_set_text(GTK_LABEL(sqlpilot->flights_utc_lbl), "Local");

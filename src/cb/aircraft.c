@@ -41,6 +41,11 @@ void on_aircraft_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpil
   edctrl_selection_changed(sqlpilot->aircraft_edctrl);
 }
 
+void on_aircraft_notes_changed(GtkTextBuffer *tb, Sqlpilot *sqlpilot)
+{
+  edctrl_set_modified(sqlpilot->aircraft_edctrl);
+}
+
 void on_aircraft_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
   edctrl_del_btn_clicked(sqlpilot->aircraft_edctrl);

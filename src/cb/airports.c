@@ -172,6 +172,11 @@ void on_airports_country_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   edctrl_set_modified(sqlpilot->airports_edctrl);
 }
 
+void on_airports_notes_changed(GtkTextBuffer *tb, Sqlpilot *sqlpilot)
+{
+  edctrl_set_modified(sqlpilot->airports_edctrl);
+}
+
 void on_airports_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
 {
   edctrl_del_btn_clicked(sqlpilot->airports_edctrl);
