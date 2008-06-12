@@ -31,6 +31,8 @@ SRC = src/sqlpilot.c \
       src/cb/aircraft.c \
       src/cb/types.c \
       src/cb/airports.c \
+      src/cb/reports.c \
+      src/cb/summary.c \
       src/edctrl.c \
       src/flights.c \
       src/roles.c \

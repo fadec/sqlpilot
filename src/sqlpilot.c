@@ -49,6 +49,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
 #ifdef USING_GTK_BUILDER
   GtkBuilder       *builder;
   GError           *err;
+
   builder = gtk_builder_new ();
   if (gtk_builder_add_from_file (builder, UI_XML_FILE, &err) == 0) {
     barf (err->message);
@@ -222,7 +223,15 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(airports_armdel_btn);
   pull_widget(airports_del_btn);
   pull_widget(airports_todel_lbl);
-
+  pull_widget(reports_title);
+  pull_widget(reports_refresh);
+  pull_widget(reports_query_progress);
+  pull_widget(reports_results_summary);
+  pull_widget(reports_sql_text);
+  pull_widget(reports_save_btn);
+  pull_widget(reports_armdel_btn);
+  pull_widget(reports_del_btn);
+  
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
   gtk_widget_show_all(sqlpilot->flights_treeview);
@@ -379,7 +388,6 @@ Sqlpilot *sqlpilot_new(const char *filename)
   sqlpilot->types_stale = 1;
   sqlpilot->airports_stale = 1;
   
-
   flights_load_selection(sqlpilot);
   roles_load_selection(sqlpilot);
   aircraft_load_selection(sqlpilot);

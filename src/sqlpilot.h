@@ -297,6 +297,15 @@ struct Sqlpilot {
   GtkWidget *airports_del_btn;
   Edctrl _airports_edctrl;
   Edctrl *airports_edctrl;
+
+  GtkWidget *reports_title;
+  GtkWidget *reports_refresh;
+  GtkWidget *reports_query_progress;
+  GtkWidget *reports_results_summary;
+  GtkWidget *reports_sql_text;
+  GtkWidget *reports_save_btn;
+  GtkWidget *reports_armdel_btn;
+  GtkWidget *reports_del_btn;
 };
 
 #include "flights.h"
