@@ -13,4 +13,4 @@ fix the airport data
 allow multiline approach editing - or use CSV
 adjust airports select queries
 fix column sorting
-make fkey fields indicate if they will cause an insert
+After save/creation, a row remains visible or appears even if it doesn't match the where clause. This is a feature but there should be an indication that a row is not in the where.

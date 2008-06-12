@@ -103,6 +103,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(window);
   pull_widget(flights_where);
   pull_widget(flights_refresh);
+  pull_widget(flights_query_progress);
   pull_widget(flights_results_summary);
   pull_widget(flights_sw);
   pull_widget(flights_view_date);

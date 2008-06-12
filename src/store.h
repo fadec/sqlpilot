@@ -26,4 +26,5 @@
 void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkTreeModel **ret_store);
 int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt);
 long store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt);
+long store_repopulate_from_stmt_with_progress(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress);
 #endif

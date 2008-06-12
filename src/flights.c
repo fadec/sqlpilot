@@ -592,6 +592,7 @@ void flights_load_selection(Sqlpilot *logb)
 void flights_refresh(Sqlpilot *sqlpilot)
 {
   static int lock=0;
+  //  DBStatement *select;
   char sql[4096];
   const char *where_clause;
   long nrows;
@@ -602,10 +603,14 @@ void flights_refresh(Sqlpilot *sqlpilot)
   if (lock) return;
   lock = 1;
 
+  gtk_widget_hide(sqlpilot->flights_results_summary);
+  gtk_widget_show(sqlpilot->flights_query_progress);
+
   where_clause = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_where));
 
   if (strlen(where_clause)) {
     snprintf(sql, sizeof(sql), "%s where %s ;", FLIGHTS_SELECT, where_clause);
+    //    snprintf(sql_nrows, sizeof(sql_nrows), "select count(*) from flights where %s ;");
   } else {
     snprintf(sql, sizeof(sql), "%s ;", FLIGHTS_SELECT);
   }
@@ -617,8 +622,12 @@ void flights_refresh(Sqlpilot *sqlpilot)
     sqlpilot->flights_select_all = db_prep(sqlpilot->db, "SELECT 42 WHERE 0 = 1;");
   }
 
+
   gtk_label_set_text(GTK_LABEL(sqlpilot->flights_results_summary), "");
-  nrows = store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->flights_treemodel), sqlpilot->flights_select_all);
+  nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(sqlpilot->flights_treemodel),
+						   sqlpilot->flights_select_all,
+						   GTK_PROGRESS_BAR(sqlpilot->flights_query_progress));
+
   if (err == DB_OK) {
     snprintf(results_summary, sizeof(results_summary), "%ld Flights", nrows);
   } else {
@@ -630,6 +639,9 @@ void flights_refresh(Sqlpilot *sqlpilot)
   sqlpilot->flights_stale = FALSE;
 
   flights_refresh_utilization(sqlpilot);
+
+  gtk_widget_hide(sqlpilot->flights_query_progress);
+  gtk_widget_show(sqlpilot->flights_results_summary);
 
   lock = 0;
 }

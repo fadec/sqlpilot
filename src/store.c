@@ -51,28 +51,33 @@ static GtkListStore *store_new_from_stmt(DBStatement *stmt)
 	return store;
 }
 
-static long store_populate_from_stmt(GtkListStore *store, DBStatement *stmt)
+static long store_populate_from_stmt(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress)
 {
   int result_code, i, ncolumns;
-  long nrows=0;
+  long nrows=0,maxrows=0;
   GtkTreeIter iter;
   const unsigned char *text;
   
-  ncolumns = db_column_count(stmt);
-  
+  if (progress) {
+    gtk_progress_bar_set_fraction(progress, 0.0);
+    while ((result_code = db_step(stmt)) == DB_ROW) maxrows++;
+  }
   db_reset(stmt);
-  
+
+  ncolumns = db_column_count(stmt);  
+
   while ((result_code = db_step(stmt)) == DB_ROW) {
     gtk_list_store_append(store, &iter);
     for(i = 0; i < ncolumns; i++) {
       text = db_column_text(stmt, i);
       gtk_list_store_set(store, &iter, i, text, -1);
     }
-    nrows++;
-    while (!(nrows % 256) && gtk_events_pending()) {
-      gtk_main_iteration();
+    if (!(nrows % 128)) {
+      while (gtk_events_pending()) gtk_main_iteration();
     }
     gtk_main_iteration_do(FALSE);
+    nrows++;
+    if (progress) gtk_progress_bar_set_fraction(progress, nrows/(double)maxrows);
   }
   
   db_reset(stmt);
@@ -82,7 +87,13 @@ static long store_populate_from_stmt(GtkListStore *store, DBStatement *stmt)
 long store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt)
 {
   gtk_list_store_clear(store);
-  return store_populate_from_stmt(store, stmt);
+  return store_populate_from_stmt(store, stmt, NULL);
+}
+
+long store_repopulate_from_stmt_with_progress(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress)
+{
+  gtk_list_store_clear(store);
+  return store_populate_from_stmt(store, stmt, progress);
 }
 
 int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)

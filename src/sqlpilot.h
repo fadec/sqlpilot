@@ -124,6 +124,7 @@ struct Sqlpilot {
   DBStatement *flights_delete;
   GtkWidget *flights_where;
   GtkWidget *flights_refresh;
+  GtkWidget *flights_query_progress;
   GtkWidget *flights_results_summary;
   GtkWidget *flights_sw;	/* Scrollable Window - contains the treeview */
   GtkTreeModel *flights_treemodel;
