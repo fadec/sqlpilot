@@ -281,6 +281,11 @@ int db_bind_null(DBStatement *stmt, int i)
   return sqlite3_bind_null(stmt, i);
 }
 
+int db_bind_nonempty_text_else_null(DBStatement *stmt, int i, const char *text)
+{
+  return (text && *text) ? db_bind_text(stmt, i, text) : db_bind_null(stmt, i);
+}
+
 int db_clear_bindings(DBStatement *stmt)
 {
   return sqlite3_clear_bindings(stmt);

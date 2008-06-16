@@ -22,17 +22,37 @@
 void on_aircraft_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_aircraft_ident(entry);
+
+  if (aircraft_ident_validate(sqlpilot)) {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+  } else {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+  }
+  if (aircraft_error(sqlpilot)) {
+    edctrl_set_invalid(sqlpilot->aircraft_edctrl);
+  } else {
+    edctrl_set_modified(sqlpilot->aircraft_edctrl);
+  }
+}
+
+void on_aircraft_fleetno_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+{
   edctrl_set_modified(sqlpilot->aircraft_edctrl);
+  if (aircraft_fleetno_validate(sqlpilot)) {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_fleetno_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+  } else {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_fleetno_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+  }
+  if (aircraft_error(sqlpilot)) {
+    edctrl_set_invalid(sqlpilot->aircraft_edctrl);
+  } else {
+    edctrl_set_modified(sqlpilot->aircraft_edctrl);
+  }
 }
 
 void on_aircraft_type_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_types_ident(entry);
-  edctrl_set_modified(sqlpilot->aircraft_edctrl);
-}
-
-void on_aircraft_fleetno_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
-{
   edctrl_set_modified(sqlpilot->aircraft_edctrl);
 }
 

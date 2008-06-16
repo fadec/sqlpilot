@@ -76,5 +76,8 @@ int aircraft_can_delete(GtkTreeSelection *selection);
 DBint64 aircraft_write_entries(const gchar *id, Sqlpilot *sqlpilot);
 void aircraft_load_selection(Sqlpilot *logb);
 int aircraft_count_flights(Sqlpilot *, DBint64 id);
+int aircraft_error(Sqlpilot *sqlpilot);
+int aircraft_ident_validate(Sqlpilot *sqlpilot);
+int aircraft_fleetno_validate(Sqlpilot *sqlpilot);
 
 #endif

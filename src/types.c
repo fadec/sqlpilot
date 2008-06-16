@@ -329,3 +329,27 @@ void types_refresh(Sqlpilot *sqlpilot)
     types_load_selection(sqlpilot);
     sqlpilot->types_stale = FALSE;
 }
+
+int types_ident_validate(Sqlpilot *sqlpilot)
+{
+  gchar *id=NULL;
+  const gchar *ident;
+
+  id = get_text_from_tree_selection(sqlpilot->types_selection, COL_ID);
+  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->types_ident));
+
+  if (unique_but_for(sqlpilot->db, "types", "ident", ident, "id", EMPTY_IF_NULL(id))) {
+    sqlpilot->types_ident_error = 0;
+  } else {
+    sqlpilot->types_ident_error = 1;
+  }
+
+  g_free(id);
+
+  return sqlpilot->types_ident_error;
+}
+
+int types_error(Sqlpilot *sqlpilot)
+{
+  return sqlpilot->types_ident_error;
+}

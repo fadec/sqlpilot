@@ -7,10 +7,19 @@ find a way to keep row selected during refresh
 make views
 write difftime db function
 utc/local time weird if no date
-inserts that fail do to unique constraints fail silently and the table acts buggy thereafter
-do something about all the times in the flights table
-fix the airport data
-allow multiline approach editing - or use CSV
-adjust airports select queries
-fix column sorting
+
+** inserts that fail do to unique constraints fail silently and the table acts buggy thereafter
+   make edctrl stuck in invalid state until told to exit
+							
+do something about all the times in the flights table	
+fix the airport data					
+allow multiline approach editing - or use CSV		
+adjust airports select queries				
+fix column sorting					
 After save/creation, a row remains visible or appears even if it doesn't match the where clause. This is a feature but there should be an indication that a row is not in the where.
+Make importcsv read row headers, output date/airport pair to stdout, and take options for timebase of local|airport|utc|specified
+  							
+  							
+  							
+       	       	       	
+							

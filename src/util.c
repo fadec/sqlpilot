@@ -428,6 +428,42 @@ int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, 
   return inserted;
 }
 
+int unique_but_for(DB *db, const char *table, const char *col, const char *value, const char *butcol, const char *butvalue)
+{
+  DBStatement *stmt;
+  int ret;
+  char sql[512];
+
+  snprintf(sql, sizeof(sql), "select * from %s where %s != ? and %s = ?;", table, butcol, col);
+
+  stmt = db_prep(db, sql);
+
+  db_bind_text(stmt, 1, butvalue);
+  db_bind_text(stmt, 2, value);
+
+  if (db_step(stmt) == DB_DONE) {
+    ret = 1;
+  } else {
+    ret = 0;
+  }
+  db_finalize(stmt);
+
+  return ret;
+}
+
+char *get_text_from_tree_selection(GtkTreeSelection *tsel, int column)
+{
+  GtkTreeIter iter;
+  GtkTreeModel *model;
+  gchar *text=NULL;
+
+  if ((gtk_tree_selection_get_selected(tsel, &model, &iter))) {
+    gtk_tree_model_get(model, &iter,
+		       column, &text,
+		       -1);
+  }
+  return text;
+}
 
 /* Parses base sixty of base ten segments (00:00.000:00:0) and returns value */
 /* Base10 fractionals are truncated to the nearest Base60 integer e.g. */

@@ -81,9 +81,9 @@ DBint64 aircraft_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   } else {
     stmt = sqlpilot->aircraft_insert;
   }
-  db_bind_text(stmt, AIRCRAFT_WRITE_IDENT, ident);
+  db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_IDENT, ident);
+  db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_FLEETNO, fleetno);
   bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "ident", type);
-  db_bind_text(stmt, AIRCRAFT_WRITE_FLEETNO, fleetno);
   db_bind_text(stmt, AIRCRAFT_WRITE_NOTES, notes);
 
   db_step(stmt);
@@ -158,4 +158,53 @@ int aircraft_count_flights(Sqlpilot *sqlpilot, DBint64 id)
   db_clear_bindings(stmt);
   
   return c;
+}
+
+int aircraft_ident_validate(Sqlpilot *sqlpilot)
+{
+  gchar *id=NULL;
+  const gchar *ident;
+
+  id = get_text_from_tree_selection(sqlpilot->aircraft_selection, COL_ID);
+  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_ident));
+  
+  if (unique_but_for(sqlpilot->db, "aircraft", "ident", ident, "id", EMPTY_IF_NULL(id))) {
+    sqlpilot->aircraft_ident_error = 0;
+  } else {
+    sqlpilot->aircraft_ident_error = 1;
+  }
+
+  g_free(id);
+
+  return sqlpilot->aircraft_ident_error;
+}
+
+int aircraft_fleetno_validate(Sqlpilot *sqlpilot)
+{
+  gchar *id=NULL;
+  const gchar *fleetno;
+
+  id = get_text_from_tree_selection(sqlpilot->aircraft_selection, COL_ID);
+  fleetno = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_fleetno));
+
+  if (unique_but_for(sqlpilot->db, "aircraft", "fleetno", fleetno, "id", EMPTY_IF_NULL(id))) {
+    sqlpilot->aircraft_fleetno_error = 0;
+  } else {
+    sqlpilot->aircraft_fleetno_error = 1;
+  }
+
+  g_free(id);
+
+  return sqlpilot->aircraft_fleetno_error;
+}
+
+int aircraft_error(Sqlpilot *sqlpilot)
+{
+  const gchar *ident, *fleetno;
+  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_ident));
+  fleetno = gtk_entry_get_text(GTK_ENTRY(sqlpilot->aircraft_fleetno));
+
+  return ( !((ident && *ident) || (fleetno && *fleetno))
+	   || sqlpilot->aircraft_ident_error
+	   || sqlpilot->aircraft_fleetno_error);
 }

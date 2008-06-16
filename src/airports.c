@@ -104,8 +104,8 @@ DBint64 airports_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   } else {
     stmt = sqlpilot->airports_insert;
   }
-  db_bind_text(stmt, AIRPORTS_WRITE_IDENT, ident);
-  db_bind_text(stmt, AIRPORTS_WRITE_ICAO,  icao);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_IDENT, ident);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_ICAO,  icao);
   db_bind_text(stmt, AIRPORTS_WRITE_LAT,   lat);
   db_bind_text(stmt, AIRPORTS_WRITE_LON,   lon);
   db_bind_text(stmt, AIRPORTS_WRITE_ELEV,  elev);
@@ -194,3 +194,53 @@ void airports_refresh(Sqlpilot *sqlpilot)
     airports_load_selection(sqlpilot);
     sqlpilot->airports_stale = FALSE;
 }
+
+int airports_ident_validate(Sqlpilot *sqlpilot)
+{
+  gchar *id=NULL;
+  const gchar *ident;
+
+  id = get_text_from_tree_selection(sqlpilot->airports_selection, COL_ID);
+  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->airports_ident));
+  
+  if (unique_but_for(sqlpilot->db, "airports", "ident", ident, "id", EMPTY_IF_NULL(id))) {
+    sqlpilot->airports_ident_error = 0;
+  } else {
+    sqlpilot->airports_ident_error = 1;
+  }
+
+  g_free(id);
+
+  return sqlpilot->airports_ident_error;
+}
+
+int airports_icao_validate(Sqlpilot *sqlpilot)
+{
+  gchar *id=NULL;
+  const gchar *icao;
+
+  id = get_text_from_tree_selection(sqlpilot->airports_selection, COL_ID);
+  icao = gtk_entry_get_text(GTK_ENTRY(sqlpilot->airports_icao));
+
+  if (unique_but_for(sqlpilot->db, "airports", "icao", icao, "id", EMPTY_IF_NULL(id))) {
+    sqlpilot->airports_icao_error = 0;
+  } else {
+    sqlpilot->airports_icao_error = 1;
+  }
+
+  g_free(id);
+
+  return sqlpilot->airports_icao_error;
+}
+
+int airports_error(Sqlpilot *sqlpilot)
+{
+  const gchar *ident, *icao;
+  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->airports_ident));
+  icao = gtk_entry_get_text(GTK_ENTRY(sqlpilot->airports_icao));
+
+  return ( !((ident && *ident) || (icao && *icao))
+	   || sqlpilot->airports_ident_error
+	   || sqlpilot->airports_icao_error);
+}
+

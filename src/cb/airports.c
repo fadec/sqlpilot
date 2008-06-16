@@ -22,7 +22,32 @@
 void on_airports_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_airports_ident(entry);
+
+  if (airports_ident_validate(sqlpilot)) {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+  } else {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+  }
+  if (airports_error(sqlpilot)) {
+    edctrl_set_invalid(sqlpilot->airports_edctrl);
+  } else {
+    edctrl_set_modified(sqlpilot->airports_edctrl);
+  }
+}
+
+void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+{
   edctrl_set_modified(sqlpilot->airports_edctrl);
+  if (airports_icao_validate(sqlpilot)) {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+  } else {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+  }
+  if (airports_error(sqlpilot)) {
+    edctrl_set_invalid(sqlpilot->airports_edctrl);
+  } else {
+    edctrl_set_modified(sqlpilot->airports_edctrl);
+  }
 }
 
 void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
@@ -30,15 +55,8 @@ void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
   edctrl_selection_changed(logb->airports_edctrl);
 }
 
-void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
-{
-  entry_clamp_text(entry, 4, 1, is_ident_char);
-  edctrl_set_modified(sqlpilot->airports_edctrl);
-}
-
 int on_airports_icao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
 {
-  edctrl_set_invalid(sqlpilot->airports_edctrl);
   return FALSE;
 }
 

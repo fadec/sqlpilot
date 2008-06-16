@@ -64,6 +64,8 @@ void move_time(const char *fromtz, const char *totz, const char *strdate, const 
 int row_exists(DB *db, const char *table, const char *column, const char *value);
 int find_row_id(DB *db, const char *table, const char *column, const char *value, DBint64 *r_id);
 int bind_id_of(DBStatement *stmt, int i, const char *table, const char *column, const char *value);
+int unique_but_for(DB *db, const char *table, const char *col, const char *value, const char *butcol, const char *butvalue);
+char *get_text_from_tree_selection(GtkTreeSelection *tsel, int column);
 
 int parseB60(const char *ts);
 int parsetime(const char *ts, int b60numerals);

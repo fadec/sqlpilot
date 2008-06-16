@@ -140,6 +140,7 @@ CREATE TABLE Employers (
 create unique index airports_ident on airports(ident);
 create unique index airports_icao on airports(icao);
 create unique index aircraft_ident on aircraft(ident);
+create unique index aircraft_fleetno on aircraft(fleetno);
 create unique index roles_ident on roles(ident);
 create unique index type_ident on types(ident);
 

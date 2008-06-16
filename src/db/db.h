@@ -96,6 +96,7 @@ int db_bind_int(DBStatement *stmt, int i, int n);
 int db_bind_int64(DBStatement *, int, int);
 int db_bind_double(DBStatement *, int, double);
 int db_bind_null(DBStatement *, int);
+int db_bind_nonempty_text_else_null(DBStatement *stmt, int i, const char *text);
 int db_column_count(DBStatement *stmt);
 int db_finalize(DBStatement *stmt);
 int db_step(DBStatement *stmt);

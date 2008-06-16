@@ -172,3 +172,26 @@ int roles_can_delete(GtkTreeSelection *selection)
   return !_flights;
 }
 
+int roles_ident_validate(Sqlpilot *sqlpilot)
+{
+  gchar *id=NULL;
+  const gchar *ident;
+
+  id = get_text_from_tree_selection(sqlpilot->roles_selection, COL_ID);
+  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->roles_ident));
+
+  if (unique_but_for(sqlpilot->db, "roles", "ident", ident, "id", EMPTY_IF_NULL(id))) {
+    sqlpilot->roles_ident_error = 0;
+  } else {
+    sqlpilot->roles_ident_error = 1;
+  }
+
+  g_free(id);
+
+  return sqlpilot->roles_ident_error;
+}
+
+int roles_error(Sqlpilot *sqlpilot)
+{
+  return sqlpilot->roles_ident_error;
+}

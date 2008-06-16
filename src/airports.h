@@ -117,5 +117,8 @@ void airports_load_selection(Sqlpilot *logb);
 void airports_refresh(Sqlpilot *sqlpilot);
 int airports_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int airports_can_delete(GtkTreeSelection *selection);
+int airports_error(Sqlpilot *sqlpilot);
+int airports_ident_validate(Sqlpilot *sqlpilot);
+int airports_icao_validate(Sqlpilot *sqlpilot);
 
 #endif

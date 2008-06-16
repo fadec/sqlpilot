@@ -25,7 +25,16 @@
 void on_types_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_types_ident(entry);
-  edctrl_set_modified(sqlpilot->types_edctrl);
+  if (types_ident_validate(sqlpilot)) {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->types_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+  } else {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->types_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+  }
+  if (types_error(sqlpilot)) {
+    edctrl_set_invalid(sqlpilot->types_edctrl);
+  } else {
+    edctrl_set_modified(sqlpilot->types_edctrl);
+  }
 }
 
 void on_types_make_changed(GtkEntry *entry, Sqlpilot *sqlpilot)

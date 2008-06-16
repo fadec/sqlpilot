@@ -146,6 +146,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(flights_todel_lbl);
   pull_widget(roles_sw);
   pull_widget(roles_ident);
+  pull_widget(roles_ident_valid_wart);
   pull_widget(roles_name);
   pull_widget(roles_pic);
   pull_widget(roles_sic);
@@ -161,8 +162,10 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(roles_todel_lbl);
   pull_widget(aircraft_sw);
   pull_widget(aircraft_ident);
-  pull_widget(aircraft_type);
+  pull_widget(aircraft_ident_valid_wart);
   pull_widget(aircraft_fleetno);
+  pull_widget(aircraft_fleetno_valid_wart);
+  pull_widget(aircraft_type);
   pull_widget(aircraft_notes);
   pull_widget(aircraft_new_btn);
   pull_widget(aircraft_save_btn);
@@ -171,6 +174,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(aircraft_todel_lbl);
   pull_widget(types_sw);
   pull_widget(types_ident);
+  pull_widget(types_ident_valid_wart);
   pull_widget(types_make);
   pull_widget(types_model);
   pull_widget(types_airplane);
@@ -208,7 +212,9 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(types_todel_lbl);
   pull_widget(airports_sw);
   pull_widget(airports_ident);
+  pull_widget(airports_ident_valid_wart);
   pull_widget(airports_icao);
+  pull_widget(airports_icao_valid_wart);
   pull_widget(airports_name);
   pull_widget(airports_lat);
   pull_widget(airports_lon);

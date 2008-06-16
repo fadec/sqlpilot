@@ -22,7 +22,16 @@
 void on_roles_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_roles_ident(entry);
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  if (roles_ident_validate(sqlpilot)) {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+  } else {
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+  }
+  if (roles_error(sqlpilot)) {
+    edctrl_set_invalid(sqlpilot->roles_edctrl);
+  } else {
+    edctrl_set_modified(sqlpilot->roles_edctrl);
+  }
 }
 
 void on_roles_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)

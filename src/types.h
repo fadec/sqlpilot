@@ -226,5 +226,8 @@ void types_after_change(Sqlpilot *sqlpilot);
 DBint64 types_write_entries(const gchar *id, Sqlpilot *sqlpilot);
 void types_load_selection(Sqlpilot *logb);
 void types_refresh(Sqlpilot *sqlpilot);
+int types_ident_validate(Sqlpilot *sqlpilot);
+int types_error(Sqlpilot *sqlpilot);
+
 
 #endif

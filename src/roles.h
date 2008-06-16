@@ -94,4 +94,8 @@ int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int roles_can_delete(GtkTreeSelection *selection);
 
+int roles_error(Sqlpilot *sqlpilot);
+int roles_ident_validate(Sqlpilot *sqlpilot);
+
+
 #endif

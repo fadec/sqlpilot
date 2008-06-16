@@ -74,8 +74,8 @@ void edctrl_set_selected(Edctrl *ec);
 void edctrl_set_modified(Edctrl *ec);
 void edctrl_set_invalid(Edctrl *ec);
 void edctrl_set_deletearmed(Edctrl *ec);
-void edctrl_set_ignore_modifications(Edctrl *ec, int bool);
 
+void edctrl_ignore_modifications(Edctrl *ec, int bool);
 void edctrl_selection_changed(Edctrl *ec);
 void edctrl_new_btn_clicked(Edctrl *ec);
 void edctrl_save_btn_clicked(Edctrl *ec);
@@ -171,6 +171,7 @@ struct Sqlpilot {
   Edctrl *flights_edctrl;
 
   int roles_stale;
+  int roles_ident_error;
   DBStatement *roles_select_all;
   DBStatement *roles_select_by_id;
   DBStatement *roles_insert;
@@ -181,6 +182,7 @@ struct Sqlpilot {
   GtkTreeSelection *roles_selection;
   GtkWidget *roles_treeview;
   GtkWidget *roles_ident;
+  GtkWidget *roles_ident_valid_wart;
   GtkWidget *roles_name;
   GtkWidget *roles_pic;
   GtkWidget *roles_sic;
@@ -198,6 +200,8 @@ struct Sqlpilot {
   Edctrl *roles_edctrl;
 
   int aircraft_stale;
+  int aircraft_ident_error;
+  int aircraft_fleetno_error;
   DBStatement *aircraft_select_all;
   DBStatement *aircraft_select_by_id;
   DBStatement *aircraft_insert;
@@ -209,8 +213,10 @@ struct Sqlpilot {
   GtkTreeSelection *aircraft_selection;
   GtkWidget *aircraft_treeview;
   GtkWidget *aircraft_ident;
-  GtkWidget *aircraft_type;
+  GtkWidget *aircraft_ident_valid_wart;
   GtkWidget *aircraft_fleetno;
+  GtkWidget *aircraft_fleetno_valid_wart;
+  GtkWidget *aircraft_type;
   GtkWidget *aircraft_notes;
   GtkWidget *aircraft_new_btn;
   GtkWidget *aircraft_save_btn;
@@ -221,6 +227,7 @@ struct Sqlpilot {
   Edctrl *aircraft_edctrl;
 
   int types_stale;
+  int types_ident_error;
   DBStatement *types_select_all;
   DBStatement *types_select_by_id;
   DBStatement *types_insert;
@@ -231,6 +238,7 @@ struct Sqlpilot {
   GtkTreeSelection *types_selection;
   GtkWidget *types_treeview;
   GtkWidget *types_ident;
+  GtkWidget *types_ident_valid_wart;
   GtkWidget *types_make;
   GtkWidget *types_model;
   GtkWidget *types_airplane;
@@ -270,6 +278,8 @@ struct Sqlpilot {
   Edctrl *types_edctrl;
 
   int airports_stale;
+  int airports_ident_error;
+  int airports_icao_error;
   DBStatement *airports_select_all;
   DBStatement *airports_select_by_id;
   DBStatement *airports_insert;
@@ -280,7 +290,9 @@ struct Sqlpilot {
   GtkTreeSelection *airports_selection;
   GtkWidget *airports_treeview;
   GtkWidget *airports_ident;
+  GtkWidget *airports_ident_valid_wart;
   GtkWidget *airports_icao;
+  GtkWidget *airports_icao_valid_wart;
   GtkWidget *airports_name;
   GtkWidget *airports_city;
   GtkWidget *airports_province;
