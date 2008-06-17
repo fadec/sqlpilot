@@ -316,6 +316,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_save(sqlpilot->flights_edctrl, flights_write_entries, sqlpilot);
   edctrl_register_after_change(sqlpilot->flights_edctrl, flights_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->flights_edctrl, flights_load_selection, sqlpilot);
+  edctrl_register_validator(sqlpilot->flights_edctrl, NULL, NULL);
 
   sqlpilot->roles_edctrl                 = &sqlpilot->_roles_edctrl;
   sqlpilot->roles_edctrl->edstate        = EDSTATE_EMPTY;
@@ -332,6 +333,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_save(sqlpilot->roles_edctrl, roles_write_entries, sqlpilot);
   edctrl_register_after_change(sqlpilot->roles_edctrl, roles_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->roles_edctrl, roles_load_selection, sqlpilot);
+  edctrl_register_validator(sqlpilot->roles_edctrl, roles_error, sqlpilot);
 
   sqlpilot->aircraft_edctrl                        = &sqlpilot->_aircraft_edctrl;
   sqlpilot->aircraft_edctrl->edstate               = EDSTATE_EMPTY;
@@ -348,6 +350,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_save(sqlpilot->aircraft_edctrl, aircraft_write_entries, sqlpilot);
   edctrl_register_after_change(sqlpilot->aircraft_edctrl, aircraft_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->aircraft_edctrl, aircraft_load_selection, sqlpilot);
+  edctrl_register_validator(sqlpilot->aircraft_edctrl, aircraft_error, sqlpilot);
 
   sqlpilot->types_edctrl                 = &sqlpilot->_types_edctrl;
   sqlpilot->types_edctrl->edstate        = EDSTATE_EMPTY;
@@ -364,6 +367,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_save(sqlpilot->types_edctrl, types_write_entries, sqlpilot);
   edctrl_register_after_change(sqlpilot->types_edctrl, types_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->types_edctrl, types_load_selection, sqlpilot);
+  edctrl_register_validator(sqlpilot->types_edctrl, types_error, sqlpilot);
 
   sqlpilot->airports_edctrl                 = &sqlpilot->_airports_edctrl;
   sqlpilot->airports_edctrl->edstate        = EDSTATE_EMPTY;
@@ -380,6 +384,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_save(sqlpilot->airports_edctrl, airports_write_entries, sqlpilot);
   edctrl_register_after_change(sqlpilot->airports_edctrl, airports_after_change, sqlpilot);
   edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot);
+  edctrl_register_validator(sqlpilot->airports_edctrl, airports_error, sqlpilot);
 
 #ifdef USING_GTK_BUILDER
   g_object_unref (G_OBJECT (builder));

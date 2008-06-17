@@ -68,13 +68,18 @@ void edctrl_ignore_modifications(Edctrl *ec, int bool)
 
 void edctrl_set_modified(Edctrl *ec)
 {
-  if (ec->edstate == EDSTATE_MODIFIED || ec->ignore_modifications) return;
-  ec->edstate = EDSTATE_MODIFIED;
+  if (ec->ignore_modifications) return;
+  if (ec->validator && ec->validator(ec->validator_data)) {
+    gtk_widget_set_sensitive(GTK_WIDGET(ec->save_btn), 0);
+  } else {
+    gtk_widget_set_sensitive(GTK_WIDGET(ec->save_btn), 1);
+  }
+  if (ec->edstate == EDSTATE_MODIFIED) return;
   gtk_widget_set_sensitive(GTK_WIDGET(ec->armdel_btn), 0);
   gtk_widget_set_sensitive(GTK_WIDGET(ec->del_btn), 0);
   gtk_widget_set_sensitive(GTK_WIDGET(ec->new_btn), 0);
-  gtk_widget_set_sensitive(GTK_WIDGET(ec->save_btn), 1);
   edctrl_show_record(ec);
+  ec->edstate = EDSTATE_MODIFIED;
 }
 
 void edctrl_set_invalid(Edctrl *ec)
@@ -130,6 +135,12 @@ void edctrl_register_save(Edctrl *ec, DBint64 func(const char*, Sqlpilot *), Sql
 {
   ec->save = func;
   ec->save_data = data;
+}
+
+void edctrl_register_validator(Edctrl *ec, int func(Sqlpilot *), Sqlpilot *data)
+{
+  ec->validator = func;
+  ec->validator_data = data;
 }
 
 void edctrl_del_btn_clicked(Edctrl *ec)

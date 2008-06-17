@@ -62,6 +62,8 @@ struct Edctrl {
   int (*can_delete)(GtkTreeSelection *);
   void (*after_change)(Sqlpilot *);
   void *after_change_data;
+  int (*validator)(Sqlpilot *);
+  void *validator_data;
   DBint64 (*save)(const char *id, Sqlpilot *);
   void *save_data;
   int ignore_modifications;
@@ -84,6 +86,7 @@ void edctrl_del_btn_clicked(Edctrl *ec);
 void edctrl_register_load_selection(Edctrl *ec, void func(Sqlpilot *), Sqlpilot *);
 void edctrl_register_save(Edctrl *ec, DBint64 func(const char *, Sqlpilot *), Sqlpilot *);
 void edctrl_register_after_change(Edctrl *ec, void (Sqlpilot *), Sqlpilot *);
+void edctrl_register_validator(Edctrl *ec, int func(Sqlpilot *), Sqlpilot *data);
 
 void edctrl_armdel_btn_toggled(Edctrl *ec);
 

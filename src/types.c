@@ -351,5 +351,7 @@ int types_ident_validate(Sqlpilot *sqlpilot)
 
 int types_error(Sqlpilot *sqlpilot)
 {
-  return sqlpilot->types_ident_error;
+  const gchar *ident;
+  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->types_ident));
+  return (!*ident || sqlpilot->types_ident_error);
 }
