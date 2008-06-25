@@ -166,6 +166,7 @@ void db_register_sqlpilot_functions(DB* db)
 {
   /* register custom functions */
   sqlite3_create_function(db, "m_to_hhmm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
+  sqlite3_create_function(db, "hm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
   sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
   sqlite3_create_function(db, "bool", 1, SQLITE_ANY, 0, bool_func, 0, 0);
   sqlite3_create_function(db, "linecount", 1, SQLITE_ANY, 0, linecount_func, 0, 0);

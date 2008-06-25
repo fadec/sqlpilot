@@ -29,7 +29,7 @@
 #else
 #include <gtk/gtk.h>
 #endif
-Sqlpilot *sqlpilot;
+static Sqlpilot *sqlpilot;
 
 int
 main (int argc, char *argv[])

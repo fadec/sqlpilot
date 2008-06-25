@@ -29,7 +29,7 @@ USING_READLINE=false
 # for gtk-builder-convert
 PYTHON=python2.5
 
-PACKAGES = gtk+-2.0 libglade-2.0 #hildon-libs
+PACKAGES = gtk+-2.0 libglade-2.0 libgtkhtml-3.14 #hildon-libs
 
 # paths
 PREFIX = /usr/local

@@ -156,3 +156,7 @@ void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkT
   *ret_view = view;
   *ret_store = GTK_TREE_MODEL(store);
 }
+
+/* int store_build_from_csv_fread(FILE *in, GtkWidget **ret_view, GtkTreeModel **ret_store) */
+/* { */
+  

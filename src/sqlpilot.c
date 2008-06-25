@@ -44,6 +44,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
     barf ("Couldn't open database.");
     return NULL;
   }
+  sqlpilot->db_filename = g_strdup(filename);
 
   /* Build UI from XML */
 #ifdef USING_GTK_BUILDER
@@ -237,6 +238,8 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(reports_save_btn);
   pull_widget(reports_armdel_btn);
   pull_widget(reports_del_btn);
+  pull_widget(summaries_select_summary);
+  pull_widget(summaries_sw);
   
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
@@ -386,6 +389,8 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot);
   edctrl_register_validator(sqlpilot->airports_edctrl, airports_error, sqlpilot);
 
+  summaries_init(sqlpilot);
+
 #ifdef USING_GTK_BUILDER
   g_object_unref (G_OBJECT (builder));
 #else
@@ -410,6 +415,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
 
 void sqlpilot_finalize(Sqlpilot *sqlpilot)
 {
+  g_free(sqlpilot->db_filename);
   g_slice_free(Sqlpilot, sqlpilot);
 }
 

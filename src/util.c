@@ -565,3 +565,75 @@ void format_time(const char *input, char *out, char separator)
     out[0] = '\0';
   }
 }
+
+gboolean spawn_script(const gchar *wdir,
+		      gchar **argv,
+		      gchar **envp,
+		      gchar *standard_input,
+		      gchar **standard_output,
+		      gchar **standard_error,
+		      gint *exit_code,
+		      GError **error,
+		      int busy_func(void*),
+		      void *busy_data)
+{
+  int nstdin, nstdout, nstderr;
+  FILE *fstdin=NULL, *fstdout=NULL, *fstderr=NULL;
+  GString *sstdout, *sstderr;
+  GPid pid;
+  gboolean ret;
+  int c;
+  GSpawnFlags sf;
+
+  sf = 0;
+
+  if (!(ret = g_spawn_async_with_pipes(wdir,
+				       argv,
+				       envp,
+				       sf, NULL, NULL,
+				       &pid,
+				       &nstdin,
+				       &nstdout,
+				       &nstderr,
+				       error))) {
+    return ret;
+  }
+
+  if (!((fstdin  = fdopen(nstdin, "ab")) &&
+	(fstdout = fdopen(nstdout, "rb")) &&
+	(fstderr = fdopen(nstderr, "rb")))) {
+    fprintf(stderr, "spawn_script fdopen failed\n");
+    exit(1);
+  }
+
+  fprintf(fstdin, standard_input);
+  fclose(fstdin);
+
+  sstdout = g_string_new("");
+  sstderr = g_string_new("");
+
+  while ((c = fgetc(fstdout)) != EOF) {
+    sstdout = g_string_append_c(sstdout, c);
+    if (busy_func && !busy_func(busy_data)) {
+      // terminate script and return
+    }
+  }
+
+  while ((c = fgetc(fstderr)) != EOF) {
+    sstderr = g_string_append_c(sstderr, c);
+  }
+
+  fclose(fstdout);
+  fclose(fstderr);
+
+  g_spawn_close_pid(pid);
+
+  *standard_output = sstdout->str;
+  *standard_error = sstderr->str;
+
+  g_string_free(sstdout, FALSE);
+  g_string_free(sstderr, FALSE); /* Frees struct, not character data */
+  // *exit_code =
+
+  return ret;
+}

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "
+.headers on
+.mode csv
+select strftime('%Y-%m', Date) as YrMo, hm(sum(SDur)) as SDur, hm(sum(Dur)) as Dur from Flights group by YrMo order by YrMo;" | ./shell $1

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if [ -z $1 ]; then
+    echo Flight Experience
+    echo From: date
+    echo Through: date
+    exit 1;
+fi;
+
+echo '<HTML><HEAD><TITLE>Flight Experience Summary</TITLE></HEAD>'
+
+echo 'Multi Engine: '
+
+echo "
+.headers off
+.mode tabs
+select hm(sum(Dur)) from flights f left join aircraft a on a.id = f.aircraft_id left join types t on t.id = a.type_id where t.multi;" | ./shell $1
+
+
+echo ''
+echo '</HTML>' 

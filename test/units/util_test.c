@@ -57,6 +57,18 @@ void test_daywrap_minutes(void)
   assert(daywrap_minutes(-1) == (24 * 60 - 1));
 }
 
+void test_spawn_script(void)
+{
+  GError *error=NULL;
+  gchar *argv[] = {"/bin/cat"};
+  gchar *out, *err;
+  gchar *in = "hello world";
+  gint exit;
+  assert(spawn_script(NULL, argv, NULL, in, &out, &err, &exit, &error, NULL, NULL));
+
+  assert(strcmp(out, in) == 0);
+}
+
 int main(int argc, char **argv)
 {
   test_init();
@@ -64,6 +76,7 @@ int main(int argc, char **argv)
   test(test_parsetime);
   test(test_daywrap);
   test(test_daywrap_minutes);
+  test(test_spawn_script);
   test_finalize();
   return 0;
 }

@@ -71,4 +71,15 @@ int parseB60(const char *ts);
 int parsetime(const char *ts, int b60numerals);
 void format_time(const char *input, char *out, char separator);
 
+gboolean spawn_script(const gchar *wdir,
+		      gchar **argv,
+		      gchar **envp,
+		      gchar *standard_input,
+		      gchar **standard_output,
+		      gchar **standard_error,
+		      gint *exit_code,
+		      GError **error,
+		      int busy_func(void*),
+		      void *busy_data);
+
 #endif

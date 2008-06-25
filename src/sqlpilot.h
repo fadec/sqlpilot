@@ -117,6 +117,7 @@ enum {
 
 struct Sqlpilot {
   DB *db;
+  char *db_filename;
   GtkWidget *window;
 
   int flights_stale;	   /* Treemodel contains stale data as a result of updates to db elsewhere ... the model for the view is stale; it has nothing to do with the db */
@@ -321,6 +322,10 @@ struct Sqlpilot {
   GtkWidget *reports_save_btn;
   GtkWidget *reports_armdel_btn;
   GtkWidget *reports_del_btn;
+
+  GtkWidget *summaries_select_summary;
+  GtkWidget *summaries_sw;
+  GtkWidget *summaries_html;
 };
 
 #include "flights.h"
@@ -328,6 +333,7 @@ struct Sqlpilot {
 #include "aircraft.h"
 #include "types.h"
 #include "airports.h"
+#include "summaries.h"
 
 Sqlpilot *sqlpilot_new(const char *filename);
 void sqlpilot_finalize(Sqlpilot *);

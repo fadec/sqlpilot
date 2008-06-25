@@ -17,21 +17,18 @@
 /* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
 /************************************************************************/
 
-#include "sqlpilot.h"
+#ifndef SUMMARIES_H
+#define SUMMARIES_H
 
-void on_summary_select_summary_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
-{
+#include <sqlpilot.h>
 
-}
+void summaries_init(Sqlpilot *sqlpilot);
+void summaries_refresh(Sqlpilot *sqlpilot);
 
-void on_summary_date_start_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
-{
+enum {
+  SUMMARIES_COL_FILENAME=0,
+  SUMMARIES_COL_TITLE,
+  SUMMARIES_NUMCOL
+};
 
-}
-
-void on_summary_date_end_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
-{
-
-}
-
-
+#endif
