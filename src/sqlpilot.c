@@ -240,6 +240,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(reports_del_btn);
   pull_widget(summaries_select_summary);
   pull_widget(summaries_sw);
+  pull_widget(summaries_parameters);
   
   /* Add treeview */
   store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
@@ -389,6 +390,9 @@ Sqlpilot *sqlpilot_new(const char *filename)
   edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot);
   edctrl_register_validator(sqlpilot->airports_edctrl, airports_error, sqlpilot);
 
+  
+  sqlpilot->summaries_parameter_pane = &sqlpilot->_summaries_parameter_pane;
+  sqlpilot->summaries_parameter_pane->container = sqlpilot->summaries_parameters;
   summaries_init(sqlpilot);
 
 #ifdef USING_GTK_BUILDER

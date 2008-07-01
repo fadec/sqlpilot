@@ -22,13 +22,16 @@
 
 #include <sqlpilot.h>
 
-void summaries_init(Sqlpilot *sqlpilot);
-void summaries_refresh(Sqlpilot *sqlpilot);
+#define SUMMARIES_DIR "script/summary"
 
 enum {
   SUMMARIES_COL_FILENAME=0,
   SUMMARIES_COL_TITLE,
   SUMMARIES_NUMCOL
 };
+
+void summaries_init(Sqlpilot *sqlpilot);
+void summaries_refresh(Sqlpilot *sqlpilot);
+void summaries_rebuild_parameters(Sqlpilot *sqlpilot);
 
 #endif

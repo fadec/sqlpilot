@@ -566,6 +566,10 @@ void format_time(const char *input, char *out, char separator)
   }
 }
 
+/* Spawns a process and puts the result into buffers while occasionally running busy_func.
+ * The idea being that busy_func can do things to keep the gui alive while the function 
+ * blocks until the script terminates
+ */
 gboolean spawn_script(const gchar *wdir,
 		      gchar **argv,
 		      gchar **envp,
@@ -637,3 +641,6 @@ gboolean spawn_script(const gchar *wdir,
 
   return ret;
 }
+
+
+

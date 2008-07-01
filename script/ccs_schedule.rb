@@ -158,8 +158,8 @@ end
 
 class TripInfo < Parser
   def self.parse
-    if ln = (match /^ |A\s+[a-zA-Z0-9]{5,}/)
-      ident, pos, mon, day, year = ln.gsub(/^A\s+|^\s+/, '').split(/\t/)
+    if ln = (match /^ |.\s+[a-zA-Z0-9]{5,}/)
+      ident, pos, mon, day, year = ln.gsub(/^.\s+|^\s+/, '').split(/\t/)
       {:ident => ident, :pos => pos, :mon => mon, :day => day, :year => year}
     end
   end

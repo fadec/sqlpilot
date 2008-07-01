@@ -43,6 +43,21 @@ typedef enum {
   EDSTATE_DELETEARMED
 } Edstate;
 
+typedef enum {
+  PARAMETER_TYPE_DATE
+} ParameterType;
+
+typedef struct ParameterPane {
+  GList *parameters;
+  GtkWidget *container;
+} ParameterPane;
+
+typedef struct Parameter {
+  GtkWidget *widget;
+  char *name;
+  ParameterType type;
+} Parameter;
+
 typedef struct Sqlpilot Sqlpilot;
 
 typedef struct Edctrl Edctrl;
@@ -326,6 +341,9 @@ struct Sqlpilot {
   GtkWidget *summaries_select_summary;
   GtkWidget *summaries_sw;
   GtkWidget *summaries_html;
+  GtkWidget *summaries_parameters;
+  ParameterPane _summaries_parameter_pane;
+  ParameterPane *summaries_parameter_pane;
 };
 
 #include "flights.h"

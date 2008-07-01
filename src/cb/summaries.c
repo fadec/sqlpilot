@@ -22,7 +22,7 @@
 
 void on_summaries_select_summary_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  
+  summaries_rebuild_parameters(sqlpilot);
 }
 
 void on_summaries_refresh_clicked(GtkButton *button, Sqlpilot *sqlpilot)

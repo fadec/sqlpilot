@@ -1,14 +1,14 @@
 #!/bin/bash
 
-TITLE='Flight Experience'
+TITLE='Flight Time Example'
 RUN="./shell -noheader $1"
 SELECT="select hm(sum(Dur)) from flights f left join aircraft a on a.id = f.aircraft_id left join types t on t.id = a.type_id left join roles r on r.id = f.role_id"
 
 if [ -z $1 ]; then
     echo $TITLE
     echo
-    echo From: date
-    echo Through: date
+    echo ABC: date
+    echo DEF: date
     exit 1;
 fi;
 
