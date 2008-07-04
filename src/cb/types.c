@@ -26,9 +26,9 @@ void on_types_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_types_ident(entry);
   if (types_ident_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->types_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->types_ident_valid_wart), IMAGE_INVAL ,GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->types_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->types_ident_valid_wart), IMAGE_KEY ,GTK_ICON_SIZE_BUTTON);
   }
   if (types_error(sqlpilot)) {
     edctrl_set_invalid(sqlpilot->types_edctrl);
@@ -55,6 +55,7 @@ void on_types_option_toggled(GtkButton *button, Sqlpilot *sqlpilot)
 void on_types_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
 {
   edctrl_selection_changed(sqlpilot->types_edctrl);
+  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->types_ident_valid_wart), IMAGE_KEY ,GTK_ICON_SIZE_BUTTON);
 }
 
 void on_types_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)

@@ -2,34 +2,38 @@
 
 TITLE='Flight Time Example'
 RUN="./shell -noheader $1"
-SELECT="select hm(sum(Dur)) from flights f left join aircraft a on a.id = f.aircraft_id left join types t on t.id = a.type_id left join roles r on r.id = f.role_id"
+SELECT="select hm(sum(Dur)) from flights f left join aircraft a on a.id = f.aircraft_id left join types t on t.id = a.type_id left join roles r on r.id = f.role_id
+        where f.date >= '$2' and (f.date <= '$3' or '$3' == '')"
 
 if [ -z $1 ]; then
     echo $TITLE
     echo
-    echo ABC: date
-    echo DEF: date
+    echo From: date
+    echo Through: date
     exit 1;
 fi;
 
 echo "<HTML><HEAD><TITLE>$TITLE</TITLE></HEAD>"
 echo "<H1>$TITLE</H1>"
 
+echo '<BR><BR>'
+echo "<H2>$2 through $3</H2>"
+
 echo 'PIC: '
 
-echo $SELECT "where r.pic;" | $RUN
+echo $SELECT "and r.pic;" | $RUN
 
 echo '<BR>SIC: '
 
-echo $SELECT "where r.sic;" | $RUN
+echo $SELECT "and r.sic;" | $RUN
 
 echo '<BR>Multi Engine: '
 
-echo $SELECT "where t.multi;" | $RUN
+echo $SELECT "and t.multi;" | $RUN
 
 echo '<BR>Total: '
 
-echo $SELECT "where t.total;" | $RUN
+echo $SELECT "and t.total;" | $RUN
 
 echo
 echo '</HTML>' 

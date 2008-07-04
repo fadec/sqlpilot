@@ -24,9 +24,9 @@ void on_airports_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   entry_clamp_airports_ident(entry);
 
   if (airports_ident_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
   if (airports_error(sqlpilot)) {
     edctrl_set_invalid(sqlpilot->airports_edctrl);
@@ -37,11 +37,12 @@ void on_airports_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 
 void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  entry_clamp_airports_icao(entry);
+
   if (airports_icao_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
   if (airports_error(sqlpilot)) {
     edctrl_set_invalid(sqlpilot->airports_edctrl);
@@ -50,9 +51,11 @@ void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   }
 }
 
-void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *logb)
+void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
 {
-  edctrl_selection_changed(logb->airports_edctrl);
+  edctrl_selection_changed(sqlpilot->airports_edctrl);
+  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
 }
 
 int on_airports_icao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)

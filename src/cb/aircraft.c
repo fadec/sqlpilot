@@ -24,9 +24,9 @@ void on_aircraft_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   entry_clamp_aircraft_ident(entry);
 
   if (aircraft_ident_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
   if (aircraft_error(sqlpilot)) {
     edctrl_set_invalid(sqlpilot->aircraft_edctrl);
@@ -37,11 +37,11 @@ void on_aircraft_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 
 void on_aircraft_fleetno_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
-  edctrl_set_modified(sqlpilot->aircraft_edctrl);
+  entry_clamp_aircraft_fleetno(entry);
   if (aircraft_fleetno_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_fleetno_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_fleetno_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_fleetno_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_fleetno_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
   if (aircraft_error(sqlpilot)) {
     edctrl_set_invalid(sqlpilot->aircraft_edctrl);
@@ -59,6 +59,8 @@ void on_aircraft_type_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 void on_aircraft_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
 {
   edctrl_selection_changed(sqlpilot->aircraft_edctrl);
+  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->aircraft_fleetno_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
 }
 
 void on_aircraft_notes_changed(GtkTextBuffer *tb, Sqlpilot *sqlpilot)

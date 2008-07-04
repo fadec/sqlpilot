@@ -203,7 +203,8 @@ int airports_ident_validate(Sqlpilot *sqlpilot)
   id = get_text_from_tree_selection(sqlpilot->airports_selection, COL_ID);
   ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->airports_ident));
   
-  if (unique_but_for(sqlpilot->db, "airports", "ident", ident, "id", EMPTY_IF_NULL(id))) {
+  if (unique_but_for(sqlpilot->db, "airports", "ident", ident, "id", EMPTY_IF_NULL(id)) &&
+      (strlen(ident) == 3)) {
     sqlpilot->airports_ident_error = 0;
   } else {
     sqlpilot->airports_ident_error = 1;
@@ -222,7 +223,8 @@ int airports_icao_validate(Sqlpilot *sqlpilot)
   id = get_text_from_tree_selection(sqlpilot->airports_selection, COL_ID);
   icao = gtk_entry_get_text(GTK_ENTRY(sqlpilot->airports_icao));
 
-  if (unique_but_for(sqlpilot->db, "airports", "icao", icao, "id", EMPTY_IF_NULL(id))) {
+  if (unique_but_for(sqlpilot->db, "airports", "icao", icao, "id", EMPTY_IF_NULL(id)) &&
+      (strlen(icao) == 4)) {
     sqlpilot->airports_icao_error = 0;
   } else {
     sqlpilot->airports_icao_error = 1;

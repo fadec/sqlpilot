@@ -101,12 +101,22 @@ void entry_clamp_aircraft_ident(GtkEntry *entry)
   entry_clamp_text(entry, 6, 1, is_ident_char);
 }
 
+void entry_clamp_aircraft_fleetno(GtkEntry *entry)
+{
+  entry_clamp_text(entry, -1, 1, NULL);
+}
+
 void entry_clamp_types_ident(GtkEntry *entry)
 {
   entry_clamp_text(entry, 16, 1, is_ident_char);
 }
 
 void entry_clamp_airports_ident(GtkEntry *entry)
+{
+  entry_clamp_text(entry, 3, 1, is_ident_char);
+}
+
+void entry_clamp_airports_icao(GtkEntry *entry)
 {
   entry_clamp_text(entry, 4, 1, is_ident_char);
 }
@@ -434,6 +444,7 @@ int unique_but_for(DB *db, const char *table, const char *col, const char *value
   int ret;
   char sql[512];
 
+  /* Might want to use 'like' query for case insensitivity */
   snprintf(sql, sizeof(sql), "select * from %s where %s != ? and %s = ?;", table, butcol, col);
 
   stmt = db_prep(db, sql);

@@ -49,8 +49,10 @@ void entry_clamp_text(GtkEntry *entry, int length, int setcase, int allowed(char
 
 void entry_clamp_roles_ident(GtkEntry *);
 void entry_clamp_aircraft_ident(GtkEntry *);
+void entry_clamp_aircraft_fleetno(GtkEntry *);
 void entry_clamp_types_ident(GtkEntry *);
 void entry_clamp_airports_ident(GtkEntry *);
+void entry_clamp_airports_icao(GtkEntry *);
 
 int strtime_to_m(const char *str);
 void m_to_strtime(int m, char *str, int nstr, char sep);

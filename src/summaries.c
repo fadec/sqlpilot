@@ -32,6 +32,30 @@ static void parameter_pane_fwrite(ParameterPane *ppane, FILE *stream)
   g_list_foreach(ppane->parameters, (GFunc)parameter_fwrite, (gpointer)stream);
 }
 
+static void parameter_value_tostr(Parameter *param, char *buf, int bufn)
+{
+  if (param->type == PARAMETER_TYPE_DATE) {
+    snprintf(buf, bufn, "%s", gtk_entry_get_text(GTK_ENTRY(param->widget)));
+  }
+}
+
+static void parameter_pane_snapshot_values(ParameterPane *ppane)
+{
+  GList *node=ppane->parameters;
+  Parameter *param;
+  int n;
+
+  for(n=0; n<PARAMETER_MAX; n++) {
+    if (node) {
+      param = (Parameter*)(node->data);
+      parameter_value_tostr(param, ppane->values[n], PARAMETER_VALUE_BUFSIZE);
+      node = node->next;
+    } else {
+      ppane->values[n][0] = '\0';
+    }
+  }
+}
+
 void summaries_refresh(Sqlpilot *sqlpilot)
 {
   gchar *script;
@@ -39,14 +63,18 @@ void summaries_refresh(Sqlpilot *sqlpilot)
   gchar *html_src;
   GError *error=NULL;
   int exit_code;
-  gchar *argv[3];
+  gchar *argv[PARAMETER_MAX+3]; /* +3 for script command, database arg, and NULL terminator */
+  int i;
 
   script = summaries_get_selected_script_filename(sqlpilot);
   argv[0] = script;
   argv[1] = sqlpilot->db_filename;
-  argv[2] = NULL;
 
-  parameter_pane_fwrite(sqlpilot->summaries_parameter_pane, stderr);
+  parameter_pane_snapshot_values(sqlpilot->summaries_parameter_pane);
+  for (i=0; i<PARAMETER_MAX; i++) {
+    argv[i+2] = sqlpilot->summaries_parameter_pane->values[i];
+  }
+  argv[i++] = NULL;
 
   if (spawn_script(NULL, argv, NULL, "", &sstdout, &sstderr, &exit_code, &error, NULL, NULL)) {
     html_src = sstdout;

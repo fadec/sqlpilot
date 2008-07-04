@@ -34,6 +34,10 @@
 #include "util.h"
 #include "store.h"
 
+#define IMAGE_KEY   GTK_STOCK_INDEX
+#define IMAGE_FKEY  GTK_STOCK_JUMP_TO
+#define IMAGE_INVAL GTK_STOCK_STOP
+
 /* Editing states for view */
 typedef enum {
   EDSTATE_EMPTY,
@@ -47,9 +51,13 @@ typedef enum {
   PARAMETER_TYPE_DATE
 } ParameterType;
 
+#define PARAMETER_MAX 30
+#define PARAMETER_VALUE_BUFSIZE 256
+
 typedef struct ParameterPane {
   GList *parameters;
   GtkWidget *container;
+  char values[PARAMETER_MAX][PARAMETER_VALUE_BUFSIZE];
 } ParameterPane;
 
 typedef struct Parameter {

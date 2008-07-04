@@ -23,9 +23,9 @@ void on_roles_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {
   entry_clamp_roles_ident(entry);
   if (roles_ident_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), GTK_STOCK_NO ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), GTK_STOCK_YES ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
   if (roles_error(sqlpilot)) {
     edctrl_set_invalid(sqlpilot->roles_edctrl);
@@ -90,4 +90,5 @@ void on_roles_armdel_btn_toggled(GtkButton *button, Sqlpilot *sqlpilot)
 void on_roles_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
 {
   edctrl_selection_changed(sqlpilot->roles_edctrl);
+  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
 }
