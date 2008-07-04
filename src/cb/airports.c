@@ -28,11 +28,7 @@ void on_airports_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   } else {
     gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
-  if (airports_error(sqlpilot)) {
-    edctrl_set_invalid(sqlpilot->airports_edctrl);
-  } else {
-    edctrl_set_modified(sqlpilot->airports_edctrl);
-  }
+  edctrl_set_modified(sqlpilot->airports_edctrl);
 }
 
 void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
@@ -44,11 +40,7 @@ void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   } else {
     gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
-  if (airports_error(sqlpilot)) {
-    edctrl_set_invalid(sqlpilot->airports_edctrl);
-  } else {
-    edctrl_set_modified(sqlpilot->airports_edctrl);
-  }
+  edctrl_set_modified(sqlpilot->airports_edctrl);
 }
 
 void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)

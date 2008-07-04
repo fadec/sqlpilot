@@ -20,18 +20,6 @@ static gchar *summaries_get_selected_script_filename(Sqlpilot *sqlpilot)
   return filename;
 }
 
-static void parameter_fwrite(Parameter *param, FILE *stream)
-{
-  if (param->type == PARAMETER_TYPE_DATE) {
-    fprintf(stream, ": %s", gtk_entry_get_text(GTK_ENTRY(param->widget)));
-  }
-}
-
-static void parameter_pane_fwrite(ParameterPane *ppane, FILE *stream)
-{
-  g_list_foreach(ppane->parameters, (GFunc)parameter_fwrite, (gpointer)stream);
-}
-
 static void parameter_value_tostr(Parameter *param, char *buf, int bufn)
 {
   if (param->type == PARAMETER_TYPE_DATE) {

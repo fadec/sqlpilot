@@ -27,11 +27,7 @@ void on_roles_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
   } else {
     gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
-  if (roles_error(sqlpilot)) {
-    edctrl_set_invalid(sqlpilot->roles_edctrl);
-  } else {
-    edctrl_set_modified(sqlpilot->roles_edctrl);
-  }
+  edctrl_set_modified(sqlpilot->roles_edctrl);
 }
 
 void on_roles_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)

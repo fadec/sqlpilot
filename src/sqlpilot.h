@@ -97,7 +97,6 @@ struct Edctrl {
 void edctrl_set_empty(Edctrl *ec);
 void edctrl_set_selected(Edctrl *ec);
 void edctrl_set_modified(Edctrl *ec);
-void edctrl_set_invalid(Edctrl *ec);
 void edctrl_set_deletearmed(Edctrl *ec);
 
 void edctrl_ignore_modifications(Edctrl *ec, int bool);
