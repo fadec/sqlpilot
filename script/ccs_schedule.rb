@@ -173,8 +173,8 @@ class Flight < Parser
         (crew = many Crew) &&
         (((match /^Exception/) &&
           (match /.*/)) || true)
-      flightno, seq, mday, equip, dep, arr, bout, sched, bin, dur, tail = flight.scan /\w+/
-      {:flightno => flightno, :seq => seq, :mday => mday, :equip => equip, :dep => dep, :arr => arr, :out => bout, :in => bin, :tail => tail, :crew => crew}
+      flightno, seq, mday, dh, equip, dep, arr, bout, sched, bin, dur, tail = flight.split /\t/
+      {:flightno => flightno, :dh => dh, :seq => seq, :mday => mday, :equip => equip, :dep => dep, :arr => arr, :out => bout, :in => bin, :tail => tail, :crew => crew}
     end
   end
 end
@@ -188,7 +188,7 @@ end
 class Rest < Parser
   def self.parse
     if ((match /^ DP[0-9]/) &&
-     ((match /^\s+[0-9]/ ) || true)) &&
+        ((match /^\s+[0-9]{3}\s/ ) || true)) &&
       ((one Blank) || true) &&
       (((match /City/) &&
         ((hotel = one Hotel)) || true))
@@ -309,7 +309,7 @@ for trip in Schedule.run
         :inst     => nil,
         :apprch   => nil,
         :xc       => 1,
-        :role     => "CA",
+        :role     => flight[:dh] =~ /\w/ ? "DH" : "CA",
         :dland    => nil,
         :nland    => nil,
         :notes    => nil,
