@@ -20,6 +20,9 @@
 #include "lib/csv.h"
 #include "db/db.h"
 #include "sqlpilot.h"
+#include "logbook.h"
+#include "flights.h"
+#include "aircraft.h"
 #include "util.h"
 
 #define CSV_BUFSIZE 4096

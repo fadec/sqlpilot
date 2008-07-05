@@ -18,6 +18,7 @@
 /************************************************************************/
 
 #include "sqlpilot.h"
+#include "logbook.h"
 
 #ifdef USING_HILDON
 #include <hildon-widgets/hildon-program.h>

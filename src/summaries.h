@@ -21,6 +21,7 @@
 #define SUMMARIES_H
 
 #include <sqlpilot.h>
+#include "scripter.h"
 
 #define SUMMARIES_DIR "script/summary"
 

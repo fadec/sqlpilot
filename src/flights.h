@@ -21,6 +21,7 @@
 #define FLIGHTS_H
 
 #include "sqlpilot.h"
+#include "logbook.h"
 /* Column numbers for treemodel and select statements */
 enum {
   FLIGHTS_COL_ID = COL_ID,

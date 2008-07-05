@@ -18,6 +18,8 @@
 /************************************************************************/
 
 #include "sqlpilot.h"
+#include "roles.h"
+#include "logbook.h"
 
 void on_roles_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {

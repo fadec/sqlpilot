@@ -18,7 +18,7 @@
 /************************************************************************/
 
 #include "flights.h"
-#define _GNU_SOURCE //for strcasestr
+#include "aircraft.h"
 #include <string.h>
 
 void flights_refresh_aircraft_utilized(Sqlpilot *sqlpilot)

@@ -19,6 +19,7 @@
 
 #include "sqlpilot.h"
 #include "cb/cb.h"
+#include "logbook.h"
 
 void on_window_destroy(GtkObject *object, Sqlpilot *sqlpilot)
 {

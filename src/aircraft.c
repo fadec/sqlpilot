@@ -18,6 +18,8 @@
 /************************************************************************/
 
 #include "aircraft.h"
+#include "flights.h"
+#include "logbook.h"
 
 int aircraft_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 {

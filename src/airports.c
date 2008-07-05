@@ -17,7 +17,9 @@
 /* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
 /************************************************************************/
 
+#include "sqlpilot.h"
 #include "airports.h"
+#include "logbook.h"
 
 int airports_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 {

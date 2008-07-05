@@ -21,6 +21,8 @@
 
 
 #include "sqlpilot.h"
+#include "types.h"
+#include "logbook.h"
 
 void on_types_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {

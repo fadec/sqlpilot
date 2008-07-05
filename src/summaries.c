@@ -1,10 +1,12 @@
-#include "summaries.h"
 #include <gtkhtml/gtkhtml.h>
 #include <dirent.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include "sqlpilot.h"
+#include "summaries.h"
+#include "logbook.h"
 
 static gchar *summaries_get_selected_script_filename(Sqlpilot *sqlpilot)
 {

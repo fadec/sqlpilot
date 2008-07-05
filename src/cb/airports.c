@@ -18,6 +18,8 @@
 /************************************************************************/
 
 #include "sqlpilot.h"
+#include "airports.h"
+#include "logbook.h"
 
 void on_airports_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
 {

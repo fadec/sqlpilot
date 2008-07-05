@@ -19,6 +19,8 @@
 
 
 #include "sqlpilot.h"
+#include "roles.h"
+#include "logbook.h"
 
 void roles_after_change(Sqlpilot *sqlpilot)
 {
