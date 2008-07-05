@@ -45,15 +45,15 @@ struct Edctrl {
   GtkTreeSelection *selection;
   DBStatement *delete_stmt;
   DBStatement *select_by_id_stmt;
-  void (*load_selection)(Sqlpilot *);
+  void (*load_selection)(Logbook *);
   void *load_selection_data;
   int (*selection_show)(GtkTreeSelection *, char *, size_t);
   int (*can_delete)(GtkTreeSelection *);
-  void (*after_change)(Sqlpilot *);
+  void (*after_change)(Logbook *);
   void *after_change_data;
-  int (*validator)(Sqlpilot *);
+  int (*validator)(Logbook *);
   void *validator_data;
-  DBint64 (*save)(const char *id, Sqlpilot *);
+  DBint64 (*save)(const char *id, Logbook *);
   void *save_data;
   int ignore_modifications;
 };
@@ -69,10 +69,10 @@ void edctrl_new_btn_clicked(Edctrl *ec);
 void edctrl_save_btn_clicked(Edctrl *ec);
 void edctrl_del_btn_clicked(Edctrl *ec);
 
-void edctrl_register_load_selection(Edctrl *ec, void func(Sqlpilot *), Sqlpilot *);
-void edctrl_register_save(Edctrl *ec, DBint64 func(const char *, Sqlpilot *), Sqlpilot *);
-void edctrl_register_after_change(Edctrl *ec, void (Sqlpilot *), Sqlpilot *);
-void edctrl_register_validator(Edctrl *ec, int func(Sqlpilot *), Sqlpilot *data);
+void edctrl_register_load_selection(Edctrl *ec, void func(Logbook *), Logbook *);
+void edctrl_register_save(Edctrl *ec, DBint64 func(const char *, Logbook *), Logbook *);
+void edctrl_register_after_change(Edctrl *ec, void (Logbook *), Logbook *);
+void edctrl_register_validator(Edctrl *ec, int func(Logbook *), Logbook *data);
 
 void edctrl_armdel_btn_toggled(Edctrl *ec);
 

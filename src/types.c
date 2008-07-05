@@ -60,13 +60,13 @@ int types_can_delete(GtkTreeSelection *selection)
   return !_aircraft;
 }
 
-void types_after_change(Sqlpilot *sqlpilot)
+void types_after_change(Logbook *logbook)
 {
-  sqlpilot->flights_stale = TRUE;
-  sqlpilot->aircraft_stale = TRUE;
+  logbook->flights_stale = TRUE;
+  logbook->aircraft_stale = TRUE;
 }
 
-DBint64 types_write_entries(const gchar *id, Sqlpilot *sqlpilot)
+DBint64 types_write_entries(const gchar *id, Logbook *logbook)
 {
   const gchar
     *ident,
@@ -103,44 +103,44 @@ DBint64 types_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     total;
   DBStatement *stmt;
 
-  ident       = gtk_entry_get_text(GTK_ENTRY(sqlpilot->types_ident));
-  make        = gtk_entry_get_text(GTK_ENTRY(sqlpilot->types_make));
-  model       = gtk_entry_get_text(GTK_ENTRY(sqlpilot->types_model));
-  airplane    = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_airplane));
-  rotorcraft  = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_rotorcraft));
-  glider      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_glider));
-  lta         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_lta));
-  poweredlift = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_poweredlift));
-  ppc         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_ppc));
-  weightshift = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_weightshift));
-  heli        = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_heli));
-  gyro        = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_gyro));
-  airship     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_airship));
-  balloon     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_balloon));
-  single      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_single));
-  multi       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_multi));
-  land        = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_land));
-  sea         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_sea));
-  turbine     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_turbine));
-  jet         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_jet));
-  highperf    = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_highperf));
-  retract     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_retract));
-  complex     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_complex));
-  pressurized = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_pressurized));
-  large       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_large));
-  sport       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_sport));
-  ultralight  = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_ultralight));
-  footlaunch  = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_footlaunch));
-  sim         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_sim));
-  ftd         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_ftd));
-  total       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->types_total));
+  ident       = gtk_entry_get_text(GTK_ENTRY(logbook->types_ident));
+  make        = gtk_entry_get_text(GTK_ENTRY(logbook->types_make));
+  model       = gtk_entry_get_text(GTK_ENTRY(logbook->types_model));
+  airplane    = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_airplane));
+  rotorcraft  = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_rotorcraft));
+  glider      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_glider));
+  lta         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_lta));
+  poweredlift = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_poweredlift));
+  ppc         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_ppc));
+  weightshift = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_weightshift));
+  heli        = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_heli));
+  gyro        = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_gyro));
+  airship     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_airship));
+  balloon     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_balloon));
+  single      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_single));
+  multi       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_multi));
+  land        = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_land));
+  sea         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_sea));
+  turbine     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_turbine));
+  jet         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_jet));
+  highperf    = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_highperf));
+  retract     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_retract));
+  complex     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_complex));
+  pressurized = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_pressurized));
+  large       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_large));
+  sport       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_sport));
+  ultralight  = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_ultralight));
+  footlaunch  = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_footlaunch));
+  sim         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_sim));
+  ftd         = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_ftd));
+  total       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->types_total));
   
   /* Write entries to database */
   if (id) {
-    stmt = sqlpilot->types_update;
+    stmt = logbook->types_update;
     db_bind_text(stmt, TYPES_WRITE_ID, id); 
   } else {
-    stmt = sqlpilot->types_insert;
+    stmt = logbook->types_insert;
   }
   db_bind_text(stmt, TYPES_WRITE_IDENT, ident);
   db_bind_text(stmt, TYPES_WRITE_MAKE, make);
@@ -179,11 +179,11 @@ DBint64 types_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   if (id) {
     return 0;
   } else {
-    return db_last_insert_rowid(sqlpilot->db);
+    return db_last_insert_rowid(logbook->db);
   }
 }
 
-void types_load_selection(Sqlpilot *logb)
+void types_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
   GtkTreeModel *tmodel;
@@ -325,35 +325,35 @@ void types_load_selection(Sqlpilot *logb)
   g_free(total);  
 }
 
-void types_refresh(Sqlpilot *sqlpilot)
+void types_refresh(Logbook *logbook)
 {
-    store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->types_treemodel), sqlpilot->types_select_all);
-    types_load_selection(sqlpilot);
-    sqlpilot->types_stale = FALSE;
+    store_repopulate_from_stmt(GTK_LIST_STORE(logbook->types_treemodel), logbook->types_select_all);
+    types_load_selection(logbook);
+    logbook->types_stale = FALSE;
 }
 
-int types_ident_validate(Sqlpilot *sqlpilot)
+int types_ident_validate(Logbook *logbook)
 {
   gchar *id=NULL;
   const gchar *ident;
 
-  id = get_text_from_tree_selection(sqlpilot->types_selection, COL_ID);
-  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->types_ident));
+  id = get_text_from_tree_selection(logbook->types_selection, COL_ID);
+  ident = gtk_entry_get_text(GTK_ENTRY(logbook->types_ident));
 
-  if (unique_but_for(sqlpilot->db, "types", "ident", ident, "id", EMPTY_IF_NULL(id))) {
-    sqlpilot->types_ident_error = 0;
+  if (unique_but_for(logbook->db, "types", "ident", ident, "id", EMPTY_IF_NULL(id))) {
+    logbook->types_ident_error = 0;
   } else {
-    sqlpilot->types_ident_error = 1;
+    logbook->types_ident_error = 1;
   }
 
   g_free(id);
 
-  return sqlpilot->types_ident_error;
+  return logbook->types_ident_error;
 }
 
-int types_error(Sqlpilot *sqlpilot)
+int types_error(Logbook *logbook)
 {
   const gchar *ident;
-  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->types_ident));
-  return (!*ident || sqlpilot->types_ident_error);
+  ident = gtk_entry_get_text(GTK_ENTRY(logbook->types_ident));
+  return (!*ident || logbook->types_ident_error);
 }

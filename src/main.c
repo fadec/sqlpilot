@@ -29,7 +29,7 @@
 #else
 #include <gtk/gtk.h>
 #endif
-static Sqlpilot *sqlpilot;
+static Logbook *logbook;
 
 int
 main (int argc, char *argv[])
@@ -70,17 +70,17 @@ main (int argc, char *argv[])
     
   } else {
     gtk_init (&argc, &argv);
-    if ((sqlpilot = sqlpilot_new(dbfilename)) == NULL) exit(1);
+    if ((logbook = logbook_new(dbfilename)) == NULL) exit(1);
 
 #ifdef USING_HILDON
     /*  */
     program = HILDON_PROGRAM(hildon_program_get_instance());
-    container = sqlpilot->window;
-    sqlpilot->window = hildon_window_new();
-    //g_signal_connect_swapped(sqlpilot->window ,"destroy", GTK_SIGNAL_FUNC(quit_program),ui_main);
-    gtk_widget_reparent(container, sqlpilot->window);
+    container = logbook->window;
+    logbook->window = hildon_window_new();
+    //g_signal_connect_swapped(logbook->window ,"destroy", GTK_SIGNAL_FUNC(quit_program),ui_main);
+    gtk_widget_reparent(container, logbook->window);
 
-    hildon_program_add_window(program, HILDON_WINDOW(sqlpilot->window));
+    hildon_program_add_window(program, HILDON_WINDOW(logbook->window));
     g_set_application_name(_("SqlPilot"));
     /* Hildon Menu */
     main_menu = gtk_menu_new();
@@ -98,14 +98,14 @@ main (int argc, char *argv[])
     item = gtk_menu_item_new_with_label(_("Quit"));
     gtk_menu_append(main_menu, item);
 
-    hildon_window_set_menu(HILDON_WINDOW(sqlpilot->window), GTK_MENU(main_menu));
+    hildon_window_set_menu(HILDON_WINDOW(logbook->window), GTK_MENU(main_menu));
 
     gtk_widget_show_all(GTK_WIDGET(main_menu));
 #endif
-    gtk_widget_show (sqlpilot->window);
+    gtk_widget_show (logbook->window);
 
     gtk_main ();
-    sqlpilot_finalize (sqlpilot);    
+    logbook_finalize (logbook);    
   }
 
   return 0;

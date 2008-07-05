@@ -21,84 +21,84 @@
 #include "aircraft.h"
 #include <string.h>
 
-void flights_refresh_aircraft_utilized(Sqlpilot *sqlpilot)
+void flights_refresh_aircraft_utilized(Logbook *logbook)
 {
   DBint64 id;
 
   char txt[16];
   const char *aircraft;
 
-  aircraft = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aircraft));
+  aircraft = gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft));
   if (!strlen(aircraft)) {
     snprintf(txt, sizeof(txt), " "); 
-  } else if (find_row_id(sqlpilot->db, "Aircraft", "Ident", aircraft, &id)) {
-    snprintf(txt, sizeof(txt), "(%d)", aircraft_count_flights(sqlpilot, id));
+  } else if (find_row_id(logbook->db, "Aircraft", "Ident", aircraft, &id)) {
+    snprintf(txt, sizeof(txt), "(%d)", aircraft_count_flights(logbook, id));
   } else {
     snprintf(txt, sizeof(txt), "(?)");
   }
 
-  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_aircraft_utilized), txt);
+  gtk_label_set_text(GTK_LABEL(logbook->flights_aircraft_utilized), txt);
 }
 
-void flights_refresh_role_utilized(Sqlpilot *sqlpilot)
+void flights_refresh_role_utilized(Logbook *logbook)
 {
   DBint64 id;
 
   char txt[16];
   const char *role;
-  role = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_role));
+  role = gtk_entry_get_text(GTK_ENTRY(logbook->flights_role));
 
-  if (!strlen(role) || find_row_id(sqlpilot->db, "Roles", "Ident", role, &id)) {
+  if (!strlen(role) || find_row_id(logbook->db, "Roles", "Ident", role, &id)) {
     snprintf(txt, sizeof(txt), " ");
   } else {
     snprintf(txt, sizeof(txt), "(?)");
   }
   
-  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_role_utilized), txt);
+  gtk_label_set_text(GTK_LABEL(logbook->flights_role_utilized), txt);
 }
 
-void flights_refresh_dep_utilized(Sqlpilot *sqlpilot)
+void flights_refresh_dep_utilized(Logbook *logbook)
 {
   DBint64 id;
 
   char txt[16];
   const char *dep;
 
-  dep = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
+  dep = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep));
 
-  if (!strlen(dep) || find_row_id(sqlpilot->db, "Airports", "Ident", dep, &id)) {
+  if (!strlen(dep) || find_row_id(logbook->db, "Airports", "Ident", dep, &id)) {
     snprintf(txt, sizeof(txt), " ");
   } else {
     snprintf(txt, sizeof(txt), "(?)");
   }
 
-  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_dep_utilized), txt);
+  gtk_label_set_text(GTK_LABEL(logbook->flights_dep_utilized), txt);
 }
 
-void flights_refresh_arr_utilized(Sqlpilot *sqlpilot)
+void flights_refresh_arr_utilized(Logbook *logbook)
 {
   DBint64 id;
 
   char txt[16];
   const char *arr;
 
-  arr = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
+  arr = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr));
 
-  if (!strlen(arr) || find_row_id(sqlpilot->db, "Airports", "Ident", arr, &id)) {
+  if (!strlen(arr) || find_row_id(logbook->db, "Airports", "Ident", arr, &id)) {
     snprintf(txt, sizeof(txt), " ");
   } else {
     snprintf(txt, sizeof(txt), "(?)");
   }
 
-  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_arr_utilized), txt);
+  gtk_label_set_text(GTK_LABEL(logbook->flights_arr_utilized), txt);
 }
 
-void flights_refresh_utilization(Sqlpilot *sqlpilot)
+void flights_refresh_utilization(Logbook *logbook)
 {
-  flights_refresh_role_utilized(sqlpilot);
-  flights_refresh_aircraft_utilized(sqlpilot);
-  flights_refresh_dep_utilized(sqlpilot);
-  flights_refresh_arr_utilized(sqlpilot);
+  flights_refresh_role_utilized(logbook);
+  flights_refresh_aircraft_utilized(logbook);
+  flights_refresh_dep_utilized(logbook);
+  flights_refresh_arr_utilized(logbook);
 }
 
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size)
@@ -123,14 +123,14 @@ int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size)
   }
 }
 
-void flights_after_change(Sqlpilot *sqlpilot)
+void flights_after_change(Logbook *logbook)
 {
-  sqlpilot->roles_stale = TRUE;
-  sqlpilot->aircraft_stale = TRUE;
-  sqlpilot->types_stale = TRUE;
-  sqlpilot->airports_stale = TRUE;
+  logbook->roles_stale = TRUE;
+  logbook->aircraft_stale = TRUE;
+  logbook->types_stale = TRUE;
+  logbook->airports_stale = TRUE;
 
-  flights_load_selection(sqlpilot);
+  flights_load_selection(logbook);
 }
 
 int flights_can_delete(GtkTreeSelection *selection)
@@ -140,7 +140,7 @@ int flights_can_delete(GtkTreeSelection *selection)
 }
 
 /* Writes stuff in entry portion of gui to db - if id is NULL it inserts, else updates */
-DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
+DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
 {
   const gchar
     *aircraft,
@@ -176,36 +176,36 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   DBStatement *stmt;
   gboolean utc;
 
-  utc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc));
+  utc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc));
 
-  aircraft = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aircraft));
-  role     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_role));
-  dep      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
-  arr      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
-  dur      = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dur));
-  night    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_night));
-  inst     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_inst));
-  siminst  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_siminst));
-  aprch    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aprch));
-  fltno    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_fltno));
-  sdur     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sdur));
-  trip     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_trip));
-  tripdate = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_tripdate));
-  dland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_dland));
-  nland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_nland));
-  hold     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_hold));
-  xc       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_xc));
-  crew     = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_crew));
-  notes    = text_view_get_text(GTK_TEXT_VIEW(sqlpilot->flights_notes));
-  date     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
-  leg      = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(sqlpilot->flights_leg)); 
-  aout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_aout));
-  ain  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_ain));
-  sout = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sout));
-  sin  = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_sin));
+  aircraft = gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft));
+  role     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_role));
+  dep      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep));
+  arr      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr));
+  dur      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dur));
+  night    = gtk_entry_get_text(GTK_ENTRY(logbook->flights_night));
+  inst     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_inst));
+  siminst  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_siminst));
+  aprch    = gtk_entry_get_text(GTK_ENTRY(logbook->flights_aprch));
+  fltno    = gtk_entry_get_text(GTK_ENTRY(logbook->flights_fltno));
+  sdur     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_sdur));
+  trip     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_trip));
+  tripdate = gtk_entry_get_text(GTK_ENTRY(logbook->flights_tripdate));
+  dland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(logbook->flights_dland));
+  nland    = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(logbook->flights_nland));
+  hold     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_hold));
+  xc       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_xc));
+  crew     = text_view_get_text(GTK_TEXT_VIEW(logbook->flights_crew));
+  notes    = text_view_get_text(GTK_TEXT_VIEW(logbook->flights_notes));
+  date     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_date));
+  leg      = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(logbook->flights_leg)); 
+  aout = gtk_entry_get_text(GTK_ENTRY(logbook->flights_aout));
+  ain  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_ain));
+  sout = gtk_entry_get_text(GTK_ENTRY(logbook->flights_sout));
+  sin  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_sin));
 
-  tz_of_airport_ident(sqlpilot->db, dep, deptz, sizeof(deptz));
-  tz_of_airport_ident(sqlpilot->db, arr, arrtz, sizeof(arrtz));
+  tz_of_airport_ident(logbook->db, dep, deptz, sizeof(deptz));
+  tz_of_airport_ident(logbook->db, arr, arrtz, sizeof(arrtz));
 
   if (utc) {
     /* to Local */
@@ -229,10 +229,10 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
    
   /* Write entries to database */
   if (id) {
-    stmt = sqlpilot->flights_update;
+    stmt = logbook->flights_update;
     db_bind_text(stmt, FLIGHTS_WRITE_ID, id);
   } else {
-    stmt = sqlpilot->flights_insert;
+    stmt = logbook->flights_insert;
   }
   bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "ident", aircraft);
   bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", role);
@@ -272,7 +272,7 @@ DBint64 flights_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   if (id) {
     return 0;
   } else {
-    return db_last_insert_rowid(sqlpilot->db);
+    return db_last_insert_rowid(logbook->db);
   }
 }
 
@@ -378,7 +378,7 @@ long elapsed_seconds(const char *date, const char *t1, const char *tz1, const ch
 }
 
 /* Changed is an alias to either start, end, or elapsed. */
-void reconcile_time_entries(Sqlpilot *logb,
+void reconcile_time_entries(Logbook *logb,
 			    GtkEntry *changed,
 			    GtkEntry *start,
 			    GtkEntry *end,
@@ -445,7 +445,7 @@ void reconcile_time_entries(Sqlpilot *logb,
 }
 
 /* Load the selected line into fields */
-void flights_load_selection(Sqlpilot *logb)
+void flights_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
   GtkTreeModel *model;
@@ -589,7 +589,7 @@ void flights_load_selection(Sqlpilot *logb)
   g_free(tripdate);
 }
 
-void flights_refresh(Sqlpilot *sqlpilot)
+void flights_refresh(Logbook *logbook)
 {
   static int lock=0;
   //  DBStatement *select;
@@ -603,10 +603,10 @@ void flights_refresh(Sqlpilot *sqlpilot)
   if (lock) return;
   lock = 1;
 
-  gtk_widget_hide(sqlpilot->flights_results_summary);
-  gtk_widget_show(sqlpilot->flights_query_progress);
+  gtk_widget_hide(logbook->flights_results_summary);
+  gtk_widget_show(logbook->flights_query_progress);
 
-  where_clause = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_where));
+  where_clause = gtk_entry_get_text(GTK_ENTRY(logbook->flights_where));
 
   if (strlen(where_clause)) {
     snprintf(sql, sizeof(sql), "%s where %s ;", FLIGHTS_SELECT, where_clause);
@@ -614,34 +614,34 @@ void flights_refresh(Sqlpilot *sqlpilot)
   } else {
     snprintf(sql, sizeof(sql), "%s ;", FLIGHTS_SELECT);
   }
-  db_finalize(sqlpilot->flights_select_all);
-  if ((err = db_prepare(sqlpilot->db, sql, &sqlpilot->flights_select_all)) != DB_OK) {
-    if (sqlpilot->flights_select_all) {
-      db_finalize(sqlpilot->flights_select_all);
+  db_finalize(logbook->flights_select_all);
+  if ((err = db_prepare(logbook->db, sql, &logbook->flights_select_all)) != DB_OK) {
+    if (logbook->flights_select_all) {
+      db_finalize(logbook->flights_select_all);
     }
-    sqlpilot->flights_select_all = db_prep(sqlpilot->db, "SELECT 42 WHERE 0 = 1;");
+    logbook->flights_select_all = db_prep(logbook->db, "SELECT 42 WHERE 0 = 1;");
   }
 
 
-  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_results_summary), "");
-  nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(sqlpilot->flights_treemodel),
-						   sqlpilot->flights_select_all,
-						   GTK_PROGRESS_BAR(sqlpilot->flights_query_progress));
+  gtk_label_set_text(GTK_LABEL(logbook->flights_results_summary), "");
+  nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(logbook->flights_treemodel),
+						   logbook->flights_select_all,
+						   GTK_PROGRESS_BAR(logbook->flights_query_progress));
 
   if (err == DB_OK) {
     snprintf(results_summary, sizeof(results_summary), "%ld Flights", nrows);
   } else {
     snprintf(results_summary, sizeof(results_summary), "Error");
   }
-  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_results_summary), results_summary);
+  gtk_label_set_text(GTK_LABEL(logbook->flights_results_summary), results_summary);
 
-  flights_load_selection(sqlpilot);
-  sqlpilot->flights_stale = FALSE;
+  flights_load_selection(logbook);
+  logbook->flights_stale = FALSE;
 
-  flights_refresh_utilization(sqlpilot);
+  flights_refresh_utilization(logbook);
 
-  gtk_widget_hide(sqlpilot->flights_query_progress);
-  gtk_widget_show(sqlpilot->flights_results_summary);
+  gtk_widget_hide(logbook->flights_query_progress);
+  gtk_widget_show(logbook->flights_results_summary);
 
   lock = 0;
 }

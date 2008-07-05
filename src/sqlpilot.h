@@ -25,7 +25,6 @@
 
 #define UI_XML_FILE  "data/ui/interface.xml"
 
-typedef struct Logbook Sqlpilot;
 typedef struct Logbook Logbook;
 typedef struct Edctrl Edctrl;
 typedef struct ParameterPane ParameterPane;

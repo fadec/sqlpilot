@@ -20,312 +20,270 @@
 #include "sqlpilot.h"
 #include "flights.h"
 
-void on_flights_refresh_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_flights_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
-  flights_refresh(sqlpilot);
+  flights_refresh(logbook);
 }
 
-void on_flights_view_date_toggled(GtkToggleButton *button, Sqlpilot *sqlpilot)
+void on_flights_view_date_toggled(GtkToggleButton *button, Logbook *logbook)
 {
   GtkTreeViewColumn *col;
 
-  col = gtk_tree_view_get_column(GTK_TREE_VIEW(sqlpilot->flights_treeview), 1);
-  gtk_tree_view_column_set_visible(col, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_view_date)));
+  col = gtk_tree_view_get_column(GTK_TREE_VIEW(logbook->flights_treeview), 1);
+  gtk_tree_view_column_set_visible(col, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_date)));
 }
 
-void on_flights_trip_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_trip_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
 int is_numeric_date_char(char c)
 {
   return (c >= '0' && c <= '9') || c == '-';
 }
-int on_flights_date_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_date_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   return FALSE;
 }
-int on_flights_date_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_date_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_date_on_focus_out(entry);
   return FALSE;
 }
-void on_flights_date_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_date_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 10, 0, is_numeric_date_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 } 
 
-void on_flights_leg_value_changed(GtkWidget *button, Sqlpilot *sqlpilot)
+void on_flights_leg_value_changed(GtkWidget *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_tripdate_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_tripdate_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   return FALSE;
 }
-int on_flights_tripdate_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_tripdate_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_date_on_focus_out(entry);
   return FALSE;
 }
-void on_flights_tripdate_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_tripdate_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 10, 0, is_numeric_date_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 } 
 
-void on_flights_role_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_role_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_roles_ident(entry);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_role_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_role_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  flights_refresh_role_utilized(sqlpilot);
+  flights_refresh_role_utilized(logbook);
   return FALSE;
 }
 
-void on_flights_fltno_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_fltno_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_aircraft_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_aircraft_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_aircraft_ident(entry);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_aircraft_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_aircraft_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  flights_refresh_aircraft_utilized(sqlpilot);
+  flights_refresh_aircraft_utilized(logbook);
   return FALSE;
 }
 
-void on_flights_dep_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_dep_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_airports_ident(entry);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_dep_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_dep_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
-    reconcile_time_entries(sqlpilot,
-			   GTK_ENTRY(sqlpilot->flights_sout),
-			   GTK_ENTRY(sqlpilot->flights_sout),
-			   GTK_ENTRY(sqlpilot->flights_sin),
-			   GTK_ENTRY(sqlpilot->flights_sdur));
-    reconcile_time_entries(sqlpilot,
-			   GTK_ENTRY(sqlpilot->flights_aout),
-			   GTK_ENTRY(sqlpilot->flights_aout),
-			   GTK_ENTRY(sqlpilot->flights_ain),
-			   GTK_ENTRY(sqlpilot->flights_dur));
+  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+    reconcile_time_entries(logbook,
+			   GTK_ENTRY(logbook->flights_sout),
+			   GTK_ENTRY(logbook->flights_sout),
+			   GTK_ENTRY(logbook->flights_sin),
+			   GTK_ENTRY(logbook->flights_sdur));
+    reconcile_time_entries(logbook,
+			   GTK_ENTRY(logbook->flights_aout),
+			   GTK_ENTRY(logbook->flights_aout),
+			   GTK_ENTRY(logbook->flights_ain),
+			   GTK_ENTRY(logbook->flights_dur));
   }
-  flights_refresh_dep_utilized(sqlpilot);
+  flights_refresh_dep_utilized(logbook);
   return FALSE;
 }
 
-void on_flights_arr_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_arr_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_airports_ident(entry);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_arr_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_arr_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
-    reconcile_time_entries(sqlpilot,
-			   GTK_ENTRY(sqlpilot->flights_sin),
-			   GTK_ENTRY(sqlpilot->flights_sout),
-			   GTK_ENTRY(sqlpilot->flights_sin),
-			   GTK_ENTRY(sqlpilot->flights_sdur));
-    reconcile_time_entries(sqlpilot,
-			   GTK_ENTRY(sqlpilot->flights_ain),
-			   GTK_ENTRY(sqlpilot->flights_aout),
-			   GTK_ENTRY(sqlpilot->flights_ain),
-			   GTK_ENTRY(sqlpilot->flights_dur));
+  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+    reconcile_time_entries(logbook,
+			   GTK_ENTRY(logbook->flights_sin),
+			   GTK_ENTRY(logbook->flights_sout),
+			   GTK_ENTRY(logbook->flights_sin),
+			   GTK_ENTRY(logbook->flights_sdur));
+    reconcile_time_entries(logbook,
+			   GTK_ENTRY(logbook->flights_ain),
+			   GTK_ENTRY(logbook->flights_aout),
+			   GTK_ENTRY(logbook->flights_ain),
+			   GTK_ENTRY(logbook->flights_dur));
   }
-  flights_refresh_arr_utilized(sqlpilot);
+  flights_refresh_arr_utilized(logbook);
   return FALSE;
 }
 
-int on_flights_sout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_sout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
   entry_format_time_on_focus_in(entry);
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
-int on_flights_sout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_sout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   const gchar
     *date,
     *airport;
   char local_tz[BUF_TZ], *to_tz;
 
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
-  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
-  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
+  date = gtk_entry_get_text(GTK_ENTRY(logbook->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep));
 
-  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
+  tz_of_airport_ident(logbook->db, airport, local_tz, BUF_TZ);
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
   }
 
   entry_format_time_of_day(entry, local_tz, to_tz, date);
-  reconcile_time_entries(sqlpilot,
-			 GTK_ENTRY(sqlpilot->flights_sout),
-			 GTK_ENTRY(sqlpilot->flights_sout),
-			 GTK_ENTRY(sqlpilot->flights_sin),
-			 GTK_ENTRY(sqlpilot->flights_sdur));
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  reconcile_time_entries(logbook,
+			 GTK_ENTRY(logbook->flights_sout),
+			 GTK_ENTRY(logbook->flights_sout),
+			 GTK_ENTRY(logbook->flights_sin),
+			 GTK_ENTRY(logbook->flights_sdur));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
-void on_flights_sout_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_sout_changed(GtkEntry *entry, Logbook *logbook)
 {
   /* Clamp to six chars, eg 12:34z */
   entry_clamp_text(entry, 6, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_sin_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_sin_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
   entry_format_time_on_focus_in(entry);
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
-int on_flights_sin_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_sin_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   const gchar
     *date,
     *airport;
   char local_tz[BUF_TZ], *to_tz;
 
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
-  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
-  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
+  date = gtk_entry_get_text(GTK_ENTRY(logbook->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr));
 
-  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
+  tz_of_airport_ident(logbook->db, airport, local_tz, BUF_TZ);
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
   }
 
   entry_format_time_of_day(entry, local_tz, to_tz, date);
-  reconcile_time_entries(sqlpilot,
-			 GTK_ENTRY(sqlpilot->flights_sin),
-			 GTK_ENTRY(sqlpilot->flights_sout),
-			 GTK_ENTRY(sqlpilot->flights_sin),
-			 GTK_ENTRY(sqlpilot->flights_sdur));
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  reconcile_time_entries(logbook,
+			 GTK_ENTRY(logbook->flights_sin),
+			 GTK_ENTRY(logbook->flights_sout),
+			 GTK_ENTRY(logbook->flights_sin),
+			 GTK_ENTRY(logbook->flights_sdur));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
-void on_flights_sin_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_sin_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 6, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_sdur_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_sdur_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1); 
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1); 
   entry_format_time_on_focus_in(entry);
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
-int on_flights_sdur_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_sdur_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
   entry_format_time_on_focus_out(entry, '+');
-  reconcile_time_entries(sqlpilot,
-			 GTK_ENTRY(sqlpilot->flights_sdur),
-			 GTK_ENTRY(sqlpilot->flights_sout),
-			 GTK_ENTRY(sqlpilot->flights_sin),
-			 GTK_ENTRY(sqlpilot->flights_sdur));
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  reconcile_time_entries(logbook,
+			 GTK_ENTRY(logbook->flights_sdur),
+			 GTK_ENTRY(logbook->flights_sout),
+			 GTK_ENTRY(logbook->flights_sin),
+			 GTK_ENTRY(logbook->flights_sdur));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
 
-void on_flights_sdur_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_sdur_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 5, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_aout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_aout_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
   entry_format_time_on_focus_in(entry);
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
-int on_flights_aout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_aout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   const gchar
     *date,
     *airport;
   char local_tz[BUF_TZ], *to_tz;
 
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
-  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
-  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_dep));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
+  date = gtk_entry_get_text(GTK_ENTRY(logbook->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep));
 
-  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
+  tz_of_airport_ident(logbook->db, airport, local_tz, BUF_TZ);
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
-    to_tz = "UTC";
-  } else {
-    to_tz = local_tz;
-  }
-
-  entry_format_time_of_day(entry, local_tz, to_tz, date);
-
-  reconcile_time_entries(sqlpilot,
-			 GTK_ENTRY(sqlpilot->flights_aout),
-			 GTK_ENTRY(sqlpilot->flights_aout),
-			 GTK_ENTRY(sqlpilot->flights_ain),
-			 GTK_ENTRY(sqlpilot->flights_dur));
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
-  return FALSE;
-}
-void on_flights_aout_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
-{
-  entry_clamp_text(entry, 6, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
-}
-
-int on_flights_ain_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
-{
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
-  entry_format_time_on_focus_in(entry);
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
-  return FALSE;
-}
-int on_flights_ain_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
-{
-  const gchar
-    *date,
-    *airport;
-  char local_tz[BUF_TZ], *to_tz;
-
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
-  date = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_date));
-  airport = gtk_entry_get_text(GTK_ENTRY(sqlpilot->flights_arr));
-
-  tz_of_airport_ident(sqlpilot->db, airport, local_tz, BUF_TZ);
-
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc))) {
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -333,99 +291,141 @@ int on_flights_ain_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpil
 
   entry_format_time_of_day(entry, local_tz, to_tz, date);
 
-  reconcile_time_entries(sqlpilot,
-			 GTK_ENTRY(sqlpilot->flights_ain),
-			 GTK_ENTRY(sqlpilot->flights_aout),
-			 GTK_ENTRY(sqlpilot->flights_ain),
-			 GTK_ENTRY(sqlpilot->flights_dur));
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
+  reconcile_time_entries(logbook,
+			 GTK_ENTRY(logbook->flights_aout),
+			 GTK_ENTRY(logbook->flights_aout),
+			 GTK_ENTRY(logbook->flights_ain),
+			 GTK_ENTRY(logbook->flights_dur));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
   return FALSE;
 }
-void on_flights_ain_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
-{
-  entry_clamp_text(entry, 5, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
-}
-
-int on_flights_dur_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
-{
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
-  entry_format_time_on_focus_in(entry);
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
-  return FALSE;
-}
-int on_flights_dur_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
-{
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 1);
-  entry_format_time_on_focus_out(entry, '+');
-  reconcile_time_entries(sqlpilot,
-			 GTK_ENTRY(sqlpilot->flights_dur),
-			 GTK_ENTRY(sqlpilot->flights_aout),
-			 GTK_ENTRY(sqlpilot->flights_ain),
-			 GTK_ENTRY(sqlpilot->flights_dur));
-  edctrl_ignore_modifications(sqlpilot->flights_edctrl, 0);
-  return FALSE;
-}
-void on_flights_dur_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_aout_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 6, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_inst_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_ain_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
+{
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
+  entry_format_time_on_focus_in(entry);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
+  return FALSE;
+}
+int on_flights_ain_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
+{
+  const gchar
+    *date,
+    *airport;
+  char local_tz[BUF_TZ], *to_tz;
+
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
+  date = gtk_entry_get_text(GTK_ENTRY(logbook->flights_date));
+  airport = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr));
+
+  tz_of_airport_ident(logbook->db, airport, local_tz, BUF_TZ);
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+    to_tz = "UTC";
+  } else {
+    to_tz = local_tz;
+  }
+
+  entry_format_time_of_day(entry, local_tz, to_tz, date);
+
+  reconcile_time_entries(logbook,
+			 GTK_ENTRY(logbook->flights_ain),
+			 GTK_ENTRY(logbook->flights_aout),
+			 GTK_ENTRY(logbook->flights_ain),
+			 GTK_ENTRY(logbook->flights_dur));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
+  return FALSE;
+}
+void on_flights_ain_changed(GtkEntry *entry, Logbook *logbook)
+{
+  entry_clamp_text(entry, 5, 1, is_time_char);
+  edctrl_set_modified(logbook->flights_edctrl);
+}
+
+int on_flights_dur_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
+{
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
+  entry_format_time_on_focus_in(entry);
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
+  return FALSE;
+}
+int on_flights_dur_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
+{
+  edctrl_ignore_modifications(logbook->flights_edctrl, 1);
+  entry_format_time_on_focus_out(entry, '+');
+  reconcile_time_entries(logbook,
+			 GTK_ENTRY(logbook->flights_dur),
+			 GTK_ENTRY(logbook->flights_aout),
+			 GTK_ENTRY(logbook->flights_ain),
+			 GTK_ENTRY(logbook->flights_dur));
+  edctrl_ignore_modifications(logbook->flights_edctrl, 0);
+  return FALSE;
+}
+void on_flights_dur_changed(GtkEntry *entry, Logbook *logbook)
+{
+  entry_clamp_text(entry, 6, 1, is_time_char);
+  edctrl_set_modified(logbook->flights_edctrl);
+}
+
+int on_flights_inst_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_time_on_focus_in(entry);
   return FALSE;
 }
-int on_flights_inst_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_inst_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_time_on_focus_out(entry, '+');
   return FALSE;
 }
-void on_flights_inst_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_inst_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 5, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_siminst_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_siminst_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_time_on_focus_in(entry);
   return FALSE;
 }
-int on_flights_siminst_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_siminst_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_time_on_focus_out(entry, '+');
   return FALSE;
 }
-void on_flights_siminst_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_siminst_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 5, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-int on_flights_night_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_night_focus_in_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_time_on_focus_in(entry);
   return FALSE;
 }
-int on_flights_night_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_flights_night_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   entry_format_time_on_focus_out(entry, '+');
   return FALSE;
 }
-void on_flights_night_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_flights_night_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, 5, 1, is_time_char);
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
+void on_flights_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
 {
-  edctrl_selection_changed(sqlpilot->flights_edctrl);
+  edctrl_selection_changed(logbook->flights_edctrl);
 }
 
-void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
+void on_flights_utc_toggled(GtkToggleButton *button, Logbook *logb)
 {
   char deptz[BUF_TZ], arrtz[BUF_TZ];
   char *deptz1, *deptz2, *arrtz1, *arrtz2;
@@ -480,57 +480,57 @@ void on_flights_utc_toggled(GtkToggleButton *button, Sqlpilot *logb)
   edctrl_ignore_modifications(logb->flights_edctrl, FALSE);
 }
 
-void on_flights_crew_changed(GtkTextBuffer *tb, Sqlpilot *sqlpilot)
+void on_flights_crew_changed(GtkTextBuffer *tb, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_notes_changed(GtkTextBuffer *tb, Sqlpilot *sqlpilot)
+void on_flights_notes_changed(GtkTextBuffer *tb, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_aprch_changed(GtkWidget *entry, Sqlpilot *sqlpilot)
+void on_flights_aprch_changed(GtkWidget *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_xc_toggled(GtkWidget *button, Sqlpilot *sqlpilot)
+void on_flights_xc_toggled(GtkWidget *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_hold_toggled(GtkWidget *button, Sqlpilot *sqlpilot)
+void on_flights_hold_toggled(GtkWidget *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_dland_value_changed(GtkWidget *button, Sqlpilot *sqlpilot)
+void on_flights_dland_value_changed(GtkWidget *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_nland_value_changed(GtkWidget *button, Sqlpilot *sqlpilot)
+void on_flights_nland_value_changed(GtkWidget *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->flights_edctrl);
+  edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_armdel_btn_toggled(GtkToggleButton *button, Sqlpilot *sqlpilot)
+void on_flights_armdel_btn_toggled(GtkToggleButton *button, Logbook *logbook)
 {
-  edctrl_armdel_btn_toggled(sqlpilot->flights_edctrl);
+  edctrl_armdel_btn_toggled(logbook->flights_edctrl);
 }
 
-void on_flights_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_flights_del_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_del_btn_clicked(sqlpilot->flights_edctrl);
+  edctrl_del_btn_clicked(logbook->flights_edctrl);
 }
 
-void on_flights_new_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_flights_new_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_new_btn_clicked(sqlpilot->flights_edctrl);
+  edctrl_new_btn_clicked(logbook->flights_edctrl);
 }
 
-void on_flights_save_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_flights_save_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_save_btn_clicked(sqlpilot->flights_edctrl);
+  edctrl_save_btn_clicked(logbook->flights_edctrl);
 }

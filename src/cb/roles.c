@@ -21,72 +21,72 @@
 #include "roles.h"
 #include "logbook.h"
 
-void on_roles_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_roles_ident_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_roles_ident(entry);
-  if (roles_ident_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
+  if (roles_ident_validate(logbook)) {
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->roles_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->roles_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
 
-void on_roles_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_del_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_del_btn_clicked(sqlpilot->roles_edctrl);
+  edctrl_del_btn_clicked(logbook->roles_edctrl);
 }
 
-void on_roles_save_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_save_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_save_btn_clicked(sqlpilot->roles_edctrl);
+  edctrl_save_btn_clicked(logbook->roles_edctrl);
 }
 
-void on_roles_new_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_new_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_new_btn_clicked(sqlpilot->roles_edctrl);
+  edctrl_new_btn_clicked(logbook->roles_edctrl);
 }
 
-void on_roles_name_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_roles_name_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
-void on_roles_pic_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_pic_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
-void on_roles_sic_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_sic_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
-void on_roles_fe_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_fe_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
-void on_roles_solo_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_solo_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
-void on_roles_dual_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_dual_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
-void on_roles_instruct_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_instruct_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
-void on_roles_total_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_roles_total_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->roles_edctrl);
-}
-
-void on_roles_armdel_btn_toggled(GtkButton *button, Sqlpilot *sqlpilot)
-{
-  edctrl_armdel_btn_toggled(sqlpilot->roles_edctrl);
+  edctrl_set_modified(logbook->roles_edctrl);
 }
 
-void on_roles_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
+void on_roles_armdel_btn_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_selection_changed(sqlpilot->roles_edctrl);
-  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->roles_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+  edctrl_armdel_btn_toggled(logbook->roles_edctrl);
+}
+
+void on_roles_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
+{
+  edctrl_selection_changed(logbook->roles_edctrl);
+  gtk_image_set_from_stock(GTK_IMAGE(logbook->roles_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
 }

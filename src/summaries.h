@@ -31,8 +31,8 @@ enum {
   SUMMARIES_NUMCOL
 };
 
-void summaries_init(Sqlpilot *sqlpilot);
-void summaries_refresh(Sqlpilot *sqlpilot);
-void summaries_rebuild_parameters(Sqlpilot *sqlpilot);
+void summaries_init(Logbook *logbook);
+void summaries_refresh(Logbook *logbook);
+void summaries_rebuild_parameters(Logbook *logbook);
 
 #endif

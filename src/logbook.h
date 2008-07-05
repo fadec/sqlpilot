@@ -27,10 +27,10 @@
 #include "scripter.h"
 
 #ifdef USING_GTK_BUILDER
-#define pull_widget(x) sqlpilot->x = GTK_WIDGET(gtk_builder_get_object(builder, (#x)));
+#define pull_widget(x) logbook->x = GTK_WIDGET(gtk_builder_get_object(builder, (#x)));
 #else // fall back on libglade
 #include <glade/glade-xml.h>
-#define pull_widget(x) sqlpilot->x = GTK_WIDGET(glade_xml_get_widget(gxml, (#x)));
+#define pull_widget(x) logbook->x = GTK_WIDGET(glade_xml_get_widget(gxml, (#x)));
 #endif
 
 struct Logbook {
@@ -249,7 +249,7 @@ struct Logbook {
   Scripter *summaries_parameter_pane;
 };
 
-Sqlpilot *sqlpilot_new(const char *filename);
-void sqlpilot_finalize(Sqlpilot *);
+Logbook *logbook_new(const char *filename);
+void logbook_finalize(Logbook *);
 
 #endif

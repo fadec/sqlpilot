@@ -22,23 +22,23 @@
 
 #include "sqlpilot.h"
 
-void on_flights_selection_changed(GtkTreeSelection *, Sqlpilot *);
-void on_flights_crew_changed(GtkTextBuffer *, Sqlpilot);
-void on_flights_notes_changed(GtkTextBuffer *, Sqlpilot);
-void flights_refresh(Sqlpilot *);
+void on_flights_selection_changed(GtkTreeSelection *, Logbook *);
+void on_flights_crew_changed(GtkTextBuffer *, Logbook);
+void on_flights_notes_changed(GtkTextBuffer *, Logbook);
+void flights_refresh(Logbook *);
 
-void on_roles_selection_changed(GtkTreeSelection *, Sqlpilot *);
-void roles_refresh(Sqlpilot *);
+void on_roles_selection_changed(GtkTreeSelection *, Logbook *);
+void roles_refresh(Logbook *);
 
-void on_aircraft_selection_changed(GtkTreeSelection *, Sqlpilot *);
-void on_aircraft_notes_changed(GtkTextBuffer *, Sqlpilot);
-void aircraft_refresh(Sqlpilot *);
+void on_aircraft_selection_changed(GtkTreeSelection *, Logbook *);
+void on_aircraft_notes_changed(GtkTextBuffer *, Logbook);
+void aircraft_refresh(Logbook *);
 
-void on_types_selection_changed(GtkTreeSelection *, Sqlpilot *);
-void types_refresh(Sqlpilot *);
+void on_types_selection_changed(GtkTreeSelection *, Logbook *);
+void types_refresh(Logbook *);
 
-void on_airports_selection_changed(GtkTreeSelection *, Sqlpilot *);
-void on_airports_notes_changed(GtkTextBuffer *, Sqlpilot);
-void airports_refresh(Sqlpilot *);
+void on_airports_selection_changed(GtkTreeSelection *, Logbook *);
+void on_airports_notes_changed(GtkTextBuffer *, Logbook);
+void airports_refresh(Logbook *);
 
 #endif

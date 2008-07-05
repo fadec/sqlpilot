@@ -217,24 +217,24 @@ enum {
 
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int flights_can_delete(GtkTreeSelection *selection);
-void flights_after_change(Sqlpilot *data);
-DBint64 flights_write_entries(const gchar *id, Sqlpilot *);
+void flights_after_change(Logbook *data);
+DBint64 flights_write_entries(const gchar *id, Logbook *);
 
 void entry_format_date_on_focus_out(GtkEntry *entry);
 void entry_format_time_of_day(GtkEntry *entry, const char *local_tz, const char *to_tz, const char *date);
 void entry_format_time_on_focus_out(GtkEntry *entry, char separator);
 void entry_format_time_on_focus_in(GtkEntry *entry);
 long elapsed_seconds(const char *date, const char *t1, const char *tz1, const char *t2, const char *tz2);
-void reconcile_time_entries(Sqlpilot *logb,
+void reconcile_time_entries(Logbook *logb,
 			    GtkEntry *changed,
 			    GtkEntry *start,
 			    GtkEntry *end,
 			    GtkEntry *elapsed);
-void flights_load_selection(Sqlpilot *);
-void flights_refresh(Sqlpilot *sqlpilot);
-void flights_refresh_utilization(Sqlpilot *sqlpilot);
-void flights_refresh_aircraft_utilized(Sqlpilot *sqlpilot);
-void flights_refresh_role_utilized(Sqlpilot *sqlpilot);
-void flights_refresh_dep_utilized(Sqlpilot *sqlpilot);
-void flights_refresh_arr_utilized(Sqlpilot *sqlpilot);
+void flights_load_selection(Logbook *);
+void flights_refresh(Logbook *logbook);
+void flights_refresh_utilization(Logbook *logbook);
+void flights_refresh_aircraft_utilized(Logbook *logbook);
+void flights_refresh_role_utilized(Logbook *logbook);
+void flights_refresh_dep_utilized(Logbook *logbook);
+void flights_refresh_arr_utilized(Logbook *logbook);
 #endif

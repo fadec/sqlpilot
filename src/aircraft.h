@@ -72,13 +72,13 @@ enum {
   "select count(id) from Flights where Flights.aircraft_id = ?;"
 
 int aircraft_selection_show(GtkTreeSelection *selection, char *show, size_t size);
-void aircraft_after_change(Sqlpilot *sqlpilot);
+void aircraft_after_change(Logbook *logbook);
 int aircraft_can_delete(GtkTreeSelection *selection);
-DBint64 aircraft_write_entries(const gchar *id, Sqlpilot *sqlpilot);
-void aircraft_load_selection(Sqlpilot *logb);
-int aircraft_count_flights(Sqlpilot *, DBint64 id);
-int aircraft_error(Sqlpilot *sqlpilot);
-int aircraft_ident_validate(Sqlpilot *sqlpilot);
-int aircraft_fleetno_validate(Sqlpilot *sqlpilot);
+DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook);
+void aircraft_load_selection(Logbook *logb);
+int aircraft_count_flights(Logbook *, DBint64 id);
+int aircraft_error(Logbook *logbook);
+int aircraft_ident_validate(Logbook *logbook);
+int aircraft_fleetno_validate(Logbook *logbook);
 
 #endif

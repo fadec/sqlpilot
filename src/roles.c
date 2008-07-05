@@ -22,12 +22,12 @@
 #include "roles.h"
 #include "logbook.h"
 
-void roles_after_change(Sqlpilot *sqlpilot)
+void roles_after_change(Logbook *logbook)
 {
-  sqlpilot->flights_stale = TRUE;
+  logbook->flights_stale = TRUE;
 }
 
-DBint64 roles_write_entries(const gchar *id, Sqlpilot *sqlpilot)
+DBint64 roles_write_entries(const gchar *id, Logbook *logbook)
 {
   const gchar
     *ident,
@@ -42,22 +42,22 @@ DBint64 roles_write_entries(const gchar *id, Sqlpilot *sqlpilot)
     total;
   DBStatement *stmt;
 
-  ident    = gtk_entry_get_text(GTK_ENTRY(sqlpilot->roles_ident));
-  name     = gtk_entry_get_text(GTK_ENTRY(sqlpilot->roles_name));
-  pic      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_pic));
-  sic      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_sic));
-  fe       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_fe));
-  solo     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_solo));
-  dual     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_dual));
-  instruct = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_instruct));
-  total    = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(sqlpilot->roles_total));
+  ident    = gtk_entry_get_text(GTK_ENTRY(logbook->roles_ident));
+  name     = gtk_entry_get_text(GTK_ENTRY(logbook->roles_name));
+  pic      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->roles_pic));
+  sic      = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->roles_sic));
+  fe       = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->roles_fe));
+  solo     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->roles_solo));
+  dual     = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->roles_dual));
+  instruct = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->roles_instruct));
+  total    = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->roles_total));
   
   /* Write entries to database */
   if (id) {
-    stmt = sqlpilot->roles_update;
+    stmt = logbook->roles_update;
     db_bind_text(stmt, ROLES_WRITE_ID, id);
   } else {
-    stmt = sqlpilot->roles_insert;
+    stmt = logbook->roles_insert;
   }
   db_bind_text(stmt, ROLES_WRITE_IDENT, ident);
   db_bind_text(stmt, ROLES_WRITE_NAME, name);
@@ -74,11 +74,11 @@ DBint64 roles_write_entries(const gchar *id, Sqlpilot *sqlpilot)
   if (id) {
     return 0;
   } else {
-    return db_last_insert_rowid(sqlpilot->db);
+    return db_last_insert_rowid(logbook->db);
   }
 }
 
-void roles_load_selection(Sqlpilot *logb)
+void roles_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
   GtkTreeModel *model;
@@ -130,11 +130,11 @@ void roles_load_selection(Sqlpilot *logb)
   g_free(total);
 }
 
-void roles_refresh(Sqlpilot *sqlpilot)
+void roles_refresh(Logbook *logbook)
 {
-    store_repopulate_from_stmt(GTK_LIST_STORE(sqlpilot->roles_treemodel), sqlpilot->roles_select_all);
-    roles_load_selection(sqlpilot);
-    sqlpilot->roles_stale = FALSE;
+    store_repopulate_from_stmt(GTK_LIST_STORE(logbook->roles_treemodel), logbook->roles_select_all);
+    roles_load_selection(logbook);
+    logbook->roles_stale = FALSE;
 }
 
 int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size)
@@ -174,28 +174,28 @@ int roles_can_delete(GtkTreeSelection *selection)
   return !_flights;
 }
 
-int roles_ident_validate(Sqlpilot *sqlpilot)
+int roles_ident_validate(Logbook *logbook)
 {
   gchar *id=NULL;
   const gchar *ident;
 
-  id = get_text_from_tree_selection(sqlpilot->roles_selection, COL_ID);
-  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->roles_ident));
+  id = get_text_from_tree_selection(logbook->roles_selection, COL_ID);
+  ident = gtk_entry_get_text(GTK_ENTRY(logbook->roles_ident));
 
-  if (unique_but_for(sqlpilot->db, "roles", "ident", ident, "id", EMPTY_IF_NULL(id))) {
-    sqlpilot->roles_ident_error = 0;
+  if (unique_but_for(logbook->db, "roles", "ident", ident, "id", EMPTY_IF_NULL(id))) {
+    logbook->roles_ident_error = 0;
   } else {
-    sqlpilot->roles_ident_error = 1;
+    logbook->roles_ident_error = 1;
   }
 
   g_free(id);
 
-  return sqlpilot->roles_ident_error;
+  return logbook->roles_ident_error;
 }
 
-int roles_error(Sqlpilot *sqlpilot)
+int roles_error(Logbook *logbook)
 {
   const gchar *ident;
-  ident = gtk_entry_get_text(GTK_ENTRY(sqlpilot->roles_ident));
-  return (!*ident || sqlpilot->roles_ident_error);
+  ident = gtk_entry_get_text(GTK_ENTRY(logbook->roles_ident));
+  return (!*ident || logbook->roles_ident_error);
 }

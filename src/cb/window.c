@@ -21,28 +21,28 @@
 #include "cb/cb.h"
 #include "logbook.h"
 
-void on_window_destroy(GtkObject *object, Sqlpilot *sqlpilot)
+void on_window_destroy(GtkObject *object, Logbook *logbook)
 {
   gtk_main_quit();
 }
 
-void on_notebook_switch_page(GtkNotebook *notebook, GtkNotebookPage *page, guint npage, Sqlpilot *sqlpilot)
+void on_notebook_switch_page(GtkNotebook *notebook, GtkNotebookPage *page, guint npage, Logbook *logbook)
 {
   switch (npage) {
   case NOTEBOOK_PAGE_FLIGHTS:
-    if (sqlpilot->flights_stale) flights_refresh(sqlpilot);
+    if (logbook->flights_stale) flights_refresh(logbook);
     break;
   case NOTEBOOK_PAGE_ROLES:
-    if (sqlpilot->roles_stale) roles_refresh(sqlpilot);
+    if (logbook->roles_stale) roles_refresh(logbook);
     break;
   case NOTEBOOK_PAGE_AIRCRAFT:
-    if (sqlpilot->aircraft_stale) aircraft_refresh(sqlpilot);
+    if (logbook->aircraft_stale) aircraft_refresh(logbook);
     break;
   case NOTEBOOK_PAGE_TYPES:
-    if (sqlpilot->types_stale) types_refresh(sqlpilot);
+    if (logbook->types_stale) types_refresh(logbook);
     break;
   case NOTEBOOK_PAGE_AIRPORTS:
-    if (sqlpilot->airports_stale) airports_refresh(sqlpilot);
+    if (logbook->airports_stale) airports_refresh(logbook);
     break;
   }
 }

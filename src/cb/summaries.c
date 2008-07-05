@@ -20,12 +20,12 @@
 #include "sqlpilot.h"
 #include "summaries.h"
 
-void on_summaries_select_summary_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_summaries_select_summary_changed(GtkEntry *entry, Logbook *logbook)
 {
-  summaries_rebuild_parameters(sqlpilot);
+  summaries_rebuild_parameters(logbook);
 }
 
-void on_summaries_refresh_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_summaries_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
-  summaries_refresh(sqlpilot);
+  summaries_refresh(logbook);
 }

@@ -19,31 +19,31 @@
 
 #include "sqlpilot.h"
 
-void on_reports_refresh_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_reports_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
   
 }
-void on_reports_sql_changed(GtkTextBuffer *tb, Sqlpilot *sqlpilot)
+void on_reports_sql_changed(GtkTextBuffer *tb, Logbook *logbook)
 {
-  //  edctrl_set_modified(sqlpilot->reports_edctrl);
+  //  edctrl_set_modified(logbook->reports_edctrl);
 }
-void on_reports_title_changed(GtkWidget *entry, Sqlpilot *sqlpilot)
+void on_reports_title_changed(GtkWidget *entry, Logbook *logbook)
 {
-  //  edctrl_set_modified(sqlpilot->reports_edctrl);
-}
-
-void on_reports_armdel_btn_toggled(GtkToggleButton *button, Sqlpilot *sqlpilot)
-{
-  //  edctrl_armdel_btn_toggled(sqlpilot->reports_edctrl);
+  //  edctrl_set_modified(logbook->reports_edctrl);
 }
 
-void on_reports_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_reports_armdel_btn_toggled(GtkToggleButton *button, Logbook *logbook)
 {
-  //  edctrl_del_btn_clicked(sqlpilot->reports_edctrl);
+  //  edctrl_armdel_btn_toggled(logbook->reports_edctrl);
 }
 
-void on_reports_save_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_reports_del_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  //  edctrl_save_btn_clicked(sqlpilot->reports_edctrl);
+  //  edctrl_del_btn_clicked(logbook->reports_edctrl);
+}
+
+void on_reports_save_btn_clicked(GtkButton *button, Logbook *logbook)
+{
+  //  edctrl_save_btn_clicked(logbook->reports_edctrl);
 }
 

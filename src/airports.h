@@ -111,14 +111,14 @@ enum {
 #include "airports.h"
 
 
-void airports_after_change(Sqlpilot *sqlpilot);
-DBint64 airports_write_entries(const gchar *id, Sqlpilot *sqlpilot);
-void airports_load_selection(Sqlpilot *logb);
-void airports_refresh(Sqlpilot *sqlpilot);
+void airports_after_change(Logbook *logbook);
+DBint64 airports_write_entries(const gchar *id, Logbook *logbook);
+void airports_load_selection(Logbook *logb);
+void airports_refresh(Logbook *logbook);
 int airports_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int airports_can_delete(GtkTreeSelection *selection);
-int airports_error(Sqlpilot *sqlpilot);
-int airports_ident_validate(Sqlpilot *sqlpilot);
-int airports_icao_validate(Sqlpilot *sqlpilot);
+int airports_error(Logbook *logbook);
+int airports_ident_validate(Logbook *logbook);
+int airports_icao_validate(Logbook *logbook);
 
 #endif

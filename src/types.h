@@ -223,12 +223,12 @@ enum {
 
 int types_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int types_can_delete(GtkTreeSelection *selection);
-void types_after_change(Sqlpilot *sqlpilot);
-DBint64 types_write_entries(const gchar *id, Sqlpilot *sqlpilot);
-void types_load_selection(Sqlpilot *logb);
-void types_refresh(Sqlpilot *sqlpilot);
-int types_ident_validate(Sqlpilot *sqlpilot);
-int types_error(Sqlpilot *sqlpilot);
+void types_after_change(Logbook *logbook);
+DBint64 types_write_entries(const gchar *id, Logbook *logbook);
+void types_load_selection(Logbook *logb);
+void types_refresh(Logbook *logbook);
+int types_ident_validate(Logbook *logbook);
+int types_error(Logbook *logbook);
 
 
 #endif

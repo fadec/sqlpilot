@@ -112,25 +112,25 @@ void edctrl_armdel_btn_toggled(Edctrl *ec)
   }
 }
 
-void edctrl_register_load_selection(Edctrl *ec, void func(Sqlpilot *), Sqlpilot *data)
+void edctrl_register_load_selection(Edctrl *ec, void func(Logbook *), Logbook *data)
 {
   ec->load_selection = func;
   ec->load_selection_data = data;
 }
 
-void edctrl_register_after_change(Edctrl *ec, void func(Sqlpilot *), Sqlpilot *data)
+void edctrl_register_after_change(Edctrl *ec, void func(Logbook *), Logbook *data)
 {
   ec->after_change = func;
   ec->after_change_data = data;
 }
 
-void edctrl_register_save(Edctrl *ec, DBint64 func(const char*, Sqlpilot *), Sqlpilot *data)
+void edctrl_register_save(Edctrl *ec, DBint64 func(const char*, Logbook *), Logbook *data)
 {
   ec->save = func;
   ec->save_data = data;
 }
 
-void edctrl_register_validator(Edctrl *ec, int func(Sqlpilot *), Sqlpilot *data)
+void edctrl_register_validator(Edctrl *ec, int func(Logbook *), Logbook *data)
 {
   ec->validator = func;
   ec->validator_data = data;

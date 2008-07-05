@@ -21,49 +21,49 @@
 #include "airports.h"
 #include "logbook.h"
 
-void on_airports_ident_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_ident_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_airports_ident(entry);
 
-  if (airports_ident_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
+  if (airports_ident_validate(logbook)) {
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-void on_airports_icao_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_icao_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_airports_icao(entry);
 
-  if (airports_icao_validate(sqlpilot)) {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
+  if (airports_icao_validate(logbook)) {
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_icao_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-void on_airports_selection_changed(GtkTreeSelection *selection, Sqlpilot *sqlpilot)
+void on_airports_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
 {
-  edctrl_selection_changed(sqlpilot->airports_edctrl);
-  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
-  gtk_image_set_from_stock(GTK_IMAGE(sqlpilot->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+  edctrl_selection_changed(logbook->airports_edctrl);
+  gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+  gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
 }
 
-int on_airports_icao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_airports_icao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   return FALSE;
 }
 
-void on_airports_tzone_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_tzone_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_text(entry, BUF_TZ - 1, 0, NULL);
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-int on_airports_tzone_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_airports_tzone_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   char zonedir[] = "/usr/share/zoneinfo/";
   char zonepath[sizeof(zonedir) + BUF_TZ - 1];
@@ -89,14 +89,14 @@ int on_airports_tzone_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sql
   return FALSE;
 }
 
-void on_airports_lat_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_lat_changed(GtkEntry *entry, Logbook *logbook)
 {
   /* 10 chars for -12.123456 */
   entry_clamp_text(entry, 10, 0, is_num_char);
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 
 }
-int on_airports_lat_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_airports_lat_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   double f;
   char fstr[11];
@@ -115,14 +115,14 @@ int on_airports_lat_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpi
   return FALSE;
 }
 
-void on_airports_lon_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_lon_changed(GtkEntry *entry, Logbook *logbook)
 {
   /* 11 chars for -123.123456 */
   entry_clamp_text(entry, 11, 0, is_num_char);
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-int on_airports_lon_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_airports_lon_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   double f;
   char fstr[12];
@@ -141,14 +141,14 @@ int on_airports_lon_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpi
     return FALSE;
 }
 
-void on_airports_elev_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_elev_changed(GtkEntry *entry, Logbook *logbook)
 {
   /* 5 chars for 99999 or -9999, should cover most airport elevations in feet */
   entry_clamp_text(entry, 5, 0, is_num_char);
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-int on_airports_elev_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlpilot *sqlpilot)
+int on_airports_elev_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
   long elev;
   char elevstr[6];
@@ -167,47 +167,47 @@ int on_airports_elev_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Sqlp
   return FALSE;
 }
 
-void on_airports_name_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_name_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-void on_airports_city_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_city_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-void on_airports_province_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_province_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-void on_airports_country_changed(GtkEntry *entry, Sqlpilot *sqlpilot)
+void on_airports_country_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-void on_airports_notes_changed(GtkTextBuffer *tb, Sqlpilot *sqlpilot)
+void on_airports_notes_changed(GtkTextBuffer *tb, Logbook *logbook)
 {
-  edctrl_set_modified(sqlpilot->airports_edctrl);
+  edctrl_set_modified(logbook->airports_edctrl);
 }
 
-void on_airports_del_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_airports_del_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_del_btn_clicked(sqlpilot->airports_edctrl);
+  edctrl_del_btn_clicked(logbook->airports_edctrl);
 }
 
-void on_airports_save_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_airports_save_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_save_btn_clicked(sqlpilot->airports_edctrl);
+  edctrl_save_btn_clicked(logbook->airports_edctrl);
 }
 
-void on_airports_new_btn_clicked(GtkButton *button, Sqlpilot *sqlpilot)
+void on_airports_new_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_new_btn_clicked(sqlpilot->airports_edctrl);
+  edctrl_new_btn_clicked(logbook->airports_edctrl);
 }
 
-void on_airports_armdel_btn_toggled(GtkButton *button, Sqlpilot *sqlpilot)
+void on_airports_armdel_btn_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_armdel_btn_toggled(sqlpilot->airports_edctrl);
+  edctrl_armdel_btn_toggled(logbook->airports_edctrl);
 }

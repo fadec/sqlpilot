@@ -28,17 +28,17 @@
 #include "summaries.h"
 #include "cb/cb.h"
 
-Sqlpilot *sqlpilot_new(const char *filename)
+Logbook *logbook_new(const char *filename)
 {
-  Sqlpilot         *sqlpilot;
+  Logbook         *logbook;
 
   /* Open Database */
-  sqlpilot = g_slice_new0(Sqlpilot);
-  if (!(sqlpilot->db = db_open(filename))) {
+  logbook = g_slice_new0(Logbook);
+  if (!(logbook->db = db_open(filename))) {
     barf ("Couldn't open database.");
     return NULL;
   }
-  sqlpilot->db_filename = g_strdup(filename);
+  logbook->db_filename = g_strdup(filename);
 
   /* Build UI from XML */
 #ifdef USING_GTK_BUILDER
@@ -53,7 +53,7 @@ Sqlpilot *sqlpilot_new(const char *filename)
   }
 
   /* Connect Signals */
-  gtk_builder_connect_signals(builder, sqlpilot);
+  gtk_builder_connect_signals(builder, logbook);
 
 #else
   GladeXML *gxml;
@@ -65,36 +65,36 @@ Sqlpilot *sqlpilot_new(const char *filename)
 #endif
 
   /* Set DB statements */
-  sqlpilot->flights_select_all   = db_prep(sqlpilot->db, FLIGHTS_SELECT FLIGHTS_ORDER ";");
-  sqlpilot->flights_select_by_id = db_prep(sqlpilot->db, FLIGHTS_SELECT FLIGHTS_WHERE_ID);
-  sqlpilot->flights_insert       = db_prep(sqlpilot->db, FLIGHTS_INSERT);
-  sqlpilot->flights_update       = db_prep(sqlpilot->db, FLIGHTS_UPDATE);
-  sqlpilot->flights_delete       = db_prep(sqlpilot->db, FLIGHTS_DELETE);
+  logbook->flights_select_all   = db_prep(logbook->db, FLIGHTS_SELECT FLIGHTS_ORDER ";");
+  logbook->flights_select_by_id = db_prep(logbook->db, FLIGHTS_SELECT FLIGHTS_WHERE_ID);
+  logbook->flights_insert       = db_prep(logbook->db, FLIGHTS_INSERT);
+  logbook->flights_update       = db_prep(logbook->db, FLIGHTS_UPDATE);
+  logbook->flights_delete       = db_prep(logbook->db, FLIGHTS_DELETE);
 
-  sqlpilot->roles_select_all     = db_prep(sqlpilot->db, ROLES_SELECT ROLES_GROUP_BY ";");
-  sqlpilot->roles_select_by_id   = db_prep(sqlpilot->db, ROLES_SELECT ROLES_WHERE_ID ROLES_GROUP_BY ";");
-  sqlpilot->roles_insert         = db_prep(sqlpilot->db, ROLES_INSERT);
-  sqlpilot->roles_update         = db_prep(sqlpilot->db, ROLES_UPDATE);
-  sqlpilot->roles_delete         = db_prep(sqlpilot->db, ROLES_DELETE);
+  logbook->roles_select_all     = db_prep(logbook->db, ROLES_SELECT ROLES_GROUP_BY ";");
+  logbook->roles_select_by_id   = db_prep(logbook->db, ROLES_SELECT ROLES_WHERE_ID ROLES_GROUP_BY ";");
+  logbook->roles_insert         = db_prep(logbook->db, ROLES_INSERT);
+  logbook->roles_update         = db_prep(logbook->db, ROLES_UPDATE);
+  logbook->roles_delete         = db_prep(logbook->db, ROLES_DELETE);
 
-  sqlpilot->aircraft_select_all     = db_prep(sqlpilot->db, AIRCRAFT_SELECT AIRCRAFT_GROUP_BY ";");
-  sqlpilot->aircraft_select_by_id   = db_prep(sqlpilot->db, AIRCRAFT_SELECT AIRCRAFT_WHERE_ID AIRCRAFT_GROUP_BY ";");
-  sqlpilot->aircraft_insert         = db_prep(sqlpilot->db, AIRCRAFT_INSERT);
-  sqlpilot->aircraft_update         = db_prep(sqlpilot->db, AIRCRAFT_UPDATE);
-  sqlpilot->aircraft_delete         = db_prep(sqlpilot->db, AIRCRAFT_DELETE);
-  sqlpilot->aircraft_count_flights  = db_prep(sqlpilot->db, AIRCRAFT_COUNT_FLIGHTS);
+  logbook->aircraft_select_all     = db_prep(logbook->db, AIRCRAFT_SELECT AIRCRAFT_GROUP_BY ";");
+  logbook->aircraft_select_by_id   = db_prep(logbook->db, AIRCRAFT_SELECT AIRCRAFT_WHERE_ID AIRCRAFT_GROUP_BY ";");
+  logbook->aircraft_insert         = db_prep(logbook->db, AIRCRAFT_INSERT);
+  logbook->aircraft_update         = db_prep(logbook->db, AIRCRAFT_UPDATE);
+  logbook->aircraft_delete         = db_prep(logbook->db, AIRCRAFT_DELETE);
+  logbook->aircraft_count_flights  = db_prep(logbook->db, AIRCRAFT_COUNT_FLIGHTS);
 
-  sqlpilot->types_select_all     = db_prep(sqlpilot->db, TYPES_SELECT TYPES_GROUP_BY ";");
-  sqlpilot->types_select_by_id   = db_prep(sqlpilot->db, TYPES_SELECT TYPES_WHERE_ID TYPES_GROUP_BY ";");
-  sqlpilot->types_insert         = db_prep(sqlpilot->db, TYPES_INSERT);
-  sqlpilot->types_update         = db_prep(sqlpilot->db, TYPES_UPDATE);
-  sqlpilot->types_delete         = db_prep(sqlpilot->db, TYPES_DELETE);
+  logbook->types_select_all     = db_prep(logbook->db, TYPES_SELECT TYPES_GROUP_BY ";");
+  logbook->types_select_by_id   = db_prep(logbook->db, TYPES_SELECT TYPES_WHERE_ID TYPES_GROUP_BY ";");
+  logbook->types_insert         = db_prep(logbook->db, TYPES_INSERT);
+  logbook->types_update         = db_prep(logbook->db, TYPES_UPDATE);
+  logbook->types_delete         = db_prep(logbook->db, TYPES_DELETE);
 
-  sqlpilot->airports_select_all     = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_GROUP_BY ";");
-  sqlpilot->airports_select_by_id   = db_prep(sqlpilot->db, AIRPORTS_SELECT AIRPORTS_WHERE_ID ";");
-  sqlpilot->airports_insert         = db_prep(sqlpilot->db, AIRPORTS_INSERT);
-  sqlpilot->airports_update         = db_prep(sqlpilot->db, AIRPORTS_UPDATE);
-  sqlpilot->airports_delete         = db_prep(sqlpilot->db, AIRPORTS_DELETE);
+  logbook->airports_select_all     = db_prep(logbook->db, AIRPORTS_SELECT AIRPORTS_GROUP_BY ";");
+  logbook->airports_select_by_id   = db_prep(logbook->db, AIRPORTS_SELECT AIRPORTS_WHERE_ID ";");
+  logbook->airports_insert         = db_prep(logbook->db, AIRPORTS_INSERT);
+  logbook->airports_update         = db_prep(logbook->db, AIRPORTS_UPDATE);
+  logbook->airports_delete         = db_prep(logbook->db, AIRPORTS_DELETE);
   
   pull_widget(window);
   pull_widget(flights_where);
@@ -237,157 +237,157 @@ Sqlpilot *sqlpilot_new(const char *filename)
   pull_widget(summaries_parameters);
   
   /* Add treeview */
-  store_build_query_stmt_widget(sqlpilot->flights_select_all, &sqlpilot->flights_treeview, &sqlpilot->flights_treemodel);
-  gtk_widget_show_all(sqlpilot->flights_treeview);
-  gtk_container_add(GTK_CONTAINER(sqlpilot->flights_sw), sqlpilot->flights_treeview);
+  store_build_query_stmt_widget(logbook->flights_select_all, &logbook->flights_treeview, &logbook->flights_treemodel);
+  gtk_widget_show_all(logbook->flights_treeview);
+  gtk_container_add(GTK_CONTAINER(logbook->flights_sw), logbook->flights_treeview);
 
-  store_build_query_stmt_widget(sqlpilot->roles_select_all, &sqlpilot->roles_treeview, &sqlpilot->roles_treemodel);
-  gtk_widget_show_all(sqlpilot->roles_treeview);
-  gtk_container_add(GTK_CONTAINER(sqlpilot->roles_sw), sqlpilot->roles_treeview);
+  store_build_query_stmt_widget(logbook->roles_select_all, &logbook->roles_treeview, &logbook->roles_treemodel);
+  gtk_widget_show_all(logbook->roles_treeview);
+  gtk_container_add(GTK_CONTAINER(logbook->roles_sw), logbook->roles_treeview);
 
-  store_build_query_stmt_widget(sqlpilot->aircraft_select_all, &sqlpilot->aircraft_treeview, &sqlpilot->aircraft_treemodel);
-  gtk_widget_show_all(sqlpilot->aircraft_treeview);
-  gtk_container_add(GTK_CONTAINER(sqlpilot->aircraft_sw), sqlpilot->aircraft_treeview);
+  store_build_query_stmt_widget(logbook->aircraft_select_all, &logbook->aircraft_treeview, &logbook->aircraft_treemodel);
+  gtk_widget_show_all(logbook->aircraft_treeview);
+  gtk_container_add(GTK_CONTAINER(logbook->aircraft_sw), logbook->aircraft_treeview);
 
-  store_build_query_stmt_widget(sqlpilot->types_select_all, &sqlpilot->types_treeview, &sqlpilot->types_treemodel);
-  gtk_widget_show_all(sqlpilot->types_treeview);
-  gtk_container_add(GTK_CONTAINER(sqlpilot->types_sw), sqlpilot->types_treeview);
+  store_build_query_stmt_widget(logbook->types_select_all, &logbook->types_treeview, &logbook->types_treemodel);
+  gtk_widget_show_all(logbook->types_treeview);
+  gtk_container_add(GTK_CONTAINER(logbook->types_sw), logbook->types_treeview);
 
-  store_build_query_stmt_widget(sqlpilot->airports_select_all, &sqlpilot->airports_treeview, &sqlpilot->airports_treemodel);
-  gtk_widget_show_all(sqlpilot->airports_treeview);
-  gtk_container_add(GTK_CONTAINER(sqlpilot->airports_sw), sqlpilot->airports_treeview);
+  store_build_query_stmt_widget(logbook->airports_select_all, &logbook->airports_treeview, &logbook->airports_treemodel);
+  gtk_widget_show_all(logbook->airports_treeview);
+  gtk_container_add(GTK_CONTAINER(logbook->airports_sw), logbook->airports_treeview);
 
   /* Setup treeview callbacks */
-  sqlpilot->flights_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->flights_treeview));
-  gtk_tree_selection_set_mode (sqlpilot->flights_selection, GTK_SELECTION_SINGLE);
-  g_signal_connect (G_OBJECT (sqlpilot->flights_selection), "changed",
+  logbook->flights_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->flights_treeview));
+  gtk_tree_selection_set_mode (logbook->flights_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (logbook->flights_selection), "changed",
 		    G_CALLBACK (on_flights_selection_changed),
-		    sqlpilot);
-  sqlpilot->roles_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->roles_treeview));
-  gtk_tree_selection_set_mode (sqlpilot->roles_selection, GTK_SELECTION_SINGLE);
-  g_signal_connect (G_OBJECT (sqlpilot->roles_selection), "changed",
+		    logbook);
+  logbook->roles_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->roles_treeview));
+  gtk_tree_selection_set_mode (logbook->roles_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (logbook->roles_selection), "changed",
 		    G_CALLBACK (on_roles_selection_changed),
-		    sqlpilot);
-  sqlpilot->aircraft_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->aircraft_treeview));
-  gtk_tree_selection_set_mode (sqlpilot->aircraft_selection, GTK_SELECTION_SINGLE);
-  g_signal_connect (G_OBJECT (sqlpilot->aircraft_selection), "changed",
+		    logbook);
+  logbook->aircraft_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->aircraft_treeview));
+  gtk_tree_selection_set_mode (logbook->aircraft_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (logbook->aircraft_selection), "changed",
 		    G_CALLBACK (on_aircraft_selection_changed),
-		    sqlpilot);
-  sqlpilot->types_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->types_treeview));
-  gtk_tree_selection_set_mode (sqlpilot->types_selection, GTK_SELECTION_SINGLE);
-  g_signal_connect (G_OBJECT (sqlpilot->types_selection), "changed",
+		    logbook);
+  logbook->types_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->types_treeview));
+  gtk_tree_selection_set_mode (logbook->types_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (logbook->types_selection), "changed",
 		    G_CALLBACK (on_types_selection_changed),
-		    sqlpilot);
-  sqlpilot->airports_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (sqlpilot->airports_treeview));
-  gtk_tree_selection_set_mode (sqlpilot->airports_selection, GTK_SELECTION_SINGLE);
-  g_signal_connect (G_OBJECT (sqlpilot->airports_selection), "changed",
+		    logbook);
+  logbook->airports_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->airports_treeview));
+  gtk_tree_selection_set_mode (logbook->airports_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (logbook->airports_selection), "changed",
 		    G_CALLBACK (on_airports_selection_changed),
-		    sqlpilot);
+		    logbook);
 
   /* Setup text view buffer callbacks */
-  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->flights_crew))), "changed",
-		   G_CALLBACK(on_flights_crew_changed), sqlpilot);
-  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->flights_notes))), "changed",
-		   G_CALLBACK(on_flights_notes_changed), sqlpilot);
-  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->aircraft_notes))), "changed",
-		   G_CALLBACK(on_aircraft_notes_changed), sqlpilot);
-  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(sqlpilot->airports_notes))), "changed",
-		   G_CALLBACK(on_airports_notes_changed), sqlpilot);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_crew))), "changed",
+		   G_CALLBACK(on_flights_crew_changed), logbook);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_notes))), "changed",
+		   G_CALLBACK(on_flights_notes_changed), logbook);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->aircraft_notes))), "changed",
+		   G_CALLBACK(on_aircraft_notes_changed), logbook);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->airports_notes))), "changed",
+		   G_CALLBACK(on_airports_notes_changed), logbook);
 
   /* Out of place code to init flights utc button */
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(sqlpilot->flights_utc), FALSE);
-  gtk_label_set_text(GTK_LABEL(sqlpilot->flights_utc_lbl), "Local");
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), FALSE);
+  gtk_label_set_text(GTK_LABEL(logbook->flights_utc_lbl), "Local");
 
   /* Edit Controls */
-  sqlpilot->flights_edctrl                 = &sqlpilot->_flights_edctrl;
-  sqlpilot->flights_edctrl->edstate        = EDSTATE_EMPTY;
-  sqlpilot->flights_edctrl->new_btn        = sqlpilot->flights_new_btn;
-  sqlpilot->flights_edctrl->save_btn       = sqlpilot->flights_save_btn;
-  sqlpilot->flights_edctrl->armdel_btn     = sqlpilot->flights_armdel_btn;
-  sqlpilot->flights_edctrl->todel_lbl      = sqlpilot->flights_todel_lbl;
-  sqlpilot->flights_edctrl->del_btn        = sqlpilot->flights_del_btn;
-  sqlpilot->flights_edctrl->selection      = sqlpilot->flights_selection;
-  sqlpilot->flights_edctrl->selection_show = flights_selection_show;
-  sqlpilot->flights_edctrl->can_delete     = flights_can_delete;
-  sqlpilot->flights_edctrl->delete_stmt    = sqlpilot->flights_delete;
-  sqlpilot->flights_edctrl->select_by_id_stmt    = sqlpilot->flights_select_by_id;
-  edctrl_register_save(sqlpilot->flights_edctrl, flights_write_entries, sqlpilot);
-  edctrl_register_after_change(sqlpilot->flights_edctrl, flights_after_change, sqlpilot);
-  edctrl_register_load_selection(sqlpilot->flights_edctrl, flights_load_selection, sqlpilot);
-  edctrl_register_validator(sqlpilot->flights_edctrl, NULL, NULL);
+  logbook->flights_edctrl                 = &logbook->_flights_edctrl;
+  logbook->flights_edctrl->edstate        = EDSTATE_EMPTY;
+  logbook->flights_edctrl->new_btn        = logbook->flights_new_btn;
+  logbook->flights_edctrl->save_btn       = logbook->flights_save_btn;
+  logbook->flights_edctrl->armdel_btn     = logbook->flights_armdel_btn;
+  logbook->flights_edctrl->todel_lbl      = logbook->flights_todel_lbl;
+  logbook->flights_edctrl->del_btn        = logbook->flights_del_btn;
+  logbook->flights_edctrl->selection      = logbook->flights_selection;
+  logbook->flights_edctrl->selection_show = flights_selection_show;
+  logbook->flights_edctrl->can_delete     = flights_can_delete;
+  logbook->flights_edctrl->delete_stmt    = logbook->flights_delete;
+  logbook->flights_edctrl->select_by_id_stmt    = logbook->flights_select_by_id;
+  edctrl_register_save(logbook->flights_edctrl, flights_write_entries, logbook);
+  edctrl_register_after_change(logbook->flights_edctrl, flights_after_change, logbook);
+  edctrl_register_load_selection(logbook->flights_edctrl, flights_load_selection, logbook);
+  edctrl_register_validator(logbook->flights_edctrl, NULL, NULL);
 
-  sqlpilot->roles_edctrl                 = &sqlpilot->_roles_edctrl;
-  sqlpilot->roles_edctrl->edstate        = EDSTATE_EMPTY;
-  sqlpilot->roles_edctrl->new_btn        = sqlpilot->roles_new_btn;
-  sqlpilot->roles_edctrl->save_btn       = sqlpilot->roles_save_btn;
-  sqlpilot->roles_edctrl->armdel_btn     = sqlpilot->roles_armdel_btn;
-  sqlpilot->roles_edctrl->todel_lbl      = sqlpilot->roles_todel_lbl;
-  sqlpilot->roles_edctrl->del_btn        = sqlpilot->roles_del_btn;
-  sqlpilot->roles_edctrl->selection      = sqlpilot->roles_selection;
-  sqlpilot->roles_edctrl->selection_show = roles_selection_show;
-  sqlpilot->roles_edctrl->can_delete     = roles_can_delete;
-  sqlpilot->roles_edctrl->delete_stmt    = sqlpilot->roles_delete;
-  sqlpilot->roles_edctrl->select_by_id_stmt    = sqlpilot->roles_select_by_id;
-  edctrl_register_save(sqlpilot->roles_edctrl, roles_write_entries, sqlpilot);
-  edctrl_register_after_change(sqlpilot->roles_edctrl, roles_after_change, sqlpilot);
-  edctrl_register_load_selection(sqlpilot->roles_edctrl, roles_load_selection, sqlpilot);
-  edctrl_register_validator(sqlpilot->roles_edctrl, roles_error, sqlpilot);
+  logbook->roles_edctrl                 = &logbook->_roles_edctrl;
+  logbook->roles_edctrl->edstate        = EDSTATE_EMPTY;
+  logbook->roles_edctrl->new_btn        = logbook->roles_new_btn;
+  logbook->roles_edctrl->save_btn       = logbook->roles_save_btn;
+  logbook->roles_edctrl->armdel_btn     = logbook->roles_armdel_btn;
+  logbook->roles_edctrl->todel_lbl      = logbook->roles_todel_lbl;
+  logbook->roles_edctrl->del_btn        = logbook->roles_del_btn;
+  logbook->roles_edctrl->selection      = logbook->roles_selection;
+  logbook->roles_edctrl->selection_show = roles_selection_show;
+  logbook->roles_edctrl->can_delete     = roles_can_delete;
+  logbook->roles_edctrl->delete_stmt    = logbook->roles_delete;
+  logbook->roles_edctrl->select_by_id_stmt    = logbook->roles_select_by_id;
+  edctrl_register_save(logbook->roles_edctrl, roles_write_entries, logbook);
+  edctrl_register_after_change(logbook->roles_edctrl, roles_after_change, logbook);
+  edctrl_register_load_selection(logbook->roles_edctrl, roles_load_selection, logbook);
+  edctrl_register_validator(logbook->roles_edctrl, roles_error, logbook);
 
-  sqlpilot->aircraft_edctrl                        = &sqlpilot->_aircraft_edctrl;
-  sqlpilot->aircraft_edctrl->edstate               = EDSTATE_EMPTY;
-  sqlpilot->aircraft_edctrl->new_btn               = sqlpilot->aircraft_new_btn;
-  sqlpilot->aircraft_edctrl->save_btn              = sqlpilot->aircraft_save_btn;
-  sqlpilot->aircraft_edctrl->armdel_btn            = sqlpilot->aircraft_armdel_btn;
-  sqlpilot->aircraft_edctrl->todel_lbl             = sqlpilot->aircraft_todel_lbl;
-  sqlpilot->aircraft_edctrl->del_btn               = sqlpilot->aircraft_del_btn;
-  sqlpilot->aircraft_edctrl->selection             = sqlpilot->aircraft_selection;
-  sqlpilot->aircraft_edctrl->selection_show        = aircraft_selection_show;
-  sqlpilot->aircraft_edctrl->can_delete            = aircraft_can_delete;
-  sqlpilot->aircraft_edctrl->delete_stmt           = sqlpilot->aircraft_delete;
-  sqlpilot->aircraft_edctrl->select_by_id_stmt     = sqlpilot->aircraft_select_by_id;
-  edctrl_register_save(sqlpilot->aircraft_edctrl, aircraft_write_entries, sqlpilot);
-  edctrl_register_after_change(sqlpilot->aircraft_edctrl, aircraft_after_change, sqlpilot);
-  edctrl_register_load_selection(sqlpilot->aircraft_edctrl, aircraft_load_selection, sqlpilot);
-  edctrl_register_validator(sqlpilot->aircraft_edctrl, aircraft_error, sqlpilot);
+  logbook->aircraft_edctrl                        = &logbook->_aircraft_edctrl;
+  logbook->aircraft_edctrl->edstate               = EDSTATE_EMPTY;
+  logbook->aircraft_edctrl->new_btn               = logbook->aircraft_new_btn;
+  logbook->aircraft_edctrl->save_btn              = logbook->aircraft_save_btn;
+  logbook->aircraft_edctrl->armdel_btn            = logbook->aircraft_armdel_btn;
+  logbook->aircraft_edctrl->todel_lbl             = logbook->aircraft_todel_lbl;
+  logbook->aircraft_edctrl->del_btn               = logbook->aircraft_del_btn;
+  logbook->aircraft_edctrl->selection             = logbook->aircraft_selection;
+  logbook->aircraft_edctrl->selection_show        = aircraft_selection_show;
+  logbook->aircraft_edctrl->can_delete            = aircraft_can_delete;
+  logbook->aircraft_edctrl->delete_stmt           = logbook->aircraft_delete;
+  logbook->aircraft_edctrl->select_by_id_stmt     = logbook->aircraft_select_by_id;
+  edctrl_register_save(logbook->aircraft_edctrl, aircraft_write_entries, logbook);
+  edctrl_register_after_change(logbook->aircraft_edctrl, aircraft_after_change, logbook);
+  edctrl_register_load_selection(logbook->aircraft_edctrl, aircraft_load_selection, logbook);
+  edctrl_register_validator(logbook->aircraft_edctrl, aircraft_error, logbook);
 
-  sqlpilot->types_edctrl                 = &sqlpilot->_types_edctrl;
-  sqlpilot->types_edctrl->edstate        = EDSTATE_EMPTY;
-  sqlpilot->types_edctrl->new_btn        = sqlpilot->types_new_btn;
-  sqlpilot->types_edctrl->save_btn       = sqlpilot->types_save_btn;
-  sqlpilot->types_edctrl->armdel_btn     = sqlpilot->types_armdel_btn;
-  sqlpilot->types_edctrl->todel_lbl      = sqlpilot->types_todel_lbl;
-  sqlpilot->types_edctrl->del_btn        = sqlpilot->types_del_btn;
-  sqlpilot->types_edctrl->selection      = sqlpilot->types_selection;
-  sqlpilot->types_edctrl->selection_show = types_selection_show;
-  sqlpilot->types_edctrl->can_delete     = types_can_delete;
-  sqlpilot->types_edctrl->delete_stmt    = sqlpilot->types_delete;
-  sqlpilot->types_edctrl->select_by_id_stmt    = sqlpilot->types_select_by_id;
-  edctrl_register_save(sqlpilot->types_edctrl, types_write_entries, sqlpilot);
-  edctrl_register_after_change(sqlpilot->types_edctrl, types_after_change, sqlpilot);
-  edctrl_register_load_selection(sqlpilot->types_edctrl, types_load_selection, sqlpilot);
-  edctrl_register_validator(sqlpilot->types_edctrl, types_error, sqlpilot);
+  logbook->types_edctrl                 = &logbook->_types_edctrl;
+  logbook->types_edctrl->edstate        = EDSTATE_EMPTY;
+  logbook->types_edctrl->new_btn        = logbook->types_new_btn;
+  logbook->types_edctrl->save_btn       = logbook->types_save_btn;
+  logbook->types_edctrl->armdel_btn     = logbook->types_armdel_btn;
+  logbook->types_edctrl->todel_lbl      = logbook->types_todel_lbl;
+  logbook->types_edctrl->del_btn        = logbook->types_del_btn;
+  logbook->types_edctrl->selection      = logbook->types_selection;
+  logbook->types_edctrl->selection_show = types_selection_show;
+  logbook->types_edctrl->can_delete     = types_can_delete;
+  logbook->types_edctrl->delete_stmt    = logbook->types_delete;
+  logbook->types_edctrl->select_by_id_stmt    = logbook->types_select_by_id;
+  edctrl_register_save(logbook->types_edctrl, types_write_entries, logbook);
+  edctrl_register_after_change(logbook->types_edctrl, types_after_change, logbook);
+  edctrl_register_load_selection(logbook->types_edctrl, types_load_selection, logbook);
+  edctrl_register_validator(logbook->types_edctrl, types_error, logbook);
 
-  sqlpilot->airports_edctrl                 = &sqlpilot->_airports_edctrl;
-  sqlpilot->airports_edctrl->edstate        = EDSTATE_EMPTY;
-  sqlpilot->airports_edctrl->new_btn        = sqlpilot->airports_new_btn;
-  sqlpilot->airports_edctrl->save_btn       = sqlpilot->airports_save_btn;
-  sqlpilot->airports_edctrl->armdel_btn     = sqlpilot->airports_armdel_btn;
-  sqlpilot->airports_edctrl->todel_lbl      = sqlpilot->airports_todel_lbl;
-  sqlpilot->airports_edctrl->del_btn        = sqlpilot->airports_del_btn;
-  sqlpilot->airports_edctrl->selection      = sqlpilot->airports_selection;
-  sqlpilot->airports_edctrl->selection_show = airports_selection_show;
-  sqlpilot->airports_edctrl->can_delete     = airports_can_delete;
-  sqlpilot->airports_edctrl->delete_stmt    = sqlpilot->airports_delete;
-  sqlpilot->airports_edctrl->select_by_id_stmt    = sqlpilot->airports_select_by_id;
-  edctrl_register_save(sqlpilot->airports_edctrl, airports_write_entries, sqlpilot);
-  edctrl_register_after_change(sqlpilot->airports_edctrl, airports_after_change, sqlpilot);
-  edctrl_register_load_selection(sqlpilot->airports_edctrl, airports_load_selection, sqlpilot);
-  edctrl_register_validator(sqlpilot->airports_edctrl, airports_error, sqlpilot);
+  logbook->airports_edctrl                 = &logbook->_airports_edctrl;
+  logbook->airports_edctrl->edstate        = EDSTATE_EMPTY;
+  logbook->airports_edctrl->new_btn        = logbook->airports_new_btn;
+  logbook->airports_edctrl->save_btn       = logbook->airports_save_btn;
+  logbook->airports_edctrl->armdel_btn     = logbook->airports_armdel_btn;
+  logbook->airports_edctrl->todel_lbl      = logbook->airports_todel_lbl;
+  logbook->airports_edctrl->del_btn        = logbook->airports_del_btn;
+  logbook->airports_edctrl->selection      = logbook->airports_selection;
+  logbook->airports_edctrl->selection_show = airports_selection_show;
+  logbook->airports_edctrl->can_delete     = airports_can_delete;
+  logbook->airports_edctrl->delete_stmt    = logbook->airports_delete;
+  logbook->airports_edctrl->select_by_id_stmt    = logbook->airports_select_by_id;
+  edctrl_register_save(logbook->airports_edctrl, airports_write_entries, logbook);
+  edctrl_register_after_change(logbook->airports_edctrl, airports_after_change, logbook);
+  edctrl_register_load_selection(logbook->airports_edctrl, airports_load_selection, logbook);
+  edctrl_register_validator(logbook->airports_edctrl, airports_error, logbook);
 
   
-  sqlpilot->summaries_parameter_pane = &sqlpilot->_summaries_parameter_pane;
-  sqlpilot->summaries_parameter_pane->container = sqlpilot->summaries_parameters;
-  summaries_init(sqlpilot);
+  logbook->summaries_parameter_pane = &logbook->_summaries_parameter_pane;
+  logbook->summaries_parameter_pane->container = logbook->summaries_parameters;
+  summaries_init(logbook);
 
 #ifdef USING_GTK_BUILDER
   g_object_unref (G_OBJECT (builder));
@@ -395,25 +395,25 @@ Sqlpilot *sqlpilot_new(const char *filename)
   g_object_unref (G_OBJECT(gxml));
 #endif
 
-  sqlpilot->flights_stale = 0;
-  flights_refresh(sqlpilot);
-  sqlpilot->roles_stale = 1;
-  sqlpilot->aircraft_stale = 1;
-  sqlpilot->types_stale = 1;
-  sqlpilot->airports_stale = 1;
+  logbook->flights_stale = 0;
+  flights_refresh(logbook);
+  logbook->roles_stale = 1;
+  logbook->aircraft_stale = 1;
+  logbook->types_stale = 1;
+  logbook->airports_stale = 1;
   
-  flights_load_selection(sqlpilot);
-  roles_load_selection(sqlpilot);
-  aircraft_load_selection(sqlpilot);
-  types_load_selection(sqlpilot);
-  aircraft_load_selection(sqlpilot);
+  flights_load_selection(logbook);
+  roles_load_selection(logbook);
+  aircraft_load_selection(logbook);
+  types_load_selection(logbook);
+  aircraft_load_selection(logbook);
 
-  return sqlpilot;
+  return logbook;
 }
 
-void sqlpilot_finalize(Sqlpilot *sqlpilot)
+void logbook_finalize(Logbook *logbook)
 {
-  g_free(sqlpilot->db_filename);
-  g_slice_free(Sqlpilot, sqlpilot);
+  g_free(logbook->db_filename);
+  g_slice_free(Logbook, logbook);
 }
 

@@ -83,19 +83,19 @@ enum {
   "delete from roles where id = ?;"
 
 
-void roles_after_change(Sqlpilot *sqlpilot);
+void roles_after_change(Logbook *logbook);
 
-DBint64 roles_write_entries(const gchar *id, Sqlpilot *sqlpilot);
+DBint64 roles_write_entries(const gchar *id, Logbook *logbook);
 
-void roles_load_selection(Sqlpilot *sqlpilot);
+void roles_load_selection(Logbook *logbook);
 
 int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 
 int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int roles_can_delete(GtkTreeSelection *selection);
 
-int roles_error(Sqlpilot *sqlpilot);
-int roles_ident_validate(Sqlpilot *sqlpilot);
+int roles_error(Logbook *logbook);
+int roles_ident_validate(Logbook *logbook);
 
 
 #endif
