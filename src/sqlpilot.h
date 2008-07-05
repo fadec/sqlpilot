@@ -61,9 +61,9 @@ typedef struct ParameterPane {
 } ParameterPane;
 
 typedef struct Parameter {
+  ParameterType type;
   GtkWidget *widget;
   char *name;
-  ParameterType type;
 } Parameter;
 
 typedef struct Sqlpilot Sqlpilot;

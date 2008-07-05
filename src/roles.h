@@ -37,21 +37,21 @@ enum {
   ROLES_COL_TIME
 };
 
-#define ROLES_SELECT						\
-  "select roles.id as _id"					\
-  ", roles.ident as Ident"					\
-  ", roles.name as Name"					\
-  ", bool(roles.pic) as PIC"					\
-  ", bool(roles.sic) as SIC"					\
-  ", bool(roles.fe) as FE"					\
-  ", bool(roles.solo) as Solo"					\
-  ", bool(roles.dual) as Dual"					\
-  ", bool(roles.instruct) as Instruct"				\
-  ", bool(roles.total) as Total"				\
-  ", count(flights.id) as Flights"				\
-  ", m_to_hhmm(sum(flights.dur)) as Time"			\
-  " from roles"							\
-  " left join flights on flights.role_id = roles.id"		\
+#define ROLES_SELECT							\
+  "select roles.id as _id"						\
+  ", roles.ident as Ident"						\
+  ", roles.name as Name"						\
+  ", bool(roles.pic) as PIC"						\
+  ", bool(roles.sic) as SIC"						\
+  ", bool(roles.fe) as FE"						\
+  ", bool(roles.solo) as Solo"						\
+  ", bool(roles.dual) as Dual"						\
+  ", bool(roles.instruct) as Instruct"					\
+  ", bool(roles.total) as Total"					\
+  ", count(flights.id) as Flights"					\
+  ", m_to_hhmm(sum(flights.dur)) as Time"				\
+  " from roles"								\
+  " left join flights on flights.role_id = roles.id and flights.dur > 0"
 
 #define ROLES_GROUP_BY \
   " group by roles.id order by roles.ident"

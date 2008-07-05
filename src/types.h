@@ -98,7 +98,8 @@ enum {
   ", m_to_hhmm(sum(flights.dur)) as Time"			\
   " from types"							\
   " left join aircraft on aircraft.type_id = types.id"		\
-  " left join flights on flights.aircraft_id = aircraft.id"
+  " left join flights on flights.aircraft_id = aircraft.id"	\
+  "   and flights.dur > 0"
 
 #define TYPES_GROUP_BY \
   " group by types.id order by types.ident"

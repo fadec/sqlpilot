@@ -32,18 +32,19 @@ enum {
   AIRCRAFT_COL_TIME
 };
 
-#define AIRCRAFT_SELECT						\
-  "select aircraft.id as _id"					\
-  ", aircraft.ident as Ident"					\
-  ", types.ident as Type"					\
-  ", aircraft.fleetno as FleetNo"				\
-  ", aircraft.notes as _Notes"					\
-  ", count(flights.id) as Flights"				\
-  ", m_to_hhmm(sum(flights.dur)) as Time"			\
-  " from aircraft"						\
-  " left join types on aircraft.type_id = types.id"		\
-  " left join flights on flights.aircraft_id = aircraft.id"	\
-
+#define AIRCRAFT_SELECT							\
+  "select aircraft.id as _id"						\
+  ", aircraft.ident as Ident"						\
+  ", types.ident as Type"						\
+  ", aircraft.fleetno as FleetNo"					\
+  ", aircraft.notes as _Notes"						\
+  ", count(flights.id) as Flights"					\
+  ", m_to_hhmm(sum(flights.dur)) as Time"				\
+  " from aircraft"							\
+  " left join types on aircraft.type_id = types.id"			\
+  " left join flights on flights.aircraft_id = aircraft.id"		\
+  "   and flights.dur > 0"
+  
 #define AIRCRAFT_GROUP_BY \
   " group by aircraft.id order by flights desc"
 
