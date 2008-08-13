@@ -23,13 +23,13 @@
 
 #define _GNU_SOURCE //for strcasestr
 
+#define S(x) (#x)
 #define UI_XML_FILE  "data/ui/interface.xml"
 
 typedef struct Logbook Logbook;
 typedef struct Edctrl Edctrl;
 typedef struct ParameterPane ParameterPane;
 typedef struct ParameterPane Scripter;
-
 
 #include "config.h"
 #include <gtk/gtk.h>

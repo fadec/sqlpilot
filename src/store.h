@@ -27,4 +27,5 @@ void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkT
 int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt);
 long store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt);
 long store_repopulate_from_stmt_with_progress(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress);
+void store_view_set_column_visible_by_title(GtkTreeView *view, const char *title, gboolean visible);
 #endif

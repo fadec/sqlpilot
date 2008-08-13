@@ -116,26 +116,102 @@ int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
 /********/
 /* View */
 /********/
+
+/* Parse int compare that filters out non-[0-9] characters before parse */
+static gint iter_compare_by_noisy_str_int_column(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer column)
+{
+  char *a_val, *b_val, *pread, *pwrite;
+  gint ret;
+
+  gtk_tree_model_get(model, a, (gint)column, &a_val, -1);
+  gtk_tree_model_get(model, b, (gint)column, &b_val, -1);
+  
+  for (pread = pwrite = a_val; a_val && *pread; pread++) {
+    if (isdigit(*pread)) {
+      *pwrite = *pread;
+      pwrite++;
+    }
+  }
+
+  for (pread = pwrite = b_val; b_val && *pread; pread++) {
+    if (isdigit(*pread)) {
+      *pwrite = *pread;
+      pwrite++;
+    }
+  }
+
+  ret = atol(EMPTY_IF_NULL(a_val)) - atol(EMPTY_IF_NULL(b_val));
+
+  g_free(a_val);
+  g_free(b_val);
+  return ret;
+}
+
+static gint iter_compare_by_str_float_column(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer column)
+{
+  char *a_val, *b_val;
+  gint ret;
+
+  gtk_tree_model_get(model, a, (gint)column, &a_val, -1);
+  gtk_tree_model_get(model, b, (gint)column, &b_val, -1);
+  
+  ret = atof(EMPTY_IF_NULL(a_val)) - atof(EMPTY_IF_NULL(b_val));
+
+  g_free(a_val);
+  g_free(b_val);
+  return ret;
+}
+
 static void store_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt)
 {
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
-  const char *header;
+  const char *column_name;
+  char meta[32], header[256];
   int ncolumns, i;
+  /* Special colums */
+  /* _ makes hidden column */
+  /* n noisy string numeric sort */
+  /* f parse string as float sort */
 
   ncolumns = db_column_count(stmt);
-  for (i = 0; i < ncolumns; i++)
-    {
-      header = db_column_name(stmt, i);
-      if (header[0] != '_') {
-	renderer = gtk_cell_renderer_text_new();
-	column = gtk_tree_view_column_new_with_attributes (header, renderer, "text", i, NULL);
-	gtk_tree_view_column_set_sort_column_id (column, i);
-	gtk_tree_view_column_set_reorderable(column, TRUE);
-	gtk_tree_view_column_set_resizable(column, TRUE);
-	gtk_tree_view_append_column (treeview, column);
+  for (i = 0; i < ncolumns; i++) {
+    column_name = db_column_name(stmt, i);
+    meta[0] = header[0] = '\0';
+    if (strchr(column_name, '\\')) {
+      sscanf(column_name, "%31[^\\]\\%255s", meta, header);
+    } else {
+      sscanf(column_name, "%255s", header);
+    }
+    if (!strchr(meta, '_')) {
+      renderer = gtk_cell_renderer_text_new();
+      column = gtk_tree_view_column_new_with_attributes(header, renderer, "text", i, NULL);
+      gtk_tree_view_column_set_sort_column_id(column, i);
+      gtk_tree_view_column_set_reorderable(column, TRUE);
+      gtk_tree_view_column_set_resizable(column, TRUE);
+      gtk_tree_view_append_column(treeview, column);
+      if (strchr(meta, 'n')) {
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_noisy_str_int_column, (gpointer)i, NULL);
+      } else if (strchr(meta, 'f')) {
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_str_float_column, (gpointer)i, NULL);
       }
     }
+  }
+}
+
+GtkTreeViewColumn *store_view_find_column_by_title(GtkTreeView *view, const char *title)
+{
+  int i;
+  GtkTreeViewColumn *col;
+  for (i = 0; (col = gtk_tree_view_get_column(view, i)); i++) {
+    if (!strcmp(gtk_tree_view_column_get_title(col), title)) return col;
+  }
+  return NULL;
+}
+
+void store_view_set_column_visible_by_title(GtkTreeView *view, const char *title, gboolean visible)
+{
+  gtk_tree_view_column_set_visible(store_view_find_column_by_title(view, title), visible);
 }
 
 void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkTreeModel **ret_store)

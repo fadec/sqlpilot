@@ -276,43 +276,6 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   }
 }
 
-void entry_format_date_on_focus_out(GtkEntry *entry)
-{
-  int d1=0, d2=0, d3=0;
-  const char *text;
-  char result[11];		/* strlen("yyyy-mm-dd\0") == 11 */
-  struct tm tm = {0};
-  time_t t;
-
-  text = gtk_entry_get_text(entry);
-
-  if (text && strlen(text)) {
-    if (time(&t) == -1) { exit(1); }
-    localtime_r(&t, &tm);
-    switch (sscanf(text, "%d-%d-%d", &d1, &d2, &d3)) {
-    case 3:
-      tm.tm_year = d1 - 1900;
-      tm.tm_mon = d2 - 1;
-      tm.tm_mday = d3;
-      break;
-    case 2:
-      tm.tm_mon = d1 - 1;
-      tm.tm_mday = d2;
-      break;
-    case 1:
-      tm.tm_mday = d1;
-      break;
-    }
-    if (mktime(&tm) == -1) {
-      result[0] = '\0';
-    } else {
-      strftime(result, 11, "%Y-%m-%d", &tm);
-    }
-    gtk_entry_set_text(entry, result);
-  }
-
-}
-
 void entry_format_time_of_day(GtkEntry *entry, const char *local_tz, const char *to_tz, const char *date)
 {
   const char *txt;
@@ -589,6 +552,110 @@ void flights_load_selection(Logbook *logb)
   g_free(tripdate);
 }
 
+void flights_set_view_column_visibility(Logbook *logbook)
+{
+  char *headers[] = {
+    "Date",
+    "Leg",
+    "Aircraft",
+    "Role",
+    "Dep",
+    "Arr",
+    "Dur",
+    "Night",
+    "Inst",
+    "SimInst",
+    "Hold",
+    "Aprch",
+    "nApr",
+    "XC",
+    "Dist",
+    "DLand",
+    "NLand",
+    "Crew",
+    "Crw",
+    "Notes",
+    "Nts",
+    "FltNo",
+    "SDur",
+    "Trip",
+    "TripDate",
+    NULL
+  };
+  GtkWidget *toggles[] = {
+    logbook->flights_view_date,
+    logbook->flights_view_leg,
+    logbook->flights_view_aircraft,
+    logbook->flights_view_role,
+    logbook->flights_view_dep,
+    logbook->flights_view_arr,
+    logbook->flights_view_dur,
+    logbook->flights_view_night,
+    logbook->flights_view_inst,
+    logbook->flights_view_siminst,
+    logbook->flights_view_hold,
+    logbook->flights_view_aprch,
+    logbook->flights_view_aprchn,
+    logbook->flights_view_xc,
+    logbook->flights_view_dist,
+    logbook->flights_view_dland,
+    logbook->flights_view_nland,
+    logbook->flights_view_crew,
+    logbook->flights_view_crewn,
+    logbook->flights_view_notes,
+    logbook->flights_view_notesn,
+    logbook->flights_view_fltno,
+    logbook->flights_view_sdur,
+    logbook->flights_view_trip,
+    logbook->flights_view_tripdate,  
+    NULL
+  };
+  int i;
+
+  for (i=0; headers[i]; i++) {
+/*     fprintf(stderr, "%s\n", headers[i]); */
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   headers[i],
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggles[i])));
+  }
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "SOutUTC",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sout)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "SInUTC",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sin)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "AOutUTC",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aout)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "AInUTC",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_ain)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "SOut", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "SIn", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "AOut", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "AIn", FALSE);
+  } else {
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "SOut",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sout)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "SIn",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sin)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "AOut",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aout)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "AIn",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_ain)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "SOutUTC", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "SInUTC", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "AOutUTC", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "AInUTC", FALSE);
+  }
+}
+
 void flights_refresh(Logbook *logbook)
 {
   static int lock=0;
@@ -602,6 +669,9 @@ void flights_refresh(Logbook *logbook)
   /* refreshing while already refreshing is bad */
   if (lock) return;
   lock = 1;
+  logbook->flights_stale = FALSE;
+
+  flights_set_view_column_visibility(logbook);
 
   gtk_widget_hide(logbook->flights_results_summary);
   gtk_widget_show(logbook->flights_query_progress);
@@ -622,7 +692,6 @@ void flights_refresh(Logbook *logbook)
     logbook->flights_select_all = db_prep(logbook->db, "SELECT 42 WHERE 0 = 1;");
   }
 
-
   gtk_label_set_text(GTK_LABEL(logbook->flights_results_summary), "");
   nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(logbook->flights_treemodel),
 						   logbook->flights_select_all,
@@ -636,7 +705,6 @@ void flights_refresh(Logbook *logbook)
   gtk_label_set_text(GTK_LABEL(logbook->flights_results_summary), results_summary);
 
   flights_load_selection(logbook);
-  logbook->flights_stale = FALSE;
 
   flights_refresh_utilization(logbook);
 

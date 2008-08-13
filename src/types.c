@@ -327,9 +327,9 @@ void types_load_selection(Logbook *logb)
 
 void types_refresh(Logbook *logbook)
 {
+    logbook->types_stale = FALSE;
     store_repopulate_from_stmt(GTK_LIST_STORE(logbook->types_treemodel), logbook->types_select_all);
     types_load_selection(logbook);
-    logbook->types_stale = FALSE;
 }
 
 int types_ident_validate(Logbook *logbook)

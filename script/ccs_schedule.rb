@@ -20,6 +20,8 @@
 ########################################################################
 
 SHOW_THOUGHTS = false
+OPTS = {}
+#OPTS[:actual_times] = true
 
 module Parse
   @@n_current_line = 0
@@ -300,10 +302,10 @@ for trip in Schedule.run
         :type     => nil,
         :dep      => flight[:dep],
         :arr      => flight[:arr],
-        :aout     => nil,
-        :ain      => nil,
-        :sout     => flight[:out],
-        :sin      => flight[:in],
+        :aout     => (flight[:out] if OPTS[:actual_times]),
+        :ain      => (flight[:in] if OPTS[:actual_times]),
+        :sout     => (flight[:out] unless OPTS[:actual_times]),
+        :sin      => (flight[:in] unless OPTS[:actual_times]),
         :dur      => nil,
         :night    => nil,
         :inst     => nil,

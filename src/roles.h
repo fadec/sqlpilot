@@ -38,18 +38,18 @@ enum {
 };
 
 #define ROLES_SELECT							\
-  "select roles.id as _id"						\
+  "select roles.id as '_\\id'"						\
   ", roles.ident as Ident"						\
   ", roles.name as Name"						\
-  ", bool(roles.pic) as PIC"						\
-  ", bool(roles.sic) as SIC"						\
-  ", bool(roles.fe) as FE"						\
-  ", bool(roles.solo) as Solo"						\
-  ", bool(roles.dual) as Dual"						\
-  ", bool(roles.instruct) as Instruct"					\
-  ", bool(roles.total) as Total"					\
-  ", count(flights.id) as Flights"					\
-  ", m_to_hhmm(sum(flights.dur)) as Time"				\
+  ", bool(roles.pic) as '_\\PIC'"					\
+  ", bool(roles.sic) as '_\\SIC'"					\
+  ", bool(roles.fe) as '_\\FE'"						\
+  ", bool(roles.solo) as '_\\Solo'"					\
+  ", bool(roles.dual) as '_\\Dual'"					\
+  ", bool(roles.instruct) as '_\\Instruct'"				\
+  ", bool(roles.total) as '_\\Total'"					\
+  ", count(flights.id) as 'n\\Flights'"					\
+  ", m_to_hhmm(sum(flights.dur)) as 'n\\Time'"				\
   " from roles"								\
   " left join flights on flights.role_id = roles.id and flights.dur > 0"
 

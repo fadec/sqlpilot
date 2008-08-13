@@ -160,6 +160,7 @@ static void parameter_pane_append_date(ParameterPane *ppane, const gchar *name)
   gtk_box_pack_start(GTK_BOX(vbox), label, FALSE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(vbox), entry, FALSE, TRUE, 0);
   gtk_box_pack_start(GTK_BOX(ppane->container), vbox, FALSE, TRUE, 0);
+  g_signal_connect(entry, "focus-out-event", (GtkSignalFunc)entry_format_date_on_focus_out, entry);
   gtk_widget_show_all(vbox);
 
   ppane->parameters = g_list_append(ppane->parameters, parameter_new(PARAMETER_TYPE_DATE, name, entry));

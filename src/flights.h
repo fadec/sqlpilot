@@ -64,7 +64,7 @@ enum {
 /* All columns must be selected for use during update queries */
 /* Column names preceded with a _ are get hidden in the treeview */
 #define FLIGHTS_SELECT							\
-  "select flights.id as id"						\
+  "select flights.id as '_\\id'"					\
   ", flights.Date as Date"						\
   ", flights.Leg as Leg"						\
   ", a.ident as Aircraft"						\
@@ -75,27 +75,27 @@ enum {
   ", flights.AOutUTC as AOutUTC"					\
   ", flights.ain as AIn"						\
   ", flights.AInUTC as AInUTC"						\
-  ", m_to_hhmm(flights.dur) as Dur"					\
-  ", m_to_hhmm(flights.night) as Night"					\
-  ", m_to_hhmm(flights.inst) as Inst"					\
-  ", m_to_hhmm(flights.siminst) as SimInst"				\
+  ", m_to_hhmm(flights.dur) as 'n\\Dur'"				\
+  ", m_to_hhmm(flights.night) as 'n\\Night'"				\
+  ", m_to_hhmm(flights.inst) as 'n\\Inst'"				\
+  ", m_to_hhmm(flights.siminst) as 'n\\SimInst'"			\
   ", bool(flights.hold) as Hold"					\
   ", flights.aprch as Aprch"						\
-  ", linecount(flights.aprch) as Aprch"					\
+  ", linecount(flights.aprch) as 'n\\nApr'"				\
   ", bool(flights.xc) as XC"						\
-  ", round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as Dist"	\
-  ", flights.dland as DLand"						\
-  ", flights.nland as NLand"						\
+  ", round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as 'n\\Dist'"	\
+  ", flights.dland as 'n\\DLand'"					\
+  ", flights.nland as 'n\\NLand'"					\
   ", flights.crew as Crew"						\
-  ", linecount(flights.crew) as Crw"					\
+  ", linecount(flights.crew) as 'n\\Crw'"				\
   ", flights.notes as Notes"						\
-  ", linecount(flights.notes) as Nts"					\
-  ", flights.fltno as FltNo"						\
+  ", linecount(flights.notes) as 'n\\Nts'"				\
+  ", flights.fltno as 'n\\FltNo'"					\
   ", flights.sout as SOut"						\
   ", flights.SOutUTC as SOutUTC"					\
   ", flights.sin as SIn"						\
   ", flights.SInUTC as SInUTC"						\
-  ", m_to_hhmm(flights.sdur) as SDur"					\
+  ", m_to_hhmm(flights.sdur) as 'n\\SDur'"				\
   ", flights.trip as Trip"						\
   ", flights.TripDate as TripDate"					\
   " from flights"							\

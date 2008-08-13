@@ -192,9 +192,9 @@ void airports_load_selection(Logbook *logb)
 
 void airports_refresh(Logbook *logbook)
 {
+    logbook->airports_stale = FALSE;
     store_repopulate_from_stmt(GTK_LIST_STORE(logbook->airports_treemodel), logbook->airports_select_all);
     airports_load_selection(logbook);
-    logbook->airports_stale = FALSE;
 }
 
 int airports_ident_validate(Logbook *logbook)

@@ -52,7 +52,6 @@ struct Logbook {
   GtkTreeModel *flights_treemodel;
   GtkTreeSelection *flights_selection;
   GtkWidget *flights_treeview;
-  GtkWidget *flights_view_date;
   GtkWidget *flights_utc;
   GtkWidget *flights_utc_lbl;
   GtkWidget *flights_aircraft;
@@ -84,6 +83,37 @@ struct Logbook {
   GtkWidget *flights_sdur;
   GtkWidget *flights_trip;
   GtkWidget *flights_tripdate;
+
+  GtkWidget *flights_view_aircraft;
+  GtkWidget *flights_view_date;
+  GtkWidget *flights_view_leg;
+  GtkWidget *flights_view_dist;
+  GtkWidget *flights_view_role;
+  GtkWidget *flights_view_dep;
+  GtkWidget *flights_view_arr;
+  GtkWidget *flights_view_aout;
+  GtkWidget *flights_view_ain;
+  GtkWidget *flights_view_dur;
+  GtkWidget *flights_view_night;
+  GtkWidget *flights_view_inst;
+  GtkWidget *flights_view_siminst;
+  GtkWidget *flights_view_hold;
+  GtkWidget *flights_view_aprch;
+  GtkWidget *flights_view_aprchn;
+  GtkWidget *flights_view_xc;
+  GtkWidget *flights_view_dland;
+  GtkWidget *flights_view_nland;
+  GtkWidget *flights_view_crew;
+  GtkWidget *flights_view_crewn;
+  GtkWidget *flights_view_notes;
+  GtkWidget *flights_view_notesn;
+  GtkWidget *flights_view_fltno;
+  GtkWidget *flights_view_sout;
+  GtkWidget *flights_view_sin;
+  GtkWidget *flights_view_sdur;
+  GtkWidget *flights_view_trip;
+  GtkWidget *flights_view_tripdate;
+
   GtkWidget *flights_new_btn;
   GtkWidget *flights_save_btn;
   GtkWidget *flights_armdel_btn;

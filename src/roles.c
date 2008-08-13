@@ -132,9 +132,9 @@ void roles_load_selection(Logbook *logb)
 
 void roles_refresh(Logbook *logbook)
 {
+    logbook->roles_stale = FALSE;
     store_repopulate_from_stmt(GTK_LIST_STORE(logbook->roles_treemodel), logbook->roles_select_all);
     roles_load_selection(logbook);
-    logbook->roles_stale = FALSE;
 }
 
 int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size)

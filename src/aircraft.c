@@ -137,9 +137,9 @@ void aircraft_load_selection(Logbook *logb)
 
 void aircraft_refresh(Logbook *logbook)
 {
+  logbook->aircraft_stale = FALSE;
   store_repopulate_from_stmt(GTK_LIST_STORE(logbook->aircraft_treemodel), logbook->aircraft_select_all);
   aircraft_load_selection(logbook);
-  logbook->aircraft_stale = FALSE;
 }
 
 int aircraft_count_flights(Logbook *logbook, DBint64 id)

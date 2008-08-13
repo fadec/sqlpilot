@@ -41,7 +41,7 @@ void edctrl_set_empty(Edctrl *ec)
 {
   if (ec->edstate == EDSTATE_EMPTY) return;
   ec->edstate = EDSTATE_EMPTY;
-  gtk_widget_set_sensitive(ec->new_btn, 0);
+  gtk_widget_set_sensitive(ec->new_btn, 1);
   gtk_widget_set_sensitive(ec->save_btn, 0);
   gtk_widget_set_sensitive(ec->armdel_btn, 0);
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ec->armdel_btn), 0);
@@ -77,7 +77,7 @@ void edctrl_set_modified(Edctrl *ec)
   if (ec->edstate == EDSTATE_MODIFIED) return;
   gtk_widget_set_sensitive(GTK_WIDGET(ec->armdel_btn), 0);
   gtk_widget_set_sensitive(GTK_WIDGET(ec->del_btn), 0);
-  gtk_widget_set_sensitive(GTK_WIDGET(ec->new_btn), 0);
+  gtk_widget_set_sensitive(GTK_WIDGET(ec->new_btn), 1);
   edctrl_show_record(ec);
   ec->edstate = EDSTATE_MODIFIED;
 }
@@ -173,6 +173,8 @@ void edctrl_save_btn_clicked(Edctrl *ec)
   GtkTreeModel *model;
   DBint64 inserted_id;
   gchar *id=NULL;
+  GtkTreePath *path;
+  GtkTreeView *view;
 
   stmt = ec->select_by_id_stmt;
 
@@ -188,7 +190,13 @@ void edctrl_save_btn_clicked(Edctrl *ec)
     gtk_list_store_insert(GTK_LIST_STORE(model), &iter, 0);
   }
   store_update_row(GTK_LIST_STORE(model), &iter, stmt);
+
+  /* Select the iter and scroll to selection */
   gtk_tree_selection_select_iter(ec->selection, &iter);
+  view = gtk_tree_selection_get_tree_view(ec->selection);
+  gtk_tree_view_get_cursor(view, &path, NULL);
+  gtk_tree_view_scroll_to_cell(view, path, NULL, FALSE, 0, 0);
+  gtk_tree_path_free(path);
 
   db_reset(stmt);
   db_clear_bindings(stmt);

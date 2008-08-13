@@ -121,9 +121,46 @@ void entry_clamp_airports_icao(GtkEntry *entry)
   entry_clamp_text(entry, 4, 1, is_ident_char);
 }
 
+void entry_format_date_on_focus_out(GtkEntry *entry)
+{
+  int d1=0, d2=0, d3=0;
+  const char *text;
+  char result[11];		/* strlen("yyyy-mm-dd\0") == 11 */
+  struct tm tm = {0};
+  time_t t;
+
+  text = gtk_entry_get_text(entry);
+
+  if (text && strlen(text)) {
+    if (time(&t) == -1) { exit(1); }
+    localtime_r(&t, &tm);
+    switch (sscanf(text, "%d-%d-%d", &d1, &d2, &d3)) {
+    case 3:
+      tm.tm_year = d1 - 1900;
+      tm.tm_mon = d2 - 1;
+      tm.tm_mday = d3;
+      break;
+    case 2:
+      tm.tm_mon = d1 - 1;
+      tm.tm_mday = d2;
+      break;
+    case 1:
+      tm.tm_mday = d1;
+      break;
+    }
+    if (mktime(&tm) == -1) {
+      result[0] = '\0';
+    } else {
+      strftime(result, 11, "%Y-%m-%d", &tm);
+    }
+    gtk_entry_set_text(entry, result);
+  }
+}
+
 int strtime_to_m(const char *str)
 {
   int h = 0, m = 0;
+  if (!str) return 0;
   if (strchr(str, ':')) {
     sscanf(str, "%d:%d", &h, &m);
   } else if (strchr(str, '+')) {

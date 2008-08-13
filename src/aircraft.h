@@ -33,20 +33,20 @@ enum {
 };
 
 #define AIRCRAFT_SELECT							\
-  "select aircraft.id as _id"						\
+  "select aircraft.id as id"						\
   ", aircraft.ident as Ident"						\
   ", types.ident as Type"						\
   ", aircraft.fleetno as FleetNo"					\
-  ", aircraft.notes as _Notes"						\
-  ", count(flights.id) as Flights"					\
-  ", m_to_hhmm(sum(flights.dur)) as Time"				\
+  ", aircraft.notes as '_\\Notes'"					\
+  ", count(flights.id) as 'n\\Flights'"					\
+  ", m_to_hhmm(sum(flights.dur)) as 'n\\Time'"				\
   " from aircraft"							\
   " left join types on aircraft.type_id = types.id"			\
   " left join flights on flights.aircraft_id = aircraft.id"		\
   "   and flights.dur > 0"
   
 #define AIRCRAFT_GROUP_BY \
-  " group by aircraft.id order by flights desc"
+  " group by aircraft.id order by count(flights.id) desc"
 
 #define AIRCRAFT_WHERE_ID \
   " where aircraft.id = ?"

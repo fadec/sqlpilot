@@ -61,41 +61,41 @@ enum {
 };
 
 #define TYPES_SELECT						\
-  "select types.id as _id"					\
+  "select types.id as '_\\id'"					\
   ", types.ident as Ident"					\
   ", types.make as Make"					\
   ", types.model as Model"					\
-  ", types.airplane as _Airplane"				\
-  ", types.rotorcraft as _Rotorcraft"				\
-  ", types.glider as _Glider"					\
-  ", types.lta as _LTA"						\
-  ", types.poweredlift as _Poweredlift"				\
-  ", types.ppc as _PPC"						\
-  ", types.weightshift as _Weightshift"				\
-  ", types.heli as _Heli"					\
-  ", types.gyro as _Gyro"					\
-  ", types.airship as _Airship"					\
-  ", types.balloon as _Balloon"					\
-  ", types.single as _Single"					\
-  ", types.multi as _Multi"					\
-  ", types.land as _Land"					\
-  ", types.sea as _Sea"						\
-  ", types.turbine as _Turbine"					\
-  ", types.jet as _Jet"						\
-  ", types.highperf as _HighPerf"				\
-  ", types.retract as _Retract"					\
-  ", types.complex as _Complex"					\
-  ", types.pressurized as _Pressurized"				\
-  ", types.large as _Large"					\
-  ", types.sport as _Sport"					\
-  ", types.ultralight as _Ultralight"				\
-  ", types.footlaunch as _Footlaunch"				\
-  ", types.sim as _Sim"						\
-  ", types.ftd as _FTD"						\
-  ", types.total as _Total"					\
-  ", count(distinct(aircraft.id)) as Aircraft"			\
-  ", count(flights.id) as Flights"				\
-  ", m_to_hhmm(sum(flights.dur)) as Time"			\
+  ", types.airplane as '_\\Airplane'"				\
+  ", types.rotorcraft as '_\\Rotorcraft'"			\
+  ", types.glider as '_\\Glider'"				\
+  ", types.lta as '_\\LTA'"					\
+  ", types.poweredlift as '_\\Poweredlift'"			\
+  ", types.ppc as '_\\PPC'"					\
+  ", types.weightshift as '_\\Weightshift'"			\
+  ", types.heli as '_\\Heli'"					\
+  ", types.gyro as '_\\Gyro'"					\
+  ", types.airship as '_\\Airship'"				\
+  ", types.balloon as '_\\Balloon'"				\
+  ", types.single as '_\\Single'"				\
+  ", types.multi as '_\\Multi'"					\
+  ", types.land as '_\\Land'"					\
+  ", types.sea as '_\\Sea'"					\
+  ", types.turbine as '_\\Turbine'"				\
+  ", types.jet as '_\\Jet'"					\
+  ", types.highperf as '_\\HighPerf'"				\
+  ", types.retract as '_\\Retract'"				\
+  ", types.complex as '_\\Complex'"				\
+  ", types.pressurized as '_\\Pressurized'"			\
+  ", types.large as '_\\Large'"					\
+  ", types.sport as '_\\Sport'"					\
+  ", types.ultralight as '_\\Ultralight'"			\
+  ", types.footlaunch as '_\\Footlaunch'"			\
+  ", types.sim as '_\\Sim'"					\
+  ", types.ftd as '_\\FTD'"					\
+  ", types.total as '_\\Total'"					\
+  ", count(distinct(aircraft.id)) as 'n\\Aircraft'"		\
+  ", count(flights.id) as 'n\\Flights'"				\
+  ", m_to_hhmm(sum(flights.dur)) as 'n\\Time'"			\
   " from types"							\
   " left join aircraft on aircraft.type_id = types.id"		\
   " left join flights on flights.aircraft_id = aircraft.id"	\
