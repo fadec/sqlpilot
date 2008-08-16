@@ -244,4 +244,6 @@ void flights_refresh_dep_utilized(Logbook *logbook);
 void flights_refresh_arr_utilized(Logbook *logbook);
 void flights_build_store_view(Logbook *logbook);
 void flights_save_options(Logbook *logbook);
+void flights_restore_options(Logbook *logbook);
+
 #endif

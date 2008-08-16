@@ -425,6 +425,8 @@ Logbook *logbook_new(const char *filename)
   g_object_unref (G_OBJECT(gxml));
 #endif
 
+  flights_restore_options(logbook);
+
   logbook->flights_stale = 0;
   flights_refresh(logbook);
   logbook->roles_stale = 1;

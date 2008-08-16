@@ -741,7 +741,7 @@ void flights_save_options(Logbook *logbook)
   registry_set_int(logbook, "flights/view", "AOut",   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aout)));
   registry_set_int(logbook, "flights/view", "AIn",   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_ain)));
 
-  //  registry_set_int(logbook, "flights", "UTC", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc)));
+  registry_set_int(logbook, "flights", "UTC", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc)));
 
 }
 
@@ -805,11 +805,13 @@ void flights_refresh(Logbook *logbook)
 
 void flights_build_store_view(Logbook *logbook)
 {
-  /* Build tree view and model*/
   store_build_query_stmt_widget(logbook->flights_select_all, flights_column_kinds, &logbook->flights_treeview, &logbook->flights_treemodel);
   gtk_widget_show_all(logbook->flights_treeview);
   gtk_container_add(GTK_CONTAINER(logbook->flights_sw), logbook->flights_treeview);
-    
+}
+
+void flights_restore_options(Logbook *logbook)
+{ 
   /* Set column order from registry */
   char *errmsg;
   DBResults *results;
@@ -855,7 +857,7 @@ void flights_build_store_view(Logbook *logbook)
 
   /* Set UTC button */
   if (registry_get_int(logbook, "flights", "UTC")) {
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), FALSE); /* True segfaults -- signal emission?  */
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), TRUE);
     gtk_label_set_text(GTK_LABEL(logbook->flights_utc_lbl), "UTC");
   } else {
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), FALSE);
