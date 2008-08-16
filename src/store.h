@@ -23,9 +23,17 @@
 #include <gtk/gtk.h>
 #include "db/db.h"
 
-void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkTreeModel **ret_store);
+typedef enum {
+  STORE_COLUMN_KIND_STR = 0,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_FLOAT
+} StoreColumnKind;
+
+void store_build_query_stmt_widget(DBStatement *stmt, StoreColumnKind *kinds, GtkWidget **ret_view, GtkTreeModel **ret_store);
 int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt);
 long store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt);
 long store_repopulate_from_stmt_with_progress(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress);
+void store_view_arrange_columns(GtkTreeView *view, int ntitles, const char **titles);
+GtkTreeViewColumn *store_view_find_column_by_title(GtkTreeView *view, const char *title);
 void store_view_set_column_visible_by_title(GtkTreeView *view, const char *title, gboolean visible);
 #endif

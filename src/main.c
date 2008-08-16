@@ -77,7 +77,6 @@ main (int argc, char *argv[])
     program = HILDON_PROGRAM(hildon_program_get_instance());
     container = logbook->window;
     logbook->window = hildon_window_new();
-    //g_signal_connect_swapped(logbook->window ,"destroy", GTK_SIGNAL_FUNC(quit_program),ui_main);
     gtk_widget_reparent(container, logbook->window);
 
     hildon_program_add_window(program, HILDON_WINDOW(logbook->window));
@@ -102,6 +101,7 @@ main (int argc, char *argv[])
 
     gtk_widget_show_all(GTK_WIDGET(main_menu));
 #endif
+    g_signal_connect_swapped(logbook->window ,"destroy", GTK_SIGNAL_FUNC(logbook_save_options), logbook);
     gtk_widget_show (logbook->window);
 
     gtk_main ();

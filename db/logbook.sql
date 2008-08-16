@@ -137,6 +137,47 @@ CREATE TABLE Employers (
        ,Name CHAR
 );
 
+CREATE TABLE OptFlightsColumns (
+       title CHAR
+       ,position INTEGER
+       ,visible BOOLEAN
+);
+
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Date",     1,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("FltNo",    2, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Leg",      3,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Aircraft", 4,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Role",     5,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Dep",      6,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Arr",      7,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AOut",     8,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AOutUTC",  9,  0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AIn",      10,  1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AInUTC",   11, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Dur",      12, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Night",    13, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Inst",     14, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SimInst",  15, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Hold",     16, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Aprch",    17, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("nApr",     18, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("XC",       19, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Dist",     20, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("DLand",    21, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("NLand",    22, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Crew",     23, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Crw",      24, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Notes",    25, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Nts",      26, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SOut",     28, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SOutUTC",  29, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SIn",      30, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SInUTC",   31, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SDur",     32, 1);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Trip",     33, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("TripDate", 34, 0);
+INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Over",     35, 0);
+
 create unique index airports_ident on airports(ident);
 create unique index airports_icao on airports(icao);
 create unique index aircraft_ident on aircraft(ident);

@@ -29,94 +29,8 @@ static void store_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt
 
 
 /*********/
-/* Model */
+/* Sorts */
 /*********/
-static GtkListStore *store_new_from_stmt(DBStatement *stmt)
-{
-	GType *column_types;
-	GtkListStore *store;
-	int ncolumns, n;
-	
-	ncolumns = db_column_count(stmt);
-	
-	column_types = malloc(sizeof(GType) * ncolumns);
-	for (n=0; n < ncolumns; n++)
-	{
-		column_types[n] = G_TYPE_STRING;
-	}
-
-	store = gtk_list_store_newv(ncolumns, column_types);
-	free(column_types);
-
-	return store;
-}
-
-static long store_populate_from_stmt(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress)
-{
-  int result_code, i, ncolumns;
-  long nrows=0,maxrows=0;
-  GtkTreeIter iter;
-  const unsigned char *text;
-  
-  if (progress) {
-    gtk_progress_bar_set_fraction(progress, 0.0);
-    while ((result_code = db_step(stmt)) == DB_ROW) maxrows++;
-  }
-  db_reset(stmt);
-
-  ncolumns = db_column_count(stmt);  
-
-  while ((result_code = db_step(stmt)) == DB_ROW) {
-    gtk_list_store_append(store, &iter);
-    for(i = 0; i < ncolumns; i++) {
-      text = db_column_text(stmt, i);
-      gtk_list_store_set(store, &iter, i, text, -1);
-    }
-    if (!(nrows % 128)) {
-      while (gtk_events_pending()) gtk_main_iteration();
-    }
-    gtk_main_iteration_do(FALSE);
-    nrows++;
-    if (progress) gtk_progress_bar_set_fraction(progress, nrows/(double)maxrows);
-  }
-  
-  db_reset(stmt);
-  return nrows;
-}
-
-long store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt)
-{
-  gtk_list_store_clear(store);
-  return store_populate_from_stmt(store, stmt, NULL);
-}
-
-long store_repopulate_from_stmt_with_progress(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress)
-{
-  gtk_list_store_clear(store);
-  return store_populate_from_stmt(store, stmt, progress);
-}
-
-int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
-{
-  int result_code, i, ncolumns;
-  const unsigned char *text;
-
-  ncolumns = db_column_count(stmt); // should also check list_store column width when not lazy
-
-  if ((result_code = db_step(stmt)) == DB_ROW) {
-    for(i = 0; i < ncolumns; i++) {
-      text = db_column_text(stmt, i);
-      gtk_list_store_set(store, iter, i, text, -1);
-    }
-  }
-
-  return result_code; // or whatever
-}
-
-/********/
-/* View */
-/********/
-
 /* Parse int compare that filters out non-[0-9] characters before parse */
 static gint iter_compare_by_noisy_str_int_column(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer column)
 {
@@ -162,14 +76,118 @@ static gint iter_compare_by_str_float_column(GtkTreeModel *model, GtkTreeIter *a
   return ret;
 }
 
-static void store_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt)
+/*********/
+/* Model */
+/*********/
+/* kinds must have size equal to number of colums in stmt or be NULL */
+static GtkListStore *store_new_from_stmt(DBStatement *stmt, StoreColumnKind *kinds)
+{
+  GType *column_types;
+  GtkListStore *store;
+  int ncolumns, n;
+  
+  ncolumns = db_column_count(stmt);
+  
+  column_types = malloc(sizeof(GType) * ncolumns);
+  for (n=0; n<ncolumns; n++) {
+    column_types[n] = G_TYPE_STRING;
+  }
+  
+  store = gtk_list_store_newv(ncolumns, column_types);
+  free(column_types);
+
+  if (kinds) {
+    for (n=0; n<ncolumns; n++) {
+      switch( kinds[n] ){
+      case STORE_COLUMN_KIND_STR:
+	/* Default sort is string */
+	break;
+      case STORE_COLUMN_KIND_STR_NUM:
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store), n, iter_compare_by_noisy_str_int_column, (gpointer)n, NULL);
+	break;
+      case STORE_COLUMN_KIND_STR_FLOAT:
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store), n, iter_compare_by_str_float_column, (gpointer)n, NULL);
+	break;
+      }
+    }
+  }
+
+  return store;
+}
+
+static long store_populate_from_stmt(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress)
+{
+  int result_code, i, ncolumns;
+  long nrows=0,maxrows=0;
+  GtkTreeIter iter;
+  const unsigned char *text;
+  
+  if (progress) {
+    gtk_progress_bar_set_fraction(progress, 0.0);
+    while ((result_code = db_step(stmt)) == DB_ROW) maxrows++;
+  }
+  db_reset(stmt);
+
+  ncolumns = db_column_count(stmt);  
+
+  while ((result_code = db_step(stmt)) == DB_ROW) {
+    gtk_list_store_append(store, &iter);
+    for(i = 0; i < ncolumns; i++) {
+      text = db_column_text(stmt, i);
+      gtk_list_store_set(store, &iter, i, text, -1);
+    }
+    if (!(nrows % 256)) {
+      while (gtk_events_pending()) gtk_main_iteration();
+    }
+    gtk_main_iteration_do(FALSE);
+    nrows++;
+    if (progress) gtk_progress_bar_set_fraction(progress, nrows/(double)maxrows);
+  }
+  
+  db_reset(stmt);
+  return nrows;
+}
+
+long store_repopulate_from_stmt(GtkListStore *store, DBStatement *stmt)
+{
+  gtk_list_store_clear(store);
+  return store_populate_from_stmt(store, stmt, NULL);
+}
+
+long store_repopulate_from_stmt_with_progress(GtkListStore *store, DBStatement *stmt, GtkProgressBar *progress)
+{
+  gtk_list_store_clear(store);
+  return store_populate_from_stmt(store, stmt, progress);
+}
+
+int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
+{
+  int result_code, i, ncolumns;
+  const unsigned char *text;
+
+  ncolumns = db_column_count(stmt); // should also check list_store column width when not lazy
+
+  if ((result_code = db_step(stmt)) == DB_ROW) {
+    for(i = 0; i < ncolumns; i++) {
+      text = db_column_text(stmt, i);
+      gtk_list_store_set(store, iter, i, text, -1);
+    }
+  }
+
+  return result_code; // or whatever
+}
+
+/********/
+/* View */
+/********/
+static void store_view_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt)
 {
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
   const char *column_name;
   char meta[32], header[256];
   int ncolumns, i;
-  /* Special colums */
+  /* Special colums * This code should really either use a sort proxy or be in the model if it's going to sort the model */
   /* _ makes hidden column */
   /* n noisy string numeric sort */
   /* f parse string as float sort */
@@ -189,7 +207,7 @@ static void store_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt
       gtk_tree_view_column_set_sort_column_id(column, i);
       gtk_tree_view_column_set_reorderable(column, TRUE);
       gtk_tree_view_column_set_resizable(column, TRUE);
-      gtk_tree_view_append_column(treeview, column);
+      gtk_tree_view_insert_column(treeview, column, i);
       if (strchr(meta, 'n')) {
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_noisy_str_int_column, (gpointer)i, NULL);
       } else if (strchr(meta, 'f')) {
@@ -209,17 +227,30 @@ GtkTreeViewColumn *store_view_find_column_by_title(GtkTreeView *view, const char
   return NULL;
 }
 
+void store_view_arrange_columns(GtkTreeView *view, int ntitles, const char **titles)
+{
+  int n;
+  GtkTreeViewColumn *prevcol=NULL, *thiscol;
+
+  for(n=0; n<ntitles; n++) {
+    if ((thiscol = store_view_find_column_by_title(view, titles[n]))) {
+      gtk_tree_view_move_column_after(view, thiscol, prevcol);
+      prevcol = thiscol;
+    }
+  }
+}
+
 void store_view_set_column_visible_by_title(GtkTreeView *view, const char *title, gboolean visible)
 {
   gtk_tree_view_column_set_visible(store_view_find_column_by_title(view, title), visible);
 }
 
-void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkTreeModel **ret_store)
+void store_build_query_stmt_widget(DBStatement *stmt, StoreColumnKind *kinds, GtkWidget **ret_view, GtkTreeModel **ret_store)
 {
   GtkListStore *store;
   GtkWidget *view;
 	
-  store = store_new_from_stmt(stmt);
+  store = store_new_from_stmt(stmt, kinds);
 
   view = gtk_tree_view_new_with_model (GTK_TREE_MODEL(store));
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
@@ -227,7 +258,7 @@ void store_build_query_stmt_widget(DBStatement *stmt, GtkWidget **ret_view, GtkT
 	
   g_object_unref (store);
 
-  store_add_columns_from_stmt(GTK_TREE_VIEW (view), stmt);
+  store_view_add_columns_from_stmt(GTK_TREE_VIEW (view), stmt);
 
   *ret_view = view;
   *ret_store = GTK_TREE_MODEL(store);

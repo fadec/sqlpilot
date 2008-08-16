@@ -33,7 +33,7 @@
 static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **argv)
 {
   char z[30];
-  int m, hh, mm;
+  int m, am, hh, mm;
   //assert(argc == 1);
   switch (sqlite3_value_type(argv[0])) {
   case SQLITE_NULL:
@@ -43,10 +43,11 @@ static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **a
   case SQLITE_FLOAT:
   case SQLITE_INTEGER: m = sqlite3_value_int(argv[0]);
   }
-  if (m) {  
-    hh = m / 60;
-    mm = m - (hh * 60);
-    snprintf(z, 30, "%d+%02d", hh, mm);
+  if (m) {
+    am = abs(m);
+    hh = am / 60;
+    mm = am - (hh * 60);
+    snprintf(z, 30, "%s%d+%02d", m < 0 ? "-" : "", hh, mm);
     sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
   }
 }
@@ -210,16 +211,14 @@ DBResults *db_get_table(DB *db, const char *sql, char **errormsg)
 	results->column_names = data;
 	results->table = data + ncolumn;
 	results->column_count = ncolumn;
-	results->row_count = ncolumn;
+	results->row_count = nrow;
 	return results;
 }
 
 void db_results_free(DBResults *results)
 {
 	sqlite3_free_table(results->column_names); // column_names are actually the beginning of the sqlite3 allocated structure
-	results->table = NULL;
 	free(results);
-	results = NULL;
 }
 
 char *db_results_table_lookup(DBResults *results, int row, int column)

@@ -113,6 +113,7 @@ struct Logbook {
   GtkWidget *flights_view_sdur;
   GtkWidget *flights_view_trip;
   GtkWidget *flights_view_tripdate;
+  GtkWidget *flights_view_over;
 
   GtkWidget *flights_new_btn;
   GtkWidget *flights_save_btn;
@@ -281,5 +282,5 @@ struct Logbook {
 
 Logbook *logbook_new(const char *filename);
 void logbook_finalize(Logbook *);
-
+void logbook_save_options(Logbook *logbook);
 #endif

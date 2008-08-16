@@ -162,6 +162,7 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_view_sdur);
   pull_widget(flights_view_trip);
   pull_widget(flights_view_tripdate);
+  pull_widget(flights_view_over);
   pull_widget(flights_new_btn);
   pull_widget(flights_save_btn);
   pull_widget(flights_armdel_btn);
@@ -265,23 +266,21 @@ Logbook *logbook_new(const char *filename)
   pull_widget(summaries_parameters);
   
   /* Add treeview */
-  store_build_query_stmt_widget(logbook->flights_select_all, &logbook->flights_treeview, &logbook->flights_treemodel);
-  gtk_widget_show_all(logbook->flights_treeview);
-  gtk_container_add(GTK_CONTAINER(logbook->flights_sw), logbook->flights_treeview);
+  flights_build_store_view(logbook);
 
-  store_build_query_stmt_widget(logbook->roles_select_all, &logbook->roles_treeview, &logbook->roles_treemodel);
+  store_build_query_stmt_widget(logbook->roles_select_all, NULL, &logbook->roles_treeview, &logbook->roles_treemodel);
   gtk_widget_show_all(logbook->roles_treeview);
   gtk_container_add(GTK_CONTAINER(logbook->roles_sw), logbook->roles_treeview);
 
-  store_build_query_stmt_widget(logbook->aircraft_select_all, &logbook->aircraft_treeview, &logbook->aircraft_treemodel);
+  store_build_query_stmt_widget(logbook->aircraft_select_all, NULL, &logbook->aircraft_treeview, &logbook->aircraft_treemodel);
   gtk_widget_show_all(logbook->aircraft_treeview);
   gtk_container_add(GTK_CONTAINER(logbook->aircraft_sw), logbook->aircraft_treeview);
 
-  store_build_query_stmt_widget(logbook->types_select_all, &logbook->types_treeview, &logbook->types_treemodel);
+  store_build_query_stmt_widget(logbook->types_select_all, NULL, &logbook->types_treeview, &logbook->types_treemodel);
   gtk_widget_show_all(logbook->types_treeview);
   gtk_container_add(GTK_CONTAINER(logbook->types_sw), logbook->types_treeview);
 
-  store_build_query_stmt_widget(logbook->airports_select_all, &logbook->airports_treeview, &logbook->airports_treemodel);
+  store_build_query_stmt_widget(logbook->airports_select_all, NULL, &logbook->airports_treeview, &logbook->airports_treemodel);
   gtk_widget_show_all(logbook->airports_treeview);
   gtk_container_add(GTK_CONTAINER(logbook->airports_sw), logbook->airports_treeview);
 
@@ -321,10 +320,6 @@ Logbook *logbook_new(const char *filename)
 		   G_CALLBACK(on_aircraft_notes_changed), logbook);
   g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->airports_notes))), "changed",
 		   G_CALLBACK(on_airports_notes_changed), logbook);
-
-  /* Out of place code to init flights utc button */
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), FALSE);
-  gtk_label_set_text(GTK_LABEL(logbook->flights_utc_lbl), "Local");
 
   /* Edit Controls */
   logbook->flights_edctrl                 = &logbook->_flights_edctrl;
@@ -437,6 +432,11 @@ Logbook *logbook_new(const char *filename)
   aircraft_load_selection(logbook);
 
   return logbook;
+}
+
+void logbook_save_options(Logbook *logbook)
+{
+  flights_save_options(logbook);
 }
 
 void logbook_finalize(Logbook *logbook)

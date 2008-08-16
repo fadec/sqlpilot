@@ -33,7 +33,7 @@ enum {
 };
 
 #define AIRCRAFT_SELECT							\
-  "select aircraft.id as id"						\
+  "select aircraft.id as '_\\id'"					\
   ", aircraft.ident as Ident"						\
   ", types.ident as Type"						\
   ", aircraft.fleetno as FleetNo"					\

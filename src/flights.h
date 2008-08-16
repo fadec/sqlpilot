@@ -58,6 +58,7 @@ enum {
   FLIGHTS_COL_SDUR,
   FLIGHTS_COL_TRIP,
   FLIGHTS_COL_TRIPDATE,
+  FLIGHTS_COL_OVER,
   FLIGHTS_NUMCOL
 };
 
@@ -75,29 +76,30 @@ enum {
   ", flights.AOutUTC as AOutUTC"					\
   ", flights.ain as AIn"						\
   ", flights.AInUTC as AInUTC"						\
-  ", m_to_hhmm(flights.dur) as 'n\\Dur'"				\
-  ", m_to_hhmm(flights.night) as 'n\\Night'"				\
-  ", m_to_hhmm(flights.inst) as 'n\\Inst'"				\
-  ", m_to_hhmm(flights.siminst) as 'n\\SimInst'"			\
+  ", m_to_hhmm(flights.dur) as Dur"					\
+  ", m_to_hhmm(flights.night) as Night"					\
+  ", m_to_hhmm(flights.inst) as Inst"					\
+  ", m_to_hhmm(flights.siminst) as SimInst"				\
   ", bool(flights.hold) as Hold"					\
   ", flights.aprch as Aprch"						\
-  ", linecount(flights.aprch) as 'n\\nApr'"				\
+  ", linecount(flights.aprch) as nApr"					\
   ", bool(flights.xc) as XC"						\
-  ", round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as 'n\\Dist'"	\
-  ", flights.dland as 'n\\DLand'"					\
-  ", flights.nland as 'n\\NLand'"					\
+  ", round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as Dist"	\
+  ", flights.dland as DLand"						\
+  ", flights.nland as NLand"						\
   ", flights.crew as Crew"						\
-  ", linecount(flights.crew) as 'n\\Crw'"				\
+  ", linecount(flights.crew) as Crw"					\
   ", flights.notes as Notes"						\
-  ", linecount(flights.notes) as 'n\\Nts'"				\
-  ", flights.fltno as 'n\\FltNo'"					\
+  ", linecount(flights.notes) as Nts"					\
+  ", flights.fltno as FltNo"						\
   ", flights.sout as SOut"						\
   ", flights.SOutUTC as SOutUTC"					\
   ", flights.sin as SIn"						\
   ", flights.SInUTC as SInUTC"						\
-  ", m_to_hhmm(flights.sdur) as 'n\\SDur'"				\
+  ", m_to_hhmm(flights.sdur) as SDur"					\
   ", flights.trip as Trip"						\
   ", flights.TripDate as TripDate"					\
+  ", m_to_hhmm(flights.dur - flights.sdur) as Over"			\
   " from flights"							\
   " left join aircraft a on flights.aircraft_id = a.id"			\
   " left join roles r on flights.role_id = r.id"			\
@@ -237,4 +239,6 @@ void flights_refresh_aircraft_utilized(Logbook *logbook);
 void flights_refresh_role_utilized(Logbook *logbook);
 void flights_refresh_dep_utilized(Logbook *logbook);
 void flights_refresh_arr_utilized(Logbook *logbook);
+void flights_build_store_view(Logbook *logbook);
+void flights_save_options(Logbook *logbook);
 #endif

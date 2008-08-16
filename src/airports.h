@@ -40,7 +40,7 @@ enum {
 };
 
 #define AIRPORTS_SELECT					\
-  "select a.id as _id"					\
+  "select a.id as '_\\id'"				\
   ", a.ident as Ident"					\
   ", a.icao as ICAO"					\
   ", a.name as Name"					\

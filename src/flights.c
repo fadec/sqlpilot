@@ -21,6 +21,44 @@
 #include "aircraft.h"
 #include <string.h>
 
+StoreColumnKind flights_column_kinds[] = {
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_FLOAT,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR_NUM
+};
+
 void flights_refresh_aircraft_utilized(Logbook *logbook)
 {
   DBint64 id;
@@ -580,6 +618,7 @@ void flights_set_view_column_visibility(Logbook *logbook)
     "SDur",
     "Trip",
     "TripDate",
+    "Over",
     NULL
   };
   GtkWidget *toggles[] = {
@@ -607,13 +646,13 @@ void flights_set_view_column_visibility(Logbook *logbook)
     logbook->flights_view_fltno,
     logbook->flights_view_sdur,
     logbook->flights_view_trip,
-    logbook->flights_view_tripdate,  
+    logbook->flights_view_tripdate,
+    logbook->flights_view_over,
     NULL
   };
   int i;
 
   for (i=0; headers[i]; i++) {
-/*     fprintf(stderr, "%s\n", headers[i]); */
     store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
 					   headers[i],
 					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggles[i])));
@@ -654,6 +693,26 @@ void flights_set_view_column_visibility(Logbook *logbook)
     store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "AOutUTC", FALSE);
     store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "AInUTC", FALSE);
   }
+}
+
+void flights_save_options(Logbook *logbook)
+{
+  const char update[] = "UPDATE OptFlightsColumns SET position = ?, visible = ? WHERE title = ?;";
+
+  DBStatement *stmt;
+  stmt = db_prep(logbook->db, update);
+
+  int i=0;
+  GtkTreeViewColumn *col;
+  while ((col = gtk_tree_view_get_column(GTK_TREE_VIEW(logbook->flights_treeview), i))) {
+    db_bind_int(stmt, 1, i);
+    db_bind_int(stmt, 2, (int)gtk_tree_view_column_get_visible(col));
+    db_bind_text(stmt, 3, gtk_tree_view_column_get_title(col));
+    db_stp_res_clr(stmt);
+    i++;
+  }
+
+  db_finalize(stmt);
 }
 
 void flights_refresh(Logbook *logbook)
@@ -714,3 +773,104 @@ void flights_refresh(Logbook *logbook)
   lock = 0;
 }
 
+void flights_build_store_view(Logbook *logbook)
+{
+  /* Build tree view and model*/
+  store_build_query_stmt_widget(logbook->flights_select_all, flights_column_kinds, &logbook->flights_treeview, &logbook->flights_treemodel);
+  gtk_widget_show_all(logbook->flights_treeview);
+  gtk_container_add(GTK_CONTAINER(logbook->flights_sw), logbook->flights_treeview);
+    
+  /* Set column order from saved options */
+  char *errmsg;
+  DBResults *results;
+  if ((results = db_get_table(logbook->db, "SELECT title FROM OptFlightsColumns ORDER BY position;", &errmsg))) {
+    store_view_arrange_columns(GTK_TREE_VIEW(logbook->flights_treeview), results->row_count, results->table);
+    db_results_free(results);
+  } else {
+    fprintf(stderr, "flights_build_store_view(): %s\n", errmsg);
+  }
+
+  /* Column visibility from saved options */
+  int i;
+  if ((results = db_get_table(logbook->db, "SELECT title FROM OptFlightsColumns WHERE NOT visible;", &errmsg))) {
+    for (i=0; i<results->row_count; i++) {
+      store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), results->table[i], FALSE);
+    }
+    db_results_free(results);
+  } else {
+    fprintf(stderr, "flights_build_store_view(): %s\n", errmsg);
+  }
+
+  /* Set view check boxes based on which columns are visible */
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_date),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Date")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_leg),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Leg")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aircraft),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Aircraft")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_role),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Role")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dep),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Dep")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_arr),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Arr")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dur),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Dur")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_night),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Night")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_inst),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Inst")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_siminst),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"SimInst")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_hold),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Hold")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aprch),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Aprch")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aprchn),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"nApr")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_xc),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"XC")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dist),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Dist")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dland),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"DLand")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_nland),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"NLand")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_crew),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Crew")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_crewn),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Crw")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_notes),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Notes")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_notesn),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Nts")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_fltno),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"FltNo")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sdur),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"SDur")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_trip),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Trip")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_tripdate),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"TripDate")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_over),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"Over")));
+
+
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sout),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"SOut")) ||
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"SOutUTC")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sin),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"SIn")) ||
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"SInUTC")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aout),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"AOut")) ||
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"AOutUTC")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_ain),
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"AIn")) ||
+			       gtk_tree_view_column_get_visible(store_view_find_column_by_title(GTK_TREE_VIEW(logbook->flights_treeview) ,"AInUTC")));
+
+  /* Set UTC button based on which time colums are visible */
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), FALSE);
+  gtk_label_set_text(GTK_LABEL(logbook->flights_utc_lbl), "Local");
+
+}
