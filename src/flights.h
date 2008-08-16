@@ -28,6 +28,7 @@ enum {
   FLIGHTS_COL_DATE,
   FLIGHTS_COL_LEG,
   FLIGHTS_COL_AIRCRAFT,
+  FLIGHTS_COL_TYPE,
   FLIGHTS_COL_ROLE,
   FLIGHTS_COL_DEP,
   FLIGHTS_COL_ARR,
@@ -69,6 +70,7 @@ enum {
   ", flights.Date as Date"						\
   ", flights.Leg as Leg"						\
   ", a.ident as Aircraft"						\
+  ", t.ident as Type"							\
   ", r.ident as Role"							\
   ", dep.ident as Dep"							\
   ", arr.ident as Arr"							\
@@ -102,6 +104,7 @@ enum {
   ", m_to_hhmm(flights.dur - flights.sdur) as Over"			\
   " from flights"							\
   " left join aircraft a on flights.aircraft_id = a.id"			\
+  " left join types t on a.type_id = t.id"				\
   " left join roles r on flights.role_id = r.id"			\
   " left join airports dep on flights.dep_id = dep.id"			\
   " left join airports arr on flights.arr_id = arr.id"

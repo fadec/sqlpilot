@@ -137,46 +137,83 @@ CREATE TABLE Employers (
        ,Name CHAR
 );
 
-CREATE TABLE OptFlightsColumns (
-       title CHAR
-       ,position INTEGER
-       ,visible BOOLEAN
+CREATE TABLE Registry (
+       path CHAR
+       ,key INTEGER		-- integer affinity for sort
+       ,value INTEGER
 );
+create unique index registry_path_key on Registry(path, key);
 
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Date",     1,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("FltNo",    2, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Leg",      3,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Aircraft", 4,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Role",     5,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Dep",      6,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Arr",      7,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AOut",     8,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AOutUTC",  9,  0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AIn",      10,  1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("AInUTC",   11, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Dur",      12, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Night",    13, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Inst",     14, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SimInst",  15, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Hold",     16, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Aprch",    17, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("nApr",     18, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("XC",       19, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Dist",     20, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("DLand",    21, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("NLand",    22, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Crew",     23, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Crw",      24, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Notes",    25, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Nts",      26, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SOut",     28, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SOutUTC",  29, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SIn",      30, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SInUTC",   31, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("SDur",     32, 1);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Trip",     33, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("TripDate", 34, 0);
-INSERT INTO OptFlightsColumns (title, position, visible) VALUES ("Over",     35, 0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Date",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "FltNo",    2);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Leg",      3);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Aircraft", 4);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Type",     5);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Role",     6);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Dep",      7);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Arr",      8);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "AOut",     9);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "AOutUTC",  10);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "AIn",      11);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "AInUTC",   12);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Dur",      13);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Night",    14);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Inst",     15);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "SimInst",  16);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Hold",     17);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Aprch",    18);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "nApr",     19);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "XC",       20);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Dist",     21);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "DLand",    22);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "NLand",    23);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Crew",     24);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Crw",      25);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Notes",    26);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Nts",      27);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "SOut",     28);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "SOutUTC",  29);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "SIn",      30);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "SInUTC",   31);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "SDur",     32);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Trip",     33);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "TripDate", 34);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Over",     35);
+
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Date",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "FltNo",    1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Leg",      1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Aircraft", 1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Type",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Role",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Dep",      1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Arr",      1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "AOut",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "AIn",      1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Dur",      1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Night",    1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Inst",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "SimInst",  0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Hold",     0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Aprch",    0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "nApr",     0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "XC",       0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Dist",     0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "DLand",    1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "NLand",    1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Crew",     0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Crw",      0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Notes",    0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Nts",      0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "SOut",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "SIn",      1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "SDur",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Trip",     0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "TripDate", 0);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Over",     0);
+
+INSERT INTO Registry (path, key, value) VALUES ("flights", "UTC", 0);
+
 
 create unique index airports_ident on airports(ident);
 create unique index airports_icao on airports(icao);

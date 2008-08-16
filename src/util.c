@@ -690,5 +690,3 @@ gboolean spawn_script(const gchar *wdir,
   return ret;
 }
 
-
-

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE glade-interface SYSTEM "glade-2.0.dtd">
-<!--Generated with glade3 3.4.5 on Fri Aug 15 21:55:15 2008 -->
+<!--Generated with glade3 3.4.5 on Sat Aug 16 00:01:02 2008 -->
 <glade-interface>
   <widget class="GtkWindow" id="window">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
@@ -1082,10 +1082,11 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="flights_view_fltno">
+                                  <widget class="GtkCheckButton" id="flights_view_leg">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Flight Number</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="label" translatable="yes">Leg Sequence</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -1094,6 +1095,63 @@
                                   </packing>
                                 </child>
                               </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkHBox" id="hbox31">
+                                <property name="visible">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <property name="homogeneous">True</property>
+                                <child>
+                                  <widget class="GtkCheckButton" id="flights_view_fltno">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">Flight Number</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </widget>
+                                </child>
+                                <child>
+                                  <widget class="GtkCheckButton" id="flights_view_dep">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="label" translatable="yes">Departure City</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkCheckButton" id="flights_view_arr">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="label" translatable="yes">Arrival City</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkCheckButton" id="flights_view_dist">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">Distance</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                             <child>
                               <widget class="GtkHBox" id="hbox26">
@@ -1125,11 +1183,10 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="flights_view_dep">
+                                  <widget class="GtkCheckButton" id="flights_view_type">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">Departure City</property>
+                                    <property name="label" translatable="yes">Type</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -1138,13 +1195,8 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="flights_view_arr">
+                                  <widget class="GtkLabel" id="label26">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">Arrival City</property>
-                                    <property name="response_id">0</property>
-                                    <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
                                     <property name="position">3</property>
@@ -1154,36 +1206,13 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">1</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                             <child>
-                              <widget class="GtkHBox" id="hbox31">
+                              <widget class="GtkHBox" id="hbox54">
                                 <property name="visible">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="homogeneous">True</property>
-                                <child>
-                                  <widget class="GtkCheckButton" id="flights_view_leg">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">Leg Number</property>
-                                    <property name="response_id">0</property>
-                                    <property name="draw_indicator">True</property>
-                                  </widget>
-                                </child>
-                                <child>
-                                  <widget class="GtkCheckButton" id="flights_view_dist">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Distance</property>
-                                    <property name="response_id">0</property>
-                                    <property name="draw_indicator">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
                                 <child>
                                   <widget class="GtkCheckButton" id="flights_view_dland">
                                     <property name="visible">True</property>
@@ -1193,9 +1222,6 @@
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
-                                  <packing>
-                                    <property name="position">2</property>
-                                  </packing>
                                 </child>
                                 <child>
                                   <widget class="GtkCheckButton" id="flights_view_nland">
@@ -1207,12 +1233,36 @@
                                     <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkCheckButton" id="flights_view_aprch">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">Approaches</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <widget class="GtkCheckButton" id="flights_view_aprchn">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="label" translatable="yes">Approach Count</property>
+                                    <property name="response_id">0</property>
+                                    <property name="draw_indicator">True</property>
+                                  </widget>
+                                  <packing>
                                     <property name="position">3</property>
                                   </packing>
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">2</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>
@@ -1269,7 +1319,7 @@
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">3</property>
+                                <property name="position">4</property>
                               </packing>
                             </child>
                             <child>
@@ -1300,24 +1350,16 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="flights_view_aprch">
+                                  <widget class="GtkLabel" id="label55">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Approach</property>
-                                    <property name="response_id">0</property>
-                                    <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
                                     <property name="position">2</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkCheckButton" id="flights_view_aprchn">
+                                  <widget class="GtkLabel" id="label53">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="label" translatable="yes">Approach Count</property>
-                                    <property name="response_id">0</property>
-                                    <property name="draw_indicator">True</property>
                                   </widget>
                                   <packing>
                                     <property name="position">3</property>
@@ -1325,7 +1367,7 @@
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">4</property>
+                                <property name="position">5</property>
                               </packing>
                             </child>
                             <child>
@@ -1334,7 +1376,7 @@
                                 <property name="label" translatable="yes">Time</property>
                               </widget>
                               <packing>
-                                <property name="position">5</property>
+                                <property name="position">6</property>
                               </packing>
                             </child>
                             <child>
@@ -1384,7 +1426,7 @@
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">6</property>
+                                <property name="position">7</property>
                               </packing>
                             </child>
                             <child>
@@ -1438,7 +1480,7 @@
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">7</property>
+                                <property name="position">8</property>
                               </packing>
                             </child>
                             <child>
@@ -1490,7 +1532,7 @@
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">8</property>
+                                <property name="position">9</property>
                               </packing>
                             </child>
                             <child>
@@ -1500,7 +1542,7 @@
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="padding">10</property>
-                                <property name="position">9</property>
+                                <property name="position">10</property>
                               </packing>
                             </child>
                           </widget>

@@ -95,6 +95,12 @@ Logbook *logbook_new(const char *filename)
   logbook->airports_insert         = db_prep(logbook->db, AIRPORTS_INSERT);
   logbook->airports_update         = db_prep(logbook->db, AIRPORTS_UPDATE);
   logbook->airports_delete         = db_prep(logbook->db, AIRPORTS_DELETE);
+
+  logbook->registry_select_by_path_key = db_prep(logbook->db, "SELECT value FROM Registry WHERE path = ? AND key = ?;");
+  logbook->registry_insert             = db_prep(logbook->db, "INSERT INTO Registry (value, path, key) VALUES (?, ?, ?);");
+  logbook->registry_update             = db_prep(logbook->db, "UPDATE Registry SET value = ? WHERE path = ? AND key = ?;");
+  logbook->registry_delete             = db_prep(logbook->db, "DELETE FROM Registry WHERE path = ? AND key = ?;");
+
   
   pull_widget(window);
   pull_widget(flights_where);
@@ -134,6 +140,7 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_trip);
   pull_widget(flights_tripdate);
   pull_widget(flights_view_aircraft);
+  pull_widget(flights_view_type);
   pull_widget(flights_view_date);
   pull_widget(flights_view_leg);
   pull_widget(flights_view_dist);
@@ -445,3 +452,64 @@ void logbook_finalize(Logbook *logbook)
   g_slice_free(Logbook, logbook);
 }
 
+char *registry_get_text(Logbook *logbook, const char *path, const char *key)
+{
+  char *value = NULL;
+  DBStatement *stmt = logbook->registry_select_by_path_key;
+  db_bind_text(stmt, 1, path);
+  db_bind_text(stmt, 2, key);
+  if (db_step(stmt) == DB_ROW) {
+    strncpy(logbook->registry_value, (char*)db_column_text(stmt, 0), REGISTRY_BUF_VALUE);
+    logbook->registry_value[REGISTRY_BUF_VALUE-1] = '\0';
+    value = logbook->registry_value;
+  }
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+
+  return value;
+}
+
+int registry_get_int(Logbook *logbook, const char *path, const char *key)
+{
+  int value = 0;
+  DBStatement *stmt = logbook->registry_select_by_path_key;
+  db_bind_text(stmt, 1, path);
+  db_bind_text(stmt, 2, key);
+  if (db_step(stmt) == DB_ROW) {
+    value = db_column_int(stmt, 0);
+  }
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+
+  return value;
+}
+
+int registry_key_exists(Logbook *logbook, const char *path, const char *key)
+{
+  int value = 1;
+  DBStatement *stmt = logbook->registry_select_by_path_key;
+  db_bind_text(stmt, 1, path);
+  db_bind_text(stmt, 2, key);
+  if (db_step(stmt) == DB_DONE) {
+    value = 0;
+  }
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+
+  return value;
+}
+
+void registry_set_int(Logbook *logbook, const char *path, const char *key, int value)
+{
+  DBStatement *stmt;
+
+  if (registry_key_exists(logbook, path, key)) {
+    stmt = logbook->registry_update;
+  } else {
+    stmt = logbook->registry_insert;
+  }
+  db_bind_int(stmt, 1, value);
+  db_bind_text(stmt, 2, path);
+  db_bind_text(stmt, 3, key);
+  db_stp_res_clr(stmt);
+}

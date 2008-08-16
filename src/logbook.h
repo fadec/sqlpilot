@@ -33,6 +33,8 @@
 #define pull_widget(x) logbook->x = GTK_WIDGET(glade_xml_get_widget(gxml, (#x)));
 #endif
 
+#define REGISTRY_BUF_VALUE 4096
+
 struct Logbook {
   DB *db;
   char *db_filename;
@@ -85,6 +87,7 @@ struct Logbook {
   GtkWidget *flights_tripdate;
 
   GtkWidget *flights_view_aircraft;
+  GtkWidget *flights_view_type;
   GtkWidget *flights_view_date;
   GtkWidget *flights_view_leg;
   GtkWidget *flights_view_dist;
@@ -278,9 +281,19 @@ struct Logbook {
   GtkWidget *summaries_parameters;
   Scripter _summaries_parameter_pane;
   Scripter *summaries_parameter_pane;
+
+  char registry_value[REGISTRY_BUF_VALUE];
+  DBStatement *registry_select_by_path_key;
+  DBStatement *registry_insert;
+  DBStatement *registry_update;
+  DBStatement *registry_delete;
 };
 
 Logbook *logbook_new(const char *filename);
 void logbook_finalize(Logbook *);
 void logbook_save_options(Logbook *logbook);
+char *registry_get_text(Logbook *logbook, const char *path, const char *key);
+int registry_get_int(Logbook *logbook, const char *path, const char *key);
+int registry_key_exists(Logbook *logbook, const char *path, const char *key);
+void registry_set_int(Logbook *logbook, const char *path, const char *key, int val);
 #endif
