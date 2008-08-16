@@ -108,15 +108,15 @@ DBint64 airports_write_entries(const gchar *id, Logbook *logbook)
   }
   db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_IDENT, ident);
   db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_ICAO,  icao);
-  db_bind_text(stmt, AIRPORTS_WRITE_LAT,   lat);
-  db_bind_text(stmt, AIRPORTS_WRITE_LON,   lon);
-  db_bind_text(stmt, AIRPORTS_WRITE_ELEV,  elev);
-  db_bind_text(stmt, AIRPORTS_WRITE_CITY, city);
-  db_bind_text(stmt, AIRPORTS_WRITE_PROVINCE, province);
-  db_bind_text(stmt, AIRPORTS_WRITE_COUNTRY, country);
-  db_bind_text(stmt, AIRPORTS_WRITE_NAME,  name);
-  db_bind_text(stmt, AIRPORTS_WRITE_TZONE, tzone);
-  db_bind_text(stmt, AIRPORTS_WRITE_NOTES, notes);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_LAT,   lat);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_LON,   lon);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_ELEV,  elev);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_CITY, city);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_PROVINCE, province);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_COUNTRY, country);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_NAME,  name);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_TZONE, tzone);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_NOTES, notes);
   
   db_stp_res_clr(stmt);
 

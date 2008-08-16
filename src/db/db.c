@@ -37,19 +37,18 @@ static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **a
   //assert(argc == 1);
   switch (sqlite3_value_type(argv[0])) {
   case SQLITE_NULL:
+    return;
   case SQLITE_TEXT:
   case SQLITE_BLOB: m = 0;
     break;
   case SQLITE_FLOAT:
   case SQLITE_INTEGER: m = sqlite3_value_int(argv[0]);
   }
-  if (m) {
-    am = abs(m);
-    hh = am / 60;
-    mm = am - (hh * 60);
-    snprintf(z, 30, "%s%d+%02d", m < 0 ? "-" : "", hh, mm);
-    sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
-  }
+  am = abs(m);
+  hh = am / 60;
+  mm = am - (hh * 60);
+  snprintf(z, 30, "%s%d+%02d", m < 0 ? "-" : "", hh, mm);
+  sqlite3_result_text(context, z, -1, SQLITE_TRANSIENT);
 }
 
 /* Takes time string in hhhhhh+mm format and returns integer minutes */
@@ -69,7 +68,7 @@ static void hhmm_to_m_func(sqlite3_context *context, int argc, sqlite3_value **a
   case SQLITE_TEXT:
     str = (char *)sqlite3_value_text(argv[0]);
     sscanf(str, "%d+%d", &hh, &mm);
-    sqlite3_result_int(context, hh * 60 + mm);
+    sqlite3_result_int(context, (abs(hh) * 60 + mm) * (str[0] == '-' ? -1 : 1));
     break;
   }
 }

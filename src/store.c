@@ -41,14 +41,14 @@ static gint iter_compare_by_noisy_str_int_column(GtkTreeModel *model, GtkTreeIte
   gtk_tree_model_get(model, b, (gint)column, &b_val, -1);
   
   for (pread = pwrite = a_val; a_val && *pread; pread++) {
-    if (isdigit(*pread)) {
+    if (isdigit(*pread) || *pread == '-') {
       *pwrite = *pread;
       pwrite++;
     }
   }
 
   for (pread = pwrite = b_val; b_val && *pread; pread++) {
-    if (isdigit(*pread)) {
+    if (isdigit(*pread) || *pread == '-') {
       *pwrite = *pread;
       pwrite++;
     }

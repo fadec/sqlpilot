@@ -214,7 +214,6 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Over",     0);
 
 INSERT INTO Registry (path, key, value) VALUES ("flights", "UTC", 0);
 
-
 create unique index airports_ident on airports(ident);
 create unique index airports_icao on airports(icao);
 create unique index aircraft_ident on aircraft(ident);

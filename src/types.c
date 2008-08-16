@@ -143,8 +143,8 @@ DBint64 types_write_entries(const gchar *id, Logbook *logbook)
     stmt = logbook->types_insert;
   }
   db_bind_text(stmt, TYPES_WRITE_IDENT, ident);
-  db_bind_text(stmt, TYPES_WRITE_MAKE, make);
-  db_bind_text(stmt, TYPES_WRITE_MODEL, model);
+  db_bind_nonempty_text_else_null(stmt, TYPES_WRITE_MAKE, make);
+  db_bind_nonempty_text_else_null(stmt, TYPES_WRITE_MODEL, model);
   db_bind_int(stmt, TYPES_WRITE_AIRPLANE, airplane ? 1 : 0);
   db_bind_int(stmt, TYPES_WRITE_ROTORCRAFT, rotorcraft ? 1 : 0);
   db_bind_int(stmt, TYPES_WRITE_GLIDER, glider ? 1 : 0);

@@ -60,7 +60,7 @@ DBint64 roles_write_entries(const gchar *id, Logbook *logbook)
     stmt = logbook->roles_insert;
   }
   db_bind_text(stmt, ROLES_WRITE_IDENT, ident);
-  db_bind_text(stmt, ROLES_WRITE_NAME, name);
+  db_bind_nonempty_text_else_null(stmt, ROLES_WRITE_NAME, name);
   db_bind_int(stmt, ROLES_WRITE_PIC, pic ? 1 : 0);
   db_bind_int(stmt, ROLES_WRITE_SIC, sic ? 1 : 0);
   db_bind_int(stmt, ROLES_WRITE_FE, fe ? 1 : 0);
