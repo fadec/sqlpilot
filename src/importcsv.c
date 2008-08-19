@@ -280,12 +280,12 @@ void incsv_import(InCSV *incsv, DB *db)
     sscanf(csv_row[incsv->nland], "%d", &nland);
 
     /* Do DB inserts */
-    if (!row_exists(db, "aircraft", "ident", csv_row[incsv->aircraft])) {
+    if (!row_exists(db, "aircraft", "tail", csv_row[incsv->aircraft])) {
       bind_id_of(aircraft_ins, AIRCRAFT_WRITE_TYPE, "types", "ident", csv_row[incsv->type]);
-      db_bind_text(aircraft_ins, AIRCRAFT_WRITE_IDENT, csv_row[incsv->aircraft]);
+      db_bind_text(aircraft_ins, AIRCRAFT_WRITE_TAIL, csv_row[incsv->aircraft]);
       db_stp_res_clr(aircraft_ins);
     }
-    bind_id_of(flights_ins, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "ident", csv_row[incsv->aircraft]);
+    bind_id_of(flights_ins, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "tail", csv_row[incsv->aircraft]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_ROLE, "roles", "ident", csv_row[incsv->role]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_DEP, "airports", "ident", csv_row[incsv->dep]);
     bind_id_of(flights_ins, FLIGHTS_WRITE_ARR, "airports", "ident", csv_row[incsv->arr]);

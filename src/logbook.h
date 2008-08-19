@@ -46,6 +46,8 @@ struct Logbook {
   DBStatement *flights_insert;
   DBStatement *flights_update;
   DBStatement *flights_delete;
+  DBStatement *flights_aircraft_fleetno_from_tail;
+  DBStatement *flights_aircraft_tail_from_fleetno;
   GtkWidget *flights_where;
   GtkWidget *flights_refresh;
   GtkWidget *flights_query_progress;
@@ -56,6 +58,10 @@ struct Logbook {
   GtkWidget *flights_treeview;
   GtkWidget *flights_utc;
   GtkWidget *flights_utc_lbl;
+  GtkWidget *flights_icao_toggle;
+  GtkWidget *flights_icao_toggle_lbl;
+  GtkWidget *flights_fleetno_toggle;
+  GtkWidget *flights_fleetno_toggle_lbl;
   GtkWidget *flights_aircraft;
   GtkWidget *flights_aircraft_utilized;
   GtkWidget *flights_date;
@@ -86,7 +92,8 @@ struct Logbook {
   GtkWidget *flights_trip;
   GtkWidget *flights_tripdate;
 
-  GtkWidget *flights_view_aircraft;
+  GtkWidget *flights_view_tail;
+  GtkWidget *flights_view_fleetno;
   GtkWidget *flights_view_type;
   GtkWidget *flights_view_date;
   GtkWidget *flights_view_leg;
@@ -156,7 +163,7 @@ struct Logbook {
   Edctrl *roles_edctrl;
 
   int aircraft_stale;
-  int aircraft_ident_error;
+  int aircraft_tail_error;
   int aircraft_fleetno_error;
   DBStatement *aircraft_select_all;
   DBStatement *aircraft_select_by_id;
@@ -168,8 +175,8 @@ struct Logbook {
   GtkTreeModel *aircraft_treemodel;
   GtkTreeSelection *aircraft_selection;
   GtkWidget *aircraft_treeview;
-  GtkWidget *aircraft_ident;
-  GtkWidget *aircraft_ident_valid_wart;
+  GtkWidget *aircraft_tail;
+  GtkWidget *aircraft_tail_valid_wart;
   GtkWidget *aircraft_fleetno;
   GtkWidget *aircraft_fleetno_valid_wart;
   GtkWidget *aircraft_type;

@@ -25,10 +25,10 @@ void on_aircraft_ident_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_aircraft_ident(entry);
 
-  if (aircraft_ident_validate(logbook)) {
-    gtk_image_set_from_stock(GTK_IMAGE(logbook->aircraft_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
+  if (aircraft_tail_validate(logbook)) {
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->aircraft_tail_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(logbook->aircraft_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->aircraft_tail_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
   edctrl_set_modified(logbook->aircraft_edctrl);
 }
@@ -53,7 +53,7 @@ void on_aircraft_type_changed(GtkEntry *entry, Logbook *logbook)
 void on_aircraft_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
 {
   edctrl_selection_changed(logbook->aircraft_edctrl);
-  gtk_image_set_from_stock(GTK_IMAGE(logbook->aircraft_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+  gtk_image_set_from_stock(GTK_IMAGE(logbook->aircraft_tail_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   gtk_image_set_from_stock(GTK_IMAGE(logbook->aircraft_fleetno_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
 }
 

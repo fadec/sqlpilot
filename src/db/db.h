@@ -59,6 +59,12 @@
 #define DB_RESULTS_TYPE_TABLE 0
 #define DB_RESULTS_TYPE_LIST 1
 
+#define DB_INTEGER  1
+#define DB_FLOAT    2
+#define DB_TEXT     3
+#define DB_BLOB     4
+#define DB_NULL     5
+
 typedef sqlite3 DB;
 typedef sqlite3_stmt DBStatement;
 /* Had trouble with sqlite3_int64 on Ubuntu ??? */
@@ -102,6 +108,7 @@ int db_finalize(DBStatement *stmt);
 int db_step(DBStatement *stmt);
 DB *db_handle(DBStatement *);
 DBint64 db_last_insert_rowid(DB *);
+int db_column_type(DBStatement *stmt, int icolumn);
 const unsigned char *db_column_text(DBStatement *stmt, int icolumn);
 int db_column_bytes(DBStatement *stmt, int icolumn);
 int db_column_int(DBStatement *stmt, int icolumn);

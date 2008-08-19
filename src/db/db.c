@@ -59,6 +59,7 @@ static void hhmm_to_m_func(sqlite3_context *context, int argc, sqlite3_value **a
   const char *str;
   switch (sqlite3_value_type(argv[0])) {
   case SQLITE_NULL:
+    return;
   case SQLITE_BLOB:
     break;
   case SQLITE_FLOAT:
@@ -73,7 +74,7 @@ static void hhmm_to_m_func(sqlite3_context *context, int argc, sqlite3_value **a
   }
 }
 
-/* formats a column as a text bool "T" "F" */
+/* formats a column as a text bool "T" "F" - NULL cast to F*/
 /* text [ "" | "0" | "F" | "f" ] = false, else true */
 static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
 {
@@ -120,8 +121,13 @@ static double great_circle(double lat1, double lon1, double lat2, double lon2)
 static void dist_nm(sqlite3_context *context, int argc, sqlite3_value **argv)
 {
   double lat1, lat2, lon1, lon2, d, conv;
+  int i;
 
   conv = 3.14159265 / 180;
+
+  for (i=0;i<4;i++) {
+    if (sqlite3_value_type(argv[i]) == SQLITE_NULL) return;
+  }
 
   lat1 = sqlite3_value_double(argv[0]) * conv;
   lon1 = sqlite3_value_double(argv[1]) * conv;
@@ -141,9 +147,7 @@ static void linecount_func(sqlite3_context *context, int argc, sqlite3_value **a
 
   switch (sqlite3_value_type(argv[0])) {
   case SQLITE_NULL:
-    break;
   case SQLITE_FLOAT:
-    break;
   case SQLITE_INTEGER:
     break;
   case SQLITE_BLOB:
@@ -329,6 +333,11 @@ int db_step(DBStatement *stmt)
 DBint64 db_last_insert_rowid(DB *db)
 {
   return sqlite3_last_insert_rowid(db);
+}
+
+int db_column_type(DBStatement *stmt, int icolumn)
+{
+  return sqlite3_column_type((sqlite3_stmt *)stmt, icolumn);
 }
 
 const unsigned char *db_column_text(DBStatement *stmt, int icolumn)

@@ -73,8 +73,8 @@ CREATE TABLE Roles (
 
 CREATE TABLE Aircraft (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Ident CHAR
 	,type_id INTEGER
+	,Tail CHAR
 	,FleetNo CHAR
 	,Notes TEXT
 );
@@ -147,7 +147,8 @@ create unique index registry_path_key on Registry(path, key);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Date",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "FltNo",    2);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Leg",      3);
-INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Aircraft", 4);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Tail",     4);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "FleetNo",     4);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Type",     5);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Role",     6);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Dep",      7);
@@ -183,7 +184,8 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Over",
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Date",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "FltNo",    1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Leg",      1);
-INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Aircraft", 1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Tail",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "FleetNo",  1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Type",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Role",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Dep",      1);
@@ -216,7 +218,7 @@ INSERT INTO Registry (path, key, value) VALUES ("flights", "UTC", 0);
 
 create unique index airports_ident on airports(ident);
 create unique index airports_icao on airports(icao);
-create unique index aircraft_ident on aircraft(ident);
+create unique index aircraft_tail on aircraft(tail);
 create unique index aircraft_fleetno on aircraft(fleetno);
 create unique index roles_ident on roles(ident);
 create unique index type_ident on types(ident);
@@ -269,7 +271,7 @@ SELECT * FROM Departures UNION SELECT * FROM Arrivals;
 
 CREATE VIEW MyAircraft AS
 SELECT aircraft.id as id
-,aircraft.ident as Ident
+,aircraft.tail as Tail
 ,types.ident as Type
 ,aircraft.fleetno as FleetNo
 ,aircraft.notes as Notes
@@ -281,7 +283,7 @@ SELECT flights.id as _id
 ,flights.date as Date
 ,roles.ident as Role
 ,types.ident as Type
-,aircraft.ident as Aircraft
+,aircraft.Tail as Aircraft
 ,aircraft.fleetno as FleetNo
 ,flights.dur as Dur
 ,dep_airports.ident as Dep

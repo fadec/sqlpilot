@@ -26,12 +26,12 @@ int aircraft_selection_show(GtkTreeSelection *selection, char *show, size_t size
   GtkTreeIter iter;
   GtkTreeModel *model;
   gchar
-    *ident=NULL;
+    *tail=NULL;
   if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
-		       FLIGHTS_COL_DATE, &ident,
+		       FLIGHTS_COL_DATE, &tail,
 		       -1);
-    snprintf(show, size, "%s", ident);
+    snprintf(show, size, "%s", tail);
     return 1;
   } else {
     show[0] = '\0';
@@ -65,13 +65,13 @@ int aircraft_can_delete(GtkTreeSelection *selection)
 DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook)
 {
   const gchar
-    *ident,
+    *tail,
     *type,
     *fleetno;
   gchar *notes;
   DBStatement *stmt;
 
-  ident    = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_ident));
+  tail    = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_tail));
   type     = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_type));
   fleetno  = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_fleetno));
   notes    = text_view_get_text(GTK_TEXT_VIEW(logbook->aircraft_notes));
@@ -83,9 +83,9 @@ DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook)
   } else {
     stmt = logbook->aircraft_insert;
   }
-  db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_IDENT, ident);
+  db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_TAIL, tail);
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_FLEETNO, fleetno);
-  bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "ident", type);
+  bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "tail", type);
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_NOTES, notes);
 
   db_step(stmt);
@@ -108,7 +108,7 @@ void aircraft_load_selection(Logbook *logb)
   GtkTreeModel *model;
   gchar
     *id=NULL,
-    *ident=NULL,
+    *tail=NULL,
     *type=NULL,
     *fleetno=NULL,
     *notes=NULL;
@@ -116,20 +116,20 @@ void aircraft_load_selection(Logbook *logb)
   if (gtk_tree_selection_get_selected (logb->aircraft_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
 		       AIRCRAFT_COL_ID, &id,
-		       AIRCRAFT_COL_IDENT, &ident,
+		       AIRCRAFT_COL_TAIL, &tail,
 		       AIRCRAFT_COL_TYPE, &type,
 		       AIRCRAFT_COL_FLEETNO, &fleetno,
 		       AIRCRAFT_COL_NOTES, &notes,
 		       -1);
   }
 
-  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_ident), EMPTY_IF_NULL(ident));
+  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_tail), EMPTY_IF_NULL(tail));
   gtk_entry_set_text(GTK_ENTRY(logb->aircraft_type), EMPTY_IF_NULL(type));
   gtk_entry_set_text(GTK_ENTRY(logb->aircraft_fleetno), EMPTY_IF_NULL(fleetno));
   text_view_set_text(GTK_TEXT_VIEW(logb->aircraft_notes), EMPTY_IF_NULL(notes));
 
   g_free(id);
-  g_free(ident);
+  g_free(tail);
   g_free(type);
   g_free(fleetno);
   g_free(notes);
@@ -162,23 +162,23 @@ int aircraft_count_flights(Logbook *logbook, DBint64 id)
   return c;
 }
 
-int aircraft_ident_validate(Logbook *logbook)
+int aircraft_tail_validate(Logbook *logbook)
 {
   gchar *id=NULL;
-  const gchar *ident;
+  const gchar *tail;
 
   id = get_text_from_tree_selection(logbook->aircraft_selection, COL_ID);
-  ident = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_ident));
+  tail = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_tail));
   
-  if (unique_but_for(logbook->db, "aircraft", "ident", ident, "id", EMPTY_IF_NULL(id))) {
-    logbook->aircraft_ident_error = 0;
+  if (unique_but_for(logbook->db, "aircraft", "tail", tail, "id", EMPTY_IF_NULL(id))) {
+    logbook->aircraft_tail_error = 0;
   } else {
-    logbook->aircraft_ident_error = 1;
+    logbook->aircraft_tail_error = 1;
   }
 
   g_free(id);
 
-  return logbook->aircraft_ident_error;
+  return logbook->aircraft_tail_error;
 }
 
 int aircraft_fleetno_validate(Logbook *logbook)
@@ -202,11 +202,11 @@ int aircraft_fleetno_validate(Logbook *logbook)
 
 int aircraft_error(Logbook *logbook)
 {
-  const gchar *ident, *fleetno;
-  ident = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_ident));
+  const gchar *tail, *fleetno;
+  tail = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_tail));
   fleetno = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_fleetno));
 
-  return ( !((ident && *ident) || (fleetno && *fleetno))
-	   || logbook->aircraft_ident_error
+  return ( !((tail && *tail) || (fleetno && *fleetno))
+	   || logbook->aircraft_tail_error
 	   || logbook->aircraft_fleetno_error);
 }

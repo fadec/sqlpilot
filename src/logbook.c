@@ -70,6 +70,8 @@ Logbook *logbook_new(const char *filename)
   logbook->flights_insert       = db_prep(logbook->db, FLIGHTS_INSERT);
   logbook->flights_update       = db_prep(logbook->db, FLIGHTS_UPDATE);
   logbook->flights_delete       = db_prep(logbook->db, FLIGHTS_DELETE);
+  logbook->flights_aircraft_fleetno_from_tail = db_prep(logbook->db, "SELECT fleetno FROM aircraft WHERE tail = ? LIMIT 1;");
+  logbook->flights_aircraft_tail_from_fleetno = db_prep(logbook->db, "SELECT tail FROM aircraft WHERE fleetno = ? LIMIT 1;");
 
   logbook->roles_select_all     = db_prep(logbook->db, ROLES_SELECT ROLES_GROUP_BY ";");
   logbook->roles_select_by_id   = db_prep(logbook->db, ROLES_SELECT ROLES_WHERE_ID ROLES_GROUP_BY ";");
@@ -112,6 +114,10 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_aircraft_utilized);
   pull_widget(flights_utc);
   pull_widget(flights_utc_lbl);
+  pull_widget(flights_icao_toggle);
+  pull_widget(flights_icao_toggle_lbl);
+  pull_widget(flights_fleetno_toggle);
+  pull_widget(flights_fleetno_toggle_lbl);
   pull_widget(flights_date);
   pull_widget(flights_leg);
   pull_widget(flights_role);
@@ -139,7 +145,8 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_sdur);
   pull_widget(flights_trip);
   pull_widget(flights_tripdate);
-  pull_widget(flights_view_aircraft);
+  pull_widget(flights_view_tail);
+  pull_widget(flights_view_fleetno);
   pull_widget(flights_view_type);
   pull_widget(flights_view_date);
   pull_widget(flights_view_leg);
@@ -192,8 +199,8 @@ Logbook *logbook_new(const char *filename)
   pull_widget(roles_del_btn);
   pull_widget(roles_todel_lbl);
   pull_widget(aircraft_sw);
-  pull_widget(aircraft_ident);
-  pull_widget(aircraft_ident_valid_wart);
+  pull_widget(aircraft_tail);
+  pull_widget(aircraft_tail_valid_wart);
   pull_widget(aircraft_fleetno);
   pull_widget(aircraft_fleetno_valid_wart);
   pull_widget(aircraft_type);

@@ -34,6 +34,9 @@ StoreColumnKind flights_column_kinds[] = {
   STORE_COLUMN_KIND_STR,
   STORE_COLUMN_KIND_STR,
   STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
+  STORE_COLUMN_KIND_STR,
   STORE_COLUMN_KIND_STR_NUM,
   STORE_COLUMN_KIND_STR_NUM,
   STORE_COLUMN_KIND_STR_NUM,
@@ -62,21 +65,21 @@ StoreColumnKind flights_column_kinds[] = {
 
 void flights_refresh_aircraft_utilized(Logbook *logbook)
 {
-  DBint64 id;
+/*   DBint64 id; */
 
-  char txt[16];
-  const char *aircraft;
+/*   char txt[16]; */
+/*   const char *aircraft; */
 
-  aircraft = gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft));
-  if (!strlen(aircraft)) {
-    snprintf(txt, sizeof(txt), " "); 
-  } else if (find_row_id(logbook->db, "Aircraft", "Ident", aircraft, &id)) {
-    snprintf(txt, sizeof(txt), "(%d)", aircraft_count_flights(logbook, id));
-  } else {
-    snprintf(txt, sizeof(txt), "(?)");
-  }
+/*   aircraft = gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft)); */
+/*   if (!strlen(aircraft)) { */
+/*     snprintf(txt, sizeof(txt), " ");  */
+/*   } else if (find_row_id(logbook->db, "Aircraft", "Ident", aircraft, &id)) { */
+/*     snprintf(txt, sizeof(txt), "(%d)", aircraft_count_flights(logbook, id)); */
+/*   } else { */
+/*     snprintf(txt, sizeof(txt), "(?)"); */
+/*   } */
 
-  gtk_label_set_text(GTK_LABEL(logbook->flights_aircraft_utilized), txt);
+/*   gtk_label_set_text(GTK_LABEL(logbook->flights_aircraft_utilized), txt); */
 }
 
 void flights_refresh_role_utilized(Logbook *logbook)
@@ -273,7 +276,8 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   } else {
     stmt = logbook->flights_insert;
   }
-  bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "ident", aircraft);
+  bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft",
+	     gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle)) ? "fleetno" : "tail", aircraft);
   bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", role);
   bind_id_of(stmt, FLIGHTS_WRITE_DEP , "airports", "ident", dep);
   bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "ident", arr);
@@ -484,13 +488,14 @@ void flights_load_selection(Logbook *logb)
     *hold=NULL;
 
   int _dland=0, _nland=0, _leg=0;
+  int col_aircraft = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_fleetno_toggle)) ? FLIGHTS_COL_FLEETNO : FLIGHTS_COL_TAIL;
 
   if (gtk_tree_selection_get_selected (logb->flights_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
 		       FLIGHTS_COL_ID, &id,
 		       FLIGHTS_COL_DATE, &date,
 		       FLIGHTS_COL_LEG, &leg,
-		       FLIGHTS_COL_AIRCRAFT, &aircraft,
+		       col_aircraft, &aircraft,
 		       FLIGHTS_COL_ROLE, &role,
 		       FLIGHTS_COL_DEP, &dep,
 		       FLIGHTS_COL_ARR, &arr,
@@ -596,7 +601,8 @@ void flights_set_view_column_visibility(Logbook *logbook)
   char *headers[] = {
     "Date",
     "Leg",
-    "Aircraft",
+    "Tail",
+    "FleetNo",
     "Type",
     "Role",
     "Dep",
@@ -626,7 +632,8 @@ void flights_set_view_column_visibility(Logbook *logbook)
   GtkWidget *toggles[] = {
     logbook->flights_view_date,
     logbook->flights_view_leg,
-    logbook->flights_view_aircraft,
+    logbook->flights_view_tail,
+    logbook->flights_view_fleetno,
     logbook->flights_view_type,
     logbook->flights_view_role,
     logbook->flights_view_dep,
@@ -711,7 +718,8 @@ void flights_save_options(Logbook *logbook)
   /* View visibility */
   registry_set_int(logbook, "flights/view", "Date", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_date)));
   registry_set_int(logbook, "flights/view", "Leg",   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_leg)));
-  registry_set_int(logbook, "flights/view", "Aircraft", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aircraft)));
+  registry_set_int(logbook, "flights/view", "Tail", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_tail)));
+  registry_set_int(logbook, "flights/view", "FleetNo", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_fleetno)));
   registry_set_int(logbook, "flights/view", "Type", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_type)));
   registry_set_int(logbook, "flights/view", "Role", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_role)));
   registry_set_int(logbook, "flights/view", "Dep",   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dep)));
@@ -825,35 +833,36 @@ void flights_restore_options(Logbook *logbook)
   /* Set view check boxes */
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_date),     str_bool(registry_get_text(logbook, "flights/view", "Date")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_leg),      str_bool(registry_get_text(logbook, "flights/view", "Leg")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aircraft), str_bool(registry_get_text(logbook, "flights/view", "Aircraft")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_tail),     str_bool(registry_get_text(logbook, "flights/view", "Tail")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_fleetno),  str_bool(registry_get_text(logbook, "flights/view", "FleetNo")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_type),     str_bool(registry_get_text(logbook, "flights/view", "Type")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_role),     str_bool(registry_get_text(logbook, "flights/view", "Role")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dep),      str_bool(registry_get_text(logbook, "flights/view", "Dep")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_arr), str_bool(registry_get_text(logbook, "flights/view", "Arr")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dur), str_bool(registry_get_text(logbook, "flights/view", "Dur")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_night), str_bool(registry_get_text(logbook, "flights/view", "Night")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_inst), str_bool(registry_get_text(logbook, "flights/view", "Inst")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_siminst), str_bool(registry_get_text(logbook, "flights/view", "SimInst")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_hold), str_bool(registry_get_text(logbook, "flights/view", "Hold")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aprch), str_bool(registry_get_text(logbook, "flights/view", "Aprch")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aprchn), str_bool(registry_get_text(logbook, "flights/view", "nApr")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_xc), str_bool(registry_get_text(logbook, "flights/view", "XC")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dist), str_bool(registry_get_text(logbook, "flights/view", "Dist")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dland), str_bool(registry_get_text(logbook, "flights/view", "DLand")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_nland), str_bool(registry_get_text(logbook, "flights/view", "NLand")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_crew), str_bool(registry_get_text(logbook, "flights/view", "Crew")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_crewn), str_bool(registry_get_text(logbook, "flights/view", "Crw")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_notes), str_bool(registry_get_text(logbook, "flights/view", "Notes")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_notesn), str_bool(registry_get_text(logbook, "flights/view", "Notes")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_fltno), str_bool(registry_get_text(logbook, "flights/view", "FltNo")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sdur), str_bool(registry_get_text(logbook, "flights/view", "SDur")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_trip), str_bool(registry_get_text(logbook, "flights/view", "Trip")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_arr),      str_bool(registry_get_text(logbook, "flights/view", "Arr")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dur),      str_bool(registry_get_text(logbook, "flights/view", "Dur")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_night),    str_bool(registry_get_text(logbook, "flights/view", "Night")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_inst),     str_bool(registry_get_text(logbook, "flights/view", "Inst")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_siminst),  str_bool(registry_get_text(logbook, "flights/view", "SimInst")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_hold),     str_bool(registry_get_text(logbook, "flights/view", "Hold")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aprch),    str_bool(registry_get_text(logbook, "flights/view", "Aprch")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aprchn),   str_bool(registry_get_text(logbook, "flights/view", "nApr")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_xc),       str_bool(registry_get_text(logbook, "flights/view", "XC")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dist),     str_bool(registry_get_text(logbook, "flights/view", "Dist")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dland),    str_bool(registry_get_text(logbook, "flights/view", "DLand")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_nland),    str_bool(registry_get_text(logbook, "flights/view", "NLand")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_crew),     str_bool(registry_get_text(logbook, "flights/view", "Crew")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_crewn),    str_bool(registry_get_text(logbook, "flights/view", "Crw")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_notes),    str_bool(registry_get_text(logbook, "flights/view", "Notes")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_notesn),   str_bool(registry_get_text(logbook, "flights/view", "Notes")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_fltno),    str_bool(registry_get_text(logbook, "flights/view", "FltNo")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sdur),     str_bool(registry_get_text(logbook, "flights/view", "SDur")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_trip),     str_bool(registry_get_text(logbook, "flights/view", "Trip")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_tripdate), str_bool(registry_get_text(logbook, "flights/view", "TripDate")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_over), str_bool(registry_get_text(logbook, "flights/view", "Over")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sout), str_bool(registry_get_text(logbook, "flights/view", "SOut")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sin), str_bool(registry_get_text(logbook, "flights/view", "SIn")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aout), str_bool(registry_get_text(logbook, "flights/view", "AOut")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_ain), str_bool(registry_get_text(logbook, "flights/view", "AIn")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_over),     str_bool(registry_get_text(logbook, "flights/view", "Over")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sout),     str_bool(registry_get_text(logbook, "flights/view", "SOut")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_sin),      str_bool(registry_get_text(logbook, "flights/view", "SIn")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aout),     str_bool(registry_get_text(logbook, "flights/view", "AOut")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_ain),      str_bool(registry_get_text(logbook, "flights/view", "AIn")));
 
   /* Set UTC button */
   if (registry_get_int(logbook, "flights", "UTC")) {
@@ -864,4 +873,26 @@ void flights_restore_options(Logbook *logbook)
     gtk_label_set_text(GTK_LABEL(logbook->flights_utc_lbl), "Local");
   }
 
+}
+
+void flights_fleetno_toggle_set_sensitivity(Logbook *logbook)
+{
+  DBStatement *stmt;
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle))) {
+    stmt = logbook->flights_aircraft_tail_from_fleetno;
+  } else {
+    stmt = logbook->flights_aircraft_fleetno_from_tail;
+  }
+  db_bind_text(stmt, 1, gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft)));
+  if ((db_step(stmt) == DB_ROW) && (db_column_type(stmt, 0) == DB_NULL)) {
+    /* Found aircraft but the other key is null */
+    gtk_widget_set_sensitive(logbook->flights_fleetno_toggle, 0);
+  } else {
+    /* Aircraft has both keys or it wasn't found at all */
+    gtk_widget_set_sensitive(logbook->flights_fleetno_toggle, 1);
+  }
+
+  db_reset(stmt);
+  db_clear_bindings(stmt);
 }

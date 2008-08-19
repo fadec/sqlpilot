@@ -24,7 +24,7 @@
 
 enum {
   AIRCRAFT_COL_ID = COL_ID,
-  AIRCRAFT_COL_IDENT,
+  AIRCRAFT_COL_TAIL,
   AIRCRAFT_COL_TYPE,
   AIRCRAFT_COL_FLEETNO,
   AIRCRAFT_COL_NOTES,
@@ -34,7 +34,7 @@ enum {
 
 #define AIRCRAFT_SELECT							\
   "select aircraft.id as '_\\id'"					\
-  ", aircraft.ident as Ident"						\
+  ", aircraft.tail as Tail"						\
   ", types.ident as Type"						\
   ", aircraft.fleetno as FleetNo"					\
   ", aircraft.notes as '_\\Notes'"					\
@@ -52,7 +52,7 @@ enum {
   " where aircraft.id = ?"
 
 enum {
-  AIRCRAFT_WRITE_IDENT = 1,
+  AIRCRAFT_WRITE_TAIL = 1,
   AIRCRAFT_WRITE_TYPE,
   AIRCRAFT_WRITE_FLEETNO,
   AIRCRAFT_WRITE_NOTES,
@@ -60,10 +60,10 @@ enum {
 };
 
 #define AIRCRAFT_INSERT \
-  "insert into aircraft (ident, type_id, fleetno, notes) values (?, ?, ?, ?);"
+  "insert into aircraft (tail, type_id, fleetno, notes) values (?, ?, ?, ?);"
 
 #define AIRCRAFT_UPDATE \
-  "update aircraft set ident = ?, type_id = ?, fleetno = ?, notes = ? where id = ?;"
+  "update aircraft set tail = ?, type_id = ?, fleetno = ?, notes = ? where id = ?;"
 
 #define AIRCRAFT_DELETE	\
   "delete from aircraft where id = ?;"
@@ -78,7 +78,7 @@ DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook);
 void aircraft_load_selection(Logbook *logb);
 int aircraft_count_flights(Logbook *, DBint64 id);
 int aircraft_error(Logbook *logbook);
-int aircraft_ident_validate(Logbook *logbook);
+int aircraft_tail_validate(Logbook *logbook);
 int aircraft_fleetno_validate(Logbook *logbook);
 
 #endif

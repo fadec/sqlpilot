@@ -27,11 +27,14 @@ enum {
   FLIGHTS_COL_ID = COL_ID,
   FLIGHTS_COL_DATE,
   FLIGHTS_COL_LEG,
-  FLIGHTS_COL_AIRCRAFT,
+  FLIGHTS_COL_TAIL,
+  FLIGHTS_COL_FLEETNO,
   FLIGHTS_COL_TYPE,
   FLIGHTS_COL_ROLE,
   FLIGHTS_COL_DEP,
+  FLIGHTS_COL_DEPICAO,
   FLIGHTS_COL_ARR,
+  FLIGHTS_COL_ARRICAO,
   FLIGHTS_COL_AOUT,
   FLIGHTS_COL_AOUTUTC,
   FLIGHTS_COL_AIN,
@@ -69,11 +72,14 @@ enum {
   "select flights.id as '_\\id'"					\
   ", flights.Date as Date"						\
   ", flights.Leg as Leg"						\
-  ", a.ident as Aircraft"						\
+  ", a.tail as Tail"							\
+  ", a.fleetno as FleetNo"						\
   ", t.ident as Type"							\
   ", r.ident as Role"							\
   ", dep.ident as Dep"							\
+  ", dep.icao as DepICAO"						\
   ", arr.ident as Arr"							\
+  ", arr.icao as ArrICAO"						\
   ", flights.aout as AOut"						\
   ", flights.AOutUTC as AOutUTC"					\
   ", flights.ain as AIn"						\
@@ -245,5 +251,6 @@ void flights_refresh_arr_utilized(Logbook *logbook);
 void flights_build_store_view(Logbook *logbook);
 void flights_save_options(Logbook *logbook);
 void flights_restore_options(Logbook *logbook);
+void flights_fleetno_toggle_set_sensitivity(Logbook *logbook);
 
 #endif
