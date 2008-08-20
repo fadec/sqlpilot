@@ -72,6 +72,10 @@ Logbook *logbook_new(const char *filename)
   logbook->flights_delete       = db_prep(logbook->db, FLIGHTS_DELETE);
   logbook->flights_aircraft_fleetno_from_tail = db_prep(logbook->db, "SELECT fleetno FROM aircraft WHERE tail = ? LIMIT 1;");
   logbook->flights_aircraft_tail_from_fleetno = db_prep(logbook->db, "SELECT tail FROM aircraft WHERE fleetno = ? LIMIT 1;");
+  logbook->flights_tz_of_airport_iata  = db_prep(logbook->db, AIRPORTS_SELECT_TZONE_BY_IATA);
+  logbook->flights_tz_of_airport_icao  = db_prep(logbook->db, AIRPORTS_SELECT_TZONE_BY_ICAO);
+  logbook->flights_iata_from_icao = db_prep(logbook->db, AIRPORTS_SELECT_IATA_BY_ICAO);
+  logbook->flights_icao_from_iata = db_prep(logbook->db, AIRPORTS_SELECT_ICAO_BY_IATA);
 
   logbook->roles_select_all     = db_prep(logbook->db, ROLES_SELECT ROLES_GROUP_BY ";");
   logbook->roles_select_by_id   = db_prep(logbook->db, ROLES_SELECT ROLES_WHERE_ID ROLES_GROUP_BY ";");
@@ -249,8 +253,8 @@ Logbook *logbook_new(const char *filename)
   pull_widget(types_del_btn);
   pull_widget(types_todel_lbl);
   pull_widget(airports_sw);
-  pull_widget(airports_ident);
-  pull_widget(airports_ident_valid_wart);
+  pull_widget(airports_iata);
+  pull_widget(airports_iata_valid_wart);
   pull_widget(airports_icao);
   pull_widget(airports_icao_valid_wart);
   pull_widget(airports_name);
@@ -351,7 +355,7 @@ Logbook *logbook_new(const char *filename)
   edctrl_register_save(logbook->flights_edctrl, flights_write_entries, logbook);
   edctrl_register_after_change(logbook->flights_edctrl, flights_after_change, logbook);
   edctrl_register_load_selection(logbook->flights_edctrl, flights_load_selection, logbook);
-  edctrl_register_validator(logbook->flights_edctrl, NULL, NULL);
+  edctrl_register_validator(logbook->flights_edctrl, flights_error, logbook);
 
   logbook->roles_edctrl                 = &logbook->_roles_edctrl;
   logbook->roles_edctrl->edstate        = EDSTATE_EMPTY;

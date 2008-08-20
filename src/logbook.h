@@ -48,6 +48,10 @@ struct Logbook {
   DBStatement *flights_delete;
   DBStatement *flights_aircraft_fleetno_from_tail;
   DBStatement *flights_aircraft_tail_from_fleetno;
+  DBStatement *flights_tz_of_airport_iata;
+  DBStatement *flights_tz_of_airport_icao;
+  DBStatement *flights_icao_from_iata;
+  DBStatement *flights_iata_from_icao;
   GtkWidget *flights_where;
   GtkWidget *flights_refresh;
   GtkWidget *flights_query_progress;
@@ -241,7 +245,7 @@ struct Logbook {
   Edctrl *types_edctrl;
 
   int airports_stale;
-  int airports_ident_error;
+  int airports_iata_error;
   int airports_icao_error;
   DBStatement *airports_select_all;
   DBStatement *airports_select_by_id;
@@ -252,8 +256,8 @@ struct Logbook {
   GtkTreeModel *airports_treemodel;
   GtkTreeSelection *airports_selection;
   GtkWidget *airports_treeview;
-  GtkWidget *airports_ident;
-  GtkWidget *airports_ident_valid_wart;
+  GtkWidget *airports_iata;
+  GtkWidget *airports_iata_valid_wart;
   GtkWidget *airports_icao;
   GtkWidget *airports_icao_valid_wart;
   GtkWidget *airports_name;

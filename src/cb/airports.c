@@ -21,14 +21,14 @@
 #include "airports.h"
 #include "logbook.h"
 
-void on_airports_ident_changed(GtkEntry *entry, Logbook *logbook)
+void on_airports_iata_changed(GtkEntry *entry, Logbook *logbook)
 {
-  entry_clamp_airports_ident(entry);
+  entry_clamp_airports_iata(entry);
 
-  if (airports_ident_validate(logbook)) {
-    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_ident_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
+  if (airports_iata_validate(logbook)) {
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_iata_valid_wart), IMAGE_INVAL, GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_iata_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   }
   edctrl_set_modified(logbook->airports_edctrl);
 }
@@ -48,7 +48,7 @@ void on_airports_icao_changed(GtkEntry *entry, Logbook *logbook)
 void on_airports_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
 {
   edctrl_selection_changed(logbook->airports_edctrl);
-  gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_ident_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
+  gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_iata_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
   gtk_image_set_from_stock(GTK_IMAGE(logbook->airports_icao_valid_wart), IMAGE_KEY, GTK_ICON_SIZE_BUTTON);
 }
 

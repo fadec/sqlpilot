@@ -31,9 +31,9 @@ enum {
   FLIGHTS_COL_FLEETNO,
   FLIGHTS_COL_TYPE,
   FLIGHTS_COL_ROLE,
-  FLIGHTS_COL_DEP,
+  FLIGHTS_COL_DEPIATA,
   FLIGHTS_COL_DEPICAO,
-  FLIGHTS_COL_ARR,
+  FLIGHTS_COL_ARRIATA,
   FLIGHTS_COL_ARRICAO,
   FLIGHTS_COL_AOUT,
   FLIGHTS_COL_AOUTUTC,
@@ -76,9 +76,9 @@ enum {
   ", a.fleetno as FleetNo"						\
   ", t.ident as Type"							\
   ", r.ident as Role"							\
-  ", dep.ident as Dep"							\
+  ", dep.iata as DepIATA"						\
   ", dep.icao as DepICAO"						\
-  ", arr.ident as Arr"							\
+  ", arr.iata as ArrIATA"						\
   ", arr.icao as ArrICAO"						\
   ", flights.aout as AOut"						\
   ", flights.AOutUTC as AOutUTC"					\
@@ -226,6 +226,7 @@ enum {
 #define FLIGHTS_DELETE				\
   "delete from flights where id = ?;"
 
+DBStatement *flights_get_tz_of_airport_stmt(Logbook *logbook);
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int flights_can_delete(GtkTreeSelection *selection);
 void flights_after_change(Logbook *data);
@@ -252,5 +253,6 @@ void flights_build_store_view(Logbook *logbook);
 void flights_save_options(Logbook *logbook);
 void flights_restore_options(Logbook *logbook);
 void flights_fleetno_toggle_set_sensitivity(Logbook *logbook);
-
+int flights_error(Logbook *logbook);
+int flights_swap_airport_key(Logbook *logbook, GtkEntry *entry);
 #endif

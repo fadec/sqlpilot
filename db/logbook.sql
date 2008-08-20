@@ -117,7 +117,7 @@ CREATE TABLE Types (
 CREATE TABLE Airports (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ICAO CHAR
-	,Ident CHAR	-- IATA
+	,IATA CHAR
 	,Name CHAR
 	,City CHAR
 	,Province CHAR
@@ -188,8 +188,10 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Tail",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "FleetNo",  1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Type",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Role",     1);
-INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Dep",      1);
-INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Arr",      1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "DepIATA",  1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "DepICAO",  1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "ArrIATA",  1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "ArrICAO",  1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "AOut",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "AIn",      1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Dur",      1);
@@ -216,8 +218,8 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Over",     0);
 
 INSERT INTO Registry (path, key, value) VALUES ("flights", "UTC", 0);
 
-create unique index airports_ident on airports(ident);
 create unique index airports_icao on airports(icao);
+create unique index airports_ident on airports(iata);
 create unique index aircraft_tail on aircraft(tail);
 create unique index aircraft_fleetno on aircraft(fleetno);
 create unique index roles_ident on roles(ident);
@@ -232,7 +234,7 @@ create index aircraft_type_id on aircraft(type_id);
 
 CREATE VIEW Departures AS
 SELECT airports.id as _id
-,airports.ident as Ident
+,airports.iata as IATA
 ,airports.icao as ICAO
 ,airports.name as Name
 ,airports.city as City
@@ -250,7 +252,7 @@ inner join flights on flights.dep_id = airports.id;
 
 CREATE VIEW Arrivals AS
 SELECT airports.id as _id
-,airports.ident as Ident
+,airports.IATA as IATA
 ,airports.icao as ICAO
 ,airports.name as Name
 ,airports.city as City
@@ -286,8 +288,8 @@ SELECT flights.id as _id
 ,aircraft.Tail as Aircraft
 ,aircraft.fleetno as FleetNo
 ,flights.dur as Dur
-,dep_airports.ident as Dep
-,arr_airports.ident as Arr
+,dep_airports.IATA as DepIATA
+,arr_airports.IATA as ArrIATA
 ,dep_airports.lat as DepLat
 ,dep_airports.lon as DepLon
 ,arr_airports.lat as ArrLat

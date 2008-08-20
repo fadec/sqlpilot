@@ -51,7 +51,7 @@ void entry_clamp_roles_ident(GtkEntry *);
 void entry_clamp_aircraft_ident(GtkEntry *);
 void entry_clamp_aircraft_fleetno(GtkEntry *);
 void entry_clamp_types_ident(GtkEntry *);
-void entry_clamp_airports_ident(GtkEntry *);
+void entry_clamp_airports_iata(GtkEntry *);
 void entry_clamp_airports_icao(GtkEntry *);
 void entry_format_date_on_focus_out(GtkEntry *);
 
@@ -61,7 +61,8 @@ void tm_read_strdate(struct tm *tm, const char *str);
 void tm_read_strtime(struct tm *tm, const char *str);
 time_t tmtz_mktime(struct tm *tm, const char *tz);
 time_t dtz_mktime(const char *date, const char *time, const char *tz);
-int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize);
+int tz_of_airport(DBStatement *select, const char *key, char *tz, int tz_bufsize);
+void tz_of_airport_or_utc(DBStatement *select, const char *key, char *tz, int tz_bufsize);
 struct tm *localtime_tz(const time_t *timep, const char *tz, struct tm *retrn);
 void move_time(const char *fromtz, const char *totz, const char *strdate, const char *strtime, char *strdate_r, char *strtime_r);
 int row_exists(DB *db, const char *table, const char *column, const char *value);

@@ -26,23 +26,23 @@ int airports_selection_show(GtkTreeSelection *selection, char *show, size_t size
   GtkTreeIter iter;
   GtkTreeModel *treemodel;
   gchar
-    *ident=NULL,
+    *iata=NULL,
     *icao=NULL,
     *city=NULL;
   if (gtk_tree_selection_get_selected (selection, &treemodel, &iter)) {
     gtk_tree_model_get(treemodel, &iter,
-		       AIRPORTS_COL_IDENT, &ident,
+		       AIRPORTS_COL_IATA, &iata,
 		       AIRPORTS_COL_ICAO, &icao,
 		       AIRPORTS_COL_CITY, &city,
 		       -1);
-    snprintf(show, size, "%s/%s - %s", ident, icao, city);
+    snprintf(show, size, "%s/%s - %s", iata, icao, city);
     return 1;
   } else {
     show[0] = '\0';
     return -1;
   }
 
-  g_free(ident);
+  g_free(iata);
   g_free(icao);
   g_free(city);
 }
@@ -73,7 +73,7 @@ void airports_after_change(Logbook *logbook)
 DBint64 airports_write_entries(const gchar *id, Logbook *logbook)
 {
   const gchar
-    *ident,
+    *iata,
     *icao,
     *lat,
     *lon,
@@ -86,7 +86,7 @@ DBint64 airports_write_entries(const gchar *id, Logbook *logbook)
   gchar *notes;
   DBStatement *stmt;
 
-  ident    = gtk_entry_get_text(GTK_ENTRY(logbook->airports_ident));
+  iata    = gtk_entry_get_text(GTK_ENTRY(logbook->airports_iata));
   icao     = gtk_entry_get_text(GTK_ENTRY(logbook->airports_icao));
   lat      = gtk_entry_get_text(GTK_ENTRY(logbook->airports_lat));
   lon      = gtk_entry_get_text(GTK_ENTRY(logbook->airports_lon));
@@ -106,7 +106,7 @@ DBint64 airports_write_entries(const gchar *id, Logbook *logbook)
   } else {
     stmt = logbook->airports_insert;
   }
-  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_IDENT, ident);
+  db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_IATA, iata);
   db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_ICAO,  icao);
   db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_LAT,   lat);
   db_bind_nonempty_text_else_null(stmt, AIRPORTS_WRITE_LON,   lon);
@@ -135,7 +135,7 @@ void airports_load_selection(Logbook *logb)
   GtkTreeModel *model;
   gchar
     *id=NULL,
-    *ident=NULL,
+    *iata=NULL,
     *icao=NULL,
     *lat=NULL,
     *lon=NULL,
@@ -150,7 +150,7 @@ void airports_load_selection(Logbook *logb)
   if (gtk_tree_selection_get_selected (logb->airports_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
 		       AIRPORTS_COL_ID, &id,
-		       AIRPORTS_COL_IDENT, &ident,
+		       AIRPORTS_COL_IATA, &iata,
 		       AIRPORTS_COL_ICAO, &icao,
 		       AIRPORTS_COL_LAT, &lat,
 		       AIRPORTS_COL_LON, &lon,
@@ -164,7 +164,7 @@ void airports_load_selection(Logbook *logb)
 		       -1);
   }
   
-  gtk_entry_set_text(GTK_ENTRY(logb->airports_ident), EMPTY_IF_NULL(ident));
+  gtk_entry_set_text(GTK_ENTRY(logb->airports_iata), EMPTY_IF_NULL(iata));
   gtk_entry_set_text(GTK_ENTRY(logb->airports_icao), EMPTY_IF_NULL(icao));
   gtk_entry_set_text(GTK_ENTRY(logb->airports_lat), EMPTY_IF_NULL(lat));
   gtk_entry_set_text(GTK_ENTRY(logb->airports_lon), EMPTY_IF_NULL(lon));
@@ -177,7 +177,7 @@ void airports_load_selection(Logbook *logb)
   text_view_set_text(GTK_TEXT_VIEW(logb->airports_notes), EMPTY_IF_NULL(notes));
 
   g_free(id);
-  g_free(ident);
+  g_free(iata);
   g_free(icao);
   g_free(lat);
   g_free(lon);
@@ -197,23 +197,23 @@ void airports_refresh(Logbook *logbook)
     airports_load_selection(logbook);
 }
 
-int airports_ident_validate(Logbook *logbook)
+int airports_iata_validate(Logbook *logbook)
 {
   gchar *id=NULL;
-  const gchar *ident;
+  const gchar *iata;
 
   id = get_text_from_tree_selection(logbook->airports_selection, COL_ID);
-  ident = gtk_entry_get_text(GTK_ENTRY(logbook->airports_ident));
+  iata = gtk_entry_get_text(GTK_ENTRY(logbook->airports_iata));
   
-  if ((strlen(ident) == 3) && unique_but_for(logbook->db, "airports", "ident", ident, "id", EMPTY_IF_NULL(id))) {
-    logbook->airports_ident_error = 0;
+  if ((strlen(iata) == 3) && unique_but_for(logbook->db, "airports", "iata", iata, "id", EMPTY_IF_NULL(id))) {
+    logbook->airports_iata_error = 0;
   } else {
-    logbook->airports_ident_error = 1;
+    logbook->airports_iata_error = 1;
   }
 
   g_free(id);
 
-  return logbook->airports_ident_error;
+  return logbook->airports_iata_error;
 }
 
 int airports_icao_validate(Logbook *logbook)
@@ -237,12 +237,12 @@ int airports_icao_validate(Logbook *logbook)
 
 int airports_error(Logbook *logbook)
 {
-  const gchar *ident, *icao;
-  ident = gtk_entry_get_text(GTK_ENTRY(logbook->airports_ident));
+  const gchar *iata, *icao;
+  iata = gtk_entry_get_text(GTK_ENTRY(logbook->airports_iata));
   icao = gtk_entry_get_text(GTK_ENTRY(logbook->airports_icao));
 
-  return ( !((ident && *ident) || (icao && *icao))
-	   || logbook->airports_ident_error
+  return ( !((iata && *iata) || (icao && *icao))
+	   || logbook->airports_iata_error
 	   || logbook->airports_icao_error);
 }
 

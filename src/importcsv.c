@@ -23,6 +23,7 @@
 #include "logbook.h"
 #include "flights.h"
 #include "aircraft.h"
+#include "airports.h"
 #include "util.h"
 
 #define CSV_BUFSIZE 4096
@@ -37,6 +38,11 @@ typedef enum {
 
 char csv_buf[CSV_BUFSIZE];
 char *csv_row[CSV_COLS];
+
+DBStatement *flights_ins;
+DBStatement *aircraft_ins;
+DBStatement *airport_tz_by_iata;
+DBStatement *airport_tz_by_icao;
 
 typedef struct InCSV InCSV;
 struct InCSV {
@@ -126,7 +132,7 @@ time_t incsv_mktime(DB *db, const char *airport, InCSVTimebase timebase, struct 
     t = tmtz_mktime(tm, "UTC");
     break;
   case INCSV_TIMEBASE_AIRPORT:
-    if (tz_of_airport_ident(db, airport, tz, BUF_TZ) && strlen(tz)) {
+    if (tz_of_airport(airport_tz_by_iata, airport, tz, BUF_TZ) && strlen(tz)) {
       t = tmtz_mktime(tm, tz);
     } else {
       fprintf(stderr, "Warning: No timezone for airport %s. Assuming machine local time.\n", airport);
@@ -164,8 +170,6 @@ void incsv_import(InCSV *incsv, DB *db)
   int dland, nland, leg;
   char *ptr;
   int nrow, ncol;
-  DBStatement *flights_ins = db_prep(db, FLIGHTS_INSERT);
-  DBStatement *aircraft_ins = db_prep(db, AIRCRAFT_INSERT);
 
   nrow = 0;
   while (csv_row_fread(incsv->fh,
@@ -207,7 +211,7 @@ void incsv_import(InCSV *incsv, DB *db)
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, aout);
       aout_t = incsv_mktime(db, csv_row[incsv->dep], incsv->timebase, &tm);
-      if (tz_of_airport_ident(db, csv_row[incsv->dep], tz, BUF_TZ)) {
+      if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->dep], tz, BUF_TZ)) {
 	localtime_tz(&aout_t, tz, &tm);
       }
       strftime(aout, BUF_TIME, "%H:%M", &tm);
@@ -219,7 +223,7 @@ void incsv_import(InCSV *incsv, DB *db)
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, ain);
       ain_t = incsv_mktime(db, csv_row[incsv->arr], incsv->timebase, &tm);
-      if (tz_of_airport_ident(db, csv_row[incsv->arr], tz, BUF_TZ)) {
+      if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->arr], tz, BUF_TZ)) {
 	localtime_tz(&ain_t, tz, &tm);
       }
       strftime(ain, BUF_TIME, "%H:%M", &tm);
@@ -231,7 +235,7 @@ void incsv_import(InCSV *incsv, DB *db)
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, sout);
       sout_t = incsv_mktime(db, csv_row[incsv->dep], incsv->timebase, &tm);
-      if (tz_of_airport_ident(db, csv_row[incsv->dep], tz, BUF_TZ)) {
+      if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->dep], tz, BUF_TZ)) {
 	localtime_tz(&sout_t, tz, &tm);
       }
       strftime(sout, BUF_TIME, "%H:%M", &tm);
@@ -243,7 +247,7 @@ void incsv_import(InCSV *incsv, DB *db)
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, sin);
       sin_t = incsv_mktime(db, csv_row[incsv->arr], incsv->timebase, &tm);
-      if (tz_of_airport_ident(db, csv_row[incsv->arr], tz, BUF_TZ)) {
+      if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->arr], tz, BUF_TZ)) {
 	localtime_tz(&sin_t, tz, &tm);
       }
       strftime(sin, BUF_TIME, "%H:%M", &tm);
@@ -327,6 +331,11 @@ int main(int argc, char **argv)
     printf("Usage: cat my.csv | importcsv logbook.db\n");
     return 1;
   }
+
+  flights_ins = db_prep(db, FLIGHTS_INSERT);
+  aircraft_ins = db_prep(db, AIRCRAFT_INSERT);
+  airport_tz_by_iata = db_prep(db, AIRPORTS_SELECT_TZONE_BY_IATA);
+  airport_tz_by_icao = db_prep(db, AIRPORTS_SELECT_TZONE_BY_ICAO);
 
   if (incsv_init(&incsv, "")) {
     printf("Failed to init csv file\n");

@@ -111,7 +111,7 @@ void entry_clamp_types_ident(GtkEntry *entry)
   entry_clamp_text(entry, 16, 1, is_ident_char);
 }
 
-void entry_clamp_airports_ident(GtkEntry *entry)
+void entry_clamp_airports_iata(GtkEntry *entry)
 {
   entry_clamp_text(entry, 3, 1, is_ident_char);
 }
@@ -358,36 +358,37 @@ void move_time(const char *fromtz, const char *totz, const char *strdate, const 
   //fprintf(stderr, "move_time -- fromtz: %s, totz: %s\n", fromtz, totz);
 }
 
-/* Returns 1 if ident found, otherwise 0 - places  */
-int tz_of_airport_ident(DB *db, const char *ident, char *tz, int tz_bufsize)
+/* Returns 1 if ident found, otherwise 0 - places utc as default value */
+int tz_of_airport(DBStatement *select, const char *key, char *tz, int tz_bufsize)
 {
-  DBStatement *select;
-  char sql[] = "select tzone from airports where ident = ?;";
   int found;
-  char *tztext;
 
-  tz[tz_bufsize - 1] = 0;
-  select = db_prep(db, sql);
-  db_bind_text(select, 1, ident);
-  found = (db_step(select) != DB_DONE);
-
+  db_bind_text(select, 1, key);
+  found = (db_step(select) == DB_ROW);
   if (found) {
-    tztext = (char *)db_column_text(select, 0);
-  }
-  if (!tztext || !strlen(tztext)) {
-    tztext = "UTC";
-  }
-
-  strncpy(tz, tztext, tz_bufsize);
-
-  if (tz[tz_bufsize - 1] != 0) {
-    fprintf(stderr, "Timezone buffer passed to tz_of_airport_ident() too small\n");
-    exit(1);
+    tz[tz_bufsize - 1] = 0;
+    strncpy(tz, EMPTY_IF_NULL((char *)db_column_text(select, 0)), tz_bufsize);
+    if (tz[tz_bufsize - 1] != 0) {
+      fprintf(stderr, "Timezone buffer passed to tz_of_airport() too small\n");
+      exit(1);
+    }
   }
 
   db_stp_res_clr(select);
 
   return found;
+}
+
+void tz_of_airport_or_utc(DBStatement *select, const char *key, char *tz, int tz_bufsize)
+{
+  if (!tz_of_airport(select, key, tz, tz_bufsize) || !tz || !strlen(tz)) {
+    tz[tz_bufsize - 1] = 0;
+    strncpy(tz, "UTC", tz_bufsize);
+    if (tz[tz_bufsize - 1] != 0) {
+      fprintf(stderr, "Timezone buffer passed to tz_of_airport_or_utc() too small\n");
+      exit(1);
+    }
+  }
 }
 
 int row_exists(DB *db, const char *table, const char *column, const char *value)
