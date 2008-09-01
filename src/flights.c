@@ -198,7 +198,8 @@ int flights_can_delete(GtkTreeSelection *selection)
 DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
 {
   const gchar
-    *aircraft,
+    *tail,
+    *fleetno,
     *role,
     *dep,
     *arr,
@@ -233,7 +234,8 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
 
   utc = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc));
 
-  aircraft = gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft));
+  tail     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_tail));
+  fleetno  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_fleetno));
   role     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_role));
   dep      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep));
   arr      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr));
@@ -289,8 +291,13 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   } else {
     stmt = logbook->flights_insert;
   }
-  bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft",
-	     gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle)) ? "fleetno" : "tail", aircraft);
+
+  if (tail && strlen(tail)) {
+    bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "tail", tail);
+  } else if (fleetno && strlen(fleetno)) {
+    bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "fleetno", fleetno);
+  }
+  
   bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", role);
   bind_id_of(stmt, FLIGHTS_WRITE_DEP , "airports",
 	     gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? "icao" : "iata", dep);
@@ -477,7 +484,8 @@ void flights_load_selection(Logbook *logb)
   GtkTreeModel *model;
   gchar
     *id=NULL,
-    *aircraft=NULL,
+    *tail=NULL,
+    *fleetno=NULL,
     *role=NULL,
     *dep=NULL,
     *arr=NULL,
@@ -508,7 +516,6 @@ void flights_load_selection(Logbook *logb)
     *hold=NULL;
 
   int _dland=0, _nland=0, _leg=0;
-  int col_aircraft = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_fleetno_toggle)) ? FLIGHTS_COL_FLEETNO : FLIGHTS_COL_TAIL;
   int col_dep = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_icao_toggle)) ? FLIGHTS_COL_DEPICAO : FLIGHTS_COL_DEPIATA;
   int col_arr = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_icao_toggle)) ? FLIGHTS_COL_ARRICAO : FLIGHTS_COL_ARRIATA;
 
@@ -517,7 +524,8 @@ void flights_load_selection(Logbook *logb)
 		       FLIGHTS_COL_ID, &id,
 		       FLIGHTS_COL_DATE, &date,
 		       FLIGHTS_COL_LEG, &leg,
-		       col_aircraft, &aircraft,
+		       FLIGHTS_COL_TAIL, &tail,
+		       FLIGHTS_COL_FLEETNO, &fleetno,
 		       FLIGHTS_COL_ROLE, &role,
 		       col_dep, &dep,
 		       col_arr, &arr,
@@ -550,7 +558,8 @@ void flights_load_selection(Logbook *logb)
     sscanf(EMPTY_IF_NULL(leg),   "%d", &_leg);
   }
 
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_aircraft), EMPTY_IF_NULL(aircraft));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_tail), EMPTY_IF_NULL(tail));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_fleetno), EMPTY_IF_NULL(fleetno));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_role), EMPTY_IF_NULL(role));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_dep), EMPTY_IF_NULL(dep));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_arr), EMPTY_IF_NULL(arr));
@@ -589,7 +598,8 @@ void flights_load_selection(Logbook *logb)
   g_free(id);
   g_free(date);
   g_free(leg);
-  g_free(aircraft);
+  g_free(tail);
+  g_free(fleetno);
   g_free(role);
   g_free(dep);
   g_free(arr);
@@ -905,31 +915,13 @@ void flights_restore_options(Logbook *logbook)
   }
   if (registry_get_int(logbook, "flights", "FleetNo")) {
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle), TRUE);
+    gtk_widget_hide(logbook->flights_tail);
+    gtk_widget_show(logbook->flights_fleetno);
   } else {
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle), FALSE);
+    gtk_widget_hide(logbook->flights_fleetno);
+    gtk_widget_show(logbook->flights_tail);
   }
-}
-
-void flights_fleetno_toggle_set_sensitivity(Logbook *logbook)
-{
-  DBStatement *stmt;
-
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle))) {
-    stmt = logbook->flights_aircraft_tail_from_fleetno;
-  } else {
-    stmt = logbook->flights_aircraft_fleetno_from_tail;
-  }
-  db_bind_text(stmt, 1, gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft)));
-  if ((db_step(stmt) == DB_ROW) && (db_column_type(stmt, 0) == DB_NULL)) {
-    /* Found aircraft but the other key is null */
-    gtk_widget_set_sensitive(logbook->flights_fleetno_toggle, 0);
-  } else {
-    /* Aircraft has both keys or it wasn't found at all */
-    gtk_widget_set_sensitive(logbook->flights_fleetno_toggle, 1);
-  }
-
-  db_reset(stmt);
-  db_clear_bindings(stmt);
 }
 
 int flights_error(Logbook *logbook)

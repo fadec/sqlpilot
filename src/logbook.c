@@ -114,7 +114,9 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_query_progress);
   pull_widget(flights_results_summary);
   pull_widget(flights_sw);
-  pull_widget(flights_aircraft);
+  pull_widget(flights_aircraft); /* Remove this */
+  pull_widget(flights_tail);
+  pull_widget(flights_fleetno);
   pull_widget(flights_aircraft_utilized);
   pull_widget(flights_utc);
   pull_widget(flights_utc_lbl);

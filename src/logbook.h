@@ -66,7 +66,9 @@ struct Logbook {
   GtkWidget *flights_icao_toggle_lbl;
   GtkWidget *flights_fleetno_toggle;
   GtkWidget *flights_fleetno_toggle_lbl;
-  GtkWidget *flights_aircraft;
+  GtkWidget *flights_aircraft; 	/* remove this */
+  GtkWidget *flights_tail;
+  GtkWidget *flights_fleetno;
   GtkWidget *flights_aircraft_utilized;
   GtkWidget *flights_date;
   GtkWidget *flights_leg;

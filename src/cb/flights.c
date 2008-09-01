@@ -94,15 +94,52 @@ void on_flights_fltno_changed(GtkEntry *entry, Logbook *logbook)
   edctrl_set_modified(logbook->flights_edctrl);
 }
 
-void on_flights_aircraft_changed(GtkEntry *entry, Logbook *logbook)
+void on_flights_tail_changed(GtkEntry *entry, Logbook *logbook)
 {
   entry_clamp_aircraft_ident(entry);
   edctrl_set_modified(logbook->flights_edctrl);
-  flights_fleetno_toggle_set_sensitivity(logbook);
 }
 
-int on_flights_aircraft_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
+void on_flights_fleetno_changed(GtkEntry *entry, Logbook *logbook)
 {
+  entry_clamp_aircraft_ident(entry);
+  edctrl_set_modified(logbook->flights_edctrl);
+}
+
+int on_flights_tail_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
+{
+  DBStatement *stmt;
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+  stmt = logbook->flights_aircraft_fleetno_from_tail;
+  db_bind_text(stmt, 1, gtk_entry_get_text(GTK_ENTRY(logbook->flights_tail)));
+  if (db_step(stmt) == DB_ROW) {
+    gtk_entry_set_text(GTK_ENTRY(logbook->flights_fleetno), (char*)db_column_text(stmt, 0) );
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(logbook->flights_fleetno), "");
+  }
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+
+  flights_refresh_aircraft_utilized(logbook);
+  return FALSE;
+}
+
+int on_flights_fleetno_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
+{
+  DBStatement *stmt;
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+  stmt = logbook->flights_aircraft_tail_from_fleetno;
+  db_bind_text(stmt, 1, gtk_entry_get_text(GTK_ENTRY(logbook->flights_fleetno)));
+  if (db_step(stmt) == DB_ROW) {
+    gtk_entry_set_text(GTK_ENTRY(logbook->flights_tail), (char*)db_column_text(stmt, 0) );
+  } else {
+    gtk_entry_set_text(GTK_ENTRY(logbook->flights_tail), "");
+  }
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+
   flights_refresh_aircraft_utilized(logbook);
   return FALSE;
 }
@@ -510,25 +547,15 @@ void on_flights_icao_toggle_toggled(GtkToggleButton *button, Logbook *logbook)
 
 void on_flights_fleetno_toggle_toggled(GtkToggleButton *button, Logbook *logbook)
 {
-  DBStatement *stmt;
-  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle))) {
-    stmt = logbook->flights_aircraft_fleetno_from_tail;
+    gtk_widget_hide(logbook->flights_tail);
+    gtk_widget_show(logbook->flights_fleetno);
     gtk_label_set_text(GTK_LABEL(logbook->flights_fleetno_toggle_lbl), "FleetNo");
   } else {
-    stmt = logbook->flights_aircraft_tail_from_fleetno;
+    gtk_widget_hide(logbook->flights_fleetno);
+    gtk_widget_show(logbook->flights_tail);
     gtk_label_set_text(GTK_LABEL(logbook->flights_fleetno_toggle_lbl), "Tail");
   }
-  db_bind_text(stmt, 1, gtk_entry_get_text(GTK_ENTRY(logbook->flights_aircraft)));
-  if (db_step(stmt) == DB_ROW) {
-    gtk_entry_set_text(GTK_ENTRY(logbook->flights_aircraft), (char*)db_column_text(stmt, 0) );
-  } else {
-    /* Do nothing since aircraft not found. Allows inserts on tail and fleetno */
-  }
-
-  db_reset(stmt);
-  db_clear_bindings(stmt);
-  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
 }
 
 void on_flights_crew_changed(GtkTextBuffer *tb, Logbook *logbook)
