@@ -967,6 +967,36 @@ int flights_error(Logbook *logbook)
   return 0;
 }
 
+static void iata_fills_icao(Logbook *logbook, GtkEntry *iata, GtkEntry *icao)
+{
+  DBStatement *stmt = logbook->flights_icao_from_iata;
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+  db_bind_text(stmt, 1, gtk_entry_get_text(iata));
+  if (db_step(stmt) == DB_ROW) {
+    gtk_entry_set_text(icao, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
+  } else {
+    gtk_entry_set_text(icao, "");
+  }
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+}
+
+static void icao_fills_iata(Logbook *logbook, GtkEntry *icao, GtkEntry *iata)
+{
+  DBStatement *stmt = logbook->flights_iata_from_icao;
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+  db_bind_text(stmt, 1, gtk_entry_get_text(icao));
+  if (db_step(stmt) == DB_ROW) {
+    gtk_entry_set_text(iata, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
+  } else {
+    gtk_entry_set_text(iata, "");
+  }
+  db_reset(stmt);
+  db_clear_bindings(stmt);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+}
+
 void flights_handle_iata_update(Logbook *logbook, GtkEntry *iata, GtkEntry *icao)
 {
   const char *text;
@@ -974,17 +1004,10 @@ void flights_handle_iata_update(Logbook *logbook, GtkEntry *iata, GtkEntry *icao
   text = EMPTY_IF_NULL(gtk_entry_get_text(iata));
   len = strlen(text);
   if (len == 3) {
-    DBStatement *stmt = logbook->flights_icao_from_iata;
-    edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
-    db_bind_text(stmt, 1, gtk_entry_get_text(iata));
-    if (db_step(stmt) == DB_ROW) {
-      gtk_entry_set_text(icao, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
-    } else {
-      gtk_entry_set_text(icao, "");
-    }
-    db_reset(stmt);
-    db_clear_bindings(stmt);
-    edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+    iata_fills_icao(logbook, iata, icao);
+  } else if (len == 4) {
+    gtk_entry_set_text(icao, text);
+    icao_fills_iata(logbook, icao, iata);
   } else {
     gtk_entry_set_text(iata, "");
   }
@@ -997,17 +1020,10 @@ void flights_handle_icao_update(Logbook *logbook, GtkEntry *icao, GtkEntry *iata
   text = EMPTY_IF_NULL(gtk_entry_get_text(icao));
   len = strlen(text);
   if (len == 4) {
-    DBStatement *stmt = logbook->flights_iata_from_icao;
-    edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
-    db_bind_text(stmt, 1, gtk_entry_get_text(icao));
-    if (db_step(stmt) == DB_ROW) {
-      gtk_entry_set_text(iata, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
-    } else {
-      gtk_entry_set_text(iata, "");
-    }
-    db_reset(stmt);
-    db_clear_bindings(stmt);
-    edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+    icao_fills_iata(logbook, icao, iata);
+  } else if (len == 3) {
+    gtk_entry_set_text(iata, text);
+    iata_fills_icao(logbook, iata, icao);
   } else {
     gtk_entry_set_text(icao, "");
   }

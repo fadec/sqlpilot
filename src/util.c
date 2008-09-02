@@ -113,7 +113,8 @@ void entry_clamp_types_ident(GtkEntry *entry)
 
 void entry_clamp_airports_iata(GtkEntry *entry)
 {
-  entry_clamp_text(entry, 3, 1, is_ident_char);
+  /* Width = 4 to allow ICAO entries in IATA field to be converted to IATA on focus out */
+  entry_clamp_text(entry, 4, 1, is_ident_char);
 }
 
 void entry_clamp_airports_icao(GtkEntry *entry)
