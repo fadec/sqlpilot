@@ -20,6 +20,8 @@
 #include "sqlpilot.h"
 #include "airports.h"
 #include "logbook.h"
+#include "summaries.h"
+#include "assert.h"
 
 int airports_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 {
@@ -246,3 +248,58 @@ int airports_error(Logbook *logbook)
 	   || logbook->airports_icao_error);
 }
 
+void airports_tzone_combo_box_init(Logbook *logbook)
+{
+  gchar *argv[] = {"/usr/bin/find"};
+  gchar tzone[BUF_TZ];
+  int nstdin, nstdout, nstderr;
+  FILE *fstdout=NULL, *fstderr=NULL;
+  GPid pid;
+  gboolean ret;
+  int c;
+  GSpawnFlags sf;
+  GError **error = NULL;
+  sf = 0;
+  assert(ret = g_spawn_async_with_pipes(TZ_DIR,
+					argv,
+					NULL,
+					sf, NULL, NULL,
+					&pid,
+					&nstdin,
+					&nstdout,
+					&nstderr,
+					error));
+
+  assert(((fstdout = fdopen(nstdout, "rb")) && (fstderr = fdopen(nstderr, "rb"))));
+
+  while ((c = fgetc(fstderr)) != EOF) {
+    putc(c, stderr);
+  }
+
+
+  GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
+  GtkTreeIter iter;
+  GtkCellRenderer *renderer;
+
+  while (fgets(tzone, BUF_TZ, fstdout)) {
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set (store, &iter,
+			0, tzone,
+			-1);
+  }
+
+  fclose(fstdout);
+  fclose(fstderr);
+
+  g_spawn_close_pid(pid);
+
+  gtk_combo_box_set_model(GTK_COMBO_BOX(logbook->airports_tzone_combo), GTK_TREE_MODEL(store));
+  gtk_cell_layout_clear(GTK_CELL_LAYOUT(logbook->airports_tzone_combo));
+  renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(logbook->airports_tzone_combo), renderer, TRUE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(logbook->airports_tzone_combo), renderer,
+				 "text", 0,
+				 NULL);
+
+  gtk_combo_box_set_active(GTK_COMBO_BOX(logbook->airports_tzone_combo), 0);
+}

@@ -65,7 +65,7 @@ void on_airports_tzone_changed(GtkEntry *entry, Logbook *logbook)
 
 int on_airports_tzone_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-  char zonedir[] = "/usr/share/zoneinfo/";
+  char zonedir[] = TZ_DIR;
   char zonepath[sizeof(zonedir) + BUF_TZ - 1];
   char *zonename = zonepath + sizeof(zonedir) - 1;
   char *p;
@@ -83,7 +83,7 @@ int on_airports_tzone_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Log
     fclose(file);
     gtk_entry_set_text(entry, zonename);
   } else {
-    gtk_entry_set_text(entry, "UTC");
+    gtk_entry_set_text(entry, "");
   }
   
   return FALSE;

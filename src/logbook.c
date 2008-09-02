@@ -269,6 +269,7 @@ Logbook *logbook_new(const char *filename)
   pull_widget(airports_province);
   pull_widget(airports_country);
   pull_widget(airports_tzone);
+  pull_widget(airports_tzone_combo);
   pull_widget(airports_notes);
   pull_widget(airports_new_btn);
   pull_widget(airports_save_btn);
@@ -453,7 +454,8 @@ Logbook *logbook_new(const char *filename)
   roles_load_selection(logbook);
   aircraft_load_selection(logbook);
   types_load_selection(logbook);
-  aircraft_load_selection(logbook);
+  airports_load_selection(logbook);
+  airports_tzone_combo_box_init(logbook);
 
   return logbook;
 }

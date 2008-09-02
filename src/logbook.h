@@ -272,6 +272,7 @@ struct Logbook {
   GtkWidget *airports_lat;
   GtkWidget *airports_lon;
   GtkWidget *airports_tzone;
+  GtkWidget *airports_tzone_combo;
   GtkWidget *airports_notes;
   GtkWidget *airports_new_btn;
   GtkWidget *airports_save_btn;

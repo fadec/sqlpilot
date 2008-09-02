@@ -55,6 +55,8 @@ typedef struct ParameterPane Scripter;
 #define BUF_DATETIME 17		/* "YYYY-MM-DD HH:MM\0" */
 #define BUF_TZ 256		/*  How ever big timezone names get??? */
 
+#define TZ_DIR "/usr/share/zoneinfo/posix/"
+
 enum {
   NOTEBOOK_PAGE_FLIGHTS = 0,
   NOTEBOOK_PAGE_ROLES,

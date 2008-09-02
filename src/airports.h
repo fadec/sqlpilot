@@ -124,5 +124,5 @@ int airports_can_delete(GtkTreeSelection *selection);
 int airports_error(Logbook *logbook);
 int airports_iata_validate(Logbook *logbook);
 int airports_icao_validate(Logbook *logbook);
-
+void airports_tzone_combo_box_init(Logbook *logbook);
 #endif
