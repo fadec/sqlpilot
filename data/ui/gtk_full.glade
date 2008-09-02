@@ -3415,12 +3415,17 @@
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkEntry" id="airports_tzone">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                <signal name="changed" handler="on_airports_tzone_changed"/>
-                                <signal name="focus_out_event" handler="on_airports_tzone_focus_out_event"/>
+                              <widget class="GtkComboBoxEntry" id="airports_tzone_combo">
+				<property name="visible">True</property>
+				<child internal-child="entry">
+				  <widget class="GtkEntry" id="airports_tzone">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <signal name="changed" handler="on_airports_tzone_changed"/>
+                                    <signal name="focus_out_event" handler="on_airports_tzone_focus_out_event"/>
+				  </widget>
+				</child>
                               </widget>
                               <packing>
                                 <property name="position">1</property>
