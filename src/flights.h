@@ -226,7 +226,10 @@ enum {
 #define FLIGHTS_DELETE				\
   "delete from flights where id = ?;"
 
-DBStatement *flights_get_tz_of_airport_stmt(Logbook *logbook);
+void flights_lookup_dep_tz(Logbook *, char *);
+void flights_lookup_arr_tz(Logbook *, char *);
+void flights_handle_iata_update(Logbook *, GtkEntry *iata, GtkEntry *icao);
+void flights_handle_icao_update(Logbook *, GtkEntry *icao, GtkEntry *iata);
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size);
 int flights_can_delete(GtkTreeSelection *selection);
 void flights_after_change(Logbook *data);

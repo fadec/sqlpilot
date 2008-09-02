@@ -74,9 +74,11 @@ struct Logbook {
   GtkWidget *flights_leg;
   GtkWidget *flights_role;
   GtkWidget *flights_role_utilized;
-  GtkWidget *flights_dep;
+  GtkWidget *flights_depicao;
+  GtkWidget *flights_depiata;
   GtkWidget *flights_dep_utilized;
-  GtkWidget *flights_arr;
+  GtkWidget *flights_arricao;
+  GtkWidget *flights_arriata;
   GtkWidget *flights_arr_utilized;
   GtkWidget *flights_aout;
   GtkWidget *flights_ain;

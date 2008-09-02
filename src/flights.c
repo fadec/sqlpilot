@@ -63,13 +63,30 @@ StoreColumnKind flights_column_kinds[] = {
   STORE_COLUMN_KIND_STR_NUM
 };
 
-DBStatement *flights_get_tz_of_airport_stmt(Logbook *logbook)
+void flights_lookup_dep_tz(Logbook *logb, char *tz)
 {
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle))) {
-    return logbook->flights_tz_of_airport_icao;
-  } else {
-    return logbook->flights_tz_of_airport_iata;
+  const char *txt;
+  DBStatement *stmt;
+  txt = gtk_entry_get_text(GTK_ENTRY(logb->flights_depicao));
+  stmt = logb->flights_tz_of_airport_icao;
+  if (!strlen(txt)) {
+    txt = gtk_entry_get_text(GTK_ENTRY(logb->flights_depiata));
+    stmt = logb->flights_tz_of_airport_iata;
   }
+  tz_of_airport_or_utc(stmt, txt, tz, BUF_TZ);
+}
+
+void flights_lookup_arr_tz(Logbook *logb, char *tz)
+{
+  const char *txt;
+  DBStatement *stmt;
+  txt = gtk_entry_get_text(GTK_ENTRY(logb->flights_arricao));
+  stmt = logb->flights_tz_of_airport_icao;
+  if (!strlen(txt)) {
+    txt = gtk_entry_get_text(GTK_ENTRY(logb->flights_arriata));
+    stmt = logb->flights_tz_of_airport_iata;
+  }
+  tz_of_airport_or_utc(stmt, txt, tz, BUF_TZ);
 }
 
 void flights_refresh_aircraft_utilized(Logbook *logbook)
@@ -110,42 +127,42 @@ void flights_refresh_role_utilized(Logbook *logbook)
 
 void flights_refresh_dep_utilized(Logbook *logbook)
 {
-  DBint64 id;
+/*   DBint64 id; */
 
-  char txt[16];
-  const char *dep;
+/*   char txt[16]; */
+/*   const char *dep; */
 
-  dep = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep));
+/*   dep = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep)); */
 
-  if (!strlen(dep) || find_row_id(logbook->db, "Airports",
-				  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? "icao" : "iata",
-				  dep, &id)) {
-    snprintf(txt, sizeof(txt), " ");
-  } else {
-    snprintf(txt, sizeof(txt), "(?)");
-  }
+/*   if (!strlen(dep) || find_row_id(logbook->db, "Airports", */
+/* 				  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? "icao" : "iata", */
+/* 				  dep, &id)) { */
+/*     snprintf(txt, sizeof(txt), " "); */
+/*   } else { */
+/*     snprintf(txt, sizeof(txt), "(?)"); */
+/*   } */
 
-  gtk_label_set_text(GTK_LABEL(logbook->flights_dep_utilized), txt);
+/*   gtk_label_set_text(GTK_LABEL(logbook->flights_dep_utilized), txt); */
 }
 
 void flights_refresh_arr_utilized(Logbook *logbook)
 {
-  DBint64 id;
+/*   DBint64 id; */
 
-  char txt[16];
-  const char *arr;
+/*   char txt[16]; */
+/*   const char *arr; */
 
-  arr = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr));
+/*   arr = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr)); */
 
-  if (!strlen(arr) || find_row_id(logbook->db, "Airports",
-				  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? "icao" : "iata",
-				  arr, &id)) {
-    snprintf(txt, sizeof(txt), " ");
-  } else {
-    snprintf(txt, sizeof(txt), "(?)");
-  }
+/*   if (!strlen(arr) || find_row_id(logbook->db, "Airports", */
+/* 				  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? "icao" : "iata", */
+/* 				  arr, &id)) { */
+/*     snprintf(txt, sizeof(txt), " "); */
+/*   } else { */
+/*     snprintf(txt, sizeof(txt), "(?)"); */
+/*   } */
 
-  gtk_label_set_text(GTK_LABEL(logbook->flights_arr_utilized), txt);
+/*   gtk_label_set_text(GTK_LABEL(logbook->flights_arr_utilized), txt); */
 }
 
 void flights_refresh_utilization(Logbook *logbook)
@@ -201,8 +218,10 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
     *tail,
     *fleetno,
     *role,
-    *dep,
-    *arr,
+    *depicao,
+    *arricao,
+    *depiata,
+    *arriata,
     *date,
     *aout,
     *ain,
@@ -237,8 +256,10 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   tail     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_tail));
   fleetno  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_fleetno));
   role     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_role));
-  dep      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep));
-  arr      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr));
+  depicao  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_depicao));
+  arricao  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arricao));
+  depiata  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_depiata));
+  arriata  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arriata));
   dur      = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dur));
   night    = gtk_entry_get_text(GTK_ENTRY(logbook->flights_night));
   inst     = gtk_entry_get_text(GTK_ENTRY(logbook->flights_inst));
@@ -261,8 +282,8 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   sout = gtk_entry_get_text(GTK_ENTRY(logbook->flights_sout));
   sin  = gtk_entry_get_text(GTK_ENTRY(logbook->flights_sin));
 
-  tz_of_airport_or_utc(flights_get_tz_of_airport_stmt(logbook), dep, deptz, sizeof(deptz));
-  tz_of_airport_or_utc(flights_get_tz_of_airport_stmt(logbook), arr, arrtz, sizeof(arrtz));
+  flights_lookup_dep_tz(logbook, deptz);
+  flights_lookup_arr_tz(logbook, arrtz);
 
   if (utc) {
     /* to Local */
@@ -297,12 +318,17 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   } else if (fleetno && strlen(fleetno)) {
     bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "fleetno", fleetno);
   }
-  
+  if (depicao && strlen(depicao)) {
+    bind_id_of(stmt, FLIGHTS_WRITE_DEP, "airports", "icao", depicao);
+  } else {
+    bind_id_of(stmt, FLIGHTS_WRITE_DEP, "airports", "iata", depiata);
+  }
+  if (arricao && strlen(arricao)) {
+    bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "icao", arricao);
+  } else {
+    bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "iata", arriata);
+  }
   bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", role);
-  bind_id_of(stmt, FLIGHTS_WRITE_DEP , "airports",
-	     gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? "icao" : "iata", dep);
-  bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports",
-	     gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? "icao" : "iata", arr);
   db_bind_nonempty_text_else_null(stmt, FLIGHTS_WRITE_DUR, dur);
   db_bind_nonempty_text_else_null(stmt, FLIGHTS_WRITE_NIGHT, night);
   db_bind_nonempty_text_else_null(stmt, FLIGHTS_WRITE_INST, inst);
@@ -412,7 +438,7 @@ void reconcile_time_entries(Logbook *logb,
 			    GtkEntry *end,
 			    GtkEntry *elapsed)
 {
-  const char *tstart, *tend, *telapsed, *tdate, *tdep, *tarr;
+  const char *tstart, *tend, *telapsed, *tdate;
   GtkEntry *tochange = NULL;
   long m = 0, hh, mm;
   time_t t;
@@ -430,13 +456,8 @@ void reconcile_time_entries(Logbook *logb,
     tdate = "1979-05-25";
   }
 
-  tdep = gtk_entry_get_text(GTK_ENTRY(logb->flights_dep));
-  tarr = gtk_entry_get_text(GTK_ENTRY(logb->flights_arr));
-
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_utc))) {
-    tz_of_airport_or_utc(flights_get_tz_of_airport_stmt(logb), tdep, deptz, BUF_TZ);
-    tz_of_airport_or_utc(flights_get_tz_of_airport_stmt(logb), tarr, arrtz, BUF_TZ);
-  }
+  flights_lookup_dep_tz(logb, deptz);
+  flights_lookup_arr_tz(logb, arrtz);
 
   if (changed == start && strlen(tstart)) {
     if (strlen(tend)) {
@@ -487,8 +508,10 @@ void flights_load_selection(Logbook *logb)
     *tail=NULL,
     *fleetno=NULL,
     *role=NULL,
-    *dep=NULL,
-    *arr=NULL,
+    *depicao=NULL,
+    *arricao=NULL,
+    *depiata=NULL,
+    *arriata=NULL,
     *date=NULL,
     *leg=NULL,
     *aout=NULL,
@@ -516,8 +539,6 @@ void flights_load_selection(Logbook *logb)
     *hold=NULL;
 
   int _dland=0, _nland=0, _leg=0;
-  int col_dep = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_icao_toggle)) ? FLIGHTS_COL_DEPICAO : FLIGHTS_COL_DEPIATA;
-  int col_arr = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logb->flights_icao_toggle)) ? FLIGHTS_COL_ARRICAO : FLIGHTS_COL_ARRIATA;
 
   if (gtk_tree_selection_get_selected (logb->flights_selection, &model, &iter)) {
     gtk_tree_model_get(model, &iter,
@@ -527,8 +548,10 @@ void flights_load_selection(Logbook *logb)
 		       FLIGHTS_COL_TAIL, &tail,
 		       FLIGHTS_COL_FLEETNO, &fleetno,
 		       FLIGHTS_COL_ROLE, &role,
-		       col_dep, &dep,
-		       col_arr, &arr,
+		       FLIGHTS_COL_DEPICAO, &depicao,
+		       FLIGHTS_COL_DEPIATA, &depiata,
+		       FLIGHTS_COL_ARRICAO, &arricao,
+		       FLIGHTS_COL_ARRIATA, &arriata,
 		       FLIGHTS_COL_AOUT, &aout,
 		       FLIGHTS_COL_AOUTUTC, &aoututc,
 		       FLIGHTS_COL_AIN, &ain,
@@ -561,8 +584,12 @@ void flights_load_selection(Logbook *logb)
   gtk_entry_set_text(GTK_ENTRY(logb->flights_tail), EMPTY_IF_NULL(tail));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_fleetno), EMPTY_IF_NULL(fleetno));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_role), EMPTY_IF_NULL(role));
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_dep), EMPTY_IF_NULL(dep));
-  gtk_entry_set_text(GTK_ENTRY(logb->flights_arr), EMPTY_IF_NULL(arr));
+
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_depicao), EMPTY_IF_NULL(depicao));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_arricao), EMPTY_IF_NULL(arricao));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_depiata), EMPTY_IF_NULL(depiata));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_arriata), EMPTY_IF_NULL(arriata));
+
   gtk_entry_set_text(GTK_ENTRY(logb->flights_dur), EMPTY_IF_NULL(dur));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_night), EMPTY_IF_NULL(night));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_inst), EMPTY_IF_NULL(inst));
@@ -601,8 +628,10 @@ void flights_load_selection(Logbook *logb)
   g_free(tail);
   g_free(fleetno);
   g_free(role);
-  g_free(dep);
-  g_free(arr);
+  g_free(depicao);
+  g_free(arricao);
+  g_free(depiata);
+  g_free(arriata);
   g_free(aout);
   g_free(aoututc);
   g_free(ain);
@@ -902,25 +931,27 @@ void flights_restore_options(Logbook *logbook)
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_aout),     str_bool(registry_get_text(logbook, "flights/view", "AOut")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_ain),      str_bool(registry_get_text(logbook, "flights/view", "AIn")));
 
-  /* Set UTC button */
+  /* Set Toggles - enters both states to ensure toggled signal emission */
   if (registry_get_int(logbook, "flights", "UTC")) {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), FALSE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), TRUE);
   } else {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), TRUE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_utc), FALSE);
   }
   if (registry_get_int(logbook, "flights", "ICAO")) {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle), FALSE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle), TRUE);
   } else {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle), TRUE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle), FALSE);
   }
   if (registry_get_int(logbook, "flights", "FleetNo")) {
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle), TRUE);
-    gtk_widget_hide(logbook->flights_tail);
-    gtk_widget_show(logbook->flights_fleetno);
-  } else {
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle), FALSE);
-    gtk_widget_hide(logbook->flights_fleetno);
-    gtk_widget_show(logbook->flights_tail);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle), TRUE);
+  } else {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle), TRUE);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle), FALSE);
   }
 }
 
@@ -936,40 +967,49 @@ int flights_error(Logbook *logbook)
   return 0;
 }
 
-/* Returns true if swap success, 0 if fail e.g. airport does not have an alternate key */
-int flights_swap_airport_key(Logbook *logbook, GtkEntry *entry)
+void flights_handle_iata_update(Logbook *logbook, GtkEntry *iata, GtkEntry *icao)
 {
-  DBStatement *stmt;
-  char *newkey;
-  int ok;
-  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
-
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle))) {
-    stmt = logbook->flights_icao_from_iata;
-    gtk_label_set_text(GTK_LABEL(logbook->flights_icao_toggle_lbl), "ICAO");
-  } else {
-    stmt = logbook->flights_iata_from_icao;
-    gtk_label_set_text(GTK_LABEL(logbook->flights_icao_toggle_lbl), "IATA");
-  }
-
-  db_bind_text(stmt, 1, gtk_entry_get_text(entry));
-  if (db_step(stmt) == DB_ROW) {
-    if ((newkey = (char*)db_column_text(stmt, 0)) && strlen(newkey)) {
-      /* found alternate key */
-      gtk_entry_set_text(entry, newkey);
-      ok = 1;
+  const char *text;
+  int len;
+  text = EMPTY_IF_NULL(gtk_entry_get_text(iata));
+  len = strlen(text);
+  if (len == 3) {
+    DBStatement *stmt = logbook->flights_icao_from_iata;
+    edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+    db_bind_text(stmt, 1, gtk_entry_get_text(iata));
+    if (db_step(stmt) == DB_ROW) {
+      gtk_entry_set_text(icao, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
     } else {
-      /* airport found but no alternate key */
-      gtk_entry_set_text(entry, "");
-      ok = 0;
+      gtk_entry_set_text(icao, "");
     }
+    db_reset(stmt);
+    db_clear_bindings(stmt);
+    edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
   } else {
-  /* airport not found */
-    ok = 0;
+    gtk_entry_set_text(iata, "");
   }
-  db_reset(stmt);
-  db_clear_bindings(stmt);
-
-  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
-  return ok;
 }
+
+void flights_handle_icao_update(Logbook *logbook, GtkEntry *icao, GtkEntry *iata)
+{
+  const char *text;
+  int len;
+  text = EMPTY_IF_NULL(gtk_entry_get_text(icao));
+  len = strlen(text);
+  if (len == 4) {
+    DBStatement *stmt = logbook->flights_iata_from_icao;
+    edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+    db_bind_text(stmt, 1, gtk_entry_get_text(icao));
+    if (db_step(stmt) == DB_ROW) {
+      gtk_entry_set_text(iata, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
+    } else {
+      gtk_entry_set_text(iata, "");
+    }
+    db_reset(stmt);
+    db_clear_bindings(stmt);
+    edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+  } else {
+    gtk_entry_set_text(icao, "");
+  }
+}
+
