@@ -24,7 +24,7 @@ VERSION_TINY  = 0
 
 USING_HILDON=false
 USING_GTK_BUILDER=true
-USING_READLINE=false
+USING_READLINE=true
 
 # for gtk-builder-convert
 PYTHON=python2.5

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TITLE='Flight Time Example'
-RUN="./shell -noheader $1"
+RUN="./console -noheader $1"
 SELECT="select hm(sum(Dur)) from flights f left join aircraft a on a.id = f.aircraft_id left join types t on t.id = a.type_id left join roles r on r.id = f.role_id
         where f.date >= '$2' and (f.date <= '$3' or '$3' == '')"
 

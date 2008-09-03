@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TITLE='Flight Experience'
-RUN="./shell -noheader $1"
+RUN="./console -noheader $1"
 SELECT="select hm(sum(Dur)) from flights f left join aircraft a on a.id = f.aircraft_id left join types t on t.id = a.type_id left join roles r on r.id = f.role_id"
 
 if [ -z $1 ]; then
