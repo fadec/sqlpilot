@@ -421,3 +421,8 @@ int db_exec_simple(DB *db, const char *sql)
   }
   return rc;
 }
+
+const char *db_errmsg(DB *db)
+{
+  return sqlite3_errmsg((sqlite3*)db);
+}

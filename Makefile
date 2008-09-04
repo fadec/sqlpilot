@@ -133,6 +133,7 @@ ui: data/ui/interface.xml
 data/ui/interface.xml: $(UI_GLADE) config.mk
 ifeq ($(USING_GTK_BUILDER),true)
 	sed 's/<property name="response_id">0<\/property>//g' $(UI_GLADE) > data/ui/sqlpilot.glade.tmp;
+	sed 's/<requires-version lib="gtk+" version="2.12"\/>//g' $(UI_GLADE) > data/ui/sqlpilot.glade.tmp;
 	$(PYTHON) `which gtk-builder-convert` data/ui/sqlpilot.glade.tmp data/ui/interface.xml;
 	rm data/ui/sqlpilot.glade.tmp;
 else

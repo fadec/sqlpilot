@@ -107,6 +107,8 @@ Logbook *logbook_new(const char *filename)
   logbook->registry_update             = db_prep(logbook->db, "UPDATE Registry SET value = ? WHERE path = ? AND key = ?;");
   logbook->registry_delete             = db_prep(logbook->db, "DELETE FROM Registry WHERE path = ? AND key = ?;");
 
+  logbook->reports_delete   = db_prep(logbook->db, "DELETE FROM Reports WHERE Title = ?;");
+  logbook->reports_insert   = db_prep(logbook->db, "INSERT INTO Reports (Title, SQL) VALUES (?, ?);");
   
   pull_widget(window);
   pull_widget(flights_where);
@@ -276,6 +278,8 @@ Logbook *logbook_new(const char *filename)
   pull_widget(airports_armdel_btn);
   pull_widget(airports_del_btn);
   pull_widget(airports_todel_lbl);
+  pull_widget(reports_sw);
+  pull_widget(reports_err_msg);
   pull_widget(reports_title);
   pull_widget(reports_refresh);
   pull_widget(reports_query_progress);

@@ -137,6 +137,12 @@ CREATE TABLE Employers (
        ,Name CHAR
 );
 
+CREATE TABLE Reports (
+       id INTEGER PRIMARY KEY AUTOINCREMENT
+       ,Title CHAR
+       ,SQL TEXT
+);
+
 CREATE TABLE Registry (
        path CHAR
        ,key INTEGER		-- integer affinity for sort

@@ -282,6 +282,12 @@ struct Logbook {
   Edctrl _airports_edctrl;
   Edctrl *airports_edctrl;
 
+  DBStatement *reports_delete;
+  DBStatement *reports_insert;
+  GtkWidget *reports_sw;
+  GtkTreeModel *reports_treemodel;
+  GtkWidget *reports_err_msg;
+  GtkWidget *reports_treeview;
   GtkWidget *reports_title;
   GtkWidget *reports_refresh;
   GtkWidget *reports_query_progress;

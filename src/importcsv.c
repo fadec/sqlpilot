@@ -336,7 +336,7 @@ Status incsv_import(InCSV *incsv, DB *db)
     if (update && db_column_text(existing, FLIGHTS_COL_AIRCRAFT_ID)) {
       db_bind_int64(stmt, FLIGHTS_WRITE_AIRCRAFT, db_column_int64(existing, FLIGHTS_COL_AIRCRAFT_ID));
     } else {
-      if (!row_exists(db, "aircraft", "tail", csv_row[incsv->tail])) {
+      if (strlen(csv_row[incsv->tail]) && !row_exists(db, "aircraft", "tail", csv_row[incsv->tail])) {
 	bind_id_of(aircraft_ins, AIRCRAFT_WRITE_TYPE, "types", "ident", csv_row[incsv->type]);
 	db_bind_nonempty_text_else_null(aircraft_ins, AIRCRAFT_WRITE_TAIL, csv_row[incsv->tail]);
 	db_stp_res_clr(aircraft_ins);

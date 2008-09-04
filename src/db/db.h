@@ -116,5 +116,5 @@ DBint64 db_column_int64(DBStatement *stmt, int i);
 const char *db_column_name(DBStatement *stmt, int icolumn);
 const char **db_get_one(DB *db, const char *sql);
 int db_exec_simple(DB *db, const char *sql);
-
+const char *db_errmsg(DB *db);
 #endif
