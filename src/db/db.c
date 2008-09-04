@@ -82,7 +82,8 @@ static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
   const char *str;
 
   switch (sqlite3_value_type(argv[0])) {
-  case SQLITE_NULL: b = 0;
+  case SQLITE_NULL:
+    return;
     break;
   case SQLITE_FLOAT: b = (sqlite3_value_double(argv[0]) != 0.0);
     break;
@@ -94,8 +95,7 @@ static void bool_func(sqlite3_context *context, int argc, sqlite3_value **argv)
     b = strcmp("", str) && strcmp("0", str) && strcmp("F", str) && strcmp("f", str);
     break;
   }
-  if (b) { sqlite3_result_text(context, "X", -1, SQLITE_STATIC); }
-  //sqlite3_result_text(context, b ? "T" : "F", -1, SQLITE_STATIC);
+  sqlite3_result_text(context, b ? "X" : "", -1, SQLITE_STATIC);
 }
 
 /* Compute according to Haversine Formula

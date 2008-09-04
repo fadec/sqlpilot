@@ -363,6 +363,8 @@ Status incsv_import(InCSV *incsv, DB *db)
       db_bind_nonempty_text_else_null(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? (char*)db_column_text(existing, (rcol)) : (val))
     #define BIND_INT(wcol, rcol, val)					\
       db_bind_int(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? db_column_int(existing, (rcol)) : (val))
+    #define BIND_BOOL(wcol, rcol, val)					\
+      db_bind_int(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? str_bool((char*)db_column_text(existing, (rcol))) : (val))
     BIND_TEXT(FLIGHTS_WRITE_DATE, FLIGHTS_COL_DATE, date);
     BIND_INT(FLIGHTS_WRITE_LEG, FLIGHTS_COL_LEG, leg);
     BIND_TEXT(FLIGHTS_WRITE_FLTNO, FLIGHTS_COL_FLTNO, csv_row[incsv->fltno]);
@@ -377,8 +379,10 @@ Status incsv_import(InCSV *incsv, DB *db)
     BIND_TEXT(FLIGHTS_WRITE_AOUTUTC, FLIGHTS_COL_AINUTC, ainutc);
     BIND_TEXT(FLIGHTS_WRITE_DUR, FLIGHTS_COL_DUR, dur);
     BIND_TEXT(FLIGHTS_WRITE_NIGHT, FLIGHTS_COL_NIGHT, night);
-    BIND_TEXT(FLIGHTS_WRITE_INST, FLIGHTS_COL_INST, inst); 
-    BIND_INT(FLIGHTS_WRITE_XC, FLIGHTS_COL_XC, str_bool(csv_row[incsv->xc]));
+    BIND_TEXT(FLIGHTS_WRITE_INST, FLIGHTS_COL_INST, inst);
+    BIND_TEXT(FLIGHTS_WRITE_SIMINST, FLIGHTS_COL_SIMINST, NULL);
+    BIND_BOOL(FLIGHTS_WRITE_XC, FLIGHTS_COL_XC, str_bool(csv_row[incsv->xc]));
+    BIND_BOOL(FLIGHTS_WRITE_HOLD, FLIGHTS_COL_HOLD, str_bool(csv_row[incsv->hold]));
     BIND_INT(FLIGHTS_WRITE_DLAND, FLIGHTS_COL_DLAND, dland);
     BIND_INT(FLIGHTS_WRITE_NLAND, FLIGHTS_COL_NLAND, nland);
     BIND_TEXT(FLIGHTS_WRITE_APRCH, FLIGHTS_COL_APRCH, csv_row[incsv->aprch]);
@@ -388,6 +392,7 @@ Status incsv_import(InCSV *incsv, DB *db)
     BIND_TEXT(FLIGHTS_WRITE_TRIPDATE, FLIGHTS_COL_TRIPDATE, csv_row[incsv->tripdate]);
     #undef BIND_TEXT
     #undef BIND_INT
+    #undef BIND_BOOL
     db_stp_res_clr(stmt);
     db_reset(existing);
     db_clear_bindings(existing);
