@@ -45,10 +45,12 @@ typedef struct ParameterPane Scripter;
 #define IMAGE_FKEY  GTK_STOCK_JUMP_TO
 #define IMAGE_INVAL GTK_STOCK_STOP
 
+#define SQLPILOT_CONSOLE_GREETING "Please report bugs to <samdanielson@gmail.com>."
+
 /* id column for select satements is always 0 */
 #define COL_ID 0
 
-#define EMPTY_IF_NULL(x) (x ? x : "")
+#define EMPTY_IF_NULL(x) ((x) ? (x) : "")
 
 #define BUF_DATE 11		/* "YYYY-MM-DD\0" */
 #define BUF_TIME 6		/* "HH:MM\0" expecting no flight longer than 99 hours */

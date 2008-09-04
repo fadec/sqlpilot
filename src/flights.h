@@ -25,6 +25,10 @@
 /* Column numbers for treemodel and select statements */
 enum {
   FLIGHTS_COL_ID = COL_ID,
+  FLIGHTS_COL_AIRCRAFT_ID,
+  FLIGHTS_COL_ROLE_ID,
+  FLIGHTS_COL_DEP_ID,
+  FLIGHTS_COL_ARR_ID,
   FLIGHTS_COL_DATE,
   FLIGHTS_COL_LEG,
   FLIGHTS_COL_TAIL,
@@ -70,6 +74,10 @@ enum {
 /* Column names preceded with a _ are get hidden in the treeview */
 #define FLIGHTS_SELECT							\
   "select flights.id as '_\\id'"					\
+  ", a.id as '_\\aircraft_id'"						\
+  ", r.id as '_\\role_id'"						\
+  ", dep.id as '_\\dep_id'"						\
+  ", arr.id as '_\\arr_id'"						\
   ", flights.Date as Date"						\
   ", flights.Leg as Leg"						\
   ", a.tail as Tail"							\
@@ -119,7 +127,13 @@ enum {
   " order by Date, Leg ASC"
 
 #define FLIGHTS_WHERE_ID \
-  " where flights.id = ?;"
+  " where flights.id = ? LIMIT 1;"
+
+#define FLIGHTS_WHERE_DATE_FLTNO_DEPIATA \
+  " WHERE flights.date == ? AND flights.fltno == ? AND dep.iata == ? LIMIT 1;"
+
+#define FLIGHTS_WHERE_DATE_FLTNO_DEPICAO \
+  " WHERE flights.date == ? AND flights.fltno == ? AND dep.iata == ? LIMIT 1;"
 
 /* Insert and update bindings */
 enum {
@@ -154,7 +168,6 @@ enum {
   FLIGHTS_WRITE_TRIPDATE,
   FLIGHTS_WRITE_ID
 };
-
 
 #define FLIGHTS_INSERT							\
   "insert into flights ("						\

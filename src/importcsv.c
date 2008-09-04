@@ -36,10 +36,14 @@ typedef enum {
   INCSV_TIMEBASE_UTCOFFSET
 } InCSVTimebase;
 
+typedef enum { SUCCESS, WARNING, ERROR } Status;
+
 char csv_buf[CSV_BUFSIZE];
 char *csv_row[CSV_COLS];
 
 DBStatement *flights_ins;
+DBStatement *flights_update;
+DBStatement *flights_by_date_fltno_depiata;
 DBStatement *aircraft_ins;
 DBStatement *airport_tz_by_iata;
 DBStatement *airport_tz_by_icao;
@@ -50,7 +54,9 @@ struct InCSV {
   int date,
     leg,
     fltno,
-    aircraft,
+    tail,
+    fleetno,
+    role,
     type,
     dep,
     arr,
@@ -61,11 +67,11 @@ struct InCSV {
     dur,
     night,
     inst,
-    apprch,
-    xc,
-    role,
+    aprch,
+    hold,
     dland,
     nland,
+    xc,
     crew,
     notes,
     trip,
@@ -74,7 +80,6 @@ struct InCSV {
   int sep;
   int timebase;
 };
-
 
 static int incsv_init(InCSV *csv, const char *filename)
 {
@@ -86,7 +91,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   csv->date = i++;
   csv->leg = i++;
   csv->fltno = i++;
-  csv->aircraft = i++;
+  csv->tail = i++;
   csv->type = i++;
   csv->dep = i++;
   csv->arr = i++;
@@ -97,7 +102,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   csv->dur = i++;
   csv->night = i++;
   csv->inst = i++;
-  csv->apprch = i++;
+  csv->aprch = i++;
   csv->xc = i++;
   csv->role = i++;
   csv->dland = i++;
@@ -115,11 +120,12 @@ static void incsv_finalize(InCSV *incsv)
   fclose(incsv->fh);
 }
 
-time_t incsv_mktime(DB *db, const char *airport, InCSVTimebase timebase, struct tm *tm)
+time_t incsv_mktime(DB *db, const char *airport, InCSVTimebase timebase, struct tm *tm, Status *stat)
 {
   time_t t;
   char tz[BUF_TZ] = "\0";
 
+  *stat = SUCCESS;
   switch (timebase) {
   default:
     fprintf(stderr, "timebase not set\n");
@@ -135,15 +141,30 @@ time_t incsv_mktime(DB *db, const char *airport, InCSVTimebase timebase, struct 
     if (tz_of_airport(airport_tz_by_iata, airport, tz, BUF_TZ) && strlen(tz)) {
       t = tmtz_mktime(tm, tz);
     } else {
-      fprintf(stderr, "Warning: No timezone for airport %s. Assuming machine local time.\n", airport);
+      printf("    Warning: No timezone for airport %s. Assuming machine local time.\n", airport);
       t = mktime(tm);
+      *stat = WARNING;
     }
     break;
   }
   return t;
 }
 
-void incsv_import(InCSV *incsv, DB *db)
+Status report_airport(const char *position, const char *code)
+{
+  int slen = strlen(EMPTY_IF_NULL(code));
+  if (slen == 0) {
+    printf("    Warning: %s airport blank\n", position);
+    return WARNING;
+    
+  } else if (slen < 3 || slen > 4) {
+    printf("    Error: %s airport identifier \"%s\" does not look like ICAO or IATA\n", position, code);
+    return ERROR;
+  }
+  return SUCCESS;
+}
+
+Status incsv_import(InCSV *incsv, DB *db)
 {
   char
     date[BUF_DATE],
@@ -170,6 +191,10 @@ void incsv_import(InCSV *incsv, DB *db)
   int dland, nland, leg;
   char *ptr;
   int nrow, ncol;
+  Status s;
+  int warnings = 0;
+  DBStatement *existing, *stmt;	/* Existing row, insert or update statement */
+  int update = 0;		/* nonzero if stmt is an update */
 
   nrow = 0;
   while (csv_row_fread(incsv->fh,
@@ -186,7 +211,8 @@ void incsv_import(InCSV *incsv, DB *db)
     for (ncol=0; ncol<incsv->numcol; ncol++) {
       if (!csv_row[ncol]) {
 	csv_row[ncol] = "\0";
-	fprintf(stderr, "Warning: missing column %d in row %d\n", ncol+1, nrow);
+	fprintf(stderr, "Error: missing column %d in row %d\n", ncol+1, nrow);
+	return ERROR;
       }
     }
 
@@ -196,12 +222,31 @@ void incsv_import(InCSV *incsv, DB *db)
     leg = 0;
     aout_t = ain_t = sout_t = sin_t = -1;
 
-    /* Copy and reformat certain fields to internal formats */
+    /* Reformat date to yyyy-mm-dd */
     strncpy(date, csv_row[incsv->date], sizeof(date));
     for (ptr = date; ptr < (date + sizeof(date)); ptr++) {
       if ('/' == *ptr) { *ptr = '-'; };
     }
     date[sizeof(date) - 1] = '\0';
+
+    /* Set stmt to update or merge depending on whether or not a sufficient match is in the db */
+    existing = flights_by_date_fltno_depiata;
+    db_bind_text(existing, 1, date);
+    db_bind_text(existing, 2, csv_row[incsv->fltno]);
+    db_bind_text(existing, 3, csv_row[incsv->dep]);
+    if (db_step(existing) == DB_ROW) {
+      stmt = flights_update;
+      db_bind_int64(stmt, FLIGHTS_WRITE_ID, db_column_int64(existing, 0));
+      update = 1;
+    } else {
+      stmt = flights_ins;
+      update = 0;
+    }
+
+    printf("%s %s %s %s\n", update ? "Update" : "Insert", date, csv_row[incsv->dep], csv_row[incsv->arr]);
+
+    report_airport("Departure", csv_row[incsv->dep]);
+    report_airport("Arrival", csv_row[incsv->arr]);
 
     sscanf(csv_row[incsv->leg], "%d", &leg);
 
@@ -210,7 +255,8 @@ void incsv_import(InCSV *incsv, DB *db)
       format_time(csv_row[incsv->aout], aout, ':');
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, aout);
-      aout_t = incsv_mktime(db, csv_row[incsv->dep], incsv->timebase, &tm);
+      aout_t = incsv_mktime(db, csv_row[incsv->dep], incsv->timebase, &tm, &s);
+      if (s == WARNING) { warnings = 1; }
       if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->dep], tz, BUF_TZ)) {
 	localtime_tz(&aout_t, tz, &tm);
       }
@@ -222,7 +268,8 @@ void incsv_import(InCSV *incsv, DB *db)
       format_time(csv_row[incsv->ain],  ain,  ':');
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, ain);
-      ain_t = incsv_mktime(db, csv_row[incsv->arr], incsv->timebase, &tm);
+      ain_t = incsv_mktime(db, csv_row[incsv->arr], incsv->timebase, &tm, &s);
+      if (s == WARNING) { warnings = 1; }
       if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->arr], tz, BUF_TZ)) {
 	localtime_tz(&ain_t, tz, &tm);
       }
@@ -234,7 +281,8 @@ void incsv_import(InCSV *incsv, DB *db)
       format_time(csv_row[incsv->sout], sout, ':');
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, sout);
-      sout_t = incsv_mktime(db, csv_row[incsv->dep], incsv->timebase, &tm);
+      sout_t = incsv_mktime(db, csv_row[incsv->dep], incsv->timebase, &tm, &s);
+      if (s == WARNING) { warnings = 1; }
       if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->dep], tz, BUF_TZ)) {
 	localtime_tz(&sout_t, tz, &tm);
       }
@@ -246,7 +294,8 @@ void incsv_import(InCSV *incsv, DB *db)
       format_time(csv_row[incsv->sin],  sin, ':');
       tm_read_strdate(&tm, date);
       tm_read_strtime(&tm, sin);
-      sin_t = incsv_mktime(db, csv_row[incsv->arr], incsv->timebase, &tm);
+      sin_t = incsv_mktime(db, csv_row[incsv->arr], incsv->timebase, &tm, &s);
+      if (s == WARNING) { warnings = 1; }
       if (tz_of_airport(airport_tz_by_iata, csv_row[incsv->arr], tz, BUF_TZ)) {
 	localtime_tz(&sin_t, tz, &tm);
       }
@@ -271,83 +320,153 @@ void incsv_import(InCSV *incsv, DB *db)
     sscanf(csv_row[incsv->night], "%f", &fnight);
     fnight *= 60;
     if (fnight >= strtime_to_m(dur) - 3) fnight = strtime_to_m(dur);
-    m_to_strtime(fnight, night, BUF_TIME, '+');
+    if (fnight) m_to_strtime(fnight, night, BUF_TIME, '+');
 
     /* Compute inst - also rounds cause why not */
     sscanf(csv_row[incsv->inst], "%f", &finst);
     finst *= 60;
     if (finst >= strtime_to_m(dur) - 3) finst = strtime_to_m(dur);
-    m_to_strtime(finst, inst, BUF_TIME, '+');
+    if (finst) m_to_strtime(finst, inst, BUF_TIME, '+');
 
     /* Landings */
     sscanf(csv_row[incsv->dland], "%d", &dland);
     sscanf(csv_row[incsv->nland], "%d", &nland);
-
-    /* Do DB inserts */
-    if (!row_exists(db, "aircraft", "tail", csv_row[incsv->aircraft])) {
-      bind_id_of(aircraft_ins, AIRCRAFT_WRITE_TYPE, "types", "ident", csv_row[incsv->type]);
-      db_bind_text(aircraft_ins, AIRCRAFT_WRITE_TAIL, csv_row[incsv->aircraft]);
-      db_stp_res_clr(aircraft_ins);
+    
+    /* Do DB writes */
+    if (update && db_column_text(existing, FLIGHTS_COL_AIRCRAFT_ID)) {
+      db_bind_int64(stmt, FLIGHTS_WRITE_AIRCRAFT, db_column_int64(existing, FLIGHTS_COL_AIRCRAFT_ID));
+    } else {
+      if (!row_exists(db, "aircraft", "tail", csv_row[incsv->tail])) {
+	bind_id_of(aircraft_ins, AIRCRAFT_WRITE_TYPE, "types", "ident", csv_row[incsv->type]);
+	db_bind_nonempty_text_else_null(aircraft_ins, AIRCRAFT_WRITE_TAIL, csv_row[incsv->tail]);
+	db_stp_res_clr(aircraft_ins);
+      }
+      bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "tail", csv_row[incsv->tail]);
     }
-    bind_id_of(flights_ins, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "tail", csv_row[incsv->aircraft]);
-    bind_id_of(flights_ins, FLIGHTS_WRITE_ROLE, "roles", "ident", csv_row[incsv->role]);
-    bind_id_of(flights_ins, FLIGHTS_WRITE_DEP, "airports", "ident", csv_row[incsv->dep]);
-    bind_id_of(flights_ins, FLIGHTS_WRITE_ARR, "airports", "ident", csv_row[incsv->arr]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_DATE, date);
-    db_bind_int(flights_ins, FLIGHTS_WRITE_LEG, leg);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_FLTNO, csv_row[incsv->fltno]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SOUT, sout);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SOUTUTC, soututc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SIN, sin);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SINUTC, sinutc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_SDUR, sdur);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AOUT, aout);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AOUTUTC, aoututc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AIN, ain);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_AINUTC, ainutc);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_DUR, dur);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_NIGHT, night);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_INST, inst);
-    db_bind_int(flights_ins, FLIGHTS_WRITE_XC, str_bool(csv_row[incsv->xc]));
-    db_bind_int(flights_ins, FLIGHTS_WRITE_DLAND, dland);
-    db_bind_int(flights_ins, FLIGHTS_WRITE_NLAND, nland);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_APRCH, csv_row[incsv->apprch]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_CREW, csv_row[incsv->crew]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_NOTES, csv_row[incsv->notes]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_TRIP, csv_row[incsv->trip]);
-    db_bind_text(flights_ins, FLIGHTS_WRITE_TRIPDATE, csv_row[incsv->tripdate]);
-    db_stp_res_clr(flights_ins);
-    fprintf(stderr, "%d: %s\n", nrow, date);
+    if (update && db_column_text(existing, FLIGHTS_COL_ROLE_ID)) {
+      db_bind_int64(stmt, FLIGHTS_WRITE_ROLE, db_column_int64(existing, FLIGHTS_COL_ROLE_ID));
+    } else {
+      bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", csv_row[incsv->role]);
+    }
+    if (update && db_column_text(existing, FLIGHTS_COL_DEP_ID)) {
+      db_bind_int64(stmt, FLIGHTS_WRITE_DEP, db_column_int64(existing, FLIGHTS_COL_DEP_ID));
+    } else {
+      bind_id_of(stmt, FLIGHTS_WRITE_DEP, "airports", "iata", csv_row[incsv->dep]);
+    }
+    if (update && db_column_text(existing, FLIGHTS_COL_ARR_ID)) {
+      db_bind_int64(stmt, FLIGHTS_WRITE_ARR, db_column_int64(existing, FLIGHTS_COL_ARR_ID));
+    } else {
+      bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "iata", csv_row[incsv->arr]);
+    }
+    /* These macros only change null values in db on update */
+    #define BIND_TEXT(wcol, rcol, val)					\
+      db_bind_nonempty_text_else_null(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? (char*)db_column_text(existing, (rcol)) : (val))
+    #define BIND_INT(wcol, rcol, val)					\
+      db_bind_int(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? db_column_int(existing, (rcol)) : (val))
+    BIND_TEXT(FLIGHTS_WRITE_DATE, FLIGHTS_COL_DATE, date);
+    BIND_INT(FLIGHTS_WRITE_LEG, FLIGHTS_COL_LEG, leg);
+    BIND_TEXT(FLIGHTS_WRITE_FLTNO, FLIGHTS_COL_FLTNO, csv_row[incsv->fltno]);
+    BIND_TEXT(FLIGHTS_WRITE_SOUT, FLIGHTS_COL_SOUT, sout);
+    BIND_TEXT(FLIGHTS_WRITE_SOUTUTC, FLIGHTS_COL_SOUTUTC, soututc);
+    BIND_TEXT(FLIGHTS_WRITE_SIN, FLIGHTS_COL_SIN, sin);
+    BIND_TEXT(FLIGHTS_WRITE_SINUTC, FLIGHTS_COL_SINUTC, sinutc);
+    BIND_TEXT(FLIGHTS_WRITE_SDUR, FLIGHTS_COL_SDUR, sdur);
+    BIND_TEXT(FLIGHTS_WRITE_AOUT, FLIGHTS_COL_AOUT, aout);
+    BIND_TEXT(FLIGHTS_WRITE_AOUTUTC, FLIGHTS_COL_AOUTUTC, aoututc);
+    BIND_TEXT(FLIGHTS_WRITE_AIN, FLIGHTS_COL_AIN, ain);
+    BIND_TEXT(FLIGHTS_WRITE_AOUTUTC, FLIGHTS_COL_AINUTC, ainutc);
+    BIND_TEXT(FLIGHTS_WRITE_DUR, FLIGHTS_COL_DUR, dur);
+    BIND_TEXT(FLIGHTS_WRITE_NIGHT, FLIGHTS_COL_NIGHT, night);
+    BIND_TEXT(FLIGHTS_WRITE_INST, FLIGHTS_COL_INST, inst); 
+    BIND_INT(FLIGHTS_WRITE_XC, FLIGHTS_COL_XC, str_bool(csv_row[incsv->xc]));
+    BIND_INT(FLIGHTS_WRITE_DLAND, FLIGHTS_COL_DLAND, dland);
+    BIND_INT(FLIGHTS_WRITE_NLAND, FLIGHTS_COL_NLAND, nland);
+    BIND_TEXT(FLIGHTS_WRITE_APRCH, FLIGHTS_COL_APRCH, csv_row[incsv->aprch]);
+    BIND_TEXT(FLIGHTS_WRITE_CREW, FLIGHTS_COL_CREW, csv_row[incsv->crew]);
+    BIND_TEXT(FLIGHTS_WRITE_NOTES, FLIGHTS_COL_NOTES, csv_row[incsv->notes]);
+    BIND_TEXT(FLIGHTS_WRITE_TRIP, FLIGHTS_COL_TRIP, csv_row[incsv->trip]);
+    BIND_TEXT(FLIGHTS_WRITE_TRIPDATE, FLIGHTS_COL_TRIPDATE, csv_row[incsv->tripdate]);
+    #undef BIND_TEXT
+    #undef BIND_INT
+    db_stp_res_clr(stmt);
+    db_reset(existing);
+    db_clear_bindings(existing);
     nrow++;
   }
+  return warnings ? WARNING : SUCCESS;
 }
 
 int main(int argc, char **argv)
 {
+  char usage[] = "Usage: cat <CSV file> | importcsv <Database file>. Option -h for details.\n";
   InCSV incsv;
   DB *db;
+  char *db_filename = NULL;
+  int i;
+  int force = 0;
 
-  if (argc < 2) {
-    printf("Usage: cat my.csv | importcsv logbook.db\n");
+  for (i=1; i<argc; i++) {
+    if (argv[i][0] == '-') {
+      if (argv[i][1] == 'h') {
+	printf("SQLPilot (CSV -> Database) Importer\n");
+	printf("%s\n", usage);
+	printf("    -h    This message\n");
+	printf("    -f    Force commit\n");
+	printf("Imported flights matching on date/fltno/dep will update only null fields.\n");
+	printf("%s\n", SQLPILOT_CONSOLE_GREETING);
+	return 0;
+      }
+      if (argv[i][1] == 'f') {
+	force = 1;
+      }
+    } else {
+      db_filename = argv[i];
+    }
+  }
+
+  if (!db_filename) {
+    printf("%s", usage);
     return 1;
   }
 
+  if (incsv_init(&incsv, "")) {
+    printf("Failed to open CSV file\n");
+    return 1;
+  }
+
+  if ((db = db_open(db_filename)) == NULL) {
+    printf("Failed to open database\n");
+    return 1;
+  }
   flights_ins = db_prep(db, FLIGHTS_INSERT);
+  flights_update = db_prep(db, FLIGHTS_UPDATE);
+  flights_by_date_fltno_depiata = db_prep(db, FLIGHTS_SELECT FLIGHTS_WHERE_DATE_FLTNO_DEPIATA);
   aircraft_ins = db_prep(db, AIRCRAFT_INSERT);
   airport_tz_by_iata = db_prep(db, AIRPORTS_SELECT_TZONE_BY_IATA);
   airport_tz_by_icao = db_prep(db, AIRPORTS_SELECT_TZONE_BY_ICAO);
 
-  if (incsv_init(&incsv, "")) {
-    printf("Failed to init csv file\n");
+  db_exec_simple(db, "BEGIN TRANSACTION;");
+  switch (incsv_import(&incsv, db)) {
+  case SUCCESS:
+    db_exec_simple(db, "COMMIT;");
+    printf("Import Successful\n\n");
+    break;
+  case WARNING:
+    if (force) {
+      db_exec_simple(db, "COMMIT;");
+      printf("Warnings. Commit forced.\n\n");
+    } else {
+      db_exec_simple(db, "ROLLBACK;");
+      printf("Warnings. Use -f to force.\n\n");
+    }
+    break;
+  default:
+  case ERROR:
+    db_exec_simple(db, "ROLLBACK;");
+    fprintf(stderr, "Transaction Failed\n\n");
     return 1;
+    break;
   }
-
-  if ((db = db_open(argv[1])) == NULL) {
-    printf("Failed to open database\n");
-    return 1;
-  }
-
-  incsv_import(&incsv, db);
 
   incsv_finalize(&incsv);
   return 0;

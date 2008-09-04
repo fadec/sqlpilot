@@ -23,6 +23,10 @@
 
 StoreColumnKind flights_column_kinds[] = {
   STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
+  STORE_COLUMN_KIND_STR_NUM,
   STORE_COLUMN_KIND_STR,
   STORE_COLUMN_KIND_STR_NUM,
   STORE_COLUMN_KIND_STR,
@@ -957,12 +961,6 @@ void flights_restore_options(Logbook *logbook)
 
 int flights_error(Logbook *logbook)
 {
-/*   const gchar *dep, *arr; */
-/*   int valid_airport_length = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle)) ? 4 : 3; */
-/*   dep = gtk_entry_get_text(GTK_ENTRY(logbook->flights_dep)); */
-/*   arr = gtk_entry_get_text(GTK_ENTRY(logbook->flights_arr)); */
-
-/*   if (dep && strlen(dep) != */
 
   return 0;
 }
