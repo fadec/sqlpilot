@@ -65,6 +65,10 @@ Logbook *logbook_new(const char *filename)
 #endif
 
   /* Set DB statements */
+  logbook->ta_begin = db_prep(logbook->db, "BEGIN TRANSACTION;");
+  logbook->ta_commit = db_prep(logbook->db, "COMMIT;");
+  logbook->ta_rollback = db_prep(logbook->db, "ROLLBACK;");
+
   logbook->flights_select_all   = db_prep(logbook->db, FLIGHTS_SELECT FLIGHTS_ORDER ";");
   logbook->flights_select_by_id = db_prep(logbook->db, FLIGHTS_SELECT FLIGHTS_WHERE_ID);
   logbook->flights_insert       = db_prep(logbook->db, FLIGHTS_INSERT);
@@ -107,8 +111,9 @@ Logbook *logbook_new(const char *filename)
   logbook->registry_update             = db_prep(logbook->db, "UPDATE Registry SET value = ? WHERE path = ? AND key = ?;");
   logbook->registry_delete             = db_prep(logbook->db, "DELETE FROM Registry WHERE path = ? AND key = ?;");
 
-  logbook->reports_delete   = db_prep(logbook->db, "DELETE FROM Reports WHERE Title = ?;");
-  logbook->reports_insert   = db_prep(logbook->db, "INSERT INTO Reports (Title, SQL) VALUES (?, ?);");
+  logbook->reports_sql_by_title    = db_prep(logbook->db, "SELECT SQL FROM Reports WHERE Title = ?;");
+  logbook->reports_delete_by_title = db_prep(logbook->db, "DELETE FROM Reports WHERE Title = ?;");
+  logbook->reports_insert          = db_prep(logbook->db, "INSERT INTO Reports (Title, SQL) VALUES (?, ?);");
   
   pull_widget(window);
   pull_widget(flights_where);
@@ -281,9 +286,11 @@ Logbook *logbook_new(const char *filename)
   pull_widget(reports_sw);
   pull_widget(reports_err_msg);
   pull_widget(reports_title);
+  pull_widget(reports_title_combo);
   pull_widget(reports_refresh);
   pull_widget(reports_query_progress);
   pull_widget(reports_results_summary);
+  pull_widget(reports_sql_expander);
   pull_widget(reports_sql_text);
   pull_widget(reports_save_btn);
   pull_widget(reports_armdel_btn);
@@ -347,6 +354,8 @@ Logbook *logbook_new(const char *filename)
 		   G_CALLBACK(on_aircraft_notes_changed), logbook);
   g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->airports_notes))), "changed",
 		   G_CALLBACK(on_airports_notes_changed), logbook);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->reports_sql_text))), "changed",
+		   G_CALLBACK(on_reports_sql_text_changed), logbook);
 
   /* Edit Controls */
   logbook->flights_edctrl                 = &logbook->_flights_edctrl;
@@ -453,6 +462,7 @@ Logbook *logbook_new(const char *filename)
   logbook->aircraft_stale = 1;
   logbook->types_stale = 1;
   logbook->airports_stale = 1;
+  reports_title_combo_init(logbook);
   
   flights_load_selection(logbook);
   roles_load_selection(logbook);

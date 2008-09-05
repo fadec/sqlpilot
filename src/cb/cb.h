@@ -41,4 +41,6 @@ void on_airports_selection_changed(GtkTreeSelection *, Logbook *);
 void on_airports_notes_changed(GtkTextBuffer *, Logbook);
 void airports_refresh(Logbook *);
 
+void on_reports_sql_text_changed(GtkTextBuffer *, Logbook *);
+
 #endif

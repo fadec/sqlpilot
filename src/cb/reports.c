@@ -25,14 +25,33 @@ void on_reports_refresh_clicked(GtkButton *button, Logbook *logbook)
   reports_refresh(logbook);
 }
 
-void on_reports_sql_changed(GtkTextBuffer *tb, Logbook *logbook)
+static void reports_set_modified(Logbook *logbook)
 {
-
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->reports_armdel_btn), FALSE);
+    gtk_widget_set_sensitive(logbook->reports_armdel_btn, FALSE);
+    gtk_widget_set_sensitive(logbook->reports_del_btn, FALSE);
+    gtk_widget_set_sensitive(logbook->reports_save_btn, strlen(gtk_entry_get_text(GTK_ENTRY(logbook->reports_title))));
 }
 
 void on_reports_title_changed(GtkWidget *entry, Logbook *logbook)
 {
+  if (GTK_WIDGET_HAS_FOCUS(entry)) {
+    reports_set_modified(logbook);
+    gtk_expander_set_expanded(GTK_EXPANDER(logbook->reports_sql_expander), TRUE);
+  } else {
+    db_bind_text(logbook->reports_sql_by_title, 1, gtk_entry_get_text(GTK_ENTRY(logbook->reports_title)));
+    db_step(logbook->reports_sql_by_title);
+    fprintf(stderr, "Error's from here ...\n");
+    text_view_set_text(GTK_TEXT_VIEW(logbook->reports_sql_text), (char*)db_column_text(logbook->reports_sql_by_title, 0));
+    fprintf(stderr, "... to here during delete.\n");
+    db_reset(logbook->reports_sql_by_title);
+    db_clear_bindings(logbook->reports_sql_by_title);
 
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->reports_armdel_btn), FALSE);
+    gtk_widget_set_sensitive(logbook->reports_armdel_btn, TRUE);
+    gtk_widget_set_sensitive(logbook->reports_del_btn, FALSE);
+    gtk_widget_set_sensitive(logbook->reports_save_btn, FALSE);
+  }
 }
 
 void on_reports_armdel_btn_toggled(GtkToggleButton *button, Logbook *logbook)
@@ -42,11 +61,24 @@ void on_reports_armdel_btn_toggled(GtkToggleButton *button, Logbook *logbook)
 
 void on_reports_del_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-
+  reports_delete(logbook);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->reports_armdel_btn), FALSE);
+  gtk_widget_set_sensitive(logbook->reports_armdel_btn, FALSE);
+  gtk_widget_set_sensitive(logbook->reports_del_btn, FALSE);
+  gtk_widget_set_sensitive(logbook->reports_save_btn, FALSE);
 }
 
 void on_reports_save_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-
+  reports_save(logbook);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->reports_armdel_btn), FALSE);
+  gtk_widget_set_sensitive(logbook->reports_armdel_btn, TRUE);
+  gtk_widget_set_sensitive(logbook->reports_del_btn, FALSE);
+  gtk_widget_set_sensitive(logbook->reports_save_btn, FALSE);
+  gtk_expander_set_expanded(GTK_EXPANDER(logbook->reports_sql_expander), FALSE);
 }
 
+void on_reports_sql_text_changed(GtkTextBuffer *tb, Logbook *logbook)
+{
+  reports_set_modified(logbook);
+}

@@ -39,6 +39,9 @@ struct Logbook {
   DB *db;
   char *db_filename;
   GtkWidget *window;
+  DBStatement *ta_begin;
+  DBStatement *ta_commit;
+  DBStatement *ta_rollback;
 
   int flights_stale;	   /* Treemodel contains stale data as a result of updates to db elsewhere ... the model for the view is stale; it has nothing to do with the db */
   DBStatement *flights_select_all; /* Select for tree model */
@@ -282,16 +285,19 @@ struct Logbook {
   Edctrl _airports_edctrl;
   Edctrl *airports_edctrl;
 
-  DBStatement *reports_delete;
+  DBStatement *reports_delete_by_title;
+  DBStatement *reports_sql_by_title;
   DBStatement *reports_insert;
   GtkWidget *reports_sw;
   GtkTreeModel *reports_treemodel;
   GtkWidget *reports_err_msg;
   GtkWidget *reports_treeview;
   GtkWidget *reports_title;
+  GtkWidget *reports_title_combo;
   GtkWidget *reports_refresh;
   GtkWidget *reports_query_progress;
   GtkWidget *reports_results_summary;
+  GtkWidget *reports_sql_expander;
   GtkWidget *reports_sql_text;
   GtkWidget *reports_save_btn;
   GtkWidget *reports_armdel_btn;
