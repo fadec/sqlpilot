@@ -21,6 +21,21 @@
 
 SHOW_THOUGHTS = false
 OPTS = {}
+
+require 'optparse'
+
+begin
+  OptionParser.new do |opts|
+    opts.banner = "Usage: ccs_schedule.rb [options]"
+    opts.on("-a", "--actual-times", "Output times as actual") do |a|
+      OPTS[:actual_times] = a
+    end
+  end.parse!
+rescue OptionParser::InvalidOption => e
+  puts "Invalid option. -h for details."
+  exit
+end
+
 #OPTS[:actual_times] = true
 
 module Parse
