@@ -1,39 +1,17 @@
 
 #include "reports.h"
 
-void reports_refresh(Logbook *logbook)
+DBStatement *reports_make_statement(Logbook *logbook)
 {
-  static int lock=0;
-
-  long nrows;
-  int err;
-  char results_summary[128];
-  char *sql;
   DBStatement *select = NULL;
-  GtkTreeModel *model;
-  GtkWidget *view;
+  char *sql = text_view_get_text(GTK_TEXT_VIEW(logbook->reports_sql_text));
+  char results_summary[128];
 
-  /* refreshing while already refreshing is bad */
-  if (lock) return;
-  lock = 1;
-
-  gtk_widget_hide(logbook->reports_results_summary);
-  gtk_widget_show(logbook->reports_query_progress);
-
-  sql = text_view_get_text(GTK_TEXT_VIEW(logbook->reports_sql_text));
-  gtk_label_set_text(GTK_LABEL(logbook->reports_results_summary), "");
   gtk_widget_hide(logbook->reports_err_msg);
-
   if (sql && strlen(sql)) {
-    if ((err = db_prepare(logbook->db, sql, &select)) == DB_OK) {
+    if (db_prepare(logbook->db, sql, &select) == DB_OK) {
       if (db_column_count(select)) {
-	store_build_query_stmt_widget(select, NULL, &view, &model);
-	nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(model), select, GTK_PROGRESS_BAR(logbook->reports_query_progress));
-	snprintf(results_summary, sizeof(results_summary), "%ld Rows", nrows);
-	if (logbook->reports_treeview) { gtk_widget_destroy(logbook->reports_treeview); }
-	gtk_container_add(GTK_CONTAINER(logbook->reports_sw), view);
-	gtk_widget_show(GTK_WIDGET(view));
-	logbook->reports_treeview = view;
+	return select;
       } else {
 	snprintf(results_summary, sizeof(results_summary), "Wrong SQL");
 	gtk_label_set_text(GTK_LABEL(logbook->reports_err_msg), "The statement does not have any colums");
@@ -48,10 +26,44 @@ void reports_refresh(Logbook *logbook)
     }
   } else {
     snprintf(results_summary, sizeof(results_summary), "No SQL");
+    gtk_label_set_text(GTK_LABEL(logbook->reports_err_msg), "Enter an SQL select statement");
     gtk_expander_set_expanded(GTK_EXPANDER(logbook->reports_sql_expander), TRUE);
   }
-
+  if (select) { db_finalize(select); }
   gtk_label_set_text(GTK_LABEL(logbook->reports_results_summary), results_summary);
+  return NULL;
+}
+
+void reports_refresh(Logbook *logbook)
+{
+  static int lock=0;
+
+  long nrows;
+  char results_summary[128];
+  DBStatement *select = NULL;
+  GtkTreeModel *model;
+  GtkWidget *view;
+
+  /* refreshing while already refreshing is bad */
+  if (lock) return;
+  lock = 1;
+
+  gtk_widget_hide(logbook->reports_results_summary);
+  gtk_widget_show(logbook->reports_query_progress);
+
+  gtk_label_set_text(GTK_LABEL(logbook->reports_results_summary), "");
+
+  if ((select = reports_make_statement(logbook))) {
+    store_build_query_stmt_widget(select, NULL, &view, &model);
+    nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(model), select, GTK_PROGRESS_BAR(logbook->reports_query_progress));
+    snprintf(results_summary, sizeof(results_summary), "%ld Rows", nrows);
+    if (logbook->reports_treeview) { gtk_widget_destroy(logbook->reports_treeview); }
+    gtk_container_add(GTK_CONTAINER(logbook->reports_sw), view);
+    gtk_widget_show(GTK_WIDGET(view));
+    logbook->reports_treeview = view;
+    gtk_label_set_text(GTK_LABEL(logbook->reports_results_summary), results_summary);
+  }
+
   gtk_widget_hide(logbook->reports_query_progress);
   gtk_widget_show(logbook->reports_results_summary);
   
@@ -81,14 +93,26 @@ void reports_title_combo_reload(Logbook *logbook)
 
 void reports_save(Logbook *logbook)
 {
-  db_stp_res_clr(logbook->ta_begin);
-  db_bind_text(logbook->reports_delete_by_title, 1, gtk_entry_get_text(GTK_ENTRY(logbook->reports_title)));
-  db_stp_res_clr(logbook->reports_delete_by_title);
-  db_bind_text(logbook->reports_insert, REPORTS_WRITE_TITLE, gtk_entry_get_text(GTK_ENTRY(logbook->reports_title)));
-  db_bind_text(logbook->reports_insert, REPORTS_WRITE_SQL, text_view_get_text(GTK_TEXT_VIEW(logbook->reports_sql_text)));
-  db_stp_res_clr(logbook->reports_insert);
-  db_stp_res_clr(logbook->ta_commit);
-  reports_title_combo_reload(logbook);
+  DBStatement *stmt;
+
+  if ((stmt = reports_make_statement(logbook))) {
+    db_finalize(stmt);
+
+    db_stp_res_clr(logbook->ta_begin);
+    db_bind_text(logbook->reports_delete_by_title, 1, gtk_entry_get_text(GTK_ENTRY(logbook->reports_title)));
+    db_stp_res_clr(logbook->reports_delete_by_title);
+    db_bind_text(logbook->reports_insert, REPORTS_WRITE_TITLE, gtk_entry_get_text(GTK_ENTRY(logbook->reports_title)));
+    db_bind_text(logbook->reports_insert, REPORTS_WRITE_SQL, text_view_get_text(GTK_TEXT_VIEW(logbook->reports_sql_text)));
+    db_stp_res_clr(logbook->reports_insert);
+    db_stp_res_clr(logbook->ta_commit);
+
+    reports_title_combo_reload(logbook);
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->reports_armdel_btn), FALSE);
+    gtk_widget_set_sensitive(logbook->reports_armdel_btn, TRUE);
+    gtk_widget_set_sensitive(logbook->reports_del_btn, FALSE);
+    gtk_widget_set_sensitive(logbook->reports_save_btn, FALSE);
+    gtk_expander_set_expanded(GTK_EXPANDER(logbook->reports_sql_expander), FALSE);
+  }
 }
 
 void reports_delete(Logbook *logbook)

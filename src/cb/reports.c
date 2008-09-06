@@ -71,11 +71,6 @@ void on_reports_del_btn_clicked(GtkButton *button, Logbook *logbook)
 void on_reports_save_btn_clicked(GtkButton *button, Logbook *logbook)
 {
   reports_save(logbook);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->reports_armdel_btn), FALSE);
-  gtk_widget_set_sensitive(logbook->reports_armdel_btn, TRUE);
-  gtk_widget_set_sensitive(logbook->reports_del_btn, FALSE);
-  gtk_widget_set_sensitive(logbook->reports_save_btn, FALSE);
-  gtk_expander_set_expanded(GTK_EXPANDER(logbook->reports_sql_expander), FALSE);
 }
 
 void on_reports_sql_text_changed(GtkTextBuffer *tb, Logbook *logbook)
