@@ -29,7 +29,7 @@ USING_READLINE=true
 # for gtk-builder-convert
 PYTHON=python2.5
 
-PACKAGES = gtk+-2.0 libglade-2.0 libgtkhtml-3.14 #hildon-libs
+PACKAGES = gtk+-2.0 libgtkhtml-3.14 # libglade-2.0 hildon-libs
 
 # paths
 PREFIX = /usr/local
@@ -38,7 +38,7 @@ MANPREFIX = ${PREFIX}/share/man
 
 # includes and libs
 INCS = -Itest -Isrc -I${PREFIX}/include -I/usr/include `pkg-config $(PACKAGES) --cflags`
-LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lpthread -lreadline `pkg-config $(PACKAGES) --libs`
+LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lpthread -lreadline `pkg-config $(PACKAGES) --libs` -lsqlite3
 
 # flags
 CFLAGS = -g3 -Wall -O0 ${INCS}

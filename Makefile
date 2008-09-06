@@ -22,7 +22,6 @@ include config.mk
 SRC = src/sqlpilot.c \
       src/util.c \
       src/lib/csv.c \
-      src/db/sqlite3.c \
       src/db/db.c \
       src/store.c \
       src/cb/window.c \
@@ -33,6 +32,7 @@ SRC = src/sqlpilot.c \
       src/cb/airports.c \
       src/cb/reports.c \
       src/cb/summaries.c \
+      src/cb/import.c \
       src/logbook.c \
       src/edctrl.c \
       src/scripter.c \
@@ -42,13 +42,14 @@ SRC = src/sqlpilot.c \
       src/types.c \
       src/airports.c \
       src/reports.c \
-      src/summaries.c
+      src/summaries.c \
+      src/import.c
 
 APP_SRC = src/main.c ${SRC}
 
 IMPORTCSV_SRC = src/importcsv.c ${SRC}
 
-CONSOLE_SRC = src/console.c src/db/db.c src/db/sqlite3.c
+CONSOLE_SRC = src/console.c src/db/db.c #src/db/sqlite3.c
 
 # Example: make test db, make test-run db
 TEST_SRC = test/units/$(unit)_test.c test/test.c ${SRC}
@@ -57,7 +58,6 @@ HEADERS = src/config.h \
 	  src/sqlpilot.h \
 	  src/util.h \
 	  src/lib/csv.h \
-	  src/db/sqlite3.h \
 	  src/db/db.h \
           src/store.h \
 	  src/cb/cb.h \
@@ -70,7 +70,8 @@ HEADERS = src/config.h \
 	  src/types.h \
 	  src/airports.h \
 	  src/reports.h \
-	  src/summaries.h
+	  src/summaries.h \
+	  src/import.h
 
 
 APP_HEADERS = src/sqlpilot.h ${HEADERS}
