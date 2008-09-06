@@ -86,4 +86,7 @@ gboolean spawn_script(const gchar *wdir,
 		      int busy_func(void*),
 		      void *busy_data);
 
+void filename_combo_box_build_model(GtkComboBox *cbox);
+void filename_combo_box_merge_dir(GtkComboBox *cbox, const char *dir);
+
 #endif

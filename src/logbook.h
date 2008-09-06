@@ -310,6 +310,17 @@ struct Logbook {
   Scripter _summaries_parameter_pane;
   Scripter *summaries_parameter_pane;
 
+  GtkWidget *import_script;
+  GtkWidget *import_read_btn;
+  GtkWidget *import_write_btn;
+  GtkWidget *import_input_expander;
+  GtkWidget *import_interpretend_expander;
+  GtkWidget *import_response_expander;
+  GtkWidget *import_write_normal;
+  GtkWidget *import_write_dryrun;
+  GtkWidget *import_write_force;
+  GtkWidget *import_input_notebook;
+
   char registry_value[REGISTRY_BUF_VALUE];
   DBStatement *registry_select_by_path_key;
   DBStatement *registry_insert;

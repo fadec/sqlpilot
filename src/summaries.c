@@ -1,8 +1,4 @@
 #include <gtkhtml/gtkhtml.h>
-#include <dirent.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
 
 #include "sqlpilot.h"
 #include "summaries.h"
@@ -87,40 +83,8 @@ static void summaries_html_view_init(Logbook *logbook)
 
 static void summaries_selector_init(Logbook *logbook)
 {
-  GtkListStore *store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
-  GtkTreeIter iter;
-  GtkCellRenderer *renderer;
-
-  DIR *dp;
-  struct dirent *dirp;
-  struct stat statinfo;
-  char filename[256];
-
-  if ((dp = opendir(SUMMARIES_DIR)) == NULL) {
-    fprintf(stderr, "Can't open summary dir\n");
-    exit(1);
-  }
-  while ((dirp = readdir(dp)) != NULL) {
-    snprintf(filename, sizeof(filename), "%s/%s", SUMMARIES_DIR, dirp->d_name);
-    stat(filename, &statinfo);
-    if (S_ISREG(statinfo.st_mode) || S_ISLNK(statinfo.st_mode)) {
-      gtk_list_store_append(store, &iter);
-      gtk_list_store_set (store, &iter,
-			  SUMMARIES_COL_FILENAME, filename,
-			  SUMMARIES_COL_TITLE, dirp->d_name,
-			  -1);
-    }
-  }
-  closedir(dp);
-
-  gtk_combo_box_set_model(GTK_COMBO_BOX(logbook->summaries_select_summary), GTK_TREE_MODEL(store));
-  gtk_cell_layout_clear(GTK_CELL_LAYOUT(logbook->summaries_select_summary));
-  renderer = gtk_cell_renderer_text_new();
-  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(logbook->summaries_select_summary), renderer, TRUE);
-  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(logbook->summaries_select_summary), renderer,
-				 "text", SUMMARIES_COL_TITLE,
-				 NULL);
-
+  filename_combo_box_build_model(GTK_COMBO_BOX(logbook->summaries_select_summary));
+  filename_combo_box_merge_dir(GTK_COMBO_BOX(logbook->summaries_select_summary), SUMMARIES_DIR);
   gtk_combo_box_set_active(GTK_COMBO_BOX(logbook->summaries_select_summary), 0);
 }
 

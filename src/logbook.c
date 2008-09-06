@@ -26,6 +26,7 @@
 #include "airports.h"
 #include "reports.h"
 #include "summaries.h"
+#include "import.h"
 #include "cb/cb.h"
 
 Logbook *logbook_new(const char *filename)
@@ -298,6 +299,16 @@ Logbook *logbook_new(const char *filename)
   pull_widget(summaries_select_summary);
   pull_widget(summaries_sw);
   pull_widget(summaries_parameters);
+  pull_widget(import_script);
+  pull_widget(import_read_btn);
+  pull_widget(import_write_btn);
+  pull_widget(import_input_expander);
+  pull_widget(import_interpretend_expander);
+  pull_widget(import_response_expander);
+  pull_widget(import_write_normal);
+  pull_widget(import_write_dryrun);
+  pull_widget(import_write_force);
+  pull_widget(import_input_notebook);
   
   /* Add treeview */
   flights_build_store_view(logbook);
@@ -463,6 +474,7 @@ Logbook *logbook_new(const char *filename)
   logbook->types_stale = 1;
   logbook->airports_stale = 1;
   reports_title_combo_init(logbook);
+  import_init(logbook);
   
   flights_load_selection(logbook);
   roles_load_selection(logbook);

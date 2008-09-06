@@ -142,6 +142,7 @@ CREATE TABLE Reports (
        ,Title CHAR
        ,SQL TEXT
 );
+create unique index reports_title on Reports(title);
 
 CREATE TABLE Registry (
        path CHAR
@@ -149,6 +150,13 @@ CREATE TABLE Registry (
        ,value INTEGER
 );
 create unique index registry_path_key on Registry(path, key);
+
+INSERT INTO Reports (Title, SQL) VALUES ("Time in Type", "select Type, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by type;");
+
+INSERT INTO Reports (Title, SQL) VALUES ("Daily", "select Date, hm(s) as Scheduled, hm(a) as Actual from (select date, sum(sdur) as s, sum(dur) as a from Experience group by date) order by Date;");
+
+INSERT INTO Reports (Title, SQL) VALUES ("Monthly", "select strftime('%Y-%m', Date) as Month, count(id) as Flights, hm(sum(SDur)) as Scheduled, hm(sum(Dur)) as Actual from Flights group by Month order by Month;");
+
 
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Date",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "FltNo",    2);
@@ -293,7 +301,16 @@ SELECT flights.id as _id
 ,types.ident as Type
 ,aircraft.Tail as Aircraft
 ,aircraft.fleetno as FleetNo
+,flights.sdur as SDur
 ,flights.dur as Dur
+,flights.sout as SOut
+,flights.sin as SIn
+,flights.aout as AOut
+,flights.ain as AIn
+,flights.soututc as SOutUTC
+,flights.sinutc as SInUTC
+,flights.aoututc as AOutUTC
+,flights.ainutc as AInUTC
 ,dep_airports.IATA as DepIATA
 ,arr_airports.IATA as ArrIATA
 ,dep_airports.lat as DepLat

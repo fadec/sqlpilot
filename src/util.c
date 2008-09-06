@@ -20,6 +20,10 @@
 #include "util.h"
 #include <string.h>
 #include <time.h>
+#include <dirent.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 gboolean str_bool(const char *str)
 {
@@ -692,3 +696,47 @@ gboolean spawn_script(const gchar *wdir,
   return ret;
 }
 
+/* col 0 is for the full path, col 1 is just the filename and is what gets displayed */
+void filename_combo_box_build_model(GtkComboBox *cbox)
+{
+  GtkListStore *store;
+  GtkCellRenderer *renderer;
+
+  store = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
+  gtk_combo_box_set_model(GTK_COMBO_BOX(cbox), GTK_TREE_MODEL(store));
+  gtk_cell_layout_clear(GTK_CELL_LAYOUT(cbox));
+  renderer = gtk_cell_renderer_text_new();
+  gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(cbox), renderer, TRUE);
+  gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(cbox), renderer,
+				 "text", 1,
+				 NULL);
+}
+
+/* Adds a files from a dir to the combo box - really it should overwrite d_name duplicates so home dir scripts can bump system ones */
+void filename_combo_box_merge_dir(GtkComboBox *cbox, const char *dir)
+{
+  DIR *dp;
+  struct dirent *dirp;
+  struct stat statinfo;
+  char filename[256];
+  GtkListStore *store;
+  GtkTreeIter iter;
+
+  store = (GtkListStore*) gtk_combo_box_get_model(cbox);
+  if ((dp = opendir(dir)) == NULL) {
+    fprintf(stderr, "Can't open directory: %s\n", dir);
+    exit(1);
+  }
+  while ((dirp = readdir(dp)) != NULL) {
+    snprintf(filename, sizeof(filename), "%s/%s", dir, dirp->d_name);
+    stat(filename, &statinfo);
+    if (S_ISREG(statinfo.st_mode) || S_ISLNK(statinfo.st_mode)) {
+      gtk_list_store_append(store, &iter);
+      gtk_list_store_set (store, &iter,
+			  0, filename,
+			  1, dirp->d_name,
+			  -1);
+    }
+  }
+  closedir(dp);
+}

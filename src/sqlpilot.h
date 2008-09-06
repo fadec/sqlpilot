@@ -37,6 +37,7 @@ typedef struct ParameterPane Scripter;
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
+#include <assert.h>
 #include "db/db.h"
 #include "util.h"
 #include "store.h"

@@ -85,7 +85,7 @@ DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook)
   }
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_TAIL, tail);
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_FLEETNO, fleetno);
-  bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "tail", type);
+  bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "ident", type);
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_NOTES, notes);
 
   db_step(stmt);
