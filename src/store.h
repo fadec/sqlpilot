@@ -36,4 +36,5 @@ long store_repopulate_from_stmt_with_progress(GtkListStore *store, DBStatement *
 void store_view_arrange_columns(GtkTreeView *view, int ntitles, const char **titles);
 GtkTreeViewColumn *store_view_find_column_by_title(GtkTreeView *view, const char *title);
 void store_view_set_column_visible_by_title(GtkTreeView *view, const char *title, gboolean visible);
+void store_fwrite_csv(GtkTreeView *, FILE *);
 #endif

@@ -303,8 +303,12 @@ Logbook *logbook_new(const char *filename)
   pull_widget(import_read_btn);
   pull_widget(import_write_btn);
   pull_widget(import_input_expander);
+  pull_widget(import_input_text);
+  pull_widget(import_input_file);
   pull_widget(import_interpretend_expander);
+  pull_widget(import_interpreted_sw);
   pull_widget(import_response_expander);
+  pull_widget(import_response_text);
   pull_widget(import_write_normal);
   pull_widget(import_write_dryrun);
   pull_widget(import_write_force);

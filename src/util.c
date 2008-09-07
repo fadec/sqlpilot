@@ -740,3 +740,19 @@ void filename_combo_box_merge_dir(GtkComboBox *cbox, const char *dir)
   }
   closedir(dp);
 }
+
+/* Returned string must be freed */
+gchar *filename_combo_box_get_current_full_filename(GtkComboBox *cbox)
+{
+  GtkTreeIter iter;
+  gchar *filename=NULL;
+
+  if (gtk_combo_box_get_active_iter(GTK_COMBO_BOX(cbox), &iter)) {
+    gtk_tree_model_get(gtk_combo_box_get_model(GTK_COMBO_BOX(cbox)), &iter,
+		       0, &filename,
+		       -1);
+  }
+
+  return filename;
+}
+

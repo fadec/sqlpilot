@@ -314,8 +314,14 @@ struct Logbook {
   GtkWidget *import_read_btn;
   GtkWidget *import_write_btn;
   GtkWidget *import_input_expander;
+  GtkWidget *import_input_text;
+  GtkWidget *import_input_file;
   GtkWidget *import_interpretend_expander;
+  GtkWidget *import_interpreted_sw;
+  GtkTreeModel *import_interpreted_treemodel;
+  GtkWidget *import_interpreted_treeview;
   GtkWidget *import_response_expander;
+  GtkWidget *import_response_text;
   GtkWidget *import_write_normal;
   GtkWidget *import_write_dryrun;
   GtkWidget *import_write_force;

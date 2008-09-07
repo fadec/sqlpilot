@@ -260,10 +260,35 @@ void store_build_query_stmt_widget(DBStatement *stmt, StoreColumnKind *kinds, Gt
 
   store_view_add_columns_from_stmt(GTK_TREE_VIEW (view), stmt);
 
-  *ret_view = view;
-  *ret_store = GTK_TREE_MODEL(store);
+  if (ret_view) *ret_view = view;
+  if (ret_store) *ret_store = GTK_TREE_MODEL(store);
 }
 
-/* int store_build_from_csv_fread(FILE *in, GtkWidget **ret_view, GtkTreeModel **ret_store) */
-/* { */
+/* Only does string type values, currently */
+static gboolean tree_model_fwrite_csv_row(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, FILE *fh)
+{
+  int ncol = gtk_tree_model_get_n_columns(model);
+  int n;
+  gchar *str;
   
+  for (n=0; n<ncol; n++) {
+    gtk_tree_model_get(model, iter, n, &str, -1);
+    if (n) fprintf(fh, ",");
+    fprintf(fh, "\"%s\"", str);
+    g_free(str);
+  }
+  fprintf(fh, "\n");
+  return FALSE;
+}
+/* Somewhat stupid - assumes view column indicies match model column indicies  */
+void store_fwrite_csv(GtkTreeView *view, FILE *fh)
+{
+  int n;
+  GtkTreeViewColumn *col;
+  for (n=0; ((col = gtk_tree_view_get_column(view, n))); n++) {
+    if (n) fprintf(fh, ",");
+    fprintf(fh, "\"%s\"", gtk_tree_view_column_get_title(col));
+  }
+  fprintf(fh, "\n");
+  gtk_tree_model_foreach(gtk_tree_view_get_model(view), (GtkTreeModelForeachFunc)tree_model_fwrite_csv_row, (gpointer)fh);
+}

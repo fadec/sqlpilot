@@ -4528,7 +4528,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkExpander" id="expander6">
+                  <widget class="GtkExpander" id="import_response_expander">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <child>
