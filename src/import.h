@@ -12,7 +12,7 @@ void import_init(Logbook *logbook);
 
 void import_setup_script_options(Logbook *logbook);
 
-void import_read_file(Logbook *logbook);
-void import_read_text(Logbook *logbook);
+int import_read_file(Logbook *logbook);
+int import_read_text(Logbook *logbook);
 
 void import_write(Logbook *logbook);

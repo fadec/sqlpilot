@@ -94,7 +94,7 @@ static int build_table_from_csv_fh(FILE *in, GtkWidget **ret_view, GtkTreeModel 
   return nrow;
 }
 
-void import_read_text(Logbook *logbook)
+int import_read_text(Logbook *logbook)
 {
   GPid pid;
   int fdin, fdout, fderr;
@@ -103,6 +103,7 @@ void import_read_text(Logbook *logbook)
   char *txt;
   GtkWidget *view;
   GtkTreeModel *model;
+  int nrow;
 
   gchar *filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
   gchar *argv[] = {filename, NULL};
@@ -122,7 +123,7 @@ void import_read_text(Logbook *logbook)
     fclose(fin);
 
     assert(fout);
-    build_table_from_csv_fh(fout, &view, &model, NULL);
+    nrow = build_table_from_csv_fh(fout, &view, &model, NULL);
     fclose(fout); 
     assert(ferr);
     fclose(ferr);
@@ -137,11 +138,12 @@ void import_read_text(Logbook *logbook)
     fprintf(stderr, "Can't open import script\n");
   }
   g_free(filename);
+  return nrow;
 }
 
-void import_read_file(Logbook *logbook)
+int import_read_file(Logbook *logbook)
 {
-  
+  return 0;
 }
 
 void import_write(Logbook *logbook)
@@ -151,8 +153,11 @@ void import_write(Logbook *logbook)
   FILE *fin=NULL, *fout=NULL, *ferr=NULL;
   GError *error=NULL;
 
-  gchar *filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
-  gchar *argv[] = {filename, NULL};
+  gchar *argv[] = {"./importcsv",
+		   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->import_write_force)) ? "-f" : "",
+		   logbook->db_filename,
+
+		   NULL};
 
   if (g_spawn_async_with_pipes(NULL, argv, NULL, 0, NULL, NULL, &pid, &fdin, &fdout, &fderr, &error)) {
     if (!((fin  = fdopen(fdin, "ab")) &&
@@ -180,7 +185,13 @@ void import_write(Logbook *logbook)
     text_view_set_text(GTK_TEXT_VIEW(logbook->import_response_text), gsout->str);
     g_string_free(gsout, FALSE);
     g_string_free(gserr, FALSE);
-    
 
+    logbook->flights_stale = TRUE;
+    logbook->aircraft_stale = TRUE;
+    logbook->roles_stale = TRUE;
+    logbook->types_stale = TRUE;
+    logbook->airports_stale = TRUE;
+  } else {
+    fprintf(stderr, "Could not open database import program\n");
   }
 }

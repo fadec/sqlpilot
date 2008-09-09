@@ -4223,21 +4223,47 @@
                   <widget class="GtkExpander" id="import_input_expander">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="expanded">True</property>
+                    <property name="spacing">2</property>
+                    <signal name="activate" handler="on_import_input_expander_activate"/>
                     <child>
                       <widget class="GtkNotebook" id="import_input_notebook">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <child>
-                          <widget class="GtkScrolledWindow" id="import_input_text_sw">
+                          <widget class="GtkVBox" id="vbox52">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                             <child>
-                              <widget class="GtkTextView" id="import_input_text">
+                              <widget class="GtkScrolledWindow" id="import_input_text_sw">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
+                                <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                                <child>
+                                  <widget class="GtkTextView" id="import_input_text">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                  </widget>
+                                </child>
                               </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkHBox" id="hbox66">
+                                <property name="visible">True</property>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </widget>
                         </child>
@@ -4384,6 +4410,9 @@
                   <widget class="GtkExpander" id="import_interpreted_expander">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="expanded">True</property>
+                    <property name="spacing">2</property>
+                    <signal name="activate" handler="on_import_interpreted_expander_activate"/>
                     <child>
                       <widget class="GtkScrolledWindow" id="import_interpreted_sw">
                         <property name="visible">True</property>
@@ -4396,9 +4425,23 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkLabel" id="label63">
+                      <widget class="GtkHBox" id="hbox62">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Processed Input</property>
+                        <child>
+                          <widget class="GtkLabel" id="label63">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Processed Input</property>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="import_interpreted_status">
+                            <property name="visible">True</property>
+                          </widget>
+                          <packing>
+                            <property name="padding">11</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </widget>
                       <packing>
                         <property name="type">label_item</property>
@@ -4420,8 +4463,9 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkHBox" id="hbox62">
+                  <widget class="GtkHBox" id="import_write_controls">
                     <property name="visible">True</property>
+                    <property name="sensitive">False</property>
                     <child>
                       <widget class="GtkHBox" id="hbox65">
                         <property name="visible">True</property>
@@ -4531,6 +4575,9 @@
                   <widget class="GtkExpander" id="import_response_expander">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="expanded">True</property>
+                    <property name="spacing">2</property>
+                    <signal name="activate" handler="on_import_response_expander_activate"/>
                     <child>
                       <widget class="GtkScrolledWindow" id="input_response_sw">
                         <property name="visible">True</property>

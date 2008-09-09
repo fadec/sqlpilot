@@ -462,7 +462,7 @@ int main(int argc, char **argv)
       printf("Warnings. Commit forced.\n\n");
     } else {
       db_exec_simple(db, "ROLLBACK;");
-      printf("Warnings. Use -f to force.\n\n");
+      printf("Warnings. The transaction was rolled back. Use -f to force.\n\n");
     }
     break;
   default:
