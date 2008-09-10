@@ -62,7 +62,13 @@ module Parse
   end
 
   def text
-    @@text ||= STDIN.read
+    filename = ($*.reject {|x| !x || x[0] == '-'[0]})[0]
+    begin
+      @@text ||= filename ? File.read(filename) : STDIN.read
+    rescue
+      puts "Error opening input file"
+      exit(1)
+    end
   end
 
   def getline

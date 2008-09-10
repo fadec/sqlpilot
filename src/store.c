@@ -137,11 +137,11 @@ static long store_populate_from_stmt(GtkListStore *store, DBStatement *stmt, Gtk
       gtk_list_store_set(store, &iter, i, text, -1);
     }
     if (!(nrows % 256)) {
+      if (progress) gtk_progress_bar_set_fraction(progress, nrows/(double)maxrows);
       while (gtk_events_pending()) gtk_main_iteration();
     }
     gtk_main_iteration_do(FALSE);
     nrows++;
-    if (progress) gtk_progress_bar_set_fraction(progress, nrows/(double)maxrows);
   }
   
   db_reset(stmt);

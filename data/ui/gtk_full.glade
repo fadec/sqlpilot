@@ -1303,6 +1303,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_tripdate">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">TripDate</property>
                                     <property name="label" translatable="yes">Trip Date</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1312,6 +1313,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_trip">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Trip</property>
                                     <property name="label" translatable="yes">Trip</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1324,6 +1326,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_date">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Date</property>
                                     <property name="label" translatable="yes">Date</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1337,6 +1340,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">Leg</property>
                                     <property name="label" translatable="yes">Leg Sequence</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1356,6 +1360,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_fltno">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">FltNo</property>
                                     <property name="label" translatable="yes">Flight Number</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1366,7 +1371,8 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">Departure City</property>
+                                    <property name="tooltip_text">DepICAO or DepIATA</property>
+                                    <property name="label" translatable="yes">Departure Airport</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -1379,7 +1385,8 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">Arrival City</property>
+                                    <property name="tooltip_text">ArrICAO or ArrIATA</property>
+                                    <property name="label" translatable="yes">Arrival Airport</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
                                   </widget>
@@ -1391,6 +1398,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_dist">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Dist</property>
                                     <property name="label" translatable="yes">Distance</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1414,6 +1422,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">Role</property>
                                     <property name="label" translatable="yes">Role</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1424,6 +1433,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_type">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Type</property>
                                     <property name="label" translatable="yes">Type</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1436,6 +1446,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_tail">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Tail</property>
                                     <property name="label" translatable="yes">Tail Number</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1449,6 +1460,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">FleetNo</property>
                                     <property name="label" translatable="yes">Fleet Number</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1473,6 +1485,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">DLand</property>
                                     <property name="label" translatable="yes">Day Landings</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1483,6 +1496,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">NLand</property>
                                     <property name="label" translatable="yes">Night Landings</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1495,6 +1509,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_aprch">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Aprch</property>
                                     <property name="label" translatable="yes">Approaches</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1507,6 +1522,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_aprchn">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">nApr</property>
                                     <property name="label" translatable="yes">Approach Count</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1530,6 +1546,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">Crew</property>
                                     <property name="label" translatable="yes">Crew</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1539,6 +1556,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_crewn">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Crw</property>
                                     <property name="label" translatable="yes">Crew Count</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1552,6 +1570,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">Notes</property>
                                     <property name="label" translatable="yes">Notes</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1564,6 +1583,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_notesn">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Nts</property>
                                     <property name="label" translatable="yes">Notes Count</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1586,6 +1606,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_hold">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Hold</property>
                                     <property name="label" translatable="yes">Hold</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1596,6 +1617,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">XC</property>
                                     <property name="label" translatable="yes">Cross Country</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1642,6 +1664,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_sout">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">SOut or SOutUTC</property>
                                     <property name="label" translatable="yes">Scheduled Out</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1651,6 +1674,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_sin">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">SIn or SInUTC</property>
                                     <property name="label" translatable="yes">Scheduled In</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1663,6 +1687,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_sdur">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">SDur</property>
                                     <property name="label" translatable="yes">Scheduled Duration</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1692,6 +1717,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_aout">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">AOut or AOutUTC</property>
                                     <property name="label" translatable="yes">Actual Out</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1701,6 +1727,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_ain">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">AIn or AInUTC</property>
                                     <property name="label" translatable="yes">Actual In</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1713,6 +1740,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_dur">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Dur</property>
                                     <property name="label" translatable="yes">Actual Duration</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1725,6 +1753,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_over">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Over</property>
                                     <property name="label" translatable="yes">Overtime</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1748,6 +1777,7 @@
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="tooltip_text">Night</property>
                                     <property name="label" translatable="yes">Night</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1757,6 +1787,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_inst">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">Inst</property>
                                     <property name="label" translatable="yes">Intrument</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>
@@ -1769,6 +1800,7 @@
                                   <widget class="GtkCheckButton" id="flights_view_siminst">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="tooltip_text">SimInst</property>
                                     <property name="label" translatable="yes">Simulated Instrument</property>
                                     <property name="response_id">0</property>
                                     <property name="draw_indicator">True</property>

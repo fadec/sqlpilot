@@ -670,10 +670,6 @@ void flights_set_view_column_visibility(Logbook *logbook)
     "FleetNo",
     "Type",
     "Role",
-    "DepIATA",
-    "DepICAO",
-    "ArrIATA",
-    "ArrICAO",
     "Dur",
     "Night",
     "Inst",
@@ -703,10 +699,6 @@ void flights_set_view_column_visibility(Logbook *logbook)
     logbook->flights_view_fleetno,
     logbook->flights_view_type,
     logbook->flights_view_role,
-    logbook->flights_view_dep,
-    logbook->flights_view_dep,
-    logbook->flights_view_arr,
-    logbook->flights_view_arr,
     logbook->flights_view_dur,
     logbook->flights_view_night,
     logbook->flights_view_inst,
@@ -735,6 +727,26 @@ void flights_set_view_column_visibility(Logbook *logbook)
     store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
 					   headers[i],
 					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggles[i])));
+  }
+
+  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle))) {
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "DepICAO",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dep)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "ArrICAO",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_arr)));
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "DepIATA", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "ArrIATA", FALSE);
+  } else {
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "DepIATA",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dep)));    
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview),
+					   "ArrIATA",
+					   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_arr)));    
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "DepICAO", FALSE);
+    store_view_set_column_visible_by_title(GTK_TREE_VIEW(logbook->flights_treeview), "ArrICAO", FALSE);
   }
 
   if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
@@ -842,6 +854,7 @@ void flights_refresh(Logbook *logbook)
   flights_set_view_column_visibility(logbook);
 
   gtk_widget_hide(logbook->flights_results_summary);
+  gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(logbook->flights_query_progress), 0.0);
   gtk_widget_show(logbook->flights_query_progress);
 
   where_clause = gtk_entry_get_text(GTK_ENTRY(logbook->flights_where));
@@ -861,6 +874,8 @@ void flights_refresh(Logbook *logbook)
   }
 
   gtk_label_set_text(GTK_LABEL(logbook->flights_results_summary), "");
+
+  while (gtk_events_pending()) gtk_main_iteration();
   nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(logbook->flights_treemodel),
 						   logbook->flights_select_all,
 						   GTK_PROGRESS_BAR(logbook->flights_query_progress));

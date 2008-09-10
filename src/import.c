@@ -105,8 +105,8 @@ int import_read_text(Logbook *logbook)
   GtkTreeModel *model;
   int nrow;
 
-  gchar *filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
-  gchar *argv[] = {filename, NULL};
+  gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
+  gchar *argv[] = {script_filename, NULL};
 
   if (g_spawn_async_with_pipes(NULL, argv, NULL, 0, NULL, NULL, &pid, &fdin, &fdout, &fderr, &error)) {
     if (!((fin  = fdopen(fdin, "ab")) &&
@@ -137,13 +137,55 @@ int import_read_text(Logbook *logbook)
   } else {
     fprintf(stderr, "Can't open import script\n");
   }
-  g_free(filename);
+  g_free(script_filename);
   return nrow;
 }
 
 int import_read_file(Logbook *logbook)
 {
-  return 0;
+  GPid pid;
+  int fdin, fdout, fderr;
+  FILE *fin=NULL, *fout=NULL, *ferr=NULL;
+  GError *error=NULL;
+  char *txt;
+  GtkWidget *view;
+  GtkTreeModel *model;
+  int nrow;
+
+  gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
+  gchar *argv[] = {script_filename, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(logbook->import_input_file)), NULL};
+
+  if (g_spawn_async_with_pipes(NULL, argv, NULL, 0, NULL, NULL, &pid, &fdin, &fdout, &fderr, &error)) {
+    if (!((fin  = fdopen(fdin, "ab")) &&
+	  (fout = fdopen(fdout, "rb")) &&
+	  (ferr = fdopen(fderr, "rb")))) {
+      fprintf(stderr, "spawn_script fdopen failed\n");
+      exit(1);
+    }
+    
+    txt = text_view_get_text(GTK_TEXT_VIEW(logbook->import_input_text));
+
+    assert(fin);
+    fputs(txt, fin);
+    fclose(fin);
+
+    assert(fout);
+    nrow = build_table_from_csv_fh(fout, &view, &model, NULL);
+    fclose(fout); 
+    assert(ferr);
+    fclose(ferr);
+    g_spawn_close_pid(pid);
+
+    if (logbook->import_interpreted_treeview) gtk_widget_destroy(logbook->import_interpreted_treeview);
+    logbook->import_interpreted_treeview = view;
+    logbook->import_interpreted_treemodel = model;
+    gtk_container_add(GTK_CONTAINER(logbook->import_interpreted_sw), view);
+    gtk_widget_show(view);
+  } else {
+    fprintf(stderr, "Can't open import script\n");
+  }
+  g_free(script_filename);
+  return nrow;
 }
 
 void import_write(Logbook *logbook)
