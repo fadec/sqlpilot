@@ -31,8 +31,8 @@ begin
       OPTS[:actual_times] = a
     end
     opts.on("-g", "--gui", "Print machine readable instructions to build a GUI for these options") do
-      puts "Actual,toggle[1],-a"
-      puts "Scheduled,toggle[1],"
+      puts "Actual:toggle[as] -a"
+      puts "Scheduled:toggle[as]"
       exit
     end
   end.parse!

@@ -327,7 +327,8 @@ SELECT flights.id as _id
 ,flights.night as Night
 ,flights.inst as Inst
 ,flights.siminst as SimInst
-,flights.xc as XC
+,flights.xc * flights.dur as XC
+,flights.aprch as Aprch
 ,flights.dur * roles.pic as PIC
 ,flights.dur * roles.sic as SIC
 ,flights.dur * roles.fe as FE

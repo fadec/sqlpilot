@@ -13,12 +13,32 @@ if [ -z $1 ]; then
     exit 1;
 fi;
 
+FROM=$2
+THROUGH=$3
+
 echo "<HTML><HEAD><TITLE>$TITLE</TITLE>"
 echo "</HEAD>"
-echo "<H1 style=\"background-color:#F00;\">$TITLE</H1>"
+echo "<STYLE>"
+cat data/style/summary.css
+echo "</STYLE>"
+echo "<BODY>"
+echo "<DIV id='header'>"
+echo "<H1>$TITLE</H1>"
+echo "</DIV>"
 
-echo '<BR><BR>'
-echo "<H2>$2 through $3</H2>"
+echo '<BR><BR><H2>'
+if [  -n "$FROM" ]; then
+    if [ -n "$THROUGH" ]; then
+	echo "$FROM through $THROUGH"
+    else
+	echo "From $FROM";
+    fi;
+else
+    if [ -n "$THROUGH" ]; then
+	echo "Through $THROUGH";
+    fi;
+fi;
+echo '</H2>'
 
 echo 'PIC: '
 
@@ -36,5 +56,5 @@ echo '<BR>Total: '
 
 echo $SELECT "and t.total;" | $RUN
 
-echo
+echo "</BODY>"
 echo '</HTML>' 

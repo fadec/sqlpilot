@@ -1,0 +1,35 @@
+body {
+    background-color:#FFF;
+}
+
+table {
+    width: 100%;
+    background-color: #FFF;
+}
+
+th {
+    background-color: #333;
+    color: #FFF;
+    padding: 0.5em;
+    text-align: center;
+}
+
+td {
+    padding: 0.3em;
+    margin: 0.05em;
+    background-color: #CCC;
+    color: #000;
+    text-align: right;
+}
+
+
+#header h1 {
+    color:#000;
+    text-align:center;
+}
+
+#header {
+    background-color: #CCC;
+    border: 0.2em solid #333;
+    padding: 1em 2em;
+}

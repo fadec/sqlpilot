@@ -1,0 +1,66 @@
+#!/bin/bash
+
+TITLE='Flight Logbook'
+RUN="./console -header -html $1"
+
+NCOL=17
+SELECT="select Date
+	       ,Type
+	       ,Aircraft
+	       ,hm(Single) as Single
+	       ,hm(Multi) as Multi
+	       ,hm(PIC) as PIC
+	       ,hm(SIC) as SIC
+	       ,hm(Inst) as Inst
+	       ,hm(SimInst) as SimInst
+	       ,hm(XC) as XC
+	       ,DLand
+	       ,NLand
+	       ,Aprch
+	       ,hm(Solo) as Solo
+	       ,hm(Dual) as Dual
+	       ,hm(Instruct) as Instruct
+	       ,hm(Total) as Total
+	       from experience;"
+TOTALS="select count(Date) as Flights
+	       ,count(distinct(Type)) as Types
+	       ,count(distinct(Aircraft)) as Aircraft
+	       ,hm(sum(Single)) as Single
+	       ,hm(sum(Multi)) as Multi
+	       ,hm(sum(PIC)) as PIC
+	       ,hm(sum(SIC)) as SIC
+	       ,hm(sum(Inst)) as Inst
+	       ,hm(sum(SimInst)) as SimInst
+	       ,hm(sum(XC)) as XC
+	       ,sum(DLand) as DLand
+	       ,sum(NLand) as NLand
+	       ,null as Aprch
+	       ,hm(sum(Solo)) as Solo
+	       ,hm(sum(Dual)) as Dual
+	       ,hm(sum(Instruct)) as Instruct
+	       ,hm(sum(Total)) as Total
+	       from experience;"
+
+if [ -z $1 ]; then
+    echo $TITLE
+    exit 1;
+fi;
+
+echo "<HTML><HEAD><TITLE>$TITLE</TITLE>"
+echo "</HEAD>"
+echo "<STYLE>"
+cat data/style/summary.css
+echo "</STYLE>"
+echo "<BODY>"
+echo "<DIV id='header'>"
+echo "<H1>$TITLE</H1>"
+echo "</DIV>"
+
+echo "<table>"
+echo $SELECT | $RUN
+echo "<tr><th colspan='$NCOL'>Totals</th></tr>"
+echo $TOTALS | $RUN
+echo "</table>"
+
+echo "</BODY>"
+echo '</HTML>'
