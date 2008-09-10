@@ -1,4 +1,7 @@
-#include <gtkhtml/gtkhtml.h>
+
+#include <libgtkhtml/document/htmldocument.h>
+#include <libgtkhtml/view/htmlview.h>
+
 
 #include "sqlpilot.h"
 #include "summaries.h"
@@ -67,18 +70,26 @@ void summaries_refresh(Logbook *logbook)
   } else {
     html_src = error->message;
   }
-  gtk_html_load_from_string(GTK_HTML(logbook->summaries_html), html_src, -1);
+
+  html_document_clear(logbook->summaries_html_document);
+  if (html_document_open_stream (logbook->summaries_html_document, "text/html")) {
+    html_document_write_stream (logbook->summaries_html_document, html_src, strlen(html_src)); 
+  }
+
+  html_document_close_stream(logbook->summaries_html_document);
 
   g_free(script);
   g_free(sstdout);
   g_free(sstderr);
 }
 
-static void summaries_html_view_init(Logbook *logbook)
+static void summaries_html_init(Logbook *logbook)
 {
-  logbook->summaries_html = gtk_html_new();
-  gtk_container_add(GTK_CONTAINER(logbook->summaries_sw), logbook->summaries_html);
-  gtk_widget_show(logbook->summaries_html);
+  logbook->summaries_html_view = html_view_new();
+  logbook->summaries_html_document = html_document_new();
+  html_view_set_document(HTML_VIEW(logbook->summaries_html_view), logbook->summaries_html_document);
+  gtk_container_add(GTK_CONTAINER(logbook->summaries_sw), logbook->summaries_html_view);
+  gtk_widget_show(logbook->summaries_html_view);
 }
 
 static void summaries_selector_init(Logbook *logbook)
@@ -90,7 +101,7 @@ static void summaries_selector_init(Logbook *logbook)
 
 void summaries_init(Logbook *logbook)
 {
-  summaries_html_view_init(logbook);
+  summaries_html_init(logbook);
   summaries_selector_init(logbook);
 }
 

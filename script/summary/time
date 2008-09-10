@@ -13,8 +13,9 @@ if [ -z $1 ]; then
     exit 1;
 fi;
 
-echo "<HTML><HEAD><TITLE>$TITLE</TITLE></HEAD>"
-echo "<H1>$TITLE</H1>"
+echo "<HTML><HEAD><TITLE>$TITLE</TITLE>"
+echo "</HEAD>"
+echo "<H1 style=\"background-color:#F00;\">$TITLE</H1>"
 
 echo '<BR><BR>'
 echo "<H2>$2 through $3</H2>"

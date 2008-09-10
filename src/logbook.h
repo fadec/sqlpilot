@@ -33,6 +33,8 @@
 #define pull_widget(x) logbook->x = GTK_WIDGET(glade_xml_get_widget(gxml, (#x)));
 #endif
 
+#include <libgtkhtml/document/htmldocument.h>
+
 #define REGISTRY_BUF_VALUE 4096
 
 struct Logbook {
@@ -305,7 +307,8 @@ struct Logbook {
 
   GtkWidget *summaries_select_summary;
   GtkWidget *summaries_sw;
-  GtkWidget *summaries_html;
+  HtmlDocument *summaries_html_document;
+  GtkWidget *summaries_html_view;
   GtkWidget *summaries_parameters;
   Scripter _summaries_parameter_pane;
   Scripter *summaries_parameter_pane;
