@@ -3,23 +3,31 @@
 
 #include "sqlpilot.h"
 
-#define PARAMETER_MAX 30
-#define PARAMETER_VALUE_BUFSIZE 256
+#define SCRIPTER_ARG_BUF 4096
+#define SCRIPTER_FILENAME_BUF 256
 
 typedef enum {
   PARAMETER_TYPE_DATE
-} ParameterType;
+} ScripterParameterType;
 
-struct ParameterPane {
+struct Scripter {
+  GtkComboBox *script_selector;
+  GtkBox *parameters_box;
   GList *parameters;
-  GtkWidget *container;
-  char values[PARAMETER_MAX][PARAMETER_VALUE_BUFSIZE];
+  char filename_buf[SCRIPTER_FILENAME_BUF];
+  char arg_buf[SCRIPTER_ARG_BUF];
 };
 
-typedef struct Parameter {
-  ParameterType type;
+typedef struct ScripterParameter {
+  ScripterParameterType type;
   GtkWidget *widget;
   char *name;
-} Parameter;
+  char *flag;
+} ScripterParameter;
 
+void scripter_init(Scripter *ss, GtkComboBox *script_selector, GtkBox *parameters_box);
+void scripter_merge_script_dir(Scripter *ss, const char *dirname);
+void scripter_read_parameters(Scripter *ppane, char **return_values);
+gchar *scripter_get_script_filename(Scripter *ss);
+void scripter_get_parameter_values(Scripter *ss, char **return_values);
 #endif

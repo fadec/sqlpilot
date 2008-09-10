@@ -461,8 +461,7 @@ Logbook *logbook_new(const char *filename)
   edctrl_register_validator(logbook->airports_edctrl, airports_error, logbook);
 
   
-  logbook->summaries_parameter_pane = &logbook->_summaries_parameter_pane;
-  logbook->summaries_parameter_pane->container = logbook->summaries_parameters;
+  logbook->summaries_scripter = &logbook->_summaries_scripter;
   summaries_init(logbook);
 
 #ifdef USING_GTK_BUILDER

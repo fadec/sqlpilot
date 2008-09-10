@@ -20,11 +20,6 @@
 #include "sqlpilot.h"
 #include "summaries.h"
 
-void on_summaries_select_summary_changed(GtkEntry *entry, Logbook *logbook)
-{
-  summaries_rebuild_parameters(logbook);
-}
-
 void on_summaries_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
   summaries_refresh(logbook);

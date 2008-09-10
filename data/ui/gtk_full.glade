@@ -4188,7 +4188,6 @@
                         <child>
                           <widget class="GtkComboBox" id="summaries_select_summary">
                             <property name="visible">True</property>
-                            <signal name="changed" handler="on_summaries_select_summary_changed"/>
                           </widget>
                           <packing>
                             <property name="position">1</property>

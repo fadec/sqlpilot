@@ -28,8 +28,7 @@
 
 typedef struct Logbook Logbook;
 typedef struct Edctrl Edctrl;
-typedef struct ParameterPane ParameterPane;
-typedef struct ParameterPane Scripter;
+typedef struct Scripter Scripter;
 
 #include "config.h"
 #include <gtk/gtk.h>

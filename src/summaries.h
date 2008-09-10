@@ -33,6 +33,5 @@ enum {
 
 void summaries_init(Logbook *logbook);
 void summaries_refresh(Logbook *logbook);
-void summaries_rebuild_parameters(Logbook *logbook);
 
 #endif

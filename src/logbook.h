@@ -310,8 +310,8 @@ struct Logbook {
   HtmlDocument *summaries_html_document;
   GtkWidget *summaries_html_view;
   GtkWidget *summaries_parameters;
-  Scripter _summaries_parameter_pane;
-  Scripter *summaries_parameter_pane;
+  Scripter _summaries_scripter;
+  Scripter *summaries_scripter;
 
   GtkWidget *import_script;
   GtkWidget *import_read_btn;
