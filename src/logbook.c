@@ -300,6 +300,7 @@ Logbook *logbook_new(const char *filename)
   pull_widget(summaries_sw);
   pull_widget(summaries_parameters);
   pull_widget(import_script);
+  pull_widget(import_script_options);
   pull_widget(import_read_btn);
   pull_widget(import_write_controls);
   pull_widget(import_write_btn);
@@ -459,10 +460,9 @@ Logbook *logbook_new(const char *filename)
   edctrl_register_after_change(logbook->airports_edctrl, airports_after_change, logbook);
   edctrl_register_load_selection(logbook->airports_edctrl, airports_load_selection, logbook);
   edctrl_register_validator(logbook->airports_edctrl, airports_error, logbook);
-
   
   logbook->summaries_scripter = &logbook->_summaries_scripter;
-  summaries_init(logbook);
+  logbook->import_scripter = &logbook->_import_scripter;
 
 #ifdef USING_GTK_BUILDER
   g_object_unref (G_OBJECT (builder));
@@ -479,6 +479,7 @@ Logbook *logbook_new(const char *filename)
   logbook->types_stale = 1;
   logbook->airports_stale = 1;
   reports_title_combo_init(logbook);
+  summaries_init(logbook);
   import_init(logbook);
   
   flights_load_selection(logbook);

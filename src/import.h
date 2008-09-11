@@ -10,8 +10,6 @@ enum {
 
 void import_init(Logbook *logbook);
 
-void import_setup_script_options(Logbook *logbook);
-
 int import_read_file(Logbook *logbook);
 int import_read_text(Logbook *logbook);
 

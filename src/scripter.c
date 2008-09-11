@@ -12,7 +12,9 @@ static int scripter_parameter_snap_value(ScripterParameter *param, char *buf, in
 /* Leaves widget intact */
 static void scripter_parameter_destroy(ScripterParameter *param)
 {
+  if (GTK_IS_WIDGET(param->widget)) { gtk_widget_destroy(param->widget); }
   g_free(param->name);
+  g_free(param->flag);
   g_slice_free(ScripterParameter, param);
 }
 
@@ -73,7 +75,7 @@ static void scripter_parameters_rebuild(Scripter *ss)
   int fdout;
   FILE *fout;
   GError *error=NULL;
-  gchar *argv[] = {(gchar*)filename_combo_box_get_current_full_filename(ss->script_selector), NULL};
+  gchar *argv[] = {(gchar*)filename_combo_box_get_current_full_filename(ss->script_selector), ss->gui_query, NULL};
   char line[256];
 
   scripter_parameters_clear(ss);
@@ -86,10 +88,11 @@ static void scripter_parameters_rebuild(Scripter *ss)
     while (fgets(line, sizeof(line), fout)) {
       scripter_interpret_parameter_spec(ss, line);
     }
+    fclose(fout);
+    g_spawn_close_pid(pid);
+  } else {
+    fprintf(stderr, "Failed to execute script\n");
   }
-  
-  fclose(fout);
-  g_spawn_close_pid(pid);
 }
 
 static void scripter_script_selector_on_change(GtkComboBox *cbox, Scripter *ss)
@@ -97,10 +100,11 @@ static void scripter_script_selector_on_change(GtkComboBox *cbox, Scripter *ss)
   scripter_parameters_rebuild(ss);
 }
 
-void scripter_init(Scripter *ss, GtkComboBox *script_selector, GtkBox *parameters_box)
+void scripter_init(Scripter *ss, GtkComboBox *script_selector, GtkBox *parameters_box, const char *gui_query)
 {
   ss->script_selector = script_selector;
   ss->parameters_box = parameters_box;
+  ss->gui_query = gui_query;
   filename_combo_box_build_model(GTK_COMBO_BOX(ss->script_selector));
   g_signal_connect (G_OBJECT (script_selector), "changed",
 		    G_CALLBACK (scripter_script_selector_on_change),

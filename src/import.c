@@ -8,21 +8,11 @@
 char csv_buf[CSV_BUFSIZE];
 char *csv_row[CSV_COLS];
 
-static void import_script_selector_init(Logbook *logbook)
-{
-  filename_combo_box_build_model(GTK_COMBO_BOX(logbook->import_script));
-  filename_combo_box_merge_dir(GTK_COMBO_BOX(logbook->import_script), IMPORT_SCRIPT_DIR);
-  gtk_combo_box_set_active(GTK_COMBO_BOX(logbook->import_script), 0);
-}
-
 void import_init(Logbook *logbook)
 {
-  import_script_selector_init(logbook);
-}
-
-void import_setup_script_options(Logbook *logbook)
-{
-
+  scripter_init(logbook->import_scripter, GTK_COMBO_BOX(logbook->import_script), GTK_BOX(logbook->import_script_options), "-g");
+  scripter_merge_script_dir(logbook->import_scripter, IMPORT_SCRIPT_DIR);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(logbook->import_script), 0);
 }
 
 static int build_table_from_csv_fh(FILE *in, GtkWidget **ret_view, GtkTreeModel **ret_store, GtkProgressBar *progress)

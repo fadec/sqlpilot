@@ -49,7 +49,7 @@ static void summaries_html_init(Logbook *logbook)
 void summaries_init(Logbook *logbook)
 {
   summaries_html_init(logbook);
-  scripter_init(logbook->summaries_scripter, GTK_COMBO_BOX(logbook->summaries_select_summary), GTK_BOX(logbook->summaries_parameters));
+  scripter_init(logbook->summaries_scripter, GTK_COMBO_BOX(logbook->summaries_select_summary), GTK_BOX(logbook->summaries_parameters), NULL);
   scripter_merge_script_dir(logbook->summaries_scripter, SUMMARIES_DIR);
   gtk_combo_box_set_active(GTK_COMBO_BOX(logbook->summaries_select_summary), 0);
 }

@@ -314,6 +314,7 @@ struct Logbook {
   Scripter *summaries_scripter;
 
   GtkWidget *import_script;
+  GtkWidget *import_script_options;
   GtkWidget *import_read_btn;
   GtkWidget *import_write_controls;
   GtkWidget *import_write_btn;
@@ -331,6 +332,8 @@ struct Logbook {
   GtkWidget *import_write_dryrun;
   GtkWidget *import_write_force;
   GtkWidget *import_input_notebook;
+  Scripter _import_scripter;
+  Scripter *import_scripter;
 
   char registry_value[REGISTRY_BUF_VALUE];
   DBStatement *registry_select_by_path_key;

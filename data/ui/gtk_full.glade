@@ -4356,7 +4356,6 @@
                     <child>
                       <widget class="GtkComboBox" id="import_script">
                         <property name="visible">True</property>
-                        <signal name="changed" handler="on_import_script_changed"/>
                       </widget>
                     </child>
                     <child>

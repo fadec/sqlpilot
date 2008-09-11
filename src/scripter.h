@@ -13,6 +13,7 @@ typedef enum {
 struct Scripter {
   GtkComboBox *script_selector;
   GtkBox *parameters_box;
+  char *gui_query;
   GList *parameters;
   char filename_buf[SCRIPTER_FILENAME_BUF];
   char arg_buf[SCRIPTER_ARG_BUF];
@@ -25,7 +26,7 @@ typedef struct ScripterParameter {
   char *flag;
 } ScripterParameter;
 
-void scripter_init(Scripter *ss, GtkComboBox *script_selector, GtkBox *parameters_box);
+void scripter_init(Scripter *ss, GtkComboBox *script_selector, GtkBox *parameters_box, const char *gui_query);
 void scripter_merge_script_dir(Scripter *ss, const char *dirname);
 void scripter_read_parameters(Scripter *ppane, char **return_values);
 gchar *scripter_get_script_filename(Scripter *ss);
