@@ -3,10 +3,17 @@
 
 static int scripter_parameter_snap_value(ScripterParameter *param, char *buf, int bufn)
 {
+  int flag_width=0, value_width=0;
+  *buf = '\0';
   if (param->type == PARAMETER_TYPE_DATE) {
-    return snprintf(buf, bufn, "%s", gtk_entry_get_text(GTK_ENTRY(param->widget))) + 1;
+    if (param->flag) { flag_width = snprintf(buf, bufn, "%s", param->flag); }
+    value_width = snprintf(buf+flag_width, bufn-flag_width, "%s", gtk_entry_get_text(GTK_ENTRY(param->widget)));
+  } else if (param->type == PARAMETER_TYPE_TOGGLE) {
+    if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(param->widget))) {
+      if (param->flag) { flag_width = snprintf(buf, bufn, "%s", param->flag); }
+    }
   }
-  return 0;
+  return flag_width + value_width;
 }
 
 /* Leaves widget intact */
@@ -18,17 +25,18 @@ static void scripter_parameter_destroy(ScripterParameter *param)
   g_slice_free(ScripterParameter, param);
 }
 
-static ScripterParameter *scripter_parameter_new(ScripterParameterType type, const gchar *name, GtkWidget *widget)
+static ScripterParameter *scripter_parameter_new(ScripterParameterType type, const gchar *name, GtkWidget *widget, const gchar *flag)
 {
   ScripterParameter *param;
   param = g_slice_new0(ScripterParameter);
   param->widget = widget;
   param->type = type;
   param->name = g_strdup(name);
+  param->flag = g_strdup(flag);;
   return param;
 }
 
-static void scripter_append_date(Scripter *ss, const gchar *name)
+static void scripter_append_date(Scripter *ss, const gchar *name, gchar *flag)
 {
   GtkWidget *vbox;
   GtkWidget *label;
@@ -44,19 +52,31 @@ static void scripter_append_date(Scripter *ss, const gchar *name)
   g_signal_connect(entry, "focus-out-event", (GtkSignalFunc)entry_format_date_on_focus_out, entry);
   gtk_widget_show_all(vbox);
 
-  ss->parameters = g_list_append(ss->parameters, scripter_parameter_new(PARAMETER_TYPE_DATE, name, entry));
+  ss->parameters = g_list_append(ss->parameters, scripter_parameter_new(PARAMETER_TYPE_DATE, name, entry, flag));
+}
+
+static void scripter_append_toggle(Scripter *ss, const gchar *name, gchar *flag)
+{
+  GtkWidget *cbutton = gtk_check_button_new_with_label(name);
+  gtk_box_pack_start(GTK_BOX(ss->parameters_box), cbutton, FALSE, TRUE, 0);
+  gtk_widget_show_all(cbutton);
+  ss->parameters = g_list_append(ss->parameters, scripter_parameter_new(PARAMETER_TYPE_TOGGLE, name, cbutton, flag));
 }
 
 static void scripter_interpret_parameter_spec(Scripter *ss, const char *line)
 {
   char
     *fieldname=NULL,
-    *fieldtype=NULL;
-  if (sscanf(line, "%a[^:]:%as", &fieldname, &fieldtype) == 2) {
-    if (!strcmp(fieldtype, "date")) {
-      scripter_append_date(ss, fieldname);
+    *fieldtype=NULL,
+    *flag=NULL;
+  if (sscanf(line, "%a[^:]:%as%as", &fieldname, &fieldtype, &flag) >= 2) {
+    if (!strncmp(fieldtype, "date", 4)) {
+      scripter_append_date(ss, fieldname, NULL);
+    } else if (!strncmp(fieldtype, "toggle", 6)) {
+      scripter_append_toggle(ss, fieldname, flag);
     }
   }
+  g_free(flag);
   g_free(fieldname);
   g_free(fieldtype);
 }
@@ -75,12 +95,12 @@ static void scripter_parameters_rebuild(Scripter *ss)
   int fdout;
   FILE *fout;
   GError *error=NULL;
-  gchar *argv[] = {(gchar*)filename_combo_box_get_current_full_filename(ss->script_selector), ss->gui_query, NULL};
+  const gchar *argv[] = {filename_combo_box_get_current_full_filename(ss->script_selector), ss->gui_query, NULL};
   char line[256];
 
   scripter_parameters_clear(ss);
 
-  if (g_spawn_async_with_pipes(NULL, argv, NULL, G_SPAWN_STDERR_TO_DEV_NULL, NULL, NULL, &pid, NULL, &fdout, NULL, &error)) {
+  if (g_spawn_async_with_pipes(NULL, (gchar**)argv, NULL, G_SPAWN_STDERR_TO_DEV_NULL, NULL, NULL, &pid, NULL, &fdout, NULL, &error)) {
     if (!(fout = fdopen(fdout, "rb"))) {
       fprintf(stderr, "fdopen failed\n");
       exit(1);
@@ -130,12 +150,17 @@ void scripter_get_parameter_values(Scripter *ss, char **return_values)
 {
   GList *node=ss->parameters;
   ScripterParameter *param;
-  int buf_offset=0, i=0;
+  int buf_offset=0,param_width=0, i=0;
 
   while (node) {
     param = (ScripterParameter*)(node->data);
-    return_values[i++] = ss->arg_buf + buf_offset;
-    buf_offset = scripter_parameter_snap_value(param, ss->arg_buf + buf_offset, SCRIPTER_ARG_BUF - buf_offset) + buf_offset;
+    return_values[i] = ss->arg_buf + buf_offset;
+    param_width = scripter_parameter_snap_value(param, ss->arg_buf + buf_offset, SCRIPTER_ARG_BUF - buf_offset);
+    //    if (return_values[i]) fprintf(stderr, "%s\n", return_values[i]);
+    if (param_width) {
+      buf_offset += param_width + 1;
+      i++;
+    }
     node = node->next;
   }
   return_values[i] = NULL;

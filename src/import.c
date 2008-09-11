@@ -95,8 +95,12 @@ int import_read_text(Logbook *logbook)
   GtkTreeModel *model;
   int nrow;
 
-  gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
-  gchar *argv[] = {script_filename, NULL};
+/*   gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script)); */
+/*   gchar *argv[] = {script_filename, "-a", NULL}; */
+
+  gchar *argv[32];
+  argv[0] = scripter_get_script_filename(logbook->import_scripter);
+  scripter_get_parameter_values(logbook->import_scripter, argv+1);
 
   if (g_spawn_async_with_pipes(NULL, argv, NULL, 0, NULL, NULL, &pid, &fdin, &fdout, &fderr, &error)) {
     if (!((fin  = fdopen(fdin, "ab")) &&
@@ -127,7 +131,7 @@ int import_read_text(Logbook *logbook)
   } else {
     fprintf(stderr, "Can't open import script\n");
   }
-  g_free(script_filename);
+/*   g_free(script_filename); */
   return nrow;
 }
 

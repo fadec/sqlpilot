@@ -7,13 +7,14 @@
 #define SCRIPTER_FILENAME_BUF 256
 
 typedef enum {
-  PARAMETER_TYPE_DATE
+  PARAMETER_TYPE_DATE,
+  PARAMETER_TYPE_TOGGLE
 } ScripterParameterType;
 
 struct Scripter {
   GtkComboBox *script_selector;
   GtkBox *parameters_box;
-  char *gui_query;
+  const char *gui_query;
   GList *parameters;
   char filename_buf[SCRIPTER_FILENAME_BUF];
   char arg_buf[SCRIPTER_ARG_BUF];
