@@ -42,7 +42,7 @@ int aircraft_selection_show(GtkTreeSelection *selection, char *show, size_t size
 void aircraft_after_change(Logbook *logbook)
 {
   logbook->flights_stale = TRUE;
-  logbook->types_stale = TRUE;
+  logbook->models_stale = TRUE;
 }
 
 int aircraft_can_delete(GtkTreeSelection *selection)
@@ -66,13 +66,13 @@ DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook)
 {
   const gchar
     *tail,
-    *type,
+    *model,
     *fleetno;
   gchar *notes;
   DBStatement *stmt;
 
   tail    = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_tail));
-  type     = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_type));
+  model     = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_model));
   fleetno  = gtk_entry_get_text(GTK_ENTRY(logbook->aircraft_fleetno));
   notes    = text_view_get_text(GTK_TEXT_VIEW(logbook->aircraft_notes));
   
@@ -85,7 +85,7 @@ DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook)
   }
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_TAIL, tail);
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_FLEETNO, fleetno);
-  bind_id_of(stmt, AIRCRAFT_WRITE_TYPE, "types", "ident", type);
+  bind_id_of(stmt, AIRCRAFT_WRITE_MODEL, "models", "ident", model);
   db_bind_nonempty_text_else_null(stmt, AIRCRAFT_WRITE_NOTES, notes);
 
   db_step(stmt);
@@ -109,7 +109,7 @@ void aircraft_load_selection(Logbook *logb)
   gchar
     *id=NULL,
     *tail=NULL,
-    *type=NULL,
+    *model=NULL,
     *fleetno=NULL,
     *notes=NULL;
 
@@ -117,20 +117,20 @@ void aircraft_load_selection(Logbook *logb)
     gtk_tree_model_get(treemod, &iter,
 		       AIRCRAFT_COL_ID, &id,
 		       AIRCRAFT_COL_TAIL, &tail,
-		       AIRCRAFT_COL_TYPE, &type,
+		       AIRCRAFT_COL_MODEL, &model,
 		       AIRCRAFT_COL_FLEETNO, &fleetno,
 		       AIRCRAFT_COL_NOTES, &notes,
 		       -1);
   }
 
   gtk_entry_set_text(GTK_ENTRY(logb->aircraft_tail), EMPTY_IF_NULL(tail));
-  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_type), EMPTY_IF_NULL(type));
+  gtk_entry_set_text(GTK_ENTRY(logb->aircraft_model), EMPTY_IF_NULL(model));
   gtk_entry_set_text(GTK_ENTRY(logb->aircraft_fleetno), EMPTY_IF_NULL(fleetno));
   text_view_set_text(GTK_TEXT_VIEW(logb->aircraft_notes), EMPTY_IF_NULL(notes));
 
   g_free(id);
   g_free(tail);
-  g_free(type);
+  g_free(model);
   g_free(fleetno);
   g_free(notes);
 }

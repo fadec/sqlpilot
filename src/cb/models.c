@@ -21,57 +21,57 @@
 
 
 #include "sqlpilot.h"
-#include "types.h"
+#include "models.h"
 #include "logbook.h"
 
-void on_types_ident_changed(GtkEntry *entry, Logbook *logbook)
+void on_models_ident_changed(GtkEntry *entry, Logbook *logbook)
 {
-  entry_clamp_types_ident(entry);
-  if (types_ident_validate(logbook)) {
-    gtk_image_set_from_stock(GTK_IMAGE(logbook->types_ident_valid_wart), IMAGE_INVAL ,GTK_ICON_SIZE_BUTTON);
+  entry_clamp_models_ident(entry);
+  if (models_ident_validate(logbook)) {
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->models_ident_valid_wart), IMAGE_INVAL ,GTK_ICON_SIZE_BUTTON);
   } else {
-    gtk_image_set_from_stock(GTK_IMAGE(logbook->types_ident_valid_wart), IMAGE_KEY ,GTK_ICON_SIZE_BUTTON);
+    gtk_image_set_from_stock(GTK_IMAGE(logbook->models_ident_valid_wart), IMAGE_KEY ,GTK_ICON_SIZE_BUTTON);
   }
-  edctrl_set_modified(logbook->types_edctrl);
+  edctrl_set_modified(logbook->models_edctrl);
 }
 
-void on_types_make_changed(GtkEntry *entry, Logbook *logbook)
+void on_models_make_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(logbook->types_edctrl);
+  edctrl_set_modified(logbook->models_edctrl);
 }
 
-void on_types_model_changed(GtkEntry *entry, Logbook *logbook)
+void on_models_type_changed(GtkEntry *entry, Logbook *logbook)
 {
-  edctrl_set_modified(logbook->types_edctrl);
+  edctrl_set_modified(logbook->models_edctrl);
 }
 
-void on_types_option_toggled(GtkButton *button, Logbook *logbook)
+void on_models_option_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_set_modified(logbook->types_edctrl);
+  edctrl_set_modified(logbook->models_edctrl);
 }
 
-void on_types_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
+void on_models_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
 {
-  edctrl_selection_changed(logbook->types_edctrl);
-  gtk_image_set_from_stock(GTK_IMAGE(logbook->types_ident_valid_wart), IMAGE_KEY ,GTK_ICON_SIZE_BUTTON);
+  edctrl_selection_changed(logbook->models_edctrl);
+  gtk_image_set_from_stock(GTK_IMAGE(logbook->models_ident_valid_wart), IMAGE_KEY ,GTK_ICON_SIZE_BUTTON);
 }
 
-void on_types_del_btn_clicked(GtkButton *button, Logbook *logbook)
+void on_models_del_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_del_btn_clicked(logbook->types_edctrl);
+  edctrl_del_btn_clicked(logbook->models_edctrl);
 }
 
-void on_types_save_btn_clicked(GtkButton *button, Logbook *logbook)
+void on_models_save_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_save_btn_clicked(logbook->types_edctrl);
+  edctrl_save_btn_clicked(logbook->models_edctrl);
 }
 
-void on_types_new_btn_clicked(GtkButton *button, Logbook *logbook)
+void on_models_new_btn_clicked(GtkButton *button, Logbook *logbook)
 {
-  edctrl_new_btn_clicked(logbook->types_edctrl);
+  edctrl_new_btn_clicked(logbook->models_edctrl);
 }
 
-void on_types_armdel_btn_toggled(GtkButton *button, Logbook *logbook)
+void on_models_armdel_btn_toggled(GtkButton *button, Logbook *logbook)
 {
-  edctrl_armdel_btn_toggled(logbook->types_edctrl);
+  edctrl_armdel_btn_toggled(logbook->models_edctrl);
 }

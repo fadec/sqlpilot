@@ -57,7 +57,7 @@ struct InCSV {
     tail,
     fleetno,
     role,
-    type,
+    model,
     dep,
     arr,
     aout,
@@ -92,7 +92,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   csv->leg = i++;
   csv->fltno = i++;
   csv->tail = i++;
-  csv->type = i++;
+  csv->model = i++;
   csv->dep = i++;
   csv->arr = i++;
   csv->aout = i++;
@@ -337,7 +337,7 @@ Status incsv_import(InCSV *incsv, DB *db)
       db_bind_int64(stmt, FLIGHTS_WRITE_AIRCRAFT, db_column_int64(existing, FLIGHTS_COL_AIRCRAFT_ID));
     } else {
       if (strlen(csv_row[incsv->tail]) && !row_exists(db, "aircraft", "tail", csv_row[incsv->tail])) {
-	bind_id_of(aircraft_ins, AIRCRAFT_WRITE_TYPE, "types", "ident", csv_row[incsv->type]);
+	bind_id_of(aircraft_ins, AIRCRAFT_WRITE_MODEL, "models", "ident", csv_row[incsv->model]);
 	db_bind_nonempty_text_else_null(aircraft_ins, AIRCRAFT_WRITE_TAIL, csv_row[incsv->tail]);
 	db_stp_res_clr(aircraft_ins);
       }

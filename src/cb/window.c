@@ -38,8 +38,8 @@ void on_notebook_switch_page(GtkNotebook *notebook, GtkNotebookPage *page, guint
   case NOTEBOOK_PAGE_AIRCRAFT:
     if (logbook->aircraft_stale) aircraft_refresh(logbook);
     break;
-  case NOTEBOOK_PAGE_TYPES:
-    if (logbook->types_stale) types_refresh(logbook);
+  case NOTEBOOK_PAGE_MODELS:
+    if (logbook->models_stale) models_refresh(logbook);
     break;
   case NOTEBOOK_PAGE_AIRPORTS:
     if (logbook->airports_stale) airports_refresh(logbook);

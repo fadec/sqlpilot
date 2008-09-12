@@ -25,7 +25,7 @@
 enum {
   AIRCRAFT_COL_ID = COL_ID,
   AIRCRAFT_COL_TAIL,
-  AIRCRAFT_COL_TYPE,
+  AIRCRAFT_COL_MODEL,
   AIRCRAFT_COL_FLEETNO,
   AIRCRAFT_COL_NOTES,
   AIRCRAFT_COL_FLIGHTS,
@@ -35,13 +35,13 @@ enum {
 #define AIRCRAFT_SELECT							\
   "select aircraft.id as '_\\id'"					\
   ", aircraft.tail as Tail"						\
-  ", types.ident as Type"						\
+  ", models.ident as Model"						\
   ", aircraft.fleetno as FleetNo"					\
   ", aircraft.notes as '_\\Notes'"					\
   ", count(flights.id) as 'n\\Flights'"					\
   ", m_to_hhmm(sum(flights.dur)) as 'n\\Time'"				\
   " from aircraft"							\
-  " left join types on aircraft.type_id = types.id"			\
+  " left join models on aircraft.model_id = models.id"			\
   " left join flights on flights.aircraft_id = aircraft.id"		\
   "   and flights.dur > 0"
   
@@ -53,17 +53,17 @@ enum {
 
 enum {
   AIRCRAFT_WRITE_TAIL = 1,
-  AIRCRAFT_WRITE_TYPE,
+  AIRCRAFT_WRITE_MODEL,
   AIRCRAFT_WRITE_FLEETNO,
   AIRCRAFT_WRITE_NOTES,
   AIRCRAFT_WRITE_ID
 };
 
 #define AIRCRAFT_INSERT \
-  "insert into aircraft (tail, type_id, fleetno, notes) values (?, ?, ?, ?);"
+  "insert into aircraft (tail, model_id, fleetno, notes) values (?, ?, ?, ?);"
 
 #define AIRCRAFT_UPDATE \
-  "update aircraft set tail = ?, type_id = ?, fleetno = ?, notes = ? where id = ?;"
+  "update aircraft set tail = ?, model_id = ?, fleetno = ?, notes = ? where id = ?;"
 
 #define AIRCRAFT_DELETE	\
   "delete from aircraft where id = ?;"

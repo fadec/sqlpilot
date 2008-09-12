@@ -5,7 +5,7 @@ RUN="./console -header -html $1"
 
 NCOL=17
 SELECT="select Date
-	       ,Type
+	       ,Model
 	       ,Aircraft
 	       ,hm(Single) as Single
 	       ,hm(Multi) as Multi
@@ -23,7 +23,7 @@ SELECT="select Date
 	       ,hm(Total) as Total
 	       from experience;"
 TOTALS="select count(Date) as Flights
-	       ,count(distinct(Type)) as Types
+	       ,count(distinct(Model)) as Models
 	       ,count(distinct(Aircraft)) as Aircraft
 	       ,hm(sum(Single)) as Single
 	       ,hm(sum(Multi)) as Multi

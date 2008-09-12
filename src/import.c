@@ -225,7 +225,7 @@ void import_write(Logbook *logbook)
     logbook->flights_stale = TRUE;
     logbook->aircraft_stale = TRUE;
     logbook->roles_stale = TRUE;
-    logbook->types_stale = TRUE;
+    logbook->models_stale = TRUE;
     logbook->airports_stale = TRUE;
   } else {
     fprintf(stderr, "Could not open database import program\n");

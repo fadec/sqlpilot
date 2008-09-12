@@ -22,7 +22,7 @@
 #include "flights.h"
 #include "roles.h"
 #include "aircraft.h"
-#include "types.h"
+#include "models.h"
 #include "airports.h"
 #include "reports.h"
 #include "summaries.h"
@@ -95,11 +95,11 @@ Logbook *logbook_new(const char *filename)
   logbook->aircraft_delete         = db_prep(logbook->db, AIRCRAFT_DELETE);
   logbook->aircraft_count_flights  = db_prep(logbook->db, AIRCRAFT_COUNT_FLIGHTS);
 
-  logbook->types_select_all     = db_prep(logbook->db, TYPES_SELECT TYPES_GROUP_BY ";");
-  logbook->types_select_by_id   = db_prep(logbook->db, TYPES_SELECT TYPES_WHERE_ID TYPES_GROUP_BY ";");
-  logbook->types_insert         = db_prep(logbook->db, TYPES_INSERT);
-  logbook->types_update         = db_prep(logbook->db, TYPES_UPDATE);
-  logbook->types_delete         = db_prep(logbook->db, TYPES_DELETE);
+  logbook->models_select_all     = db_prep(logbook->db, MODELS_SELECT MODELS_GROUP_BY ";");
+  logbook->models_select_by_id   = db_prep(logbook->db, MODELS_SELECT MODELS_WHERE_ID MODELS_GROUP_BY ";");
+  logbook->models_insert         = db_prep(logbook->db, MODELS_INSERT);
+  logbook->models_update         = db_prep(logbook->db, MODELS_UPDATE);
+  logbook->models_delete         = db_prep(logbook->db, MODELS_DELETE);
 
   logbook->airports_select_all     = db_prep(logbook->db, AIRPORTS_SELECT AIRPORTS_GROUP_BY ";");
   logbook->airports_select_by_id   = db_prep(logbook->db, AIRPORTS_SELECT AIRPORTS_WHERE_ID ";");
@@ -163,7 +163,7 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_tripdate);
   pull_widget(flights_view_tail);
   pull_widget(flights_view_fleetno);
-  pull_widget(flights_view_type);
+  pull_widget(flights_view_model);
   pull_widget(flights_view_date);
   pull_widget(flights_view_leg);
   pull_widget(flights_view_dist);
@@ -219,51 +219,51 @@ Logbook *logbook_new(const char *filename)
   pull_widget(aircraft_tail_valid_wart);
   pull_widget(aircraft_fleetno);
   pull_widget(aircraft_fleetno_valid_wart);
-  pull_widget(aircraft_type);
+  pull_widget(aircraft_model);
   pull_widget(aircraft_notes);
   pull_widget(aircraft_new_btn);
   pull_widget(aircraft_save_btn);
   pull_widget(aircraft_armdel_btn);
   pull_widget(aircraft_del_btn);
   pull_widget(aircraft_todel_lbl);
-  pull_widget(types_sw);
-  pull_widget(types_ident);
-  pull_widget(types_ident_valid_wart);
-  pull_widget(types_make);
-  pull_widget(types_model);
-  pull_widget(types_airplane);
-  pull_widget(types_rotorcraft);
-  pull_widget(types_glider);
-  pull_widget(types_lta);
-  pull_widget(types_poweredlift);
-  pull_widget(types_ppc);
-  pull_widget(types_weightshift);
-  pull_widget(types_heli);
-  pull_widget(types_gyro);
-  pull_widget(types_airship);
-  pull_widget(types_balloon);
-  pull_widget(types_single);
-  pull_widget(types_multi);
-  pull_widget(types_land);
-  pull_widget(types_sea);
-  pull_widget(types_turbine);
-  pull_widget(types_jet);
-  pull_widget(types_highperf);
-  pull_widget(types_retract);
-  pull_widget(types_complex);
-  pull_widget(types_pressurized);
-  pull_widget(types_large);
-  pull_widget(types_sport);
-  pull_widget(types_ultralight);
-  pull_widget(types_footlaunch);
-  pull_widget(types_sim);
-  pull_widget(types_ftd);
-  pull_widget(types_total);
-  pull_widget(types_new_btn);
-  pull_widget(types_save_btn);
-  pull_widget(types_armdel_btn);
-  pull_widget(types_del_btn);
-  pull_widget(types_todel_lbl);
+  pull_widget(models_sw);
+  pull_widget(models_ident);
+  pull_widget(models_ident_valid_wart);
+  pull_widget(models_make);
+  pull_widget(models_type);
+  pull_widget(models_airplane);
+  pull_widget(models_rotorcraft);
+  pull_widget(models_glider);
+  pull_widget(models_lta);
+  pull_widget(models_poweredlift);
+  pull_widget(models_ppc);
+  pull_widget(models_weightshift);
+  pull_widget(models_heli);
+  pull_widget(models_gyro);
+  pull_widget(models_airship);
+  pull_widget(models_balloon);
+  pull_widget(models_single);
+  pull_widget(models_multi);
+  pull_widget(models_land);
+  pull_widget(models_sea);
+  pull_widget(models_turbine);
+  pull_widget(models_jet);
+  pull_widget(models_highperf);
+  pull_widget(models_retract);
+  pull_widget(models_complex);
+  pull_widget(models_pressurized);
+  pull_widget(models_large);
+  pull_widget(models_sport);
+  pull_widget(models_ultralight);
+  pull_widget(models_footlaunch);
+  pull_widget(models_sim);
+  pull_widget(models_ftd);
+  pull_widget(models_total);
+  pull_widget(models_new_btn);
+  pull_widget(models_save_btn);
+  pull_widget(models_armdel_btn);
+  pull_widget(models_del_btn);
+  pull_widget(models_todel_lbl);
   pull_widget(airports_sw);
   pull_widget(airports_iata);
   pull_widget(airports_iata_valid_wart);
@@ -328,9 +328,9 @@ Logbook *logbook_new(const char *filename)
   gtk_widget_show_all(logbook->aircraft_treeview);
   gtk_container_add(GTK_CONTAINER(logbook->aircraft_sw), logbook->aircraft_treeview);
 
-  store_build_query_stmt_widget(logbook->types_select_all, NULL, &logbook->types_treeview, &logbook->types_treemodel);
-  gtk_widget_show_all(logbook->types_treeview);
-  gtk_container_add(GTK_CONTAINER(logbook->types_sw), logbook->types_treeview);
+  store_build_query_stmt_widget(logbook->models_select_all, NULL, &logbook->models_treeview, &logbook->models_treemodel);
+  gtk_widget_show_all(logbook->models_treeview);
+  gtk_container_add(GTK_CONTAINER(logbook->models_sw), logbook->models_treeview);
 
   store_build_query_stmt_widget(logbook->airports_select_all, NULL, &logbook->airports_treeview, &logbook->airports_treemodel);
   gtk_widget_show_all(logbook->airports_treeview);
@@ -352,10 +352,10 @@ Logbook *logbook_new(const char *filename)
   g_signal_connect (G_OBJECT (logbook->aircraft_selection), "changed",
 		    G_CALLBACK (on_aircraft_selection_changed),
 		    logbook);
-  logbook->types_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->types_treeview));
-  gtk_tree_selection_set_mode (logbook->types_selection, GTK_SELECTION_SINGLE);
-  g_signal_connect (G_OBJECT (logbook->types_selection), "changed",
-		    G_CALLBACK (on_types_selection_changed),
+  logbook->models_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->models_treeview));
+  gtk_tree_selection_set_mode (logbook->models_selection, GTK_SELECTION_SINGLE);
+  g_signal_connect (G_OBJECT (logbook->models_selection), "changed",
+		    G_CALLBACK (on_models_selection_changed),
 		    logbook);
   logbook->airports_selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (logbook->airports_treeview));
   gtk_tree_selection_set_mode (logbook->airports_selection, GTK_SELECTION_SINGLE);
@@ -427,22 +427,22 @@ Logbook *logbook_new(const char *filename)
   edctrl_register_load_selection(logbook->aircraft_edctrl, aircraft_load_selection, logbook);
   edctrl_register_validator(logbook->aircraft_edctrl, aircraft_error, logbook);
 
-  logbook->types_edctrl                 = &logbook->_types_edctrl;
-  logbook->types_edctrl->edstate        = EDSTATE_EMPTY;
-  logbook->types_edctrl->new_btn        = logbook->types_new_btn;
-  logbook->types_edctrl->save_btn       = logbook->types_save_btn;
-  logbook->types_edctrl->armdel_btn     = logbook->types_armdel_btn;
-  logbook->types_edctrl->todel_lbl      = logbook->types_todel_lbl;
-  logbook->types_edctrl->del_btn        = logbook->types_del_btn;
-  logbook->types_edctrl->selection      = logbook->types_selection;
-  logbook->types_edctrl->selection_show = types_selection_show;
-  logbook->types_edctrl->can_delete     = types_can_delete;
-  logbook->types_edctrl->delete_stmt    = logbook->types_delete;
-  logbook->types_edctrl->select_by_id_stmt    = logbook->types_select_by_id;
-  edctrl_register_save(logbook->types_edctrl, types_write_entries, logbook);
-  edctrl_register_after_change(logbook->types_edctrl, types_after_change, logbook);
-  edctrl_register_load_selection(logbook->types_edctrl, types_load_selection, logbook);
-  edctrl_register_validator(logbook->types_edctrl, types_error, logbook);
+  logbook->models_edctrl                 = &logbook->_models_edctrl;
+  logbook->models_edctrl->edstate        = EDSTATE_EMPTY;
+  logbook->models_edctrl->new_btn        = logbook->models_new_btn;
+  logbook->models_edctrl->save_btn       = logbook->models_save_btn;
+  logbook->models_edctrl->armdel_btn     = logbook->models_armdel_btn;
+  logbook->models_edctrl->todel_lbl      = logbook->models_todel_lbl;
+  logbook->models_edctrl->del_btn        = logbook->models_del_btn;
+  logbook->models_edctrl->selection      = logbook->models_selection;
+  logbook->models_edctrl->selection_show = models_selection_show;
+  logbook->models_edctrl->can_delete     = models_can_delete;
+  logbook->models_edctrl->delete_stmt    = logbook->models_delete;
+  logbook->models_edctrl->select_by_id_stmt    = logbook->models_select_by_id;
+  edctrl_register_save(logbook->models_edctrl, models_write_entries, logbook);
+  edctrl_register_after_change(logbook->models_edctrl, models_after_change, logbook);
+  edctrl_register_load_selection(logbook->models_edctrl, models_load_selection, logbook);
+  edctrl_register_validator(logbook->models_edctrl, models_error, logbook);
 
   logbook->airports_edctrl                 = &logbook->_airports_edctrl;
   logbook->airports_edctrl->edstate        = EDSTATE_EMPTY;
@@ -476,7 +476,7 @@ Logbook *logbook_new(const char *filename)
   flights_refresh(logbook);
   logbook->roles_stale = 1;
   logbook->aircraft_stale = 1;
-  logbook->types_stale = 1;
+  logbook->models_stale = 1;
   logbook->airports_stale = 1;
   reports_title_combo_init(logbook);
   summaries_init(logbook);
@@ -485,7 +485,7 @@ Logbook *logbook_new(const char *filename)
   flights_load_selection(logbook);
   roles_load_selection(logbook);
   aircraft_load_selection(logbook);
-  types_load_selection(logbook);
+  models_load_selection(logbook);
   airports_load_selection(logbook);
   airports_tzone_combo_box_init(logbook);
 

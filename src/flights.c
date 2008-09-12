@@ -203,7 +203,7 @@ void flights_after_change(Logbook *logbook)
 {
   logbook->roles_stale = TRUE;
   logbook->aircraft_stale = TRUE;
-  logbook->types_stale = TRUE;
+  logbook->models_stale = TRUE;
   logbook->airports_stale = TRUE;
 
   flights_load_selection(logbook);
@@ -668,7 +668,7 @@ void flights_set_view_column_visibility(Logbook *logbook)
     "Leg",
     "Tail",
     "FleetNo",
-    "Type",
+    "Model",
     "Role",
     "Dur",
     "Night",
@@ -697,7 +697,7 @@ void flights_set_view_column_visibility(Logbook *logbook)
     logbook->flights_view_leg,
     logbook->flights_view_tail,
     logbook->flights_view_fleetno,
-    logbook->flights_view_type,
+    logbook->flights_view_model,
     logbook->flights_view_role,
     logbook->flights_view_dur,
     logbook->flights_view_night,
@@ -801,7 +801,7 @@ void flights_save_options(Logbook *logbook)
   registry_set_int(logbook, "flights/view", "Leg",   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_leg)));
   registry_set_int(logbook, "flights/view", "Tail", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_tail)));
   registry_set_int(logbook, "flights/view", "FleetNo", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_fleetno)));
-  registry_set_int(logbook, "flights/view", "Type", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_type)));
+  registry_set_int(logbook, "flights/view", "Model", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_model)));
   registry_set_int(logbook, "flights/view", "Role", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_role)));
   registry_set_int(logbook, "flights/view", "Dep",   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dep)));
   registry_set_int(logbook, "flights/view", "Arr",   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_view_arr)));
@@ -921,7 +921,7 @@ void flights_restore_options(Logbook *logbook)
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_leg),      str_bool(registry_get_text(logbook, "flights/view", "Leg")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_tail),     str_bool(registry_get_text(logbook, "flights/view", "Tail")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_fleetno),  str_bool(registry_get_text(logbook, "flights/view", "FleetNo")));
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_type),     str_bool(registry_get_text(logbook, "flights/view", "Type")));
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_model),     str_bool(registry_get_text(logbook, "flights/view", "Model")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_role),     str_bool(registry_get_text(logbook, "flights/view", "Role")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_dep),      str_bool(registry_get_text(logbook, "flights/view", "Dep")));
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(logbook->flights_view_arr),      str_bool(registry_get_text(logbook, "flights/view", "Arr")));

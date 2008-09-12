@@ -44,9 +44,9 @@ void on_aircraft_fleetno_changed(GtkEntry *entry, Logbook *logbook)
   edctrl_set_modified(logbook->aircraft_edctrl);
 }
 
-void on_aircraft_type_changed(GtkEntry *entry, Logbook *logbook)
+void on_aircraft_model_changed(GtkEntry *entry, Logbook *logbook)
 {
-  entry_clamp_types_ident(entry);
+  entry_clamp_models_ident(entry);
   edctrl_set_modified(logbook->aircraft_edctrl);
 }
 

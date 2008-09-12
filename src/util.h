@@ -50,7 +50,7 @@ void entry_clamp_text(GtkEntry *entry, int length, int setcase, int allowed(char
 void entry_clamp_roles_ident(GtkEntry *);
 void entry_clamp_aircraft_ident(GtkEntry *);
 void entry_clamp_aircraft_fleetno(GtkEntry *);
-void entry_clamp_types_ident(GtkEntry *);
+void entry_clamp_models_ident(GtkEntry *);
 void entry_clamp_airports_iata(GtkEntry *);
 void entry_clamp_airports_icao(GtkEntry *);
 void entry_format_date_on_focus_out(GtkEntry *);

@@ -73,17 +73,17 @@ CREATE TABLE Roles (
 
 CREATE TABLE Aircraft (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,type_id INTEGER
+	,model_id INTEGER
 	,Tail CHAR
 	,FleetNo CHAR
 	,Notes TEXT
 );
 
-CREATE TABLE Types (
+CREATE TABLE Models (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Ident CHAR
 	,Make CHAR
-	,Model CHAR
+	,Type CHAR
 	,Airplane BOOLEAN
 	,Rotorcraft BOOLEAN
 	,Glider BOOLEAN
@@ -151,7 +151,7 @@ CREATE TABLE Registry (
 );
 create unique index registry_path_key on Registry(path, key);
 
-INSERT INTO Reports (Title, SQL) VALUES ("Time in Type", "select Type, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by type;");
+INSERT INTO Reports (Title, SQL) VALUES ("Time in Model", "select Model, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by model;");
 
 INSERT INTO Reports (Title, SQL) VALUES ("Daily", "select Date, hm(s) as Scheduled, hm(a) as Actual from (select date, sum(sdur) as s, sum(dur) as a from Experience group by date) order by Date;");
 
@@ -163,7 +163,7 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "FltNo"
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Leg",      3);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Tail",     4);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "FleetNo",     4);
-INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Type",     5);
+INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Model",     5);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Role",     6);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Dep",      7);
 INSERT INTO Registry (path, key, value) VALUES ("flights/columns/order", "Arr",      8);
@@ -200,7 +200,7 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/view", "FltNo",    1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Leg",      1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Tail",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "FleetNo",  1);
-INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Type",     1);
+INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Model",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Role",     1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "DepIATA",  1);
 INSERT INTO Registry (path, key, value) VALUES ("flights/view", "DepICAO",  1);
@@ -237,14 +237,14 @@ create unique index airports_ident on airports(iata);
 create unique index aircraft_tail on aircraft(tail);
 create unique index aircraft_fleetno on aircraft(fleetno);
 create unique index roles_ident on roles(ident);
-create unique index type_ident on types(ident);
+create unique index model_ident on models(ident);
 
 create index flights_role_id on flights (role_id);
 create index flights_dep_id on flights (dep_id);
 create index flights_arr_id on flights (arr_id);
 create index flights_aircraft_id on flights(aircraft_id);
 create index flights_date on flights(date);
-create index aircraft_type_id on aircraft(type_id);
+create index aircraft_model_id on aircraft(model_id);
 
 CREATE VIEW Departures AS
 SELECT airports.id as _id
@@ -288,17 +288,19 @@ SELECT * FROM Departures UNION SELECT * FROM Arrivals;
 CREATE VIEW MyAircraft AS
 SELECT aircraft.id as id
 ,aircraft.tail as Tail
-,types.ident as Type
+,models.ident as Model
 ,aircraft.fleetno as FleetNo
 ,aircraft.notes as Notes
 FROM aircraft
-LEFT JOIN types on aircraft.type_id = types.id;
+LEFT JOIN models on aircraft.model_id = models.id;
 
 CREATE VIEW Experience AS
 SELECT flights.id as _id
 ,flights.date as Date
 ,roles.ident as Role
-,types.ident as Type
+,models.ident as Model
+,models.make as Make
+,models.type as Type
 ,aircraft.Tail as Aircraft
 ,aircraft.fleetno as FleetNo
 ,flights.sdur as SDur
@@ -335,34 +337,34 @@ SELECT flights.id as _id
 ,flights.dur * roles.solo as Solo
 ,flights.dur * roles.dual as Dual
 ,flights.dur * roles.instruct as Instruct
-,flights.dur * types.airplane as Airplane
-,flights.dur * types.rotorcraft as Rotorcraft
-,flights.dur * types.glider as Glider
-,flights.dur * types.lta as LTA
-,flights.dur * types.poweredlift as PoweredLift
-,flights.dur * types.ppc as PPC
-,flights.dur * types.weightshift as Weightshift
-,flights.dur * types.heli as Heli
-,flights.dur * types.gyro as Gyro
-,flights.dur * types.airship as Airship
-,flights.dur * types.balloon as Ballon
-,flights.dur * types.single as Single
-,flights.dur * types.multi as Multi
-,flights.dur * types.land as Land
-,flights.dur * types.sea as Sea
-,flights.dur * types.turbine as Turbine
-,flights.dur * types.jet as Jet
-,flights.dur * types.highperf as HighPerf
-,flights.dur * types.retract as Retract
-,flights.dur * types.complex as Complex
-,flights.dur * types.pressurized as Pressurized
-,flights.dur * types.large as Large
-,flights.dur * types.sport as Sport
-,flights.dur * types.ultralight as Ultralight
-,flights.dur * types.footlaunch as Footlaunch
-,flights.dur * types.sim as Sim
-,flights.dur * types.ftd as FTD
-,flights.dur * roles.total * types.total as Total
+,flights.dur * models.airplane as Airplane
+,flights.dur * models.rotorcraft as Rotorcraft
+,flights.dur * models.glider as Glider
+,flights.dur * models.lta as LTA
+,flights.dur * models.poweredlift as PoweredLift
+,flights.dur * models.ppc as PPC
+,flights.dur * models.weightshift as Weightshift
+,flights.dur * models.heli as Heli
+,flights.dur * models.gyro as Gyro
+,flights.dur * models.airship as Airship
+,flights.dur * models.balloon as Ballon
+,flights.dur * models.single as Single
+,flights.dur * models.multi as Multi
+,flights.dur * models.land as Land
+,flights.dur * models.sea as Sea
+,flights.dur * models.turbine as Turbine
+,flights.dur * models.jet as Jet
+,flights.dur * models.highperf as HighPerf
+,flights.dur * models.retract as Retract
+,flights.dur * models.complex as Complex
+,flights.dur * models.pressurized as Pressurized
+,flights.dur * models.large as Large
+,flights.dur * models.sport as Sport
+,flights.dur * models.ultralight as Ultralight
+,flights.dur * models.footlaunch as Footlaunch
+,flights.dur * models.sim as Sim
+,flights.dur * models.ftd as FTD
+,flights.dur * roles.total * models.total as Total
 ,dland as DLand
 ,nland as NLand
 FROM flights
@@ -370,5 +372,5 @@ LEFT JOIN airports dep_airports ON flights.dep_id = dep_airports.id
 LEFT JOIN airports arr_airports ON flights.arr_id = arr_airports.id
 LEFT JOIN roles ON flights.role_id = roles.id
 LEFT JOIN aircraft ON flights.aircraft_id = aircraft.id
-LEFT JOIN types ON aircraft.type_id = types.id
+LEFT JOIN models ON aircraft.model_id = models.id
 ORDER BY flights.date;

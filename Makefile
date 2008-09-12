@@ -28,7 +28,7 @@ SRC = src/sqlpilot.c \
       src/cb/flights.c \
       src/cb/roles.c \
       src/cb/aircraft.c \
-      src/cb/types.c \
+      src/cb/models.c \
       src/cb/airports.c \
       src/cb/reports.c \
       src/cb/summaries.c \
@@ -39,7 +39,7 @@ SRC = src/sqlpilot.c \
       src/flights.c \
       src/roles.c \
       src/aircraft.c \
-      src/types.c \
+      src/models.c \
       src/airports.c \
       src/reports.c \
       src/summaries.c \
@@ -67,7 +67,7 @@ HEADERS = src/config.h \
 	  src/flights.h \
 	  src/roles.h \
 	  src/aircraft.h \
-	  src/types.h \
+	  src/models.h \
 	  src/airports.h \
 	  src/reports.h \
 	  src/summaries.h \

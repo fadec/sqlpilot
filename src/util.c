@@ -110,7 +110,7 @@ void entry_clamp_aircraft_fleetno(GtkEntry *entry)
   entry_clamp_text(entry, -1, 1, NULL);
 }
 
-void entry_clamp_types_ident(GtkEntry *entry)
+void entry_clamp_models_ident(GtkEntry *entry)
 {
   entry_clamp_text(entry, 16, 1, is_ident_char);
 }

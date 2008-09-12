@@ -34,8 +34,8 @@ void on_aircraft_selection_changed(GtkTreeSelection *, Logbook *);
 void on_aircraft_notes_changed(GtkTextBuffer *, Logbook);
 void aircraft_refresh(Logbook *);
 
-void on_types_selection_changed(GtkTreeSelection *, Logbook *);
-void types_refresh(Logbook *);
+void on_models_selection_changed(GtkTreeSelection *, Logbook *);
+void models_refresh(Logbook *);
 
 void on_airports_selection_changed(GtkTreeSelection *, Logbook *);
 void on_airports_notes_changed(GtkTextBuffer *, Logbook);
