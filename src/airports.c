@@ -52,12 +52,12 @@ int airports_selection_show(GtkTreeSelection *selection, char *show, size_t size
 int airports_can_delete(GtkTreeSelection *selection)
 {
 /*   GtkTreeIter iter; */
-/*   GtkTreeModel *model; */
+/*   GtkTreeModel *treemod; */
 /*   gchar *aircraft=NULL; */
 /*   long _aircraft=0; */
 
-/*   if (gtk_tree_selection_get_selected(selection, &model, &iter)) { */
-/*     gtk_tree_model_get(model, &iter, AIRPORTS_COL_OPS, &aircraft, -1); */
+/*   if (gtk_tree_selection_get_selected(selection, &treemod, &iter)) { */
+/*     gtk_tree_model_get(treemod, &iter, AIRPORTS_COL_OPS, &aircraft, -1); */
 /*     sscanf(aircraft, "%ld", &_aircraft); */
 /*   } */
 
@@ -134,7 +134,7 @@ DBint64 airports_write_entries(const gchar *id, Logbook *logbook)
 void airports_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar
     *id=NULL,
     *iata=NULL,
@@ -149,8 +149,8 @@ void airports_load_selection(Logbook *logb)
     *tzone=NULL,
     *notes=NULL;
 
-  if (gtk_tree_selection_get_selected (logb->airports_selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
+  if (gtk_tree_selection_get_selected (logb->airports_selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       AIRPORTS_COL_ID, &id,
 		       AIRPORTS_COL_IATA, &iata,
 		       AIRPORTS_COL_ICAO, &icao,

@@ -81,7 +81,7 @@ DBint64 roles_write_entries(const gchar *id, Logbook *logbook)
 void roles_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar
     *id=NULL,
     *ident=NULL,
@@ -94,8 +94,8 @@ void roles_load_selection(Logbook *logb)
     *instruct=NULL,
     *total=NULL;
 
-  if (gtk_tree_selection_get_selected (logb->roles_selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
+  if (gtk_tree_selection_get_selected (logb->roles_selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       ROLES_COL_ID, &id,
 		       ROLES_COL_IDENT, &ident,
 		       ROLES_COL_NAME, &name,
@@ -140,12 +140,12 @@ void roles_refresh(Logbook *logbook)
 int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar
     *ident=NULL,
     *name=NULL;
-  if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
+  if (gtk_tree_selection_get_selected (selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       ROLES_COL_IDENT, &ident,
 		       ROLES_COL_NAME, &name,
 		       -1);
@@ -160,12 +160,12 @@ int roles_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 int roles_can_delete(GtkTreeSelection *selection)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar *flights=NULL;
   long _flights=0;
 
-  if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter, ROLES_COL_FLIGHTS, &flights, -1);
+  if (gtk_tree_selection_get_selected(selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter, ROLES_COL_FLIGHTS, &flights, -1);
     sscanf(flights, "%ld", &_flights);
   }
 

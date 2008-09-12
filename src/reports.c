@@ -41,7 +41,7 @@ void reports_refresh(Logbook *logbook)
   long nrows;
   char results_summary[128];
   DBStatement *select = NULL;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   GtkWidget *view;
 
   /* refreshing while already refreshing is bad */
@@ -54,8 +54,8 @@ void reports_refresh(Logbook *logbook)
   gtk_label_set_text(GTK_LABEL(logbook->reports_results_summary), "");
 
   if ((select = reports_make_statement(logbook))) {
-    store_build_query_stmt_widget(select, NULL, &view, &model);
-    nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(model), select, GTK_PROGRESS_BAR(logbook->reports_query_progress));
+    store_build_query_stmt_widget(select, NULL, &view, &treemod);
+    nrows = store_repopulate_from_stmt_with_progress(GTK_LIST_STORE(treemod), select, GTK_PROGRESS_BAR(logbook->reports_query_progress));
     snprintf(results_summary, sizeof(results_summary), "%ld Rows", nrows);
     if (logbook->reports_treeview) { gtk_widget_destroy(logbook->reports_treeview); }
     gtk_container_add(GTK_CONTAINER(logbook->reports_sw), view);

@@ -23,12 +23,12 @@
 static void edctrl_show_record(Edctrl *ec)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   char show[BUF_ED_TODEL - 2] = ""; /* -2 to save room for '* ' prefix */
   char labeltext[BUF_ED_TODEL] = "";
   
 
-  if (gtk_tree_selection_get_selected (ec->selection, &model, &iter)) {
+  if (gtk_tree_selection_get_selected (ec->selection, &treemod, &iter)) {
     ec->selection_show(ec->selection, show, sizeof(show));
     snprintf(labeltext, sizeof(labeltext), "%s%s", (ec->edstate == EDSTATE_MODIFIED) ? "* " : "", show);
     gtk_label_set_text(GTK_LABEL(ec->todel_lbl), labeltext);
@@ -92,11 +92,11 @@ void edctrl_set_deletearmed(Edctrl *ec)
 void edctrl_selection_changed(Edctrl *ec)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
 
   ec->load_selection(ec->load_selection_data);
 
-  if (gtk_tree_selection_get_selected (ec->selection, &model, &iter)) {
+  if (gtk_tree_selection_get_selected (ec->selection, &treemod, &iter)) {
     edctrl_set_selected(ec);
   } else {
     edctrl_set_empty(ec);
@@ -139,14 +139,14 @@ void edctrl_register_validator(Edctrl *ec, int func(Logbook *), Logbook *data)
 void edctrl_del_btn_clicked(Edctrl *ec)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar *id=NULL;
   
-  if (gtk_tree_selection_get_selected(ec->selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter, COL_ID, &id, -1);
+  if (gtk_tree_selection_get_selected(ec->selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter, COL_ID, &id, -1);
     db_bind_text(ec->delete_stmt, 1, id);
     db_stp_res_clr(ec->delete_stmt);
-    gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+    gtk_list_store_remove(GTK_LIST_STORE(treemod), &iter);
     g_free(id);
     ec->after_change(ec->after_change_data);
   }
@@ -157,9 +157,9 @@ void edctrl_del_btn_clicked(Edctrl *ec)
 void edctrl_new_btn_clicked(Edctrl *ec)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   
-  if (gtk_tree_selection_get_selected(ec->selection, &model, &iter)) {
+  if (gtk_tree_selection_get_selected(ec->selection, &treemod, &iter)) {
     gtk_tree_selection_unselect_iter(ec->selection, &iter);
   }
 
@@ -170,7 +170,7 @@ void edctrl_save_btn_clicked(Edctrl *ec)
 {
   DBStatement *stmt;
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   DBint64 inserted_id;
   gchar *id=NULL;
   GtkTreePath *path;
@@ -178,8 +178,8 @@ void edctrl_save_btn_clicked(Edctrl *ec)
 
   stmt = ec->select_by_id_stmt;
 
-  if (gtk_tree_selection_get_selected(ec->selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter, COL_ID, &id, -1);
+  if (gtk_tree_selection_get_selected(ec->selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter, COL_ID, &id, -1);
 
     ec->save(id, ec->save_data);
     db_bind_text(stmt, 1, id);
@@ -187,9 +187,9 @@ void edctrl_save_btn_clicked(Edctrl *ec)
     inserted_id = ec->save(NULL, ec->save_data);
     db_bind_int64(stmt, 1, inserted_id);
 
-    gtk_list_store_insert(GTK_LIST_STORE(model), &iter, 0);
+    gtk_list_store_insert(GTK_LIST_STORE(treemod), &iter, 0);
   }
-  store_update_row(GTK_LIST_STORE(model), &iter, stmt);
+  store_update_row(GTK_LIST_STORE(treemod), &iter, stmt);
 
   /* Select the iter and scroll to selection */
   gtk_tree_selection_select_iter(ec->selection, &iter);

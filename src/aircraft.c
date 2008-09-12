@@ -24,11 +24,11 @@
 int aircraft_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar
     *tail=NULL;
-  if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
+  if (gtk_tree_selection_get_selected (selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       FLIGHTS_COL_DATE, &tail,
 		       -1);
     snprintf(show, size, "%s", tail);
@@ -48,12 +48,12 @@ void aircraft_after_change(Logbook *logbook)
 int aircraft_can_delete(GtkTreeSelection *selection)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar *flights=NULL;
   long _flights=0;
 
-  if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter, AIRCRAFT_COL_FLIGHTS, &flights, -1);
+  if (gtk_tree_selection_get_selected(selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter, AIRCRAFT_COL_FLIGHTS, &flights, -1);
     sscanf(flights, "%ld", &_flights);
   }
 
@@ -105,7 +105,7 @@ DBint64 aircraft_write_entries(const gchar *id, Logbook *logbook)
 void aircraft_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar
     *id=NULL,
     *tail=NULL,
@@ -113,8 +113,8 @@ void aircraft_load_selection(Logbook *logb)
     *fleetno=NULL,
     *notes=NULL;
 
-  if (gtk_tree_selection_get_selected (logb->aircraft_selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
+  if (gtk_tree_selection_get_selected (logb->aircraft_selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       AIRCRAFT_COL_ID, &id,
 		       AIRCRAFT_COL_TAIL, &tail,
 		       AIRCRAFT_COL_TYPE, &type,

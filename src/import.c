@@ -92,7 +92,7 @@ int import_read_text(Logbook *logbook)
   GError *error=NULL;
   char *txt;
   GtkWidget *view;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   int nrow;
 
 /*   gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script)); */
@@ -117,7 +117,7 @@ int import_read_text(Logbook *logbook)
     fclose(fin);
 
     assert(fout);
-    nrow = build_table_from_csv_fh(fout, &view, &model, NULL);
+    nrow = build_table_from_csv_fh(fout, &view, &treemod, NULL);
     fclose(fout); 
     assert(ferr);
     fclose(ferr);
@@ -125,7 +125,7 @@ int import_read_text(Logbook *logbook)
 
     if (logbook->import_interpreted_treeview) gtk_widget_destroy(logbook->import_interpreted_treeview);
     logbook->import_interpreted_treeview = view;
-    logbook->import_interpreted_treemodel = model;
+    logbook->import_interpreted_treemodel = treemod;
     gtk_container_add(GTK_CONTAINER(logbook->import_interpreted_sw), view);
     gtk_widget_show(view);
   } else {
@@ -143,7 +143,7 @@ int import_read_file(Logbook *logbook)
   GError *error=NULL;
   char *txt;
   GtkWidget *view;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   int nrow;
 
   gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
@@ -164,7 +164,7 @@ int import_read_file(Logbook *logbook)
     fclose(fin);
 
     assert(fout);
-    nrow = build_table_from_csv_fh(fout, &view, &model, NULL);
+    nrow = build_table_from_csv_fh(fout, &view, &treemod, NULL);
     fclose(fout); 
     assert(ferr);
     fclose(ferr);
@@ -172,7 +172,7 @@ int import_read_file(Logbook *logbook)
 
     if (logbook->import_interpreted_treeview) gtk_widget_destroy(logbook->import_interpreted_treeview);
     logbook->import_interpreted_treeview = view;
-    logbook->import_interpreted_treemodel = model;
+    logbook->import_interpreted_treemodel = treemod;
     gtk_container_add(GTK_CONTAINER(logbook->import_interpreted_sw), view);
     gtk_widget_show(view);
   } else {

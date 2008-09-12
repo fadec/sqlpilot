@@ -46,12 +46,12 @@ int types_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 int types_can_delete(GtkTreeSelection *selection)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar *aircraft=NULL;
   long _aircraft=0;
 
-  if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter, TYPES_COL_AIRCRAFT, &aircraft, -1);
+  if (gtk_tree_selection_get_selected(selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter, TYPES_COL_AIRCRAFT, &aircraft, -1);
     sscanf(aircraft, "%ld", &_aircraft);
   }
 
@@ -186,7 +186,7 @@ DBint64 types_write_entries(const gchar *id, Logbook *logbook)
 void types_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
-  GtkTreeModel *tmodel;
+  GtkTreeModel *treemod;
 
   gchar
     *id=NULL,
@@ -222,8 +222,8 @@ void types_load_selection(Logbook *logb)
     *ftd=NULL,
     *total=NULL;
 
-  if (gtk_tree_selection_get_selected (logb->types_selection, &tmodel, &iter)) {
-    gtk_tree_model_get(tmodel, &iter,
+  if (gtk_tree_selection_get_selected (logb->types_selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       TYPES_COL_ID, &id,
 		       TYPES_COL_IDENT, &ident,
 		       TYPES_COL_MAKE, &make,

@@ -32,13 +32,13 @@ static void store_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt
 /* Sorts */
 /*********/
 /* Parse int compare that filters out non-[0-9] characters before parse */
-static gint iter_compare_by_noisy_str_int_column(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer column)
+static gint iter_compare_by_noisy_str_int_column(GtkTreeModel *treemod, GtkTreeIter *a, GtkTreeIter *b, gpointer column)
 {
   char *a_val, *b_val, *pread, *pwrite;
   gint ret;
 
-  gtk_tree_model_get(model, a, (gint)column, &a_val, -1);
-  gtk_tree_model_get(model, b, (gint)column, &b_val, -1);
+  gtk_tree_model_get(treemod, a, (gint)column, &a_val, -1);
+  gtk_tree_model_get(treemod, b, (gint)column, &b_val, -1);
   
   for (pread = pwrite = a_val; a_val && *pread; pread++) {
     if (isdigit(*pread) || *pread == '-') {
@@ -61,13 +61,13 @@ static gint iter_compare_by_noisy_str_int_column(GtkTreeModel *model, GtkTreeIte
   return ret;
 }
 
-static gint iter_compare_by_str_float_column(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer column)
+static gint iter_compare_by_str_float_column(GtkTreeModel *treemod, GtkTreeIter *a, GtkTreeIter *b, gpointer column)
 {
   char *a_val, *b_val;
   gint ret;
 
-  gtk_tree_model_get(model, a, (gint)column, &a_val, -1);
-  gtk_tree_model_get(model, b, (gint)column, &b_val, -1);
+  gtk_tree_model_get(treemod, a, (gint)column, &a_val, -1);
+  gtk_tree_model_get(treemod, b, (gint)column, &b_val, -1);
   
   ret = atof(EMPTY_IF_NULL(a_val)) - atof(EMPTY_IF_NULL(b_val));
 
@@ -265,14 +265,14 @@ void store_build_query_stmt_widget(DBStatement *stmt, StoreColumnKind *kinds, Gt
 }
 
 /* Only does string type values, currently */
-static gboolean tree_model_fwrite_csv_row(GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, FILE *fh)
+static gboolean tree_model_fwrite_csv_row(GtkTreeModel *treemod, GtkTreePath *path, GtkTreeIter *iter, FILE *fh)
 {
-  int ncol = gtk_tree_model_get_n_columns(model);
+  int ncol = gtk_tree_model_get_n_columns(treemod);
   int n;
   gchar *str;
   
   for (n=0; n<ncol; n++) {
-    gtk_tree_model_get(model, iter, n, &str, -1);
+    gtk_tree_model_get(treemod, iter, n, &str, -1);
     if (n) fprintf(fh, ",");
     fprintf(fh, "\"%s\"", str);
     g_free(str);

@@ -180,13 +180,13 @@ void flights_refresh_utilization(Logbook *logbook)
 int flights_selection_show(GtkTreeSelection *selection, char *show, size_t size)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar
     *dep=NULL,
     *arr=NULL,
     *date=NULL;
-  if (gtk_tree_selection_get_selected (selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
+  if (gtk_tree_selection_get_selected (selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       FLIGHTS_COL_DATE, &date,
 		       FLIGHTS_COL_DEPIATA, &dep,
 		       FLIGHTS_COL_ARRIATA, &arr,
@@ -506,7 +506,7 @@ void reconcile_time_entries(Logbook *logb,
 void flights_load_selection(Logbook *logb)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar
     *id=NULL,
     *tail=NULL,
@@ -544,8 +544,8 @@ void flights_load_selection(Logbook *logb)
 
   int _dland=0, _nland=0, _leg=0;
 
-  if (gtk_tree_selection_get_selected (logb->flights_selection, &model, &iter)) {
-    gtk_tree_model_get(model, &iter,
+  if (gtk_tree_selection_get_selected (logb->flights_selection, &treemod, &iter)) {
+    gtk_tree_model_get(treemod, &iter,
 		       FLIGHTS_COL_ID, &id,
 		       FLIGHTS_COL_DATE, &date,
 		       FLIGHTS_COL_LEG, &leg,

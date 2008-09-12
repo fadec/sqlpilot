@@ -508,11 +508,11 @@ int unique_but_for(DB *db, const char *table, const char *col, const char *value
 char *get_text_from_tree_selection(GtkTreeSelection *tsel, int column)
 {
   GtkTreeIter iter;
-  GtkTreeModel *model;
+  GtkTreeModel *treemod;
   gchar *text=NULL;
 
-  if ((gtk_tree_selection_get_selected(tsel, &model, &iter))) {
-    gtk_tree_model_get(model, &iter,
+  if ((gtk_tree_selection_get_selected(tsel, &treemod, &iter))) {
+    gtk_tree_model_get(treemod, &iter,
 		       column, &text,
 		       -1);
   }
