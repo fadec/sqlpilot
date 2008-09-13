@@ -23,7 +23,21 @@
 void on_reports_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
   reports_refresh(logbook);
+  any_toggle_button_set_active(logbook->reports_view_btn, TRUE);
 }
+
+void on_reports_view_btn_toggled(GtkWidget *button, Logbook *logbook)
+{
+  gtk_widget_hide(logbook->reports_export_pane);
+  gtk_widget_show(logbook->reports_view_pane);
+}
+
+void on_reports_export_btn_toggled(GtkWidget *button, Logbook *logbook)
+{
+  gtk_widget_hide(logbook->reports_view_pane);
+  gtk_widget_show(logbook->reports_export_pane);
+}
+
 
 static void reports_set_modified(Logbook *logbook)
 {

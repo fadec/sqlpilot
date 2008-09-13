@@ -287,6 +287,10 @@ struct Logbook {
   Edctrl _airports_edctrl;
   Edctrl *airports_edctrl;
 
+  GtkWidget *reports_view_btn;
+  GtkWidget *reports_export_btn;
+  GtkWidget *reports_view_pane;
+  GtkWidget *reports_export_pane;
   DBStatement *reports_delete_by_title;
   DBStatement *reports_sql_by_title;
   DBStatement *reports_insert;
@@ -305,6 +309,10 @@ struct Logbook {
   GtkWidget *reports_armdel_btn;
   GtkWidget *reports_del_btn;
 
+  GtkWidget *summaries_view_btn;
+  GtkWidget *summaries_export_btn;
+  GtkWidget *summaries_view_pane;
+  GtkWidget *summaries_export_pane;
   GtkWidget *summaries_select_summary;
   GtkWidget *summaries_sw;
   HtmlDocument *summaries_html_document;

@@ -19,8 +19,22 @@
 
 #include "sqlpilot.h"
 #include "summaries.h"
+#include "logbook.h"
 
 void on_summaries_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
   summaries_refresh(logbook);
+  any_toggle_button_set_active(logbook->summaries_view_btn, TRUE);
+}
+
+void on_summaries_view_btn_toggled(GtkWidget *button, Logbook *logbook)
+{
+  gtk_widget_hide(logbook->summaries_export_pane);
+  gtk_widget_show(logbook->summaries_view_pane);
+}
+
+void on_summaries_export_btn_toggled(GtkWidget *button, Logbook *logbook)
+{
+  gtk_widget_hide(logbook->summaries_view_pane);
+  gtk_widget_show(logbook->summaries_export_pane);
 }

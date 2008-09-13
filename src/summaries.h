@@ -22,6 +22,7 @@
 
 #include <sqlpilot.h>
 #include "scripter.h"
+#include "logbook.h"
 
 #define SUMMARIES_DIR "script/summary"
 

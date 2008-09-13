@@ -284,6 +284,10 @@ Logbook *logbook_new(const char *filename)
   pull_widget(airports_armdel_btn);
   pull_widget(airports_del_btn);
   pull_widget(airports_todel_lbl);
+  pull_widget(reports_view_btn);
+  pull_widget(reports_export_btn);
+  pull_widget(reports_view_pane);
+  pull_widget(reports_export_pane);
   pull_widget(reports_sw);
   pull_widget(reports_err_msg);
   pull_widget(reports_title);
@@ -296,6 +300,10 @@ Logbook *logbook_new(const char *filename)
   pull_widget(reports_save_btn);
   pull_widget(reports_armdel_btn);
   pull_widget(reports_del_btn);
+  pull_widget(summaries_view_btn);
+  pull_widget(summaries_export_btn);
+  pull_widget(summaries_view_pane);
+  pull_widget(summaries_export_pane);
   pull_widget(summaries_select_summary);
   pull_widget(summaries_sw);
   pull_widget(summaries_parameters);
