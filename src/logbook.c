@@ -481,7 +481,7 @@ Logbook *logbook_new(const char *filename)
   reports_title_combo_init(logbook);
   summaries_init(logbook);
   import_init(logbook);
-  
+
   flights_load_selection(logbook);
   roles_load_selection(logbook);
   aircraft_load_selection(logbook);

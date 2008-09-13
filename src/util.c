@@ -756,3 +756,25 @@ gchar *filename_combo_box_get_current_full_filename(GtkComboBox *cbox)
   return filename;
 }
 
+gboolean any_toggle_button_get_active(GtkWidget *tb)
+{
+  if (GTK_IS_TOGGLE_BUTTON(tb)) {
+    return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb));
+  } else if (GTK_IS_TOGGLE_TOOL_BUTTON(GTK_TOGGLE_TOOL_BUTTON(tb))) {
+    return gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(tb));
+  } else {
+    fprintf(stderr, "get: What mannor of toggle button is this?\n");
+    return FALSE;
+  }
+}
+
+void any_toggle_button_set_active(GtkWidget *tb, gboolean b)
+{
+  if (GTK_IS_TOGGLE_BUTTON(tb)) {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb), b);
+  } else if (GTK_IS_TOGGLE_TOOL_BUTTON(GTK_TOGGLE_TOOL_BUTTON(tb))) {
+    gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(tb), b);
+  } else {
+    fprintf(stderr, "set: What mannor of toggle button is this?\n");
+  }
+}

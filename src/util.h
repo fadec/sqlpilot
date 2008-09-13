@@ -89,4 +89,8 @@ gboolean spawn_script(const gchar *wdir,
 void filename_combo_box_build_model(GtkComboBox *cbox);
 void filename_combo_box_merge_dir(GtkComboBox *cbox, const char *dir);
 gchar *filename_combo_box_get_current_full_filename(GtkComboBox *cbox);
+gboolean any_toggle_button_get_active(GtkWidget *tb);
+void any_toggle_button_set_active(GtkWidget *tb, gboolean b);
+
+
 #endif

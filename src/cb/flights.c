@@ -155,7 +155,7 @@ int on_flights_depicao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 {
   flights_handle_icao_update(logbook, entry, GTK_ENTRY(logbook->flights_depiata));
   
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (!any_toggle_button_get_active(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sout),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -181,7 +181,7 @@ int on_flights_depiata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 {
   flights_handle_iata_update(logbook, entry, GTK_ENTRY(logbook->flights_depicao));
 
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (!any_toggle_button_get_active(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sout),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -208,7 +208,7 @@ int on_flights_arricao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 
   flights_handle_icao_update(logbook, entry, GTK_ENTRY(logbook->flights_arriata));
 
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (!any_toggle_button_get_active(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sin),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -235,7 +235,7 @@ int on_flights_arriata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 
   flights_handle_iata_update(logbook, entry, GTK_ENTRY(logbook->flights_arricao));
   
-  if (!gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (!any_toggle_button_get_active(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sin),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -268,7 +268,7 @@ int on_flights_sout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbo
 
   flights_lookup_dep_tz(logbook, local_tz);
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (any_toggle_button_get_active(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -307,7 +307,7 @@ int on_flights_sin_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logboo
 
   flights_lookup_arr_tz(logbook, local_tz);
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (any_toggle_button_get_active(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -371,7 +371,7 @@ int on_flights_aout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbo
 
   flights_lookup_dep_tz(logbook, local_tz);
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (any_toggle_button_get_active(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -410,7 +410,7 @@ int on_flights_ain_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logboo
 
   flights_lookup_arr_tz(logbook, local_tz);
 
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_utc))) {
+  if (any_toggle_button_get_active(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -510,7 +510,7 @@ void on_flights_selection_changed(GtkTreeSelection *selection, Logbook *logbook)
   edctrl_selection_changed(logbook->flights_edctrl);
 }
 
-void on_flights_utc_toggled(GtkToggleButton *button, Logbook *logb)
+void on_flights_utc_toggled(GtkWidget *button, Logbook *logb)
 {
   char deptz[BUF_TZ], arrtz[BUF_TZ];
   char *deptz1, *deptz2, *arrtz1, *arrtz2;
@@ -526,7 +526,7 @@ void on_flights_utc_toggled(GtkToggleButton *button, Logbook *logb)
   flights_lookup_dep_tz(logb, deptz);
   flights_lookup_arr_tz(logb, arrtz);
 
-  if (gtk_toggle_button_get_active(button)) {
+  if (any_toggle_button_get_active(button)) {
     /* to UTC */
     deptz1 = deptz;
     arrtz1 = arrtz;
@@ -558,14 +558,16 @@ void on_flights_utc_toggled(GtkToggleButton *button, Logbook *logb)
     move_time(arrtz1, arrtz2, date, sin, strdate, strtime);
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
   }
-  gtk_label_set_text(GTK_LABEL(logb->flights_utc_lbl),
-		     gtk_toggle_button_get_active(button) ? "UTC" : "Local");
+/*   gtk_label_set_text(GTK_LABEL(logb->flights_utc_lbl), */
+  /* 		     any_toggle_button_get_active(button) ? "UTC" : "Local"); */
+  gtk_tool_button_set_label(GTK_TOOL_BUTTON(logb->flights_utc),
+			    any_toggle_button_get_active(button) ? "UTC" : "Local");
   edctrl_ignore_modifications(logb->flights_edctrl, FALSE);
 }
 
-void on_flights_icao_toggle_toggled(GtkToggleButton *button, Logbook *logbook)
+void on_flights_icao_toggle_toggled(GtkWidget *button, Logbook *logbook)
 {
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_icao_toggle))) {
+  if (any_toggle_button_get_active(logbook->flights_icao_toggle)) {
     gtk_widget_hide(logbook->flights_depiata);
     gtk_widget_hide(logbook->flights_arriata);
     gtk_widget_show(logbook->flights_depicao);
@@ -576,20 +578,26 @@ void on_flights_icao_toggle_toggled(GtkToggleButton *button, Logbook *logbook)
     gtk_widget_show(logbook->flights_depiata);
     gtk_widget_show(logbook->flights_arriata);
   }
-  gtk_label_set_text(GTK_LABEL(logbook->flights_icao_toggle_lbl),
-		     gtk_toggle_button_get_active(button) ? "ICAO" : "IATA");
+/*   gtk_label_set_text(GTK_LABEL(logbook->flights_icao_toggle_lbl), */
+/* 		     any_toggle_button_get_active(GTK_WIDET(button)) ? "ICAO" : "IATA"); */
+  gtk_tool_button_set_label(GTK_TOOL_BUTTON(logbook->flights_icao_toggle),
+			    any_toggle_button_get_active(button) ? "ICAO" : "IATA");
+
 }
 
 void on_flights_fleetno_toggle_toggled(GtkToggleButton *button, Logbook *logbook)
 {
-  if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->flights_fleetno_toggle))) {
+  if (any_toggle_button_get_active(logbook->flights_fleetno_toggle)) {
     gtk_widget_hide(logbook->flights_tail);
     gtk_widget_show(logbook->flights_fleetno);
-    gtk_label_set_text(GTK_LABEL(logbook->flights_fleetno_toggle_lbl), "FleetNo");
+/*     gtk_label_set_text(GTK_LABEL(logbook->flights_fleetno_toggle_lbl), "FleetNo"); */
+    gtk_tool_button_set_label(GTK_TOOL_BUTTON(logbook->flights_fleetno_toggle), "Fleet");
   } else {
     gtk_widget_hide(logbook->flights_fleetno);
     gtk_widget_show(logbook->flights_tail);
-    gtk_label_set_text(GTK_LABEL(logbook->flights_fleetno_toggle_lbl), "Tail");
+/*     gtk_label_set_text(GTK_LABEL(logbook->flights_fleetno_toggle_lbl), "Tail"); */
+    gtk_tool_button_set_label(GTK_TOOL_BUTTON(logbook->flights_fleetno_toggle), "Tail");
+
   }
 }
 
