@@ -20,6 +20,94 @@
 #include "sqlpilot.h"
 #include "flights.h"
 
+static void use_widget(GtkWidget **place, GtkWidget *to_use)
+{
+  if (GTK_IS_ENTRY(*place)) {
+    entry_copy_text(*place, to_use);
+  } else if (GTK_IS_TOGGLE_BUTTON(*place)) {
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(to_use), gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(*place)));
+  }
+  *place = to_use;
+}
+
+void on_flights_edit_ga_toggled(GtkWidget *ga_button, Logbook *logbook)
+{
+  if (!ANY_TOGGLE_GET_ACTIVE(ga_button)) return;
+
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+  
+  use_widget(&logbook->flights_tail, logbook->flights_tail_ga);
+  use_widget(&logbook->flights_fleetno, logbook->flights_fleetno_ga);
+  use_widget(&logbook->flights_dur, logbook->flights_dur_ga);
+  use_widget(&logbook->flights_tail, logbook->flights_tail_ga);
+  use_widget(&logbook->flights_fleetno, logbook->flights_fleetno_ga);
+  use_widget(&logbook->flights_date, logbook->flights_date_ga);
+  use_widget(&logbook->flights_leg, logbook->flights_leg_ga);
+  use_widget(&logbook->flights_role, logbook->flights_role_ga);
+  use_widget(&logbook->flights_dur, logbook->flights_dur_ga);
+  use_widget(&logbook->flights_night, logbook->flights_night_ga);  
+  use_widget(&logbook->flights_inst, logbook->flights_inst_ga);
+  use_widget(&logbook->flights_siminst, logbook->flights_siminst_ga);
+  use_widget(&logbook->flights_hold, logbook->flights_hold_ga);
+  use_widget(&logbook->flights_aprch, logbook->flights_aprch_ga);
+  use_widget(&logbook->flights_xc, logbook->flights_xc_ga);
+  use_widget(&logbook->flights_dland, logbook->flights_dland_ga);
+  use_widget(&logbook->flights_nland, logbook->flights_nland_ga);
+  use_widget(&logbook->flights_crew, logbook->flights_crew_ga);
+  use_widget(&logbook->flights_notes, logbook->flights_notes_ga);
+
+  if (logbook->flights_crew) text_view_copy_text(logbook->flights_crew, logbook->flights_crew_ga);
+  if (logbook->flights_notes) text_view_copy_text(logbook->flights_notes, logbook->flights_notes_ga);
+ 
+  ANY_TOGGLE_CYCLE(logbook->flights_fleetno_toggle);
+  ANY_TOGGLE_CYCLE(logbook->flights_icao_toggle);
+
+/*   gtk_widget_hide(logbook->flights_utc); */
+  gtk_widget_hide(logbook->flights_airline_pane);
+  gtk_widget_show(logbook->flights_ga_pane);
+
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+}
+
+void on_flights_edit_airline_toggled(GtkWidget *airline_button, Logbook *logbook)
+{
+  if (!ANY_TOGGLE_GET_ACTIVE(airline_button)) return;
+
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+
+  use_widget(&logbook->flights_tail, logbook->flights_tail_airline);
+  use_widget(&logbook->flights_fleetno, logbook->flights_fleetno_airline);
+  use_widget(&logbook->flights_dur, logbook->flights_dur_airline);
+  use_widget(&logbook->flights_tail, logbook->flights_tail_airline);
+  use_widget(&logbook->flights_fleetno, logbook->flights_fleetno_airline);
+  use_widget(&logbook->flights_date, logbook->flights_date_airline);
+  use_widget(&logbook->flights_leg, logbook->flights_leg_airline);
+  use_widget(&logbook->flights_role, logbook->flights_role_airline);
+  use_widget(&logbook->flights_dur, logbook->flights_dur_airline);
+  use_widget(&logbook->flights_night, logbook->flights_night_airline);  
+  use_widget(&logbook->flights_inst, logbook->flights_inst_airline);
+  use_widget(&logbook->flights_siminst, logbook->flights_siminst_airline);
+  use_widget(&logbook->flights_hold, logbook->flights_hold_airline);
+  use_widget(&logbook->flights_aprch, logbook->flights_aprch_airline);
+  use_widget(&logbook->flights_xc, logbook->flights_xc_airline);
+  use_widget(&logbook->flights_dland, logbook->flights_dland_airline);
+  use_widget(&logbook->flights_nland, logbook->flights_nland_airline);
+  use_widget(&logbook->flights_crew, logbook->flights_crew_airline);
+  use_widget(&logbook->flights_notes, logbook->flights_notes_airline);
+
+  if (logbook->flights_crew) text_view_copy_text(logbook->flights_crew, logbook->flights_crew_airline);
+  if (logbook->flights_notes) text_view_copy_text(logbook->flights_notes, logbook->flights_notes_airline);
+
+  ANY_TOGGLE_CYCLE(logbook->flights_fleetno_toggle);
+  ANY_TOGGLE_CYCLE(logbook->flights_icao_toggle);
+
+  gtk_widget_hide(logbook->flights_ga_pane);
+  gtk_widget_show(logbook->flights_utc);
+  gtk_widget_show(logbook->flights_airline_pane);
+
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+}
+
 void on_flights_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
   flights_refresh(logbook);
@@ -112,10 +200,10 @@ int on_flights_tail_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbo
   edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   stmt = logbook->flights_aircraft_fleetno_from_tail;
   db_bind_text(stmt, 1, gtk_entry_get_text(GTK_ENTRY(logbook->flights_tail)));
-  if (db_step(stmt) == DB_ROW) {
-    gtk_entry_set_text(GTK_ENTRY(logbook->flights_fleetno), (char*)db_column_text(stmt, 0) );
+ if (db_step(stmt) == DB_ROW) {
+   gtk_entry_set_text(GTK_ENTRY(logbook->flights_fleetno), EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
   } else {
-    gtk_entry_set_text(GTK_ENTRY(logbook->flights_fleetno), "");
+   gtk_entry_set_text(GTK_ENTRY(logbook->flights_fleetno), "");
   }
   db_reset(stmt);
   db_clear_bindings(stmt);
@@ -132,7 +220,7 @@ int on_flights_fleetno_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
   stmt = logbook->flights_aircraft_tail_from_fleetno;
   db_bind_text(stmt, 1, gtk_entry_get_text(GTK_ENTRY(logbook->flights_fleetno)));
   if (db_step(stmt) == DB_ROW) {
-    gtk_entry_set_text(GTK_ENTRY(logbook->flights_tail), (char*)db_column_text(stmt, 0) );
+    gtk_entry_set_text(GTK_ENTRY(logbook->flights_tail), EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
   } else {
     gtk_entry_set_text(GTK_ENTRY(logbook->flights_tail), "");
   }
@@ -155,7 +243,7 @@ int on_flights_depicao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 {
   flights_handle_icao_update(logbook, entry, GTK_ENTRY(logbook->flights_depiata));
   
-  if (!any_toggle_button_get_active(logbook->flights_utc)) {
+  if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sout),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -181,7 +269,7 @@ int on_flights_depiata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 {
   flights_handle_iata_update(logbook, entry, GTK_ENTRY(logbook->flights_depicao));
 
-  if (!any_toggle_button_get_active(logbook->flights_utc)) {
+  if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sout),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -208,7 +296,7 @@ int on_flights_arricao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 
   flights_handle_icao_update(logbook, entry, GTK_ENTRY(logbook->flights_arriata));
 
-  if (!any_toggle_button_get_active(logbook->flights_utc)) {
+  if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sin),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -235,7 +323,7 @@ int on_flights_arriata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 
   flights_handle_iata_update(logbook, entry, GTK_ENTRY(logbook->flights_arricao));
   
-  if (!any_toggle_button_get_active(logbook->flights_utc)) {
+  if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sin),
 			   GTK_ENTRY(logbook->flights_sout),
@@ -268,7 +356,7 @@ int on_flights_sout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbo
 
   flights_lookup_dep_tz(logbook, local_tz);
 
-  if (any_toggle_button_get_active(logbook->flights_utc)) {
+  if (ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -307,7 +395,7 @@ int on_flights_sin_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logboo
 
   flights_lookup_arr_tz(logbook, local_tz);
 
-  if (any_toggle_button_get_active(logbook->flights_utc)) {
+  if (ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -371,7 +459,7 @@ int on_flights_aout_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbo
 
   flights_lookup_dep_tz(logbook, local_tz);
 
-  if (any_toggle_button_get_active(logbook->flights_utc)) {
+  if (ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -410,7 +498,7 @@ int on_flights_ain_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logboo
 
   flights_lookup_arr_tz(logbook, local_tz);
 
-  if (any_toggle_button_get_active(logbook->flights_utc)) {
+  if (ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     to_tz = "UTC";
   } else {
     to_tz = local_tz;
@@ -526,7 +614,7 @@ void on_flights_utc_toggled(GtkWidget *button, Logbook *logb)
   flights_lookup_dep_tz(logb, deptz);
   flights_lookup_arr_tz(logb, arrtz);
 
-  if (any_toggle_button_get_active(button)) {
+  if (ANY_TOGGLE_GET_ACTIVE(button)) {
     /* to UTC */
     deptz1 = deptz;
     arrtz1 = arrtz;
@@ -559,15 +647,15 @@ void on_flights_utc_toggled(GtkWidget *button, Logbook *logb)
     gtk_entry_set_text(GTK_ENTRY(logb->flights_sin), strtime);
   }
 /*   gtk_label_set_text(GTK_LABEL(logb->flights_utc_lbl), */
-  /* 		     any_toggle_button_get_active(button) ? "UTC" : "Local"); */
+  /* 		     ANY_TOGGLE_GET_ACTIVE(button) ? "UTC" : "Local"); */
   gtk_tool_button_set_label(GTK_TOOL_BUTTON(logb->flights_utc),
-			    any_toggle_button_get_active(button) ? "UTC" : "Local");
+			    ANY_TOGGLE_GET_ACTIVE(button) ? "UTC" : "Local");
   edctrl_ignore_modifications(logb->flights_edctrl, FALSE);
 }
 
 void on_flights_icao_toggle_toggled(GtkWidget *button, Logbook *logbook)
 {
-  if (any_toggle_button_get_active(logbook->flights_icao_toggle)) {
+  if (ANY_TOGGLE_GET_ACTIVE(logbook->flights_icao_toggle)) {
     gtk_widget_hide(logbook->flights_depiata);
     gtk_widget_hide(logbook->flights_arriata);
     gtk_widget_show(logbook->flights_depicao);
@@ -579,15 +667,15 @@ void on_flights_icao_toggle_toggled(GtkWidget *button, Logbook *logbook)
     gtk_widget_show(logbook->flights_arriata);
   }
 /*   gtk_label_set_text(GTK_LABEL(logbook->flights_icao_toggle_lbl), */
-/* 		     any_toggle_button_get_active(GTK_WIDET(button)) ? "ICAO" : "IATA"); */
+/* 		     ANY_TOGGLE_GET_ACTIVE(GTK_WIDET(button)) ? "ICAO" : "IATA"); */
   gtk_tool_button_set_label(GTK_TOOL_BUTTON(logbook->flights_icao_toggle),
-			    any_toggle_button_get_active(button) ? "ICAO" : "IATA");
+			    ANY_TOGGLE_GET_ACTIVE(button) ? "ICAO" : "IATA");
 
 }
 
 void on_flights_fleetno_toggle_toggled(GtkToggleButton *button, Logbook *logbook)
 {
-  if (any_toggle_button_get_active(logbook->flights_fleetno_toggle)) {
+  if (ANY_TOGGLE_GET_ACTIVE(logbook->flights_fleetno_toggle)) {
     gtk_widget_hide(logbook->flights_tail);
     gtk_widget_show(logbook->flights_fleetno);
 /*     gtk_label_set_text(GTK_LABEL(logbook->flights_fleetno_toggle_lbl), "FleetNo"); */

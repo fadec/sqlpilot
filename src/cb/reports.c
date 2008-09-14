@@ -23,7 +23,7 @@
 void on_reports_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
   reports_refresh(logbook);
-  any_toggle_button_set_active(logbook->reports_view_btn, TRUE);
+  ANY_TOGGLE_SET_ACTIVE(logbook->reports_view_btn, TRUE);
 }
 
 void on_reports_view_btn_toggled(GtkWidget *button, Logbook *logbook)

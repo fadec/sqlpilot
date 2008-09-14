@@ -89,8 +89,15 @@ gboolean spawn_script(const gchar *wdir,
 void filename_combo_box_build_model(GtkComboBox *cbox);
 void filename_combo_box_merge_dir(GtkComboBox *cbox, const char *dir);
 gchar *filename_combo_box_get_current_full_filename(GtkComboBox *cbox);
-gboolean any_toggle_button_get_active(GtkWidget *tb);
-void any_toggle_button_set_active(GtkWidget *tb, gboolean b);
+gboolean any_toggle_get_active(GObject *tb);
+void any_toggle_set_active(GObject *tb, gboolean b);
+void any_toggle_cycle(GObject *t);
 
+#define ANY_TOGGLE_GET_ACTIVE(x) any_toggle_get_active(G_OBJECT(x))
+#define ANY_TOGGLE_SET_ACTIVE(x, y) any_toggle_set_active(G_OBJECT(x), y)
+#define ANY_TOGGLE_CYCLE(x) any_toggle_cycle(G_OBJECT(x))
+
+#define entry_copy_text(from, to) gtk_entry_set_text(GTK_ENTRY(to), gtk_entry_get_text(GTK_ENTRY(from)))
+#define text_view_copy_text(from, to) text_view_set_text(GTK_TEXT_VIEW(to), text_view_get_text(GTK_TEXT_VIEW(from)))
 
 #endif

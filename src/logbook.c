@@ -117,14 +117,20 @@ Logbook *logbook_new(const char *filename)
   logbook->reports_insert          = db_prep(logbook->db, "INSERT INTO Reports (Title, SQL) VALUES (?, ?);");
   
   pull_widget(window);
+  pull_widget(flights_airline_pane);
+  pull_widget(flights_ga_pane);
+  pull_action(flights_edit_ga);
+  pull_action(flights_edit_airline);
   pull_widget(flights_where);
   pull_widget(flights_refresh);
   pull_widget(flights_query_progress);
   pull_widget(flights_results_summary);
   pull_widget(flights_sw);
   pull_widget(flights_aircraft); /* Remove this */
-  pull_widget(flights_tail);
-  pull_widget(flights_fleetno);
+  pull_widget(flights_tail_ga);
+  pull_widget(flights_tail_airline);
+  pull_widget(flights_fleetno_ga);
+  pull_widget(flights_fleetno_airline);
   pull_widget(flights_aircraft_utilized);
   pull_widget(flights_utc);
   pull_widget(flights_utc_lbl);
@@ -132,9 +138,12 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_icao_toggle_lbl);
   pull_widget(flights_fleetno_toggle);
   pull_widget(flights_fleetno_toggle_lbl);
-  pull_widget(flights_date);
-  pull_widget(flights_leg);
-  pull_widget(flights_role);
+  pull_widget(flights_date_airline);
+  pull_widget(flights_date_ga);
+  pull_widget(flights_leg_ga);
+  pull_widget(flights_leg_airline);
+  pull_widget(flights_role_ga);
+  pull_widget(flights_role_airline);
   pull_widget(flights_role_utilized);
   pull_widget(flights_depiata);
   pull_widget(flights_depicao);
@@ -144,17 +153,30 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_arr_utilized);
   pull_widget(flights_aout);
   pull_widget(flights_ain);
-  pull_widget(flights_dur);
-  pull_widget(flights_night);
-  pull_widget(flights_inst);
-  pull_widget(flights_siminst);
-  pull_widget(flights_hold);
-  pull_widget(flights_aprch);
-  pull_widget(flights_xc);
-  pull_widget(flights_dland);
-  pull_widget(flights_nland);
+  pull_widget(flights_dur_ga);
+  pull_widget(flights_dur_airline);
+  pull_widget(flights_night_ga);
+  pull_widget(flights_night_airline);
+  pull_widget(flights_inst_ga);
+  pull_widget(flights_inst_airline);
+  pull_widget(flights_siminst_ga);
+  pull_widget(flights_siminst_airline);
+  pull_widget(flights_hold_ga);
+  pull_widget(flights_hold_airline);
+  pull_widget(flights_aprch_ga);
+  pull_widget(flights_aprch_airline);
+  pull_widget(flights_xc_ga);
+  pull_widget(flights_xc_airline);
+  pull_widget(flights_dland_ga);
+  pull_widget(flights_dland_airline);
+  pull_widget(flights_nland_ga);
+  pull_widget(flights_nland_airline);
   pull_widget(flights_crew);
+  pull_widget(flights_crew_ga);
+  pull_widget(flights_crew_airline);
   pull_widget(flights_notes);
+  pull_widget(flights_notes_ga);
+  pull_widget(flights_notes_airline);
   pull_widget(flights_fltno);
   pull_widget(flights_sout);
   pull_widget(flights_sin);
@@ -372,9 +394,13 @@ Logbook *logbook_new(const char *filename)
 		    logbook);
 
   /* Setup text view buffer callbacks */
-  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_crew))), "changed",
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_crew_ga))), "changed",
 		   G_CALLBACK(on_flights_crew_changed), logbook);
-  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_notes))), "changed",
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_notes_ga))), "changed",
+		   G_CALLBACK(on_flights_notes_changed), logbook);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_crew_airline))), "changed",
+		   G_CALLBACK(on_flights_crew_changed), logbook);
+  g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->flights_notes_airline))), "changed",
 		   G_CALLBACK(on_flights_notes_changed), logbook);
   g_signal_connect(G_OBJECT(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logbook->aircraft_notes))), "changed",
 		   G_CALLBACK(on_aircraft_notes_changed), logbook);
@@ -568,6 +594,20 @@ void registry_set_int(Logbook *logbook, const char *path, const char *key, int v
     stmt = logbook->registry_insert;
   }
   db_bind_int(stmt, 1, value);
+  db_bind_text(stmt, 2, path);
+  db_bind_text(stmt, 3, key);
+  db_stp_res_clr(stmt);
+}
+
+void registry_set_text(Logbook *logbook, const char *path, const char *key, const char *text)
+{
+  DBStatement *stmt;
+  if (registry_key_exists(logbook, path, key)) {
+    stmt = logbook->registry_update;
+  } else {
+    stmt = logbook->registry_insert;
+  }
+  db_bind_text(stmt, 1, text);
   db_bind_text(stmt, 2, path);
   db_bind_text(stmt, 3, key);
   db_stp_res_clr(stmt);

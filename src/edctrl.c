@@ -44,7 +44,7 @@ void edctrl_set_empty(Edctrl *ec)
   gtk_widget_set_sensitive(ec->new_btn, 1);
   gtk_widget_set_sensitive(ec->save_btn, 0);
   gtk_widget_set_sensitive(ec->armdel_btn, 0);
-  any_toggle_button_set_active(ec->armdel_btn, 0);
+  ANY_TOGGLE_SET_ACTIVE(ec->armdel_btn, 0);
   gtk_widget_set_sensitive(ec->del_btn, 0);
   edctrl_show_record(ec);
 }  
@@ -56,7 +56,7 @@ void edctrl_set_selected(Edctrl *ec)
   gtk_widget_set_sensitive(ec->new_btn, 1);
   gtk_widget_set_sensitive(ec->save_btn, 0);
   gtk_widget_set_sensitive(ec->armdel_btn, ec->can_delete(ec->selection));
-  any_toggle_button_set_active(ec->armdel_btn, 0);
+  ANY_TOGGLE_SET_ACTIVE(ec->armdel_btn, 0);
   gtk_widget_set_sensitive(ec->del_btn, 0);
   edctrl_show_record(ec);
 }
@@ -105,7 +105,7 @@ void edctrl_selection_changed(Edctrl *ec)
 
 void edctrl_armdel_btn_toggled(Edctrl *ec)
 {
-  if (any_toggle_button_get_active(ec->armdel_btn)) {
+  if (ANY_TOGGLE_GET_ACTIVE(ec->armdel_btn)) {
     edctrl_set_deletearmed(ec);
   } else {
     edctrl_set_selected(ec);

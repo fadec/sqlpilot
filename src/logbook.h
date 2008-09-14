@@ -27,7 +27,8 @@
 #include "scripter.h"
 
 #ifdef USING_GTK_BUILDER
-#define pull_widget(x) logbook->x = GTK_WIDGET(gtk_builder_get_object(builder, (#x)));
+#define pull_widget(x) logbook->x = GTK_WIDGET(gtk_builder_get_object(builder, (#x)))
+#define pull_action(x) logbook->x = GTK_ACTION(gtk_builder_get_object(builder, (#x)))
 #else // fall back on libglade
 #include <glade/glade-xml.h>
 #define pull_widget(x) logbook->x = GTK_WIDGET(glade_xml_get_widget(gxml, (#x)));
@@ -57,6 +58,10 @@ struct Logbook {
   DBStatement *flights_tz_of_airport_icao;
   DBStatement *flights_icao_from_iata;
   DBStatement *flights_iata_from_icao;
+  GtkWidget *flights_airline_pane;
+  GtkWidget *flights_ga_pane;
+  GtkAction *flights_edit_ga;
+  GtkAction *flights_edit_airline;
   GtkWidget *flights_where;
   GtkWidget *flights_refresh;
   GtkWidget *flights_query_progress;
@@ -73,11 +78,21 @@ struct Logbook {
   GtkWidget *flights_fleetno_toggle_lbl;
   GtkWidget *flights_aircraft; 	/* remove this */
   GtkWidget *flights_tail;
+  GtkWidget *flights_tail_ga;
+  GtkWidget *flights_tail_airline;
   GtkWidget *flights_fleetno;
+  GtkWidget *flights_fleetno_ga;
+  GtkWidget *flights_fleetno_airline;
   GtkWidget *flights_aircraft_utilized;
   GtkWidget *flights_date;
+  GtkWidget *flights_date_ga;
+  GtkWidget *flights_date_airline;
   GtkWidget *flights_leg;
+  GtkWidget *flights_leg_ga;
+  GtkWidget *flights_leg_airline;
   GtkWidget *flights_role;
+  GtkWidget *flights_role_ga;
+  GtkWidget *flights_role_airline;
   GtkWidget *flights_role_utilized;
   GtkWidget *flights_depicao;
   GtkWidget *flights_depiata;
@@ -88,16 +103,38 @@ struct Logbook {
   GtkWidget *flights_aout;
   GtkWidget *flights_ain;
   GtkWidget *flights_dur;
+  GtkWidget *flights_dur_ga;
+  GtkWidget *flights_dur_airline;
   GtkWidget *flights_night;
+  GtkWidget *flights_night_ga;
+  GtkWidget *flights_night_airline;
   GtkWidget *flights_inst;
+  GtkWidget *flights_inst_ga;
+  GtkWidget *flights_inst_airline;
   GtkWidget *flights_siminst;
+  GtkWidget *flights_siminst_ga;
+  GtkWidget *flights_siminst_airline;
   GtkWidget *flights_hold;
+  GtkWidget *flights_hold_ga;
+  GtkWidget *flights_hold_airline;
   GtkWidget *flights_aprch;
+  GtkWidget *flights_aprch_ga;
+  GtkWidget *flights_aprch_airline;
   GtkWidget *flights_xc;
+  GtkWidget *flights_xc_ga;
+  GtkWidget *flights_xc_airline;
   GtkWidget *flights_dland;
+  GtkWidget *flights_dland_ga;
+  GtkWidget *flights_dland_airline;
   GtkWidget *flights_nland;
+  GtkWidget *flights_nland_ga;
+  GtkWidget *flights_nland_airline;
   GtkWidget *flights_crew;
+  GtkWidget *flights_crew_ga;
+  GtkWidget *flights_crew_airline;
   GtkWidget *flights_notes;
+  GtkWidget *flights_notes_ga;
+  GtkWidget *flights_notes_airline;
   GtkWidget *flights_fltno;
   GtkWidget *flights_sout;
   GtkWidget *flights_sin;
@@ -357,4 +394,5 @@ char *registry_get_text(Logbook *logbook, const char *path, const char *key);
 int registry_get_int(Logbook *logbook, const char *path, const char *key);
 int registry_key_exists(Logbook *logbook, const char *path, const char *key);
 void registry_set_int(Logbook *logbook, const char *path, const char *key, int val);
+void registry_set_text(Logbook *logbook, const char *path, const char *key, const char *text);
 #endif

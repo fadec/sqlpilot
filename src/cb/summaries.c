@@ -24,7 +24,7 @@
 void on_summaries_refresh_clicked(GtkButton *button, Logbook *logbook)
 {
   summaries_refresh(logbook);
-  any_toggle_button_set_active(logbook->summaries_view_btn, TRUE);
+  ANY_TOGGLE_SET_ACTIVE(logbook->summaries_view_btn, TRUE);
 }
 
 void on_summaries_view_btn_toggled(GtkWidget *button, Logbook *logbook)

@@ -756,25 +756,22 @@ gchar *filename_combo_box_get_current_full_filename(GtkComboBox *cbox)
   return filename;
 }
 
-gboolean any_toggle_button_get_active(GtkWidget *tb)
+gboolean any_toggle_get_active(GObject *t)
 {
-  if (GTK_IS_TOGGLE_BUTTON(tb)) {
-    return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(tb));
-  } else if (GTK_IS_TOGGLE_TOOL_BUTTON(GTK_TOGGLE_TOOL_BUTTON(tb))) {
-    return gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(tb));
-  } else {
-    fprintf(stderr, "get: What mannor of toggle button is this?\n");
-    return FALSE;
-  }
+  gboolean b;
+  g_object_get(t, "active", &b, NULL);
+  return b;
 }
 
-void any_toggle_button_set_active(GtkWidget *tb, gboolean b)
+void any_toggle_set_active(GObject *t, gboolean b)
 {
-  if (GTK_IS_TOGGLE_BUTTON(tb)) {
-    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(tb), b);
-  } else if (GTK_IS_TOGGLE_TOOL_BUTTON(GTK_TOGGLE_TOOL_BUTTON(tb))) {
-    gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(tb), b);
-  } else {
-    fprintf(stderr, "set: What mannor of toggle button is this?\n");
-  }
+  g_object_set(t, "active", b, NULL);
+}
+
+void any_toggle_cycle(GObject *t)
+{
+  int b;
+  b = any_toggle_get_active(t);
+  any_toggle_set_active(t, !b);
+  any_toggle_set_active(t, b);
 }
