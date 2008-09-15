@@ -43,7 +43,6 @@ enum {
   " from aircraft"							\
   " left join models on aircraft.model_id = models.id"			\
   " left join flights on flights.aircraft_id = aircraft.id"		\
-  "   and flights.dur > 0"
   
 #define AIRCRAFT_GROUP_BY \
   " group by aircraft.id order by count(flights.id) desc"

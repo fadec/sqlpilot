@@ -239,6 +239,19 @@ enum {
 #define FLIGHTS_DELETE				\
   "delete from flights where id = ?;"
 
+enum {
+  FLIGHTS_ROUTING_WRITE_FLIGHT_ID = 1,
+  FLIGHTS_ROUTING_WRITE_AIRPORT_ID,
+  FLIGHTS_ROUTING_WRITE_SEQ
+};
+
+#define FLIGHTS_ROUTING_INSERT \
+  "insert into routing (flight_id, airport_id, seq) values (?, ?, ?);"
+
+#define FLIGHTS_ROUTING_DELETE \
+  "delete from routing where flight_id = ?;"
+
+
 void flights_lookup_dep_tz(Logbook *, char *);
 void flights_lookup_arr_tz(Logbook *, char *);
 void flights_handle_iata_update(Logbook *, GtkEntry *iata, GtkEntry *icao);

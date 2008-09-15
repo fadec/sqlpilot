@@ -67,6 +67,60 @@ StoreColumnKind flights_column_kinds[] = {
   STORE_COLUMN_KIND_STR_NUM
 };
 
+static void flights_delete_routing(Logbook *logbook, DBint64 flight_id)
+{
+  DBStatement *stmt = logbook->flights_routing_delete;
+  db_bind_int64(stmt, 1, flight_id);
+  db_stp_res_clr(stmt);
+}
+
+static void flights_insert_routing(Logbook *logbook, DBint64 flight_id)
+{
+  DBStatement *stmt = logbook->flights_routing_insert;
+  char *airports[100];
+  char *text,*ptr;
+  int i=0,len=0;
+
+  text = g_strdup(gtk_entry_get_text(GTK_ENTRY(logbook->flights_route)));
+
+  for (ptr=text;*ptr;ptr++) {
+    if (isalnum(*ptr)) {
+      if (!len) {
+	airports[i] = ptr;
+      }
+      len++;
+    } else {
+      if (len == 3 || len == 4) {
+	i++;
+      } else {
+	airports[i] = NULL;
+      }
+      len = 0;
+      *ptr = '\0';
+    }
+  }
+  if (len != 3 && len != 4) { airports[i] = NULL; }
+  airports[i+1] = NULL;
+
+  db_bind_int64(stmt, FLIGHTS_ROUTING_WRITE_FLIGHT_ID, flight_id);
+  for (i=0;airports[i];i++) {
+    if (i && (airports[i+1] != NULL)) { /* Omit the first and last */
+      switch (strlen(airports[i])) {
+      case 3: bind_id_of(stmt, FLIGHTS_ROUTING_WRITE_AIRPORT_ID, "airports", "iata", airports[i]);
+	break;
+      case 4: bind_id_of(stmt, FLIGHTS_ROUTING_WRITE_AIRPORT_ID, "airports", "icao", airports[i]);
+	break;
+      }
+      db_bind_int(stmt, FLIGHTS_ROUTING_WRITE_SEQ, i+1);
+      db_step(stmt);
+      db_reset(stmt);
+    }
+  }
+  db_clear_bindings(stmt);
+
+  g_free(text);
+}
+
 void flights_lookup_dep_tz(Logbook *logb, char *tz)
 {
   const char *txt;
@@ -218,6 +272,7 @@ int flights_can_delete(GtkTreeSelection *selection)
 /* Writes stuff in entry portion of gui to db - if id is NULL it inserts, else updates */
 DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
 {
+  DBint64 flight_id;
   const gchar
     *tail,
     *fleetno,
@@ -364,11 +419,15 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   g_free(crew);
   g_free(notes);
 
-  if (id) {
-    return 0;
-  } else {
-    return db_last_insert_rowid(logbook->db);
-  }
+
+  flight_id = id ? atol(id) : db_last_insert_rowid(logbook->db);
+
+  flights_delete_routing(logbook, flight_id);
+  flights_insert_routing(logbook, flight_id);
+
+  /* return 0 for updates, id for inserts */
+  return id ? 0 : flight_id;
+
 }
 
 void entry_format_time_of_day(GtkEntry *entry, const char *local_tz, const char *to_tz, const char *date)

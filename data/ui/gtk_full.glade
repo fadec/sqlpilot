@@ -1087,6 +1087,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                            <property name="pixels_above_lines">10</property>
                                           </widget>
                                         </child>
                                       </widget>
@@ -1314,6 +1315,8 @@
                                           <widget class="GtkEntry" id="flights_route">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <signal name="changed" handler="on_flights_route_changed"/>
+                                            <signal name="focus_out_event" handler="on_flights_route_focus_out_event"/>
                                           </widget>
                                           <packing>
                                             <property name="position">1</property>

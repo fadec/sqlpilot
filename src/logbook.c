@@ -75,6 +75,8 @@ Logbook *logbook_new(const char *filename)
   logbook->flights_insert       = db_prep(logbook->db, FLIGHTS_INSERT);
   logbook->flights_update       = db_prep(logbook->db, FLIGHTS_UPDATE);
   logbook->flights_delete       = db_prep(logbook->db, FLIGHTS_DELETE);
+  logbook->flights_routing_insert = db_prep(logbook->db, FLIGHTS_ROUTING_INSERT);
+  logbook->flights_routing_delete = db_prep(logbook->db, FLIGHTS_ROUTING_DELETE);
   logbook->flights_aircraft_fleetno_from_tail = db_prep(logbook->db, "SELECT fleetno FROM aircraft WHERE tail = ? LIMIT 1;");
   logbook->flights_aircraft_tail_from_fleetno = db_prep(logbook->db, "SELECT tail FROM aircraft WHERE fleetno = ? LIMIT 1;");
   logbook->flights_tz_of_airport_iata  = db_prep(logbook->db, AIRPORTS_SELECT_TZONE_BY_IATA);
@@ -126,7 +128,6 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_query_progress);
   pull_widget(flights_results_summary);
   pull_widget(flights_sw);
-  pull_widget(flights_aircraft); /* Remove this */
   pull_widget(flights_tail_ga);
   pull_widget(flights_tail_airline);
   pull_widget(flights_fleetno_ga);
@@ -151,6 +152,7 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_arricao);
   pull_widget(flights_arriata);
   pull_widget(flights_arr_utilized);
+  pull_widget(flights_route);
   pull_widget(flights_aout);
   pull_widget(flights_ain);
   pull_widget(flights_dur_ga);

@@ -743,3 +743,13 @@ void on_flights_save_btn_clicked(GtkButton *button, Logbook *logbook)
 {
   edctrl_save_btn_clicked(logbook->flights_edctrl);
 }
+
+void on_flights_route_changed(GtkEntry *entry, Logbook *logbook)
+{
+  edctrl_set_modified(logbook->flights_edctrl);
+}
+
+gboolean on_flights_route_focus_out_event(GtkEntry *entry, GdkEventFocus *f, Logbook *logbook)
+{
+  return FALSE;
+}

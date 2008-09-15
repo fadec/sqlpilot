@@ -52,6 +52,8 @@ struct Logbook {
   DBStatement *flights_insert;
   DBStatement *flights_update;
   DBStatement *flights_delete;
+  DBStatement *flights_routing_insert;
+  DBStatement *flights_routing_delete;
   DBStatement *flights_aircraft_fleetno_from_tail;
   DBStatement *flights_aircraft_tail_from_fleetno;
   DBStatement *flights_tz_of_airport_iata;
@@ -76,7 +78,6 @@ struct Logbook {
   GtkWidget *flights_icao_toggle_lbl;
   GtkWidget *flights_fleetno_toggle;
   GtkWidget *flights_fleetno_toggle_lbl;
-  GtkWidget *flights_aircraft; 	/* remove this */
   GtkWidget *flights_tail;
   GtkWidget *flights_tail_ga;
   GtkWidget *flights_tail_airline;
@@ -100,6 +101,7 @@ struct Logbook {
   GtkWidget *flights_arricao;
   GtkWidget *flights_arriata;
   GtkWidget *flights_arr_utilized;
+  GtkWidget *flights_route;
   GtkWidget *flights_aout;
   GtkWidget *flights_ain;
   GtkWidget *flights_dur;
