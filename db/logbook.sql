@@ -245,6 +245,30 @@ create index flights_arr_id on flights (arr_id);
 create index flights_aircraft_id on flights(aircraft_id);
 create index flights_date on flights(date);
 create index aircraft_model_id on aircraft(model_id);
+create index routing_flight_id on routing(flight_id);
+create index routing_airport_id on routing(airport_id);
+
+
+CREATE VIEW Routes AS
+SELECT f.id as flight_id
+,dep.id AS dep_id
+,arr.id as arr_id
+,dep.iata AS DepIATA
+,dep.icao AS DepICAO
+,arr.iata AS ArrIATA
+,arr.icao AS ArrICAO
+,dep.lat AS DepLat
+,dep.lon AS DepLon
+,arr.lat AS ArrLat
+,arr.lon AS ArrLon
+,dep.iata || ' ' || group_concat(ts.iata, ' ') || ' ' || arr.iata AS RtIATA
+,dep.icao || ' ' || group_concat(ts.icao, ' ') || ' ' || arr.icao AS RtICAO
+FROM flights f
+LEFT JOIN airports dep ON f.dep_id = dep.id
+LEFT JOIN airports arr ON f.arr_id = arr.id
+LEFT JOIN Routing r ON r.flight_id = f.id
+LEFT JOIN airports ts ON r.airport_id = ts.id
+GROUP BY f.id;
 
 CREATE VIEW Departures AS
 SELECT airports.id as _id
