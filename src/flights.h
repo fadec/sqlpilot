@@ -41,6 +41,7 @@ enum {
   FLIGHTS_COL_ARRICAO,
   FLIGHTS_COL_RTIATA,
   FLIGHTS_COL_RTICAO,
+  FLIGHTS_COL_STOPS,
   FLIGHTS_COL_AOUT,
   FLIGHTS_COL_AOUTUTC,
   FLIGHTS_COL_AIN,
@@ -92,6 +93,7 @@ enum {
   ", arr.icao as ArrICAO"						\
   ", dep.iata || ' ' || group_concat(rta.iata, ' ') || ' ' || arr.iata AS RtIATA" \
   ", dep.icao || ' ' || group_concat(rta.icao, ' ') || ' ' || arr.icao AS RtICAO" \
+  ", count(rta.id) AS Stops"						\
   ", flights.aout as AOut"						\
   ", flights.AOutUTC as AOutUTC"					\
   ", flights.ain as AIn"						\

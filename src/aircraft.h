@@ -33,13 +33,13 @@ enum {
 };
 
 #define AIRCRAFT_SELECT							\
-  "select aircraft.id as '_\\id'"					\
+  "select aircraft.id as id"						\
   ", aircraft.tail as Tail"						\
   ", models.ident as Model"						\
   ", aircraft.fleetno as FleetNo"					\
-  ", aircraft.notes as '_\\Notes'"					\
-  ", count(flights.id) as 'n\\Flights'"					\
-  ", m_to_hhmm(sum(flights.dur)) as 'n\\Time'"				\
+  ", aircraft.notes as Notes"						\
+  ", count(flights.id) as Flights"					\
+  ", m_to_hhmm(sum(flights.dur)) as Time"				\
   " from aircraft"							\
   " left join models on aircraft.model_id = models.id"			\
   " left join flights on flights.aircraft_id = aircraft.id"		\

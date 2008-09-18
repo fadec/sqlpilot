@@ -40,18 +40,18 @@ enum {
 };
 
 #define AIRPORTS_SELECT					\
-  "select a.id as '_\\id'"				\
+  "select a.id as id"					\
   ", a.iata as IATA"					\
   ", a.icao as ICAO"					\
   ", a.name as Name"					\
   ", a.tzone as TZone"					\
-  ", a.lat as 'f\\Lat'"					\
-  ", a.lon as 'f\\Lon'"					\
-  ", a.elev as 'f\\Elev'"				\
+  ", a.lat as Lat"					\
+  ", a.lon as Lon"					\
+  ", a.elev as Elev"					\
   ", a.city as City"					\
   ", a.province as Province"				\
   ", a.country as Country"				\
-  ", a.notes as '_\\Notes'"				\
+  ", a.notes as Notes"					\
   " from Airports a"					\
 
 #define AIRPORTS_GROUP_BY \

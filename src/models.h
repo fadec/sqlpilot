@@ -61,43 +61,43 @@ enum {
 };
 
 #define MODELS_SELECT						\
-  "select models.id as '_\\id'"					\
+  "select models.id as id"					\
   ", models.ident as Ident"					\
   ", models.make as Make"					\
   ", models.type as Type"					\
-  ", models.airplane as '_\\Airplane'"				\
-  ", models.rotorcraft as '_\\Rotorcraft'"			\
-  ", models.glider as '_\\Glider'"				\
-  ", models.lta as '_\\LTA'"					\
-  ", models.poweredlift as '_\\Poweredlift'"			\
-  ", models.ppc as '_\\PPC'"					\
-  ", models.weightshift as '_\\Weightshift'"			\
-  ", models.heli as '_\\Heli'"					\
-  ", models.gyro as '_\\Gyro'"					\
-  ", models.airship as '_\\Airship'"				\
-  ", models.balloon as '_\\Balloon'"				\
-  ", models.single as '_\\Single'"				\
-  ", models.multi as '_\\Multi'"					\
-  ", models.land as '_\\Land'"					\
-  ", models.sea as '_\\Sea'"					\
-  ", models.turbine as '_\\Turbine'"				\
-  ", models.jet as '_\\Jet'"					\
-  ", models.highperf as '_\\HighPerf'"				\
-  ", models.retract as '_\\Retract'"				\
-  ", models.complex as '_\\Complex'"				\
-  ", models.pressurized as '_\\Pressurized'"			\
-  ", models.large as '_\\Large'"					\
-  ", models.sport as '_\\Sport'"					\
-  ", models.ultralight as '_\\Ultralight'"			\
-  ", models.footlaunch as '_\\Footlaunch'"			\
-  ", models.sim as '_\\Sim'"					\
-  ", models.ftd as '_\\FTD'"					\
-  ", models.total as '_\\Total'"					\
-  ", count(distinct(aircraft.id)) as 'n\\Aircraft'"		\
-  ", count(flights.id) as 'n\\Flights'"				\
-  ", m_to_hhmm(sum(flights.dur)) as 'n\\Time'"			\
-  " from models"							\
-  " left join aircraft on aircraft.model_id = models.id"		\
+  ", models.airplane as Airplane"				\
+  ", models.rotorcraft as Rotorcraft"				\
+  ", models.glider as Glider"					\
+  ", models.lta as LTA"						\
+  ", models.poweredlift as Poweredlift"				\
+  ", models.ppc as PPC"						\
+  ", models.weightshift as Weightshift"				\
+  ", models.heli as Heli"					\
+  ", models.gyro as Gyro"					\
+  ", models.airship as Airship"					\
+  ", models.balloon as Balloon"					\
+  ", models.single as Single"					\
+  ", models.multi as Multi"					\
+  ", models.land as Land"					\
+  ", models.sea as Sea"						\
+  ", models.turbine as Turbine"					\
+  ", models.jet as Jet"						\
+  ", models.highperf as HighPerf"				\
+  ", models.retract as Retract"					\
+  ", models.complex as Complex"					\
+  ", models.pressurized as Pressurized"				\
+  ", models.large as Large"					\
+  ", models.sport as Sport"					\
+  ", models.ultralight as Ultralight"				\
+  ", models.footlaunch as Footlaunch"				\
+  ", models.sim as Sim"						\
+  ", models.ftd as FTD"						\
+  ", models.total as Total"					\
+  ", count(distinct(aircraft.id)) as Aircraft"			\
+  ", count(flights.id) as Flights"				\
+  ", m_to_hhmm(sum(flights.dur)) as Time"			\
+  " from models"						\
+  " left join aircraft on aircraft.model_id = models.id"	\
   " left join flights on flights.aircraft_id = aircraft.id"	\
   "   and flights.dur > 0"
 

@@ -179,45 +179,6 @@ int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
   return result_code; // or whatever
 }
 
-static ColumnPref *prefs_for_column(GHashTable *prefs, const char *name)
-{
-  static ColumnPref custom = {0};
-  static char meta[32], header[256];
-  static ColumnPref *pref;
-
-  /* columns with \ in the name override prefs - example n\Duration is a numeric sorted column called Duration */
-  /* _ makes hidden column */
-  /* n noisy string numeric sort */
-  /* f parse string as float sort */
-  if (!prefs || strchr(name, '\\')) {
-    meta[0] = header[0] = '\0';
-    sscanf(name, "%31[^\\]\\%255s", meta, header);
-    if (strchr(meta, 'n')) {
-      custom.sort = COLUMN_SORT_NUM;
-    } else if (strchr(meta, 'f')) {
-      custom.sort = COLUMN_SORT_FLOAT;
-    } else {
-      custom.sort = COLUMN_SORT_STR;
-    }
-    custom.visible = !!strchr(meta, '_');
-    custom.name = header;
-  } else {
-    pref = (ColumnPref*)g_hash_table_lookup(prefs, name);
-    if (pref) {
-      custom.name = pref->name;
-      custom.sort = pref->sort;
-      custom.visible = pref->visible;
-    } else {
-      sscanf(name, "%255s", header);
-      custom.name = header;
-      custom.sort = COLUMN_SORT_STR;
-      custom.visible = TRUE;
-    }
-  }
-
-  return &custom;  
-}
-
 
 /********/
 /* View */
@@ -227,27 +188,31 @@ static void store_view_add_columns_from_stmt(GtkTreeView *treeview, DBStatement 
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
   int ncolumns, i;
-  ColumnPref *pref;
+  ColumnPref *pref=NULL;
+  char *name;
 
   ncolumns = db_column_count(stmt);
   for (i = 0; i < ncolumns; i++) { 
-    pref = prefs_for_column(column_prefs, db_column_name(stmt, i));
-    if (pref->visible) {
+    name = (char*)db_column_name(stmt, i);
+    if (column_prefs) { pref = (ColumnPref*)g_hash_table_lookup(column_prefs, name); }
+    if (!pref || pref->visible) {
       renderer = gtk_cell_renderer_text_new();
-      column = gtk_tree_view_column_new_with_attributes(pref->name, renderer, "text", i, NULL);
+      column = gtk_tree_view_column_new_with_attributes(pref ? pref->name : name,  renderer, "text", i, NULL);
       gtk_tree_view_column_set_sort_column_id(column, i);
       gtk_tree_view_column_set_reorderable(column, TRUE);
       gtk_tree_view_column_set_resizable(column, TRUE);
       gtk_tree_view_insert_column(treeview, column, i);
-      switch (pref->sort) {
-      case COLUMN_SORT_STR:
-	break;
-      case COLUMN_SORT_NUM:
-	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_noisy_str_int_column, (gpointer)i, NULL);
-	break;
-      case COLUMN_SORT_FLOAT:
-	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_str_float_column, (gpointer)i, NULL);
-	break;
+      if (pref) {
+	switch (pref->sort) {
+	case COLUMN_SORT_STR:
+	  break;
+	case COLUMN_SORT_NUM:
+	  gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_noisy_str_int_column, (gpointer)i, NULL);
+	  break;
+	case COLUMN_SORT_FLOAT:
+	  gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_str_float_column, (gpointer)i, NULL);
+	  break;
+	}
       }
     }
   }

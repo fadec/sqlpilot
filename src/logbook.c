@@ -33,6 +33,7 @@
 ColumnPref columns[] = {
   { "AIn"		, COLUMN_SORT_NUM	 , TRUE },
   { "AOut"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Aircraft"          , COLUMN_SORT_NUM        , TRUE },
   { "Airplane"		, COLUMN_SORT_NUM	 , TRUE },
   { "Airship"		, COLUMN_SORT_NUM	 , TRUE },
   { "Aprch"		, COLUMN_SORT_STR	 , TRUE },
@@ -96,6 +97,7 @@ ColumnPref columns[] = {
   { "Pressurized"	, COLUMN_SORT_NUM	 , TRUE },
   { "Province"		, COLUMN_SORT_STR	 , TRUE },
   { "Retract"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Route"             , COLUMN_SORT_STR        , TRUE },
   { "Role"		, COLUMN_SORT_STR	 , TRUE },
   { "Rotorcraft"	, COLUMN_SORT_NUM	 , TRUE },
   { "RtIATA"		, COLUMN_SORT_STR	 , TRUE },
