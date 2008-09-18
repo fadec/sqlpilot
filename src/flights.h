@@ -39,6 +39,8 @@ enum {
   FLIGHTS_COL_DEPICAO,
   FLIGHTS_COL_ARRIATA,
   FLIGHTS_COL_ARRICAO,
+  FLIGHTS_COL_RTIATA,
+  FLIGHTS_COL_RTICAO,
   FLIGHTS_COL_AOUT,
   FLIGHTS_COL_AOUTUTC,
   FLIGHTS_COL_AIN,
@@ -73,21 +75,23 @@ enum {
 /* All columns must be selected for use during update queries */
 /* Column names preceded with a _ are get hidden in the treeview */
 #define FLIGHTS_SELECT							\
-  "select flights.id as '_\\id'"					\
-  ", a.id as '_\\aircraft_id'"						\
-  ", r.id as '_\\role_id'"						\
-  ", rt.dep_id as '_\\dep_id'"						\
-  ", rt.arr_id as '_\\arr_id'"						\
+  "select * from (select flights.id as 'flight_id'"			\
+  ", a.id as 'aircraft_id'"						\
+  ", r.id as 'role_id'"							\
+  ", dep.id as 'dep_id'"						\
+  ", arr.id as 'arr_id'"						\
   ", flights.Date as Date"						\
   ", flights.Leg as Leg"						\
   ", a.tail as Tail"							\
   ", a.fleetno as FleetNo"						\
   ", m.ident as Model"							\
   ", r.ident as Role"							\
-  ", rt.DepIATA as DepIATA"						\
-  ", rt.DepICAO as DepICAO"						\
-  ", rt.ArrIATA as ArrIATA"						\
-  ", rt.ArrICAO as ArrICAO"						\
+  ", dep.iata as DepIATA"						\
+  ", dep.icao as DepICAO"						\
+  ", arr.iata as ArrIATA"						\
+  ", arr.icao as ArrICAO"						\
+  ", dep.iata || ' ' || group_concat(rta.iata, ' ') || ' ' || arr.iata AS RtIATA" \
+  ", dep.icao || ' ' || group_concat(rta.icao, ' ') || ' ' || arr.icao AS RtICAO" \
   ", flights.aout as AOut"						\
   ", flights.AOutUTC as AOutUTC"					\
   ", flights.ain as AIn"						\
@@ -100,7 +104,7 @@ enum {
   ", flights.aprch as Aprch"						\
   ", linecount(flights.aprch) as nApr"					\
   ", bool(flights.xc) as XC"						\
-  ", round(dist_nm(rt.DepLat, rt.DepLon, rt.ArrLat, rt.ArrLon)) as Dist" \
+  ", round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as Dist"	\
   ", flights.dland as DLand"						\
   ", flights.nland as NLand"						\
   ", flights.crew as Crew"						\
@@ -120,19 +124,24 @@ enum {
   " left join aircraft a on flights.aircraft_id = a.id"			\
   " left join models m on a.model_id = m.id"				\
   " left join roles r on flights.role_id = r.id"			\
-  " left join routes rt on rt.flight_id = flights.id"			\
+  " left join airports dep on flights.dep_id = dep.id"			\
+  " left join airports arr on flights.arr_id = arr.id"			\
+  " left join routing rt on rt.flight_id = flights.id"			\
+  " left join airports rta on rt.airport_id = rta.id"			\
+  " group by flight_id)"						
+
 
 #define FLIGHTS_ORDER \
   " order by Date, Leg ASC"
 
 #define FLIGHTS_WHERE_ID \
-  " where flights.id = ? LIMIT 1;"
+  " where flight_id = ? LIMIT 1;"
 
 #define FLIGHTS_WHERE_DATE_FLTNO_DEPIATA \
-  " WHERE flights.date == ? AND flights.fltno == ? AND dep.iata == ? LIMIT 1;"
+  " WHERE Date == ? AND FltNo == ? AND DepIATA == ? LIMIT 1;"
 
 #define FLIGHTS_WHERE_DATE_FLTNO_DEPICAO \
-  " WHERE flights.date == ? AND flights.fltno == ? AND dep.iata == ? LIMIT 1;"
+  " WHERE Date == ? AND FltNo == ? AND DepICAO == ? LIMIT 1;"
 
 /* Insert and update bindings */
 enum {

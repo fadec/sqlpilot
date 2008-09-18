@@ -38,9 +38,11 @@
 
 #define REGISTRY_BUF_VALUE 4096
 
+
 struct Logbook {
   DB *db;
   char *db_filename;
+  GHashTable *column_prefs;
   GtkWidget *window;
   DBStatement *ta_begin;
   DBStatement *ta_commit;

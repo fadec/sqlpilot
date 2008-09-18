@@ -33,13 +33,13 @@
 static void m_to_hhmm_func(sqlite3_context *context, int argc, sqlite3_value **argv)
 {
   char z[30];
-  int m, am, hh, mm;
+  int m=0, am, hh, mm;
   //assert(argc == 1);
   switch (sqlite3_value_type(argv[0])) {
   case SQLITE_NULL:
     return;
   case SQLITE_TEXT:
-  case SQLITE_BLOB: m = 0;
+  case SQLITE_BLOB:
     break;
   case SQLITE_FLOAT:
   case SQLITE_INTEGER: m = sqlite3_value_int(argv[0]);
@@ -252,7 +252,8 @@ DBStatement *db_prep(DB *db, const char *sql)
   int err;
   if ((err = sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), &stmt, &sql_tail)) != SQLITE_OK)
     {
-      fprintf(stderr, "Error preparing statement for: %s\n", sql);
+      fprintf(stderr, "Error preparing statement:\n%s\n\n", sql);
+      fprintf(stderr, "%s\n\n", db_errmsg(db));
       sqlite3_close(db);
       exit(2);
     }

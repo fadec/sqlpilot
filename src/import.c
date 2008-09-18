@@ -18,7 +18,7 @@ void import_init(Logbook *logbook)
 static int build_table_from_csv_fh(FILE *in, GtkWidget **ret_view, GtkTreeModel **ret_store, GtkProgressBar *progress)
 {
   GType *column_types;
-  int n, ncol, nrow;
+  int n, ncol, nrow=0;
   int sep = ',';
   GtkListStore *store=NULL;
   GtkWidget *view=NULL;
@@ -93,7 +93,7 @@ int import_read_text(Logbook *logbook)
   char *txt;
   GtkWidget *view;
   GtkTreeModel *treemod;
-  int nrow;
+  int nrow=0;
 
 /*   gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script)); */
 /*   gchar *argv[] = {script_filename, "-a", NULL}; */
@@ -144,7 +144,7 @@ int import_read_file(Logbook *logbook)
   char *txt;
   GtkWidget *view;
   GtkTreeModel *treemod;
-  int nrow;
+  int nrow=0;
 
   gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
   gchar *argv[] = {script_filename, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(logbook->import_input_file)), NULL};

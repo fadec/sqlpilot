@@ -79,12 +79,12 @@ static gint iter_compare_by_str_float_column(GtkTreeModel *treemod, GtkTreeIter 
 /*********/
 /* Model */
 /*********/
-/* kinds must have size equal to number of colums in stmt or be NULL */
-static GtkListStore *store_new_from_stmt(DBStatement *stmt, StoreColumnKind *kinds)
+static GtkListStore *store_new_from_stmt(DBStatement *stmt, GHashTable *column_prefs)
 {
   GType *column_types;
   GtkListStore *store;
   int ncolumns, n;
+  ColumnPref *pref;
   
   ncolumns = db_column_count(stmt);
   
@@ -96,16 +96,18 @@ static GtkListStore *store_new_from_stmt(DBStatement *stmt, StoreColumnKind *kin
   store = gtk_list_store_newv(ncolumns, column_types);
   free(column_types);
 
-  if (kinds) {
+  if (column_prefs) {
     for (n=0; n<ncolumns; n++) {
-      switch( kinds[n] ){
-      case STORE_COLUMN_KIND_STR:
+      pref = (ColumnPref*)g_hash_table_lookup(column_prefs, db_column_name(stmt, n));
+      if (!pref) continue;
+      switch(pref->sort){
+      case COLUMN_SORT_STR:
 	/* Default sort is string */
 	break;
-      case STORE_COLUMN_KIND_STR_NUM:
+      case COLUMN_SORT_NUM:
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store), n, iter_compare_by_noisy_str_int_column, (gpointer)n, NULL);
 	break;
-      case STORE_COLUMN_KIND_STR_FLOAT:
+      case COLUMN_SORT_FLOAT:
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(store), n, iter_compare_by_str_float_column, (gpointer)n, NULL);
 	break;
       }
@@ -177,41 +179,75 @@ int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
   return result_code; // or whatever
 }
 
-/********/
-/* View */
-/********/
-static void store_view_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt)
+static ColumnPref *prefs_for_column(GHashTable *prefs, const char *name)
 {
-  GtkCellRenderer *renderer;
-  GtkTreeViewColumn *column;
-  const char *column_name;
-  char meta[32], header[256];
-  int ncolumns, i;
-  /* Special colums * This code should really either use a sort proxy or be in the model if it's going to sort the model */
+  static ColumnPref custom = {0};
+  static char meta[32], header[256];
+  static ColumnPref *pref;
+
+  /* columns with \ in the name override prefs - example n\Duration is a numeric sorted column called Duration */
   /* _ makes hidden column */
   /* n noisy string numeric sort */
   /* f parse string as float sort */
+  if (!prefs || strchr(name, '\\')) {
+    meta[0] = header[0] = '\0';
+    sscanf(name, "%31[^\\]\\%255s", meta, header);
+    if (strchr(meta, 'n')) {
+      custom.sort = COLUMN_SORT_NUM;
+    } else if (strchr(meta, 'f')) {
+      custom.sort = COLUMN_SORT_FLOAT;
+    } else {
+      custom.sort = COLUMN_SORT_STR;
+    }
+    custom.visible = !!strchr(meta, '_');
+    custom.name = header;
+  } else {
+    pref = (ColumnPref*)g_hash_table_lookup(prefs, name);
+    if (pref) {
+      custom.name = pref->name;
+      custom.sort = pref->sort;
+      custom.visible = pref->visible;
+    } else {
+      sscanf(name, "%255s", header);
+      custom.name = header;
+      custom.sort = COLUMN_SORT_STR;
+      custom.visible = TRUE;
+    }
+  }
+
+  return &custom;  
+}
+
+
+/********/
+/* View */
+/********/
+static void store_view_add_columns_from_stmt(GtkTreeView *treeview, DBStatement *stmt, GHashTable *column_prefs)
+{
+  GtkCellRenderer *renderer;
+  GtkTreeViewColumn *column;
+  int ncolumns, i;
+  ColumnPref *pref;
 
   ncolumns = db_column_count(stmt);
-  for (i = 0; i < ncolumns; i++) {
-    column_name = db_column_name(stmt, i);
-    meta[0] = header[0] = '\0';
-    if (strchr(column_name, '\\')) {
-      sscanf(column_name, "%31[^\\]\\%255s", meta, header);
-    } else {
-      sscanf(column_name, "%255s", header);
-    }
-    if (!strchr(meta, '_')) {
+  for (i = 0; i < ncolumns; i++) { 
+    pref = prefs_for_column(column_prefs, db_column_name(stmt, i));
+    if (pref->visible) {
       renderer = gtk_cell_renderer_text_new();
-      column = gtk_tree_view_column_new_with_attributes(header, renderer, "text", i, NULL);
+      column = gtk_tree_view_column_new_with_attributes(pref->name, renderer, "text", i, NULL);
       gtk_tree_view_column_set_sort_column_id(column, i);
       gtk_tree_view_column_set_reorderable(column, TRUE);
       gtk_tree_view_column_set_resizable(column, TRUE);
       gtk_tree_view_insert_column(treeview, column, i);
-      if (strchr(meta, 'n')) {
+      switch (pref->sort) {
+      case COLUMN_SORT_STR:
+	break;
+      case COLUMN_SORT_NUM:
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_noisy_str_int_column, (gpointer)i, NULL);
-      } else if (strchr(meta, 'f')) {
+	break;
+      case COLUMN_SORT_FLOAT:
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(gtk_tree_view_get_model(treeview)), i, iter_compare_by_str_float_column, (gpointer)i, NULL);
+	break;
       }
     }
   }
@@ -245,12 +281,12 @@ void store_view_set_column_visible_by_title(GtkTreeView *view, const char *title
   gtk_tree_view_column_set_visible(store_view_find_column_by_title(view, title), visible);
 }
 
-void store_build_query_stmt_widget(DBStatement *stmt, StoreColumnKind *kinds, GtkWidget **ret_view, GtkTreeModel **ret_store)
+void store_build_query_stmt_widget(DBStatement *stmt, GHashTable *column_prefs, GtkWidget **ret_view, GtkTreeModel **ret_store)
 {
   GtkListStore *store;
   GtkWidget *view;
 	
-  store = store_new_from_stmt(stmt, kinds);
+  store = store_new_from_stmt(stmt, column_prefs);
 
   view = gtk_tree_view_new_with_model (GTK_TREE_MODEL(store));
   gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (view), TRUE);
@@ -258,7 +294,7 @@ void store_build_query_stmt_widget(DBStatement *stmt, StoreColumnKind *kinds, Gt
 	
   g_object_unref (store);
 
-  store_view_add_columns_from_stmt(GTK_TREE_VIEW (view), stmt);
+  store_view_add_columns_from_stmt(GTK_TREE_VIEW (view), stmt, column_prefs);
 
   if (ret_view) *ret_view = view;
   if (ret_store) *ret_store = GTK_TREE_MODEL(store);

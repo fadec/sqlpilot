@@ -19,6 +19,7 @@
 
 #include "sqlpilot.h"
 #include "logbook.h"
+#include "store.h"
 #include "flights.h"
 #include "roles.h"
 #include "aircraft.h"
@@ -29,12 +30,118 @@
 #include "import.h"
 #include "cb/cb.h"
 
+ColumnPref columns[] = {
+  { "AIn"		, COLUMN_SORT_NUM	 , TRUE },
+  { "AOut"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Airplane"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Airship"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Aprch"		, COLUMN_SORT_STR	 , TRUE },
+  { "AprchN"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Arr"		, COLUMN_SORT_STR	 , TRUE },
+  { "ArrIATA"		, COLUMN_SORT_STR	 , TRUE },
+  { "ArrICAO"		, COLUMN_SORT_STR	 , TRUE },
+  { "Balloon"		, COLUMN_SORT_NUM	 , TRUE },
+  { "City"		, COLUMN_SORT_STR	 , TRUE },
+  { "Complex"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Country"		, COLUMN_SORT_STR	 , TRUE },
+  { "Crew"		, COLUMN_SORT_STR	 , TRUE },
+  { "CrewN"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Crw"		, COLUMN_SORT_NUM	 , TRUE },
+  { "DLand"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Date"		, COLUMN_SORT_STR	 , TRUE },
+  { "Dep"		, COLUMN_SORT_STR	 , TRUE },
+  { "DepIATA"		, COLUMN_SORT_STR	 , TRUE },
+  { "DepICAO"		, COLUMN_SORT_STR	 , TRUE },
+  { "Dist"		, COLUMN_SORT_FLOAT	 , TRUE },
+  { "Dual"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Dur"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Elev"		, COLUMN_SORT_FLOAT	 , TRUE },
+  { "FE"		, COLUMN_SORT_NUM	 , TRUE },
+  { "FTD"		, COLUMN_SORT_NUM	 , TRUE },
+  { "FleetNo"		, COLUMN_SORT_STR	 , TRUE },
+  { "Flights"		, COLUMN_SORT_NUM	 , TRUE },
+  { "FltNo"		, COLUMN_SORT_NUM	 , TRUE },
+  { "FootLaunch"	, COLUMN_SORT_NUM	 , TRUE },
+  { "Glider"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Gyro"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Heli"		, COLUMN_SORT_NUM	 , TRUE },
+  { "HighPerf"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Hold"		, COLUMN_SORT_NUM	 , TRUE },
+  { "IATA"		, COLUMN_SORT_STR	 , TRUE },
+  { "ICAO"		, COLUMN_SORT_STR	 , TRUE },
+  { "Ident"		, COLUMN_SORT_STR	 , TRUE },
+  { "Inst"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Instruct"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Jet"		, COLUMN_SORT_NUM	 , TRUE },
+  { "LTA"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Land"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Large"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Lat"		, COLUMN_SORT_FLOAT	 , TRUE },
+  { "Leg"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Lon"		, COLUMN_SORT_FLOAT	 , TRUE },
+  { "Make"		, COLUMN_SORT_STR	 , TRUE },
+  { "Model"		, COLUMN_SORT_STR	 , TRUE },
+  { "Multi"		, COLUMN_SORT_NUM	 , TRUE },
+  { "NLand"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Name"		, COLUMN_SORT_STR	 , TRUE },
+  { "Night"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Notes"		, COLUMN_SORT_STR	 , TRUE },
+  { "NotesN"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Nts"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Over"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Overs"		, COLUMN_SORT_NUM	 , TRUE },
+  { "PIC"		, COLUMN_SORT_NUM	 , TRUE },
+  { "PPC"		, COLUMN_SORT_NUM	 , TRUE },
+  { "PoweredLift"	, COLUMN_SORT_NUM	 , TRUE },
+  { "Pressurized"	, COLUMN_SORT_NUM	 , TRUE },
+  { "Province"		, COLUMN_SORT_STR	 , TRUE },
+  { "Retract"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Role"		, COLUMN_SORT_STR	 , TRUE },
+  { "Rotorcraft"	, COLUMN_SORT_NUM	 , TRUE },
+  { "RtIATA"		, COLUMN_SORT_STR	 , TRUE },
+  { "RtICAO"		, COLUMN_SORT_STR	 , TRUE },
+  { "SDur"		, COLUMN_SORT_NUM	 , TRUE },
+  { "SIC"		, COLUMN_SORT_NUM	 , TRUE },
+  { "SIn"		, COLUMN_SORT_NUM	 , TRUE },
+  { "SOut"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Sea"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Sim"		, COLUMN_SORT_NUM	 , TRUE },
+  { "SimInst"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Single"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Solo"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Sport"		, COLUMN_SORT_NUM	 , TRUE },
+  { "TZone"		, COLUMN_SORT_STR	 , TRUE },
+  { "Tail"		, COLUMN_SORT_STR	 , TRUE },
+  { "Time"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Total"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Trip"		, COLUMN_SORT_STR	 , TRUE },
+  { "TripDate"		, COLUMN_SORT_STR	 , TRUE },
+  { "Turbine"		, COLUMN_SORT_NUM	 , TRUE },
+  { "Type"		, COLUMN_SORT_STR	 , TRUE },
+  { "Ultralight"	, COLUMN_SORT_NUM	 , TRUE },
+  { "WeightShift"	, COLUMN_SORT_NUM	 , TRUE },
+  { "XC"		, COLUMN_SORT_NUM	 , TRUE },
+  { "id"                , COLUMN_SORT_NUM        , FALSE },
+  { "aircraft_id"	, COLUMN_SORT_NUM	 , FALSE },
+  { "arr_id"		, COLUMN_SORT_NUM	 , FALSE },
+  { "dep_id"		, COLUMN_SORT_NUM	 , FALSE },
+  { "flight_id"		, COLUMN_SORT_NUM	 , FALSE },
+  { "nAprch"		, COLUMN_SORT_NUM	 , FALSE },
+  { "role_id"		, COLUMN_SORT_NUM	 , FALSE },
+  {0}
+};
+
 Logbook *logbook_new(const char *filename)
 {
-  Logbook         *logbook;
+  Logbook         *logbook = g_slice_new0(Logbook);
+
+  logbook->column_prefs = g_hash_table_new(g_str_hash, g_str_equal);
+  int i;
+  for (i=0; columns[i].name; i++) {
+    g_hash_table_insert(logbook->column_prefs, columns[i].name, &columns[i]);
+  }
 
   /* Open Database */
-  logbook = g_slice_new0(Logbook);
   if (!(logbook->db = db_open(filename))) {
     barf ("Couldn't open database.");
     return NULL;
@@ -536,6 +643,7 @@ void logbook_save_options(Logbook *logbook)
 void logbook_finalize(Logbook *logbook)
 {
   g_free(logbook->db_filename);
+  g_hash_table_destroy(logbook->column_prefs);
   g_slice_free(Logbook, logbook);
 }
 

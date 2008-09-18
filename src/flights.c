@@ -21,52 +21,6 @@
 #include "aircraft.h"
 #include <string.h>
 
-StoreColumnKind flights_column_kinds[] = {
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_FLOAT,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_NUM,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR,
-  STORE_COLUMN_KIND_STR_NUM
-};
-
 static void flights_delete_routing(Logbook *logbook, DBint64 flight_id)
 {
   DBStatement *stmt = logbook->flights_routing_delete;
@@ -966,7 +920,7 @@ void flights_refresh(Logbook *logbook)
 
 void flights_build_store_view(Logbook *logbook)
 {
-  store_build_query_stmt_widget(logbook->flights_select_all, flights_column_kinds, &logbook->flights_treeview, &logbook->flights_treemodel);
+  store_build_query_stmt_widget(logbook->flights_select_all, logbook->column_prefs, &logbook->flights_treeview, &logbook->flights_treemodel);
   gtk_widget_show_all(logbook->flights_treeview);
   gtk_container_add(GTK_CONTAINER(logbook->flights_sw), logbook->flights_treeview);
 }
