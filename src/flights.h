@@ -74,9 +74,8 @@ enum {
 };
 
 /* All columns must be selected for use during update queries */
-/* Column names preceded with a _ are get hidden in the treeview */
 #define FLIGHTS_SELECT							\
-  "select * from (select flights.id as 'flight_id'"			\
+  "select * from (select flights.id as flight_id"			\
   ", a.id as 'aircraft_id'"						\
   ", r.id as 'role_id'"							\
   ", dep.id as 'dep_id'"						\

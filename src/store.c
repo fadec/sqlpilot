@@ -174,6 +174,8 @@ int store_update_row(GtkListStore *store, GtkTreeIter *iter, DBStatement *stmt)
       text = db_column_text(stmt, i);
       gtk_list_store_set(store, iter, i, text, -1);
     }
+  } else {
+    fprintf(stderr, "Error updating row in treestore\n");
   }
 
   return result_code; // or whatever

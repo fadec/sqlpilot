@@ -41,7 +41,7 @@ INCS = -Itest -Isrc -I${PREFIX}/include -I/usr/include `pkg-config $(PACKAGES) -
 LIBS = -L/usr/lib -lc -L${PREFIX}/lib -lm -lpthread -lreadline `pkg-config $(PACKAGES) --libs` -lsqlite3
 
 # flags
-CFLAGS = -g3 -Wall -O3 ${INCS}
+CFLAGS = -g3 -Wall -O0 ${INCS}
 LDFLAGS = -g3 -export-dynamic ${LIBS}
 
 # Solaris

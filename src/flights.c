@@ -373,8 +373,7 @@ DBint64 flights_write_entries(const gchar *id, Logbook *logbook)
   g_free(crew);
   g_free(notes);
 
-
-  flight_id = id ? atol(id) : db_last_insert_rowid(logbook->db);
+  flight_id = id ? atoll(id) : db_last_insert_rowid(logbook->db);
 
   flights_delete_routing(logbook, flight_id);
   flights_insert_routing(logbook, flight_id);

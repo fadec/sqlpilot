@@ -180,15 +180,15 @@ void edctrl_save_btn_clicked(Edctrl *ec)
 
   if (gtk_tree_selection_get_selected(ec->selection, &treemod, &iter)) {
     gtk_tree_model_get(treemod, &iter, COL_ID, &id, -1);
-
     ec->save(id, ec->save_data);
-    db_bind_text(stmt, 1, id);
+    db_bind_int(stmt, 1, atoll(id));
   } else {
     inserted_id = ec->save(NULL, ec->save_data);
     db_bind_int64(stmt, 1, inserted_id);
 
     gtk_list_store_insert(GTK_LIST_STORE(treemod), &iter, 0);
   }
+
   store_update_row(GTK_LIST_STORE(treemod), &iter, stmt);
 
   /* Select the iter and scroll to selection */
