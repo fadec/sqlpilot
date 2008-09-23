@@ -658,13 +658,17 @@ void on_flights_icao_toggle_toggled(GtkWidget *button, Logbook *logbook)
   if (ANY_TOGGLE_GET_ACTIVE(logbook->flights_icao_toggle)) {
     gtk_widget_hide(logbook->flights_depiata);
     gtk_widget_hide(logbook->flights_arriata);
+    gtk_widget_hide(logbook->flights_routeiata);
     gtk_widget_show(logbook->flights_depicao);
     gtk_widget_show(logbook->flights_arricao);
+    gtk_widget_show(logbook->flights_routeicao);
   } else {
     gtk_widget_hide(logbook->flights_depicao);
     gtk_widget_hide(logbook->flights_arricao);
+    gtk_widget_hide(logbook->flights_routeicao);
     gtk_widget_show(logbook->flights_depiata);
     gtk_widget_show(logbook->flights_arriata);
+    gtk_widget_show(logbook->flights_routeiata);
   }
 /*   gtk_label_set_text(GTK_LABEL(logbook->flights_icao_toggle_lbl), */
 /* 		     ANY_TOGGLE_GET_ACTIVE(GTK_WIDET(button)) ? "ICAO" : "IATA"); */
@@ -744,12 +748,26 @@ void on_flights_save_btn_clicked(GtkButton *button, Logbook *logbook)
   edctrl_save_btn_clicked(logbook->flights_edctrl);
 }
 
-void on_flights_route_changed(GtkEntry *entry, Logbook *logbook)
+void on_flights_routeicao_changed(GtkEntry *entry, Logbook *logbook)
 {
   edctrl_set_modified(logbook->flights_edctrl);
 }
 
-gboolean on_flights_route_focus_out_event(GtkEntry *entry, GdkEventFocus *f, Logbook *logbook)
+gboolean on_flights_routeicao_focus_out_event(GtkEntry *entry, GdkEventFocus *f, Logbook *logbook)
 {
+  flights_fill_route(logbook, 3, GTK_ENTRY(logbook->flights_routeicao), GTK_ENTRY(logbook->flights_routeiata));
+  flights_fill_route(logbook, 4, GTK_ENTRY(logbook->flights_routeicao), GTK_ENTRY(logbook->flights_routeicao));
+  return FALSE;
+}
+
+void on_flights_routeiata_changed(GtkEntry *entry, Logbook *logbook)
+{
+  edctrl_set_modified(logbook->flights_edctrl);
+}
+
+gboolean on_flights_routeiata_focus_out_event(GtkEntry *entry, GdkEventFocus *f, Logbook *logbook)
+{
+  flights_fill_route(logbook, 4, GTK_ENTRY(logbook->flights_routeiata), GTK_ENTRY(logbook->flights_routeicao));
+  flights_fill_route(logbook, 3, GTK_ENTRY(logbook->flights_routeiata), GTK_ENTRY(logbook->flights_routeiata));
   return FALSE;
 }

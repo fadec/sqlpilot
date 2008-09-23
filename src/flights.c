@@ -21,6 +21,36 @@
 #include "aircraft.h"
 #include <string.h>
 
+static const gchar *flights_get_route_text(Logbook *logbook)
+{
+  return gtk_entry_get_text(GTK_ENTRY(ANY_TOGGLE_GET_ACTIVE(logbook->flights_icao_toggle) ?
+				      logbook->flights_routeicao : logbook->flights_routeiata));
+}
+
+/* Free with g_strfreev */
+static gchar **parse_route(const char *route)
+{
+  gchar **tokens=NULL,
+    **token=NULL,
+    **airport=NULL;
+
+  int len;
+
+  tokens = g_strsplit_set(route, " ,-:|./", 50);
+
+  for (airport=token=tokens; *token; token++) {
+    len = strlen(*token);
+    if (len == 3 || len == 4) {
+      *airport++ = *token;
+    } else {
+      free(*token);
+    }
+  }
+  *airport = NULL;
+
+  return tokens;
+}
+
 static void flights_delete_routing(Logbook *logbook, DBint64 flight_id)
 {
   DBStatement *stmt = logbook->flights_routing_delete;
@@ -31,30 +61,10 @@ static void flights_delete_routing(Logbook *logbook, DBint64 flight_id)
 static void flights_insert_routing(Logbook *logbook, DBint64 flight_id)
 {
   DBStatement *stmt = logbook->flights_routing_insert;
-  char *airports[100];
-  char *text,*ptr;
-  int i=0,len=0;
+  char **airports;
+  int i=0;
 
-  text = g_strdup(gtk_entry_get_text(GTK_ENTRY(logbook->flights_route)));
-
-  for (ptr=text;*ptr;ptr++) {
-    if (isalnum(*ptr)) {
-      if (!len) {
-	airports[i] = ptr;
-      }
-      len++;
-    } else {
-      if (len == 3 || len == 4) {
-	i++;
-      } else {
-	airports[i] = NULL;
-      }
-      len = 0;
-      *ptr = '\0';
-    }
-  }
-  if (len != 3 && len != 4) { airports[i] = NULL; }
-  airports[i+1] = NULL;
+  airports = parse_route(flights_get_route_text(logbook));
 
   db_bind_int64(stmt, FLIGHTS_ROUTING_WRITE_FLIGHT_ID, flight_id);
   for (i=0;airports[i];i++) {
@@ -72,7 +82,7 @@ static void flights_insert_routing(Logbook *logbook, DBint64 flight_id)
   }
   db_clear_bindings(stmt);
 
-  g_free(text);
+  g_strfreev(airports);
 }
 
 void flights_lookup_dep_tz(Logbook *logb, char *tz)
@@ -528,6 +538,8 @@ void flights_load_selection(Logbook *logb)
     *arricao=NULL,
     *depiata=NULL,
     *arriata=NULL,
+    *rtiata=NULL,
+    *rticao=NULL,
     *date=NULL,
     *leg=NULL,
     *aout=NULL,
@@ -568,6 +580,8 @@ void flights_load_selection(Logbook *logb)
 		       FLIGHTS_COL_DEPIATA, &depiata,
 		       FLIGHTS_COL_ARRICAO, &arricao,
 		       FLIGHTS_COL_ARRIATA, &arriata,
+		       FLIGHTS_COL_RTICAO, &rticao,
+		       FLIGHTS_COL_RTIATA, &rtiata,
 		       FLIGHTS_COL_AOUT, &aout,
 		       FLIGHTS_COL_AOUTUTC, &aoututc,
 		       FLIGHTS_COL_AIN, &ain,
@@ -605,6 +619,8 @@ void flights_load_selection(Logbook *logb)
   gtk_entry_set_text(GTK_ENTRY(logb->flights_arricao), EMPTY_IF_NULL(arricao));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_depiata), EMPTY_IF_NULL(depiata));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_arriata), EMPTY_IF_NULL(arriata));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_routeicao), EMPTY_IF_NULL(rticao));
+  gtk_entry_set_text(GTK_ENTRY(logb->flights_routeiata), EMPTY_IF_NULL(rtiata));
 
   gtk_entry_set_text(GTK_ENTRY(logb->flights_dur), EMPTY_IF_NULL(dur));
   gtk_entry_set_text(GTK_ENTRY(logb->flights_night), EMPTY_IF_NULL(night));
@@ -648,6 +664,8 @@ void flights_load_selection(Logbook *logb)
   g_free(arricao);
   g_free(depiata);
   g_free(arriata);
+  g_free(rtiata);
+  g_free(rticao);
   g_free(aout);
   g_free(aoututc);
   g_free(ain);
@@ -1071,3 +1089,32 @@ void flights_handle_icao_update(Logbook *logbook, GtkEntry *icao, GtkEntry *iata
   }
 }
 
+void flights_fill_route(Logbook *logbook, int keypref, GtkEntry *from, GtkEntry *to)
+{
+  gchar **airports = parse_route(gtk_entry_get_text(from));
+  gchar **airport;
+  DBStatement *stmt = (keypref == 3) ? logbook->flights_iata_from_icao : logbook->flights_icao_from_iata;
+  GString *route = g_string_new("");
+
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+  for (airport=airports; *airport; airport++) {
+    if (strlen(*airport) != keypref) {
+      db_bind_text(stmt, 1, *airport);
+      if ((db_step(stmt) == DB_ROW) && db_column_text(stmt, 0)) {
+	g_string_append(route, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)));
+      } else {
+	g_string_append(route, *airport);
+      }
+      db_reset(stmt);
+      db_clear_bindings(stmt);
+    } else {
+      g_string_append(route, *airport);
+    }
+    g_string_append(route, " ");  
+  }
+
+  gtk_entry_set_text(to, g_string_ascii_up(route)->str);
+  g_strfreev(airports);
+  g_string_free(route, TRUE);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+}

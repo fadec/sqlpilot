@@ -261,7 +261,8 @@ Logbook *logbook_new(const char *filename)
   pull_widget(flights_arricao);
   pull_widget(flights_arriata);
   pull_widget(flights_arr_utilized);
-  pull_widget(flights_route);
+  pull_widget(flights_routeiata);
+  pull_widget(flights_routeicao);
   pull_widget(flights_aout);
   pull_widget(flights_ain);
   pull_widget(flights_dur_ga);
