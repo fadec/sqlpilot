@@ -40,7 +40,7 @@ static gchar **parse_route(const char *route)
 
   for (airport=token=tokens; *token; token++) {
     len = strlen(*token);
-    if (len == 3 || len == 4) {
+    if (len == 3 || len == 4 || (*token[0] == '?')) {
       *airport++ = *token;
     } else {
       free(*token);
@@ -1030,7 +1030,7 @@ int flights_error(Logbook *logbook)
 static void iata_fills_icao(Logbook *logbook, GtkEntry *iata, GtkEntry *icao)
 {
   DBStatement *stmt = logbook->flights_icao_from_iata;
-  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+
   db_bind_text(stmt, 1, gtk_entry_get_text(iata));
   if (db_step(stmt) == DB_ROW) {
     gtk_entry_set_text(icao, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
@@ -1039,13 +1039,13 @@ static void iata_fills_icao(Logbook *logbook, GtkEntry *iata, GtkEntry *icao)
   }
   db_reset(stmt);
   db_clear_bindings(stmt);
-  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+
 }
 
 static void icao_fills_iata(Logbook *logbook, GtkEntry *icao, GtkEntry *iata)
 {
   DBStatement *stmt = logbook->flights_iata_from_icao;
-  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
+
   db_bind_text(stmt, 1, gtk_entry_get_text(icao));
   if (db_step(stmt) == DB_ROW) {
     gtk_entry_set_text(iata, EMPTY_IF_NULL((char*)db_column_text(stmt, 0)) );
@@ -1054,7 +1054,7 @@ static void icao_fills_iata(Logbook *logbook, GtkEntry *icao, GtkEntry *iata)
   }
   db_reset(stmt);
   db_clear_bindings(stmt);
-  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+
 }
 
 void flights_handle_iata_update(Logbook *logbook, GtkEntry *iata, GtkEntry *icao)
@@ -1096,7 +1096,6 @@ void flights_fill_route(Logbook *logbook, int keypref, GtkEntry *from, GtkEntry 
   DBStatement *stmt = (keypref == 3) ? logbook->flights_iata_from_icao : logbook->flights_icao_from_iata;
   GString *route = g_string_new("");
 
-  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   for (airport=airports; *airport; airport++) {
     if (strlen(*airport) != keypref) {
       db_bind_text(stmt, 1, *airport);
@@ -1116,5 +1115,79 @@ void flights_fill_route(Logbook *logbook, int keypref, GtkEntry *from, GtkEntry 
   gtk_entry_set_text(to, g_string_ascii_up(route)->str);
   g_strfreev(airports);
   g_string_free(route, TRUE);
-  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
+
+}
+
+void flights_route_fills_deparr(Logbook *logbook)
+{
+  gchar **airports, **airport;
+
+  gtk_entry_set_text(GTK_ENTRY(logbook->flights_depicao), "");
+  gtk_entry_set_text(GTK_ENTRY(logbook->flights_depiata), "");
+  gtk_entry_set_text(GTK_ENTRY(logbook->flights_arricao), "");
+  gtk_entry_set_text(GTK_ENTRY(logbook->flights_arriata), "");
+
+  airports = parse_route(gtk_entry_get_text(GTK_ENTRY(logbook->flights_routeicao)));
+  if (airports[0]) {
+    if (strlen(airports[0]) == 4) { gtk_entry_set_text(GTK_ENTRY(logbook->flights_depicao), airports[0]); }
+    if (airports[1]) {
+      for (airport=airports+1; *(airport+1); airport++);
+      if (strlen(*airport) == 4) { gtk_entry_set_text(GTK_ENTRY(logbook->flights_arricao), *airport); }
+    }
+  }
+  g_strfreev(airports);
+  airports = parse_route(gtk_entry_get_text(GTK_ENTRY(logbook->flights_routeiata)));
+  if (airports[0]) {
+    if (strlen(airports[0]) == 3) { gtk_entry_set_text(GTK_ENTRY(logbook->flights_depiata), airports[0]); }
+    if (airports[1]) {
+      for (airport=airports+1; *(airport+1); airport++);
+      if (strlen(*airport) == 3) { gtk_entry_set_text(GTK_ENTRY(logbook->flights_arriata), *airport); }
+    }
+  }
+  g_strfreev(airports);
+}
+
+static void _flights_deparr_fills_route(GtkEntry *dep_entry, GtkEntry *arr_entry, GtkEntry *route_entry)
+{
+  gchar **route;
+  gchar **newroute;
+  gchar *dep, *arr;
+  int i;
+  int pos = 0;
+
+  dep = (gchar*)gtk_entry_get_text(GTK_ENTRY(dep_entry));
+  arr = (gchar*)gtk_entry_get_text(GTK_ENTRY(arr_entry));
+  route = parse_route(gtk_entry_get_text(GTK_ENTRY(route_entry)));
+
+  for (i=0; route[i]; i++);
+  newroute = calloc(i+3, sizeof(gchar*));
+  for (i=0; route[i]; i++) { newroute[i] = route[i]; }
+  if (strlen(dep)) {
+    newroute[0] = dep;
+  } else {
+    newroute[0] = "?";	 /* Placeholder */
+  }
+  for (i=1; route[i] && route[i+1]; i++);
+  if (strlen(arr)) {
+    newroute[i] = arr;
+  } else {
+    newroute[i] = "?";
+  }
+  gtk_entry_set_text(GTK_ENTRY(route_entry), "");
+  for (i=0; newroute[i]; i++) {
+    if (i) { gtk_editable_insert_text(GTK_EDITABLE(route_entry), " ", 1, &pos); }
+    gtk_editable_insert_text(GTK_EDITABLE(route_entry), newroute[i], strlen(newroute[i]), &pos);
+  }
+  free(newroute);
+  g_strfreev(route);
+}
+
+void flights_deparr_fills_route(Logbook *logbook)
+{
+  _flights_deparr_fills_route(GTK_ENTRY(logbook->flights_depicao),
+			      GTK_ENTRY(logbook->flights_arricao),
+			      GTK_ENTRY(logbook->flights_routeicao));
+  _flights_deparr_fills_route(GTK_ENTRY(logbook->flights_depiata),
+			      GTK_ENTRY(logbook->flights_arriata),
+			      GTK_ENTRY(logbook->flights_routeiata));
 }

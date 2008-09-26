@@ -108,10 +108,10 @@ enum {
 #define AIRPORTS_DELETE \
   "delete from airports where id = ?;"
 
-#define AIRPORTS_SELECT_TZONE_BY_IATA "SELECT tzone FROM airports WHERE iata = ? LIMIT 1;"
-#define AIRPORTS_SELECT_TZONE_BY_ICAO "SELECT tzone FROM airports WHERE icao = ? LIMIT 1;"
-#define AIRPORTS_SELECT_IATA_BY_ICAO "SELECT iata FROM airports WHERE icao = ? LIMIT 1;"
-#define AIRPORTS_SELECT_ICAO_BY_IATA "SELECT icao FROM airports WHERE iata = ? LIMIT 1;"
+#define AIRPORTS_SELECT_TZONE_BY_IATA "SELECT tzone FROM airports WHERE iata LIKE ? LIMIT 1;"
+#define AIRPORTS_SELECT_TZONE_BY_ICAO "SELECT tzone FROM airports WHERE icao LIKE ? LIMIT 1;"
+#define AIRPORTS_SELECT_IATA_BY_ICAO "SELECT iata FROM airports WHERE icao LIKE ? LIMIT 1;"
+#define AIRPORTS_SELECT_ICAO_BY_IATA "SELECT icao FROM airports WHERE iata LIKE ? LIMIT 1;"
 
 #include "airports.h"
 

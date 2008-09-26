@@ -241,7 +241,9 @@ void on_flights_depicao_changed(GtkEntry *entry, Logbook *logbook)
 
 int on_flights_depicao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   flights_handle_icao_update(logbook, entry, GTK_ENTRY(logbook->flights_depiata));
+  flights_deparr_fills_route(logbook);
   
   if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
@@ -256,6 +258,7 @@ int on_flights_depicao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 			   GTK_ENTRY(logbook->flights_dur));
   }
   flights_refresh_dep_utilized(logbook);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
   return FALSE;
 }
 
@@ -267,7 +270,9 @@ void on_flights_depiata_changed(GtkEntry *entry, Logbook *logbook)
 
 int on_flights_depiata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   flights_handle_iata_update(logbook, entry, GTK_ENTRY(logbook->flights_depicao));
+  flights_deparr_fills_route(logbook);
 
   if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
@@ -282,6 +287,7 @@ int on_flights_depiata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 			   GTK_ENTRY(logbook->flights_dur));
   }
   flights_refresh_dep_utilized(logbook);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
   return FALSE;
 }
 
@@ -293,8 +299,9 @@ void on_flights_arricao_changed(GtkEntry *entry, Logbook *logbook)
 
 int on_flights_arricao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   flights_handle_icao_update(logbook, entry, GTK_ENTRY(logbook->flights_arriata));
+  flights_deparr_fills_route(logbook);
 
   if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
@@ -309,6 +316,7 @@ int on_flights_arricao_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 			   GTK_ENTRY(logbook->flights_dur));
   }
   flights_refresh_arr_utilized(logbook);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
   return FALSE;
 }
 
@@ -320,9 +328,10 @@ void on_flights_arriata_changed(GtkEntry *entry, Logbook *logbook)
 
 int on_flights_arriata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Logbook *logbook)
 {
-
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   flights_handle_iata_update(logbook, entry, GTK_ENTRY(logbook->flights_arricao));
-  
+  flights_deparr_fills_route(logbook);
+ 
   if (!ANY_TOGGLE_GET_ACTIVE(logbook->flights_utc)) {
     reconcile_time_entries(logbook,
 			   GTK_ENTRY(logbook->flights_sin),
@@ -336,6 +345,7 @@ int on_flights_arriata_focus_out_event(GtkEntry *entry, GdkEventFocus *event, Lo
 			   GTK_ENTRY(logbook->flights_dur));
   }
   flights_refresh_arr_utilized(logbook);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
   return FALSE;
 }
 
@@ -755,8 +765,11 @@ void on_flights_routeicao_changed(GtkEntry *entry, Logbook *logbook)
 
 gboolean on_flights_routeicao_focus_out_event(GtkEntry *entry, GdkEventFocus *f, Logbook *logbook)
 {
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   flights_fill_route(logbook, 3, GTK_ENTRY(logbook->flights_routeicao), GTK_ENTRY(logbook->flights_routeiata));
   flights_fill_route(logbook, 4, GTK_ENTRY(logbook->flights_routeicao), GTK_ENTRY(logbook->flights_routeicao));
+  flights_route_fills_deparr(logbook);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
   return FALSE;
 }
 
@@ -767,7 +780,10 @@ void on_flights_routeiata_changed(GtkEntry *entry, Logbook *logbook)
 
 gboolean on_flights_routeiata_focus_out_event(GtkEntry *entry, GdkEventFocus *f, Logbook *logbook)
 {
+  edctrl_ignore_modifications(logbook->flights_edctrl, TRUE);
   flights_fill_route(logbook, 4, GTK_ENTRY(logbook->flights_routeiata), GTK_ENTRY(logbook->flights_routeicao));
   flights_fill_route(logbook, 3, GTK_ENTRY(logbook->flights_routeiata), GTK_ENTRY(logbook->flights_routeiata));
+  flights_route_fills_deparr(logbook);
+  edctrl_ignore_modifications(logbook->flights_edctrl, FALSE);
   return FALSE;
 }

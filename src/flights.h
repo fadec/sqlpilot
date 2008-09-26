@@ -90,8 +90,8 @@ enum {
   ", dep.icao as DepICAO"						\
   ", arr.iata as ArrIATA"						\
   ", arr.icao as ArrICAO"						\
-  ", dep.iata || ' ' || CASE WHEN count(rta.id) THEN group_concat(CASE WHEN rta.iata IS NOT NULL THEN rta.iata ELSE rta.icao END, ' ') || ' ' ELSE '' END || arr.iata AS RtIATA" \
-  ", dep.icao || ' ' || CASE WHEN count(rta.id) THEN group_concat(CASE WHEN rta.icao IS NOT NULL THEN rta.icao ELSE rta.iata END, ' ') || ' ' ELSE '' END || arr.icao AS RtICAO" \
+  ", CASE WHEN dep.iata IS NOT NULL THEN dep.iata ELSE dep.icao END || ' ' || CASE WHEN count(rta.id) THEN group_concat(CASE WHEN rta.iata IS NOT NULL THEN rta.iata ELSE rta.icao END, ' ') || ' ' ELSE '' END || CASE WHEN arr.iata IS NOT NULL THEN arr.iata ELSE arr.icao END AS RtIATA" \
+  ", CASE WHEN dep.icao IS NOT NULL THEN dep.icao ELSE dep.iata END || ' ' || CASE WHEN count(rta.id) THEN group_concat(CASE WHEN rta.icao IS NOT NULL THEN rta.icao ELSE rta.iata END, ' ') || ' ' ELSE '' END || CASE WHEN arr.icao IS NOT NULL THEN arr.icao ELSE arr.iata END AS RtICAO" \
   ", count(rta.id) AS Stops"						\
   ", flights.aout as AOut"						\
   ", flights.AOutUTC as AOutUTC"					\
@@ -293,4 +293,6 @@ void flights_fleetno_toggle_set_sensitivity(Logbook *logbook);
 int flights_error(Logbook *logbook);
 int flights_swap_airport_key(Logbook *logbook, GtkEntry *entry);
 void flights_fill_route(Logbook *logbook, int keypref, GtkEntry *from, GtkEntry *to);
+void flights_route_fills_deparr(Logbook *logbook);
+void flights_deparr_fills_route(Logbook *logbook);
 #endif
