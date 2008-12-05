@@ -95,9 +95,6 @@ int import_read_text(Logbook *logbook)
   GtkTreeModel *treemod;
   int nrow=0;
 
-/*   gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script)); */
-/*   gchar *argv[] = {script_filename, "-a", NULL}; */
-
   gchar *argv[32];
   argv[0] = scripter_get_script_filename(logbook->import_scripter);
   scripter_get_parameter_values(logbook->import_scripter, argv+1);
@@ -131,7 +128,7 @@ int import_read_text(Logbook *logbook)
   } else {
     fprintf(stderr, "Can't open import script\n");
   }
-/*   g_free(script_filename); */
+
   return nrow;
 }
 
@@ -146,8 +143,14 @@ int import_read_file(Logbook *logbook)
   GtkTreeModel *treemod;
   int nrow=0;
 
-  gchar *script_filename = filename_combo_box_get_current_full_filename(GTK_COMBO_BOX(logbook->import_script));
-  gchar *argv[] = {script_filename, gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(logbook->import_input_file)), NULL};
+  gchar *argv[32] = {0};
+  argv[0] = scripter_get_script_filename(logbook->import_scripter);
+  scripter_get_parameter_values(logbook->import_scripter, argv+1);
+
+  int i;
+  for (i=0; argv[i]; i++);
+  argv[i] = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(logbook->import_input_file));
+  
 
   if (g_spawn_async_with_pipes(NULL, argv, NULL, 0, NULL, NULL, &pid, &fdin, &fdout, &fderr, &error)) {
     if (!((fin  = fdopen(fdin, "ab")) &&
@@ -178,7 +181,7 @@ int import_read_file(Logbook *logbook)
   } else {
     fprintf(stderr, "Can't open import script\n");
   }
-  g_free(script_filename);
+
   return nrow;
 }
 
