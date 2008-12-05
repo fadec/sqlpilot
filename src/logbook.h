@@ -359,6 +359,9 @@ struct Logbook {
   GtkWidget *summaries_sw;
   HtmlDocument *summaries_html_document;
   GtkWidget *summaries_html_view;
+  gchar *summaries_html_src;
+  GtkWidget *summaries_export_filechooser;
+  GtkWidget *summaries_export_save;
   GtkWidget *summaries_parameters;
   Scripter _summaries_scripter;
   Scripter *summaries_scripter;

@@ -38,3 +38,8 @@ void on_summaries_export_btn_toggled(GtkWidget *button, Logbook *logbook)
   gtk_widget_hide(logbook->summaries_view_pane);
   gtk_widget_show(logbook->summaries_export_pane);
 }
+
+void on_summaries_export_save_clicked(GtkButton *button, Logbook *logbook)
+{
+  summaries_export_save(logbook);
+}

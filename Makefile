@@ -104,6 +104,7 @@ src/config.h: config.mk
 	@echo "#define VERSION_MINOR $(VERSION_MINOR)"      >> src/config.h
 	@echo "#define VERSION_TINY  $(VERSION_TINY)"       >> src/config.h
 	@echo "#define VERSION_STRING \"$(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_TINY)\"" >> src/config.h
+	@echo "#define PREFIX \"$(PREFIX)\"" >> src/config.h
 	@if [ '$(USING_HILDON)' == 'true' ]; then echo "#define USING_HILDON" >> src/config.h; fi;
 	@if [ '$(USING_GTK_BUILDER)' == 'true' ]; then echo "#define USING_GTK_BUILDER" >> src/config.h; fi;
 	@if [ '$(USING_READLINE)' == 'true' ]; then echo "#define USING_READLINE" >> src/config.h; fi;

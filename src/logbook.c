@@ -153,7 +153,7 @@ Logbook *logbook_new(const char *filename)
   /* Build UI from XML */
 #ifdef USING_GTK_BUILDER
   GtkBuilder       *builder;
-  GError           *err;
+  GError           *err=NULL;
 
   builder = gtk_builder_new ();
   if (gtk_builder_add_from_file (builder, UI_XML_FILE, &err) == 0) {
@@ -441,6 +441,8 @@ Logbook *logbook_new(const char *filename)
   pull_widget(summaries_select_summary);
   pull_widget(summaries_sw);
   pull_widget(summaries_parameters);
+  pull_widget(summaries_export_filechooser);
+  pull_widget(summaries_export_save);
   pull_widget(import_script);
   pull_widget(import_script_options);
   pull_widget(import_read_btn);
@@ -608,6 +610,8 @@ Logbook *logbook_new(const char *filename)
   edctrl_register_validator(logbook->airports_edctrl, airports_error, logbook);
   
   logbook->summaries_scripter = &logbook->_summaries_scripter;
+  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(logbook->summaries_export_filechooser), TRUE);
+
   logbook->import_scripter = &logbook->_import_scripter;
 
 #ifdef USING_GTK_BUILDER

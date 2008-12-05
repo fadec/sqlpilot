@@ -30,19 +30,11 @@
                         <property name="stock_id">gtk-convert</property>
                         <property name="menu">flights_options_menu</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton5">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToolButton" id="flights_new_btn">
@@ -52,7 +44,7 @@
                         <signal name="clicked" handler="on_flights_new_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -63,7 +55,7 @@
                         <signal name="clicked" handler="on_flights_save_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -71,7 +63,7 @@
                         <property name="stock_id">gtk-copy</property>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -79,17 +71,13 @@
                         <property name="stock_id">gtk-paste</property>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton3">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToggleToolButton" id="flights_armdel_btn">
@@ -100,7 +88,7 @@
                         <signal name="toggled" handler="on_flights_armdel_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -111,7 +99,7 @@
                         <signal name="clicked" handler="on_flights_del_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -119,17 +107,13 @@
                         <property name="stock_id">gtk-cut</property>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton6">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToggleToolButton" id="flights_utc">
@@ -139,7 +123,7 @@
                         <signal name="toggled" handler="on_flights_utc_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -150,7 +134,7 @@
                         <signal name="toggled" handler="on_flights_icao_toggle_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -161,17 +145,13 @@
                         <signal name="toggled" handler="on_flights_fleetno_toggle_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton4">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToolButton" id="flights_refresh">
@@ -180,7 +160,7 @@
                         <signal name="clicked" handler="on_flights_refresh_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </widget>
@@ -489,7 +469,7 @@
                                           <widget class="GtkSpinButton" id="flights_leg_airline">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
-                                            <property name="adjustment">1 1 99 1 10 10</property>
+                                            <property name="adjustment">1 1 99 1 10 0</property>
                                             <property name="snap_to_ticks">True</property>
                                             <property name="numeric">True</property>
                                             <signal name="value_changed" handler="on_flights_leg_value_changed"/>
@@ -993,7 +973,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                            <property name="adjustment">0 0 1000 1 5 5</property>
+                                            <property name="adjustment">0 0 1000 1 5 0</property>
                                             <signal name="value_changed" handler="on_flights_dland_value_changed"/>
                                           </widget>
                                           <packing>
@@ -1018,7 +998,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                            <property name="adjustment">0 0 1000 1 5 5</property>
+                                            <property name="adjustment">0 0 1000 1 5 0</property>
                                             <signal name="value_changed" handler="on_flights_nland_value_changed"/>
                                           </widget>
                                           <packing>
@@ -1157,7 +1137,7 @@
                                           <widget class="GtkSpinButton" id="flights_leg_ga">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
-                                            <property name="adjustment">1 1 99 1 10 10</property>
+                                            <property name="adjustment">1 1 99 1 10 0</property>
                                             <property name="snap_to_ticks">True</property>
                                             <property name="numeric">True</property>
                                             <signal name="value_changed" handler="on_flights_leg_value_changed"/>
@@ -1515,7 +1495,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                            <property name="adjustment">0 0 1000 1 5 5</property>
+                                            <property name="adjustment">0 0 1000 1 5 0</property>
                                             <signal name="value_changed" handler="on_flights_dland_value_changed"/>
                                           </widget>
                                           <packing>
@@ -1540,7 +1520,7 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                            <property name="adjustment">0 0 1000 1 5 5</property>
+                                            <property name="adjustment">0 0 1000 1 5 0</property>
                                             <signal name="value_changed" handler="on_flights_nland_value_changed"/>
                                           </widget>
                                           <packing>
@@ -1737,7 +1717,6 @@
                                 <child>
                                   <widget class="GtkProgressBar" id="flights_query_progress">
                                     <property name="visible">True</property>
-                                    <property name="text" translatable="yes"></property>
                                   </widget>
                                   <packing>
                                     <property name="position">1</property>
@@ -2400,7 +2379,7 @@
                         <signal name="clicked" handler="on_roles_new_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -2411,17 +2390,13 @@
                         <signal name="clicked" handler="on_roles_save_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton14">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToggleToolButton" id="roles_armdel_btn">
@@ -2432,7 +2407,7 @@
                         <signal name="toggled" handler="on_roles_armdel_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -2443,7 +2418,7 @@
                         <signal name="clicked" handler="on_roles_del_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </widget>
@@ -2748,7 +2723,7 @@
                         <signal name="clicked" handler="on_aircraft_new_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -2759,17 +2734,13 @@
                         <signal name="clicked" handler="on_aircraft_save_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton15">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToggleToolButton" id="aircraft_armdel_btn">
@@ -2780,7 +2751,7 @@
                         <signal name="toggled" handler="on_aircraft_armdel_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -2791,7 +2762,7 @@
                         <signal name="clicked" handler="on_aircraft_del_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </widget>
@@ -3083,7 +3054,7 @@
                         <signal name="clicked" handler="on_models_new_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -3094,17 +3065,13 @@
                         <signal name="clicked" handler="on_models_save_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton20">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToggleToolButton" id="models_armdel_btn">
@@ -3115,7 +3082,7 @@
                         <signal name="toggled" handler="on_models_armdel_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -3126,7 +3093,7 @@
                         <signal name="clicked" handler="on_models_del_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </widget>
@@ -3803,7 +3770,7 @@
                         <signal name="clicked" handler="on_airports_new_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -3814,17 +3781,13 @@
                         <signal name="clicked" handler="on_airports_save_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton25">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToggleToolButton" id="airports_armdel_btn">
@@ -3834,7 +3797,7 @@
                         <signal name="toggled" handler="on_airports_armdel_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -3845,7 +3808,7 @@
                         <signal name="clicked" handler="on_airports_del_btn_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </widget>
@@ -4342,7 +4305,7 @@
                         <signal name="toggled" handler="on_reports_view_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -4355,17 +4318,13 @@
                         <signal name="toggled" handler="on_reports_export_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton11">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToolButton" id="reports_refresh">
@@ -4374,7 +4333,7 @@
                         <signal name="clicked" handler="on_reports_refresh_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </widget>
@@ -4430,9 +4389,7 @@
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkProgressBar" id="reports_query_progress">
-                                <property name="text" translatable="yes"></property>
-                              </widget>
+                              <widget class="GtkProgressBar" id="reports_query_progress"/>
                               <packing>
                                 <property name="position">1</property>
                               </packing>
@@ -4643,8 +4600,9 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkFileChooserWidget" id="filechooserwidget2">
+                      <widget class="GtkFileChooserWidget" id="reports_export_filechooser">
                         <property name="visible">True</property>
+                        <property name="do_overwrite_confirmation">True</property>
                       </widget>
                       <packing>
                         <property name="position">1</property>
@@ -4711,7 +4669,7 @@
                         <signal name="toggled" handler="on_summaries_view_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
@@ -4723,17 +4681,13 @@
                         <signal name="toggled" handler="on_summaries_export_btn_toggled"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                     <child>
                       <widget class="GtkSeparatorToolItem" id="toolbutton31">
                         <property name="visible">True</property>
                       </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="homogeneous">False</property>
-                      </packing>
                     </child>
                     <child>
                       <widget class="GtkToolButton" id="summaries_refresh">
@@ -4742,7 +4696,7 @@
                         <signal name="clicked" handler="on_summaries_refresh_clicked"/>
                       </widget>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="homogeneous">True</property>
                       </packing>
                     </child>
                   </widget>
@@ -4843,22 +4797,24 @@
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkFileChooserWidget" id="filechooserwidget1">
+                          <widget class="GtkFileChooserWidget" id="summaries_export_filechooser">
                             <property name="visible">True</property>
                             <property name="action">GTK_FILE_CHOOSER_ACTION_SAVE</property>
+                            <property name="do_overwrite_confirmation">True</property>
                           </widget>
                           <packing>
                             <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkButton" id="button1">
+                          <widget class="GtkButton" id="summaries_export_save">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
                             <property name="label" translatable="yes">gtk-save</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
+                            <signal name="clicked" handler="on_summaries_export_save_clicked"/>
                           </widget>
                           <packing>
                             <property name="expand">False</property>

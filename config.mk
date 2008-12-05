@@ -27,13 +27,13 @@ USING_GTK_BUILDER=true
 USING_READLINE=true
 
 # for gtk-builder-convert
-PYTHON=python2.5
+PYTHON=python
 
 PACKAGES = gtk+-2.0 libgtkhtml-2.0 # libglade-2.0 hildon-libs
 
 # paths
 PREFIX = /usr/local
-CONFPREFIX = ${PREFIX}/etc
+#CONFPREFIX = ${PREFIX}/etc
 MANPREFIX = ${PREFIX}/share/man
 
 # includes and libs

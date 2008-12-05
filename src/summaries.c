@@ -32,9 +32,10 @@ void summaries_refresh(Logbook *logbook)
   }
 
   html_document_close_stream(logbook->summaries_html_document);
-
-  g_free(sstdout);
   g_free(sstderr);
+  g_free(logbook->summaries_html_src);
+  logbook->summaries_html_src = sstdout;
+
 }
 
 static void summaries_html_init(Logbook *logbook)
@@ -52,4 +53,31 @@ void summaries_init(Logbook *logbook)
   scripter_init(logbook->summaries_scripter, GTK_COMBO_BOX(logbook->summaries_select_summary), GTK_BOX(logbook->summaries_parameters), NULL);
   scripter_merge_script_dir(logbook->summaries_scripter, SUMMARIES_DIR);
   gtk_combo_box_set_active(GTK_COMBO_BOX(logbook->summaries_select_summary), 0);
+}
+
+void summaries_export_save(Logbook *logbook)
+{
+  gchar *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(logbook->summaries_export_filechooser));
+  FILE *fh;
+  gchar *content = logbook->summaries_html_src;
+  int len = strlen(EMPTY_IF_NULL(content));
+
+  if (!filename) {
+    fprintf(stderr, "No file selected\n");
+  }
+/*   if (g_file_test(G_FILE_TEST_EXISTS)) { */
+/*     if (!g_file_test_exists(G_FILE_TEST_IS_SYMLINK | G_FILE_TEST_IS_REGULAR)) { */
+/*     } */
+/*   } */
+
+      if ((fh = fopen(filename, "wb"))) {
+	fwrite(content, 1, len, fh);
+	fclose(fh);
+	ANY_TOGGLE_SET_ACTIVE(logbook->summaries_view_btn, TRUE);
+      } else {
+	fprintf(stderr, "Error opening file for writing: %s\n", filename);
+      }
+
+
+  g_free(filename);
 }
