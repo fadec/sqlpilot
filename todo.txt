@@ -19,7 +19,7 @@ Make importcsv read row headers, output date/airport pair to stdout, and take op
 Make leg seq adjustments to other rows if one is changed. Allow drag row within a date.  							
 Casts to null/"" of 0+00 ruins gui sorting for num. -0+00 is not handled correctly in sort.
   							
-       	       	       	
+date/city/fltno does not uniquely id a flight in case of a gate-return and later departure.       	       	       	
 							
 Expiring data ...
 Where clause changed

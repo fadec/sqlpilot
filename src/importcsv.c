@@ -91,7 +91,7 @@ static int incsv_init(InCSV *csv, const char *filename)
   csv->date = i++;
   csv->leg = i++;
   csv->fltno = i++;
-  csv->tail = i++;
+  csv->fleetno = i++;
   csv->model = i++;
   csv->dep = i++;
   csv->arr = i++;
@@ -335,14 +335,15 @@ Status incsv_import(InCSV *incsv, DB *db)
     /* Do DB writes */
     if (update && db_column_text(existing, FLIGHTS_COL_AIRCRAFT_ID)) {
       db_bind_int64(stmt, FLIGHTS_WRITE_AIRCRAFT, db_column_int64(existing, FLIGHTS_COL_AIRCRAFT_ID));
-    } else {
-      if (strlen(csv_row[incsv->tail]) && !row_exists(db, "aircraft", "tail", csv_row[incsv->tail])) {
+    } else if (csv_row[incsv->fleetno] && strlen(csv_row[incsv->fleetno])) {
+      if (!row_exists(db, "aircraft", "fleetno", csv_row[incsv->fleetno])) {
 	bind_id_of(aircraft_ins, AIRCRAFT_WRITE_MODEL, "models", "ident", csv_row[incsv->model]);
-	db_bind_nonempty_text_else_null(aircraft_ins, AIRCRAFT_WRITE_TAIL, csv_row[incsv->tail]);
+	db_bind_nonempty_text_else_null(aircraft_ins, AIRCRAFT_WRITE_FLEETNO, csv_row[incsv->fleetno]);
 	db_stp_res_clr(aircraft_ins);
       }
-      bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "tail", csv_row[incsv->tail]);
+      bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "fleetno", csv_row[incsv->fleetno]);
     }
+
     if (update && db_column_text(existing, FLIGHTS_COL_ROLE_ID)) {
       db_bind_int64(stmt, FLIGHTS_WRITE_ROLE, db_column_int64(existing, FLIGHTS_COL_ROLE_ID));
     } else {

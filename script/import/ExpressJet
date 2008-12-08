@@ -200,8 +200,8 @@ class Flight < Parser
         (crew = many Crew) &&
         (((match /^Exception/) &&
           (match /.*/)) || true)
-      flightno, seq, mday, dh, equip, dep, arr, bout, sched, bin, dur, tail = flight.split /\t/
-      {:flightno => flightno, :dh => dh, :seq => seq, :mday => mday, :equip => equip, :dep => dep, :arr => arr, :out => bout, :in => bin, :tail => tail, :crew => crew}
+      flightno, seq, mday, dh, equip, dep, arr, bout, sched, bin, blank1, blank2, dur, blank3, tail = flight.split /\t/
+      {:flightno => flightno.strip, :dh => dh, :seq => seq, :mday => mday, :equip => equip, :dep => dep, :arr => arr, :out => bout, :in => bin, :tail => tail, :crew => crew}
     end
   end
 end
@@ -292,7 +292,7 @@ columns = [
   :Date,
   :Leg,
   :FltNo,
-  :Aircraft,
+  :FleetNo,
   :Model,
   :Dep,
   :Arr,
@@ -323,8 +323,8 @@ for trip in Schedule.run
         :Date     => (make_date trip[:date], flight[:mday]),
         :Leg      => leg,
         :FltNo    => flight[:flightno],
-        :Aircraft => nil,
-        :Model     => nil,
+        :FleetNo  => flight[:tail],
+        :Model    => nil,
         :Dep      => flight[:dep],
         :Arr      => flight[:arr],
         :AOut     => (flight[:out] if OPTS[:actual_times]),
