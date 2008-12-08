@@ -23,7 +23,7 @@
 #endif
 
 #include "db/db.h"
-#include "db/sqlite3.h"
+#include <sqlite3.h>
 
 #include <stdlib.h>
 #include <string.h>
