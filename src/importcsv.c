@@ -37,14 +37,16 @@ typedef enum {
 } InCSVTimebase;
 
 typedef enum { SUCCESS, WARNING, ERROR } Status;
+typedef enum { FILL, OVERWRITE, REPLACE } WriteStrategy;
 
 char csv_buf[CSV_BUFSIZE];
 char *csv_row[CSV_COLS];
 
 DBStatement *flights_ins;
 DBStatement *flights_update;
-DBStatement *flights_by_date_fltno_depiata;
 DBStatement *aircraft_ins;
+DBStatement *flights_where_date_fltno_depiata_arriata;
+DBStatement *flights_where_date_fltno_depicao_arricao;
 DBStatement *airport_tz_by_iata;
 DBStatement *airport_tz_by_icao;
 
@@ -164,7 +166,7 @@ Status report_airport(const char *position, const char *code)
   return SUCCESS;
 }
 
-Status incsv_import(InCSV *incsv, DB *db)
+Status incsv_import(InCSV *incsv, DB *db, int write_strategy)
 {
   char
     date[BUF_DATE],
@@ -193,8 +195,8 @@ Status incsv_import(InCSV *incsv, DB *db)
   int nrow, ncol;
   Status s;
   int warnings = 0;
-  DBStatement *existing, *stmt;	/* Existing row, insert or update statement */
-  int update = 0;		/* nonzero if stmt is an update */
+  DBStatement *existing, *stmt; /* Existing row, insert or update statement */
+  int update = 0;               /* nonzero if stmt is an update */
 
   nrow = 0;
   while (csv_row_fread(incsv->fh,
@@ -211,7 +213,7 @@ Status incsv_import(InCSV *incsv, DB *db)
     for (ncol=0; ncol<incsv->numcol; ncol++) {
       if (!csv_row[ncol]) {
 	csv_row[ncol] = "\0";
-	fprintf(stderr, "Error: missing column %d in row %d\n", ncol+1, nrow);
+	printf("Error: missing column %d in row %d\n", ncol+1, nrow);
 	return ERROR;
       }
     }
@@ -229,21 +231,35 @@ Status incsv_import(InCSV *incsv, DB *db)
     }
     date[sizeof(date) - 1] = '\0';
 
-    /* Set stmt to update or merge depending on whether or not a sufficient match is in the db */
-    existing = flights_by_date_fltno_depiata;
+/*     Set stmt to update or merge depending on whether or not a sufficient match is in the db */
+    if (csv_row[incsv->dep] && (strlen(csv_row[incsv->dep]) == 3)) {
+      existing = flights_where_date_fltno_depiata_arriata;
+    } else {
+      existing = flights_where_date_fltno_depicao_arricao;
+    }
     db_bind_text(existing, 1, date);
     db_bind_text(existing, 2, csv_row[incsv->fltno]);
     db_bind_text(existing, 3, csv_row[incsv->dep]);
-    if (db_step(existing) == DB_ROW) {
+    db_bind_text(existing, 4, csv_row[incsv->arr]);
+    
+    switch(db_step(existing)) {
+    case DB_ROW:
       stmt = flights_update;
       db_bind_int64(stmt, FLIGHTS_WRITE_ID, db_column_int64(existing, 0));
       update = 1;
-    } else {
+      break;
+    case DB_DONE:
       stmt = flights_ins;
       update = 0;
+      break;
+    default:
+      printf("Database error\n");
+      return ERROR;
+      break;
     }
+      
 
-    printf("%s %s %s %s\n", update ? "Update" : "Insert", date, csv_row[incsv->dep], csv_row[incsv->arr]);
+    printf("%s %s %s %s\n", update ? (overwrite ? "Overwrite" : "Update") : "Insert", date, csv_row[incsv->dep], csv_row[incsv->arr]);
 
     report_airport("Departure", csv_row[incsv->dep]);
     report_airport("Arrival", csv_row[incsv->arr]);
@@ -333,7 +349,7 @@ Status incsv_import(InCSV *incsv, DB *db)
     sscanf(csv_row[incsv->nland], "%d", &nland);
     
     /* Do DB writes */
-    if (update && db_column_text(existing, FLIGHTS_COL_AIRCRAFT_ID)) {
+    if (!overwrite && update && db_column_text(existing, FLIGHTS_COL_AIRCRAFT_ID)) {
       db_bind_int64(stmt, FLIGHTS_WRITE_AIRCRAFT, db_column_int64(existing, FLIGHTS_COL_AIRCRAFT_ID));
     } else if (csv_row[incsv->fleetno] && strlen(csv_row[incsv->fleetno])) {
       if (!row_exists(db, "aircraft", "fleetno", csv_row[incsv->fleetno])) {
@@ -344,28 +360,28 @@ Status incsv_import(InCSV *incsv, DB *db)
       bind_id_of(stmt, FLIGHTS_WRITE_AIRCRAFT, "aircraft", "fleetno", csv_row[incsv->fleetno]);
     }
 
-    if (update && db_column_text(existing, FLIGHTS_COL_ROLE_ID)) {
+    if (!overwrite && update && db_column_text(existing, FLIGHTS_COL_ROLE_ID)) {
       db_bind_int64(stmt, FLIGHTS_WRITE_ROLE, db_column_int64(existing, FLIGHTS_COL_ROLE_ID));
     } else {
       bind_id_of(stmt, FLIGHTS_WRITE_ROLE, "roles", "ident", csv_row[incsv->role]);
     }
-    if (update && db_column_text(existing, FLIGHTS_COL_DEP_ID)) {
+    if (!overwrite && update && db_column_text(existing, FLIGHTS_COL_DEP_ID)) {
       db_bind_int64(stmt, FLIGHTS_WRITE_DEP, db_column_int64(existing, FLIGHTS_COL_DEP_ID));
     } else {
       bind_id_of(stmt, FLIGHTS_WRITE_DEP, "airports", "iata", csv_row[incsv->dep]);
     }
-    if (update && db_column_text(existing, FLIGHTS_COL_ARR_ID)) {
+    if (!overwrite && update && db_column_text(existing, FLIGHTS_COL_ARR_ID)) {
       db_bind_int64(stmt, FLIGHTS_WRITE_ARR, db_column_int64(existing, FLIGHTS_COL_ARR_ID));
     } else {
       bind_id_of(stmt, FLIGHTS_WRITE_ARR, "airports", "iata", csv_row[incsv->arr]);
     }
     /* These macros only change null values in db on update */
     #define BIND_TEXT(wcol, rcol, val)					\
-      db_bind_nonempty_text_else_null(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? (char*)db_column_text(existing, (rcol)) : (val))
+      db_bind_nonempty_text_else_null(stmt, (wcol), (!overwrite && update && db_column_text(existing, (rcol))) ? (char*)db_column_text(existing, (rcol)) : (val))
     #define BIND_INT(wcol, rcol, val)					\
-      db_bind_int(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? db_column_int(existing, (rcol)) : (val))
+      db_bind_int(stmt, (wcol), (!overwrite && update && db_column_text(existing, (rcol))) ? db_column_int(existing, (rcol)) : (val))
     #define BIND_BOOL(wcol, rcol, val)					\
-      db_bind_int(stmt, (wcol), (update && db_column_text(existing, (rcol))) ? str_bool((char*)db_column_text(existing, (rcol))) : (val))
+      db_bind_int(stmt, (wcol), (!overwrite && update && db_column_text(existing, (rcol))) ? str_bool((char*)db_column_text(existing, (rcol))) : (val))
     BIND_TEXT(FLIGHTS_WRITE_DATE, FLIGHTS_COL_DATE, date);
     BIND_INT(FLIGHTS_WRITE_LEG, FLIGHTS_COL_LEG, leg);
     BIND_TEXT(FLIGHTS_WRITE_FLTNO, FLIGHTS_COL_FLTNO, csv_row[incsv->fltno]);
@@ -410,20 +426,38 @@ int main(int argc, char **argv)
   char *db_filename = NULL;
   int i;
   int force = 0;
+  int dryrun = 0;
+  WriteStrategy write_strategy = FILL;
 
   for (i=1; i<argc; i++) {
     if (argv[i][0] == '-') {
-      if (argv[i][1] == 'h') {
+      switch(argv[i][1]) {
+      case 'h':
 	printf("SQLPilot (CSV -> Database) Importer\n");
 	printf("%s\n", usage);
-	printf("    -h    This message\n");
-	printf("    -f    Force commit\n");
-	printf("Imported flights matching on date/fltno/dep will update only null fields.\n");
+	printf("    -h    This message.\n");
+	printf("    -o    Overwrite. Without this option only previously null fields are imported.\n");
+	printf("    -r    Replace. Like overwrite but also imports blank fields. (not implemented)\n");
+	printf("    -f    Force. Ignore warnings and modify database anyway.\n");
+	printf("    -d    Dry run. Will not change data.\n");
+	printf("\n");
+	printf("Imported flights matching on date/fltno/dep/arr will update the existing record. See -o and -r.\n");
 	printf("%s\n", SQLPILOT_CONSOLE_GREETING);
 	return 0;
-      }
-      if (argv[i][1] == 'f') {
+      case 'f':
 	force = 1;
+	break;
+      case 'd':
+	dryrun = 1;
+	break;
+      case 'o':
+	write_strategy = OVERWRITE;
+      case 'r':
+	write_strategy = REPLACE;
+	break;
+      default:
+	fprintf(stderr, "Invalid option. -h for help.\n");
+	return 1;
       }
     } else {
       db_filename = argv[i];
@@ -446,30 +480,36 @@ int main(int argc, char **argv)
   }
   flights_ins = db_prep(db, FLIGHTS_INSERT);
   flights_update = db_prep(db, FLIGHTS_UPDATE);
-  flights_by_date_fltno_depiata = db_prep(db, FLIGHTS_SELECT FLIGHTS_WHERE_DATE_FLTNO_DEPIATA);
+  flights_where_date_fltno_depiata_arriata = db_prep(db, FLIGHTS_SELECT FLIGHTS_WHERE_DATE_FLTNO_DEPIATA_ARRIATA);
+  flights_where_date_fltno_depicao_arricao = db_prep(db, FLIGHTS_SELECT FLIGHTS_WHERE_DATE_FLTNO_DEPICAO_ARRICAO);
   aircraft_ins = db_prep(db, AIRCRAFT_INSERT);
   airport_tz_by_iata = db_prep(db, AIRPORTS_SELECT_TZONE_BY_IATA);
   airport_tz_by_icao = db_prep(db, AIRPORTS_SELECT_TZONE_BY_ICAO);
 
   db_exec_simple(db, "BEGIN TRANSACTION;");
-  switch (incsv_import(&incsv, db)) {
+  switch (incsv_import(&incsv, db, write_strategy)) {
   case SUCCESS:
-    db_exec_simple(db, "COMMIT;");
-    printf("Import Successful\n\n");
+    if (dryrun) {
+      db_exec_simple(db, "ROLLBACK;");
+      printf("Dry run successful. Nothing changed.\n\n");
+    } else {
+      db_exec_simple(db, "COMMIT;");
+      printf("Import successful. Database modified.\n\n");
+    }
     break;
   case WARNING:
     if (force) {
       db_exec_simple(db, "COMMIT;");
-      printf("Warnings. Commit forced.\n\n");
+      printf("Commit forced with warnings. Database modified.\n\n");
     } else {
       db_exec_simple(db, "ROLLBACK;");
-      printf("Warnings. The transaction was rolled back. Use -f to force.\n\n");
+      printf("Warnings. Nothing changed. Use -f to force.\n\n");
     }
     break;
   default:
   case ERROR:
     db_exec_simple(db, "ROLLBACK;");
-    fprintf(stderr, "Transaction Failed\n\n");
+    fprintf(stderr, "Transaction Failed.\n\n");
     return 1;
     break;
   }

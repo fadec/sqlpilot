@@ -459,6 +459,7 @@ Logbook *logbook_new(const char *filename)
   pull_widget(import_write_normal);
   pull_widget(import_write_dryrun);
   pull_widget(import_write_force);
+  pull_widget(import_write_overwrite);
   pull_widget(import_input_notebook);
   
   /* Add treeview */

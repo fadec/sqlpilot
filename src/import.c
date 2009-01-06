@@ -194,6 +194,8 @@ void import_write(Logbook *logbook)
 
   gchar *argv[] = {"./importcsv",
 		   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->import_write_force)) ? "-f" : "",
+		   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->import_write_dryrun)) ? "-d" : "",
+		   gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(logbook->import_write_overwrite)) ? "-o" : "",
 		   logbook->db_filename,
 
 		   NULL};

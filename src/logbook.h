@@ -384,6 +384,7 @@ struct Logbook {
   GtkWidget *import_write_normal;
   GtkWidget *import_write_dryrun;
   GtkWidget *import_write_force;
+  GtkWidget *import_write_overwrite;
   GtkWidget *import_input_notebook;
   Scripter _import_scripter;
   Scripter *import_scripter;

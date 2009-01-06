@@ -137,8 +137,11 @@ enum {
 #define FLIGHTS_WHERE_ID \
   " where flight_id = ? LIMIT 1;"
 
-#define FLIGHTS_WHERE_DATE_FLTNO_DEPIATA \
-  " WHERE Date == ? AND FltNo == ? AND DepIATA == ? LIMIT 1;"
+#define FLIGHTS_WHERE_DATE_FLTNO_DEPIATA_ARRIATA \
+  " WHERE Date == ? AND FltNo == ? AND DepIATA == ? AND ArrIATA == ? LIMIT 1;"
+
+#define FLIGHTS_WHERE_DATE_FLTNO_DEPICAO_ARRICAO \
+  " WHERE Date == ? AND FltNo == ? AND DepICAO == ? AND ArrICAO == ? LIMIT 1;"
 
 #define FLIGHTS_WHERE_DATE_FLTNO_DEPICAO \
   " WHERE Date == ? AND FltNo == ? AND DepICAO == ? LIMIT 1;"

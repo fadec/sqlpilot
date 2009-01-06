@@ -1,6 +1,29 @@
 <?xml version="1.0"?>
 <glade-interface>
   <requires-version lib="gtk+" version="2.12"/>
+  <widget class="GtkMenu" id="flights_options_menu">
+    <property name="visible">True</property>
+    <child>
+      <widget class="GtkRadioMenuItem" id="flights_edit_ga">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">General Aviation</property>
+        <property name="use_underline">True</property>
+        <property name="draw_as_radio">True</property>
+        <property name="group">flights_edit_airline</property>
+        <signal name="toggled" handler="on_flights_edit_ga_toggled"/>
+      </widget>
+    </child>
+    <child>
+      <widget class="GtkRadioMenuItem" id="flights_edit_airline">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Airline</property>
+        <property name="use_underline">True</property>
+        <property name="active">True</property>
+        <property name="draw_as_radio">True</property>
+        <signal name="toggled" handler="on_flights_edit_airline_toggled"/>
+      </widget>
+    </child>
+  </widget>
   <widget class="GtkWindow" id="window">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <signal name="destroy" handler="on_window_destroy"/>
@@ -623,135 +646,16 @@
                                     <property name="n_rows">4</property>
                                     <property name="n_columns">3</property>
                                     <child>
-                                      <widget class="GtkLabel" id="label8">
-                                        <property name="visible">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">SOut</property>
-                                      </widget>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkLabel" id="label9">
-                                        <property name="visible">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">SIn</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="right_attach">2</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkLabel" id="label10">
-                                        <property name="visible">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">SDur</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="left_attach">2</property>
-                                        <property name="right_attach">3</property>
-                                        <property name="x_options"></property>
-                                        <property name="y_options"></property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkLabel" id="label11">
-                                        <property name="visible">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">AOut</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="top_attach">2</property>
-                                        <property name="bottom_attach">3</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkLabel" id="label12">
-                                        <property name="visible">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">AIn</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="right_attach">2</property>
-                                        <property name="top_attach">2</property>
-                                        <property name="bottom_attach">3</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkLabel" id="label13">
-                                        <property name="visible">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="label" translatable="yes">Dur</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="left_attach">2</property>
-                                        <property name="right_attach">3</property>
-                                        <property name="top_attach">2</property>
-                                        <property name="bottom_attach">3</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkEntry" id="flights_aout">
+                                      <widget class="GtkEntry" id="flights_sout">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="width_chars">4</property>
-                                        <signal name="changed" handler="on_flights_aout_changed"/>
-                                        <signal name="focus_out_event" handler="on_flights_aout_focus_out_event"/>
-                                        <signal name="focus_in_event" handler="on_flights_aout_focus_in_event"/>
+                                        <signal name="changed" handler="on_flights_sout_changed"/>
+                                        <signal name="focus_out_event" handler="on_flights_sout_focus_out_event"/>
+                                        <signal name="focus_in_event" handler="on_flights_sout_focus_in_event"/>
                                       </widget>
                                       <packing>
-                                        <property name="top_attach">3</property>
-                                        <property name="bottom_attach">4</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkEntry" id="flights_ain">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="width_chars">4</property>
-                                        <signal name="changed" handler="on_flights_ain_changed"/>
-                                        <signal name="focus_out_event" handler="on_flights_ain_focus_out_event"/>
-                                        <signal name="focus_in_event" handler="on_flights_ain_focus_in_event"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="left_attach">1</property>
-                                        <property name="right_attach">2</property>
-                                        <property name="top_attach">3</property>
-                                        <property name="bottom_attach">4</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkEntry" id="flights_dur_airline">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="width_chars">4</property>
-                                        <signal name="changed" handler="on_flights_dur_changed"/>
-                                        <signal name="focus_out_event" handler="on_flights_dur_focus_out_event"/>
-                                        <signal name="focus_in_event" handler="on_flights_dur_focus_in_event"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="left_attach">2</property>
-                                        <property name="right_attach">3</property>
-                                        <property name="top_attach">3</property>
-                                        <property name="bottom_attach">4</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkEntry" id="flights_sdur">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                        <property name="width_chars">4</property>
-                                        <signal name="changed" handler="on_flights_sdur_changed"/>
-                                        <signal name="focus_out_event" handler="on_flights_sdur_focus_out_event"/>
-                                        <signal name="focus_in_event" handler="on_flights_sdur_focus_in_event"/>
-                                      </widget>
-                                      <packing>
-                                        <property name="left_attach">2</property>
-                                        <property name="right_attach">3</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                       </packing>
@@ -774,19 +678,138 @@
                                       </packing>
                                     </child>
                                     <child>
-                                      <widget class="GtkEntry" id="flights_sout">
+                                      <widget class="GtkEntry" id="flights_sdur">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                         <property name="width_chars">4</property>
-                                        <signal name="changed" handler="on_flights_sout_changed"/>
-                                        <signal name="focus_out_event" handler="on_flights_sout_focus_out_event"/>
-                                        <signal name="focus_in_event" handler="on_flights_sout_focus_in_event"/>
+                                        <signal name="changed" handler="on_flights_sdur_changed"/>
+                                        <signal name="focus_out_event" handler="on_flights_sdur_focus_out_event"/>
+                                        <signal name="focus_in_event" handler="on_flights_sdur_focus_in_event"/>
                                       </widget>
                                       <packing>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
                                         <property name="top_attach">1</property>
                                         <property name="bottom_attach">2</property>
                                       </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkEntry" id="flights_dur_airline">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="width_chars">4</property>
+                                        <signal name="changed" handler="on_flights_dur_changed"/>
+                                        <signal name="focus_out_event" handler="on_flights_dur_focus_out_event"/>
+                                        <signal name="focus_in_event" handler="on_flights_dur_focus_in_event"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
+                                        <property name="top_attach">3</property>
+                                        <property name="bottom_attach">4</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkEntry" id="flights_ain">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="width_chars">4</property>
+                                        <signal name="changed" handler="on_flights_ain_changed"/>
+                                        <signal name="focus_out_event" handler="on_flights_ain_focus_out_event"/>
+                                        <signal name="focus_in_event" handler="on_flights_ain_focus_in_event"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">1</property>
+                                        <property name="right_attach">2</property>
+                                        <property name="top_attach">3</property>
+                                        <property name="bottom_attach">4</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkEntry" id="flights_aout">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="width_chars">4</property>
+                                        <signal name="changed" handler="on_flights_aout_changed"/>
+                                        <signal name="focus_out_event" handler="on_flights_aout_focus_out_event"/>
+                                        <signal name="focus_in_event" handler="on_flights_aout_focus_in_event"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="top_attach">3</property>
+                                        <property name="bottom_attach">4</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="label13">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="label" translatable="yes">Dur</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
+                                        <property name="top_attach">2</property>
+                                        <property name="bottom_attach">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="label12">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="label" translatable="yes">AIn</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">1</property>
+                                        <property name="right_attach">2</property>
+                                        <property name="top_attach">2</property>
+                                        <property name="bottom_attach">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="label11">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="label" translatable="yes">AOut</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="top_attach">2</property>
+                                        <property name="bottom_attach">3</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="label10">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="label" translatable="yes">SDur</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">2</property>
+                                        <property name="right_attach">3</property>
+                                        <property name="x_options"></property>
+                                        <property name="y_options"></property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="label9">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="label" translatable="yes">SIn</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="left_attach">1</property>
+                                        <property name="right_attach">2</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="label8">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="label" translatable="yes">SOut</property>
+                                      </widget>
                                     </child>
                                   </widget>
                                   <packing>
@@ -4799,8 +4822,8 @@
                         <child>
                           <widget class="GtkFileChooserWidget" id="summaries_export_filechooser">
                             <property name="visible">True</property>
-                            <property name="action">GTK_FILE_CHOOSER_ACTION_SAVE</property>
                             <property name="do_overwrite_confirmation">True</property>
+                            <property name="action">GTK_FILE_CHOOSER_ACTION_SAVE</property>
                           </widget>
                           <packing>
                             <property name="position">1</property>
@@ -5137,13 +5160,64 @@
                           <widget class="GtkRadioButton" id="import_write_force">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="label" translatable="yes">Force Commit</property>
+                            <property name="label" translatable="yes">Force</property>
                             <property name="response_id">0</property>
                             <property name="draw_indicator">True</property>
                             <property name="group">import_write_normal</property>
                           </widget>
                           <packing>
                             <property name="position">2</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkVSeparator" id="vseparator9">
+                            <property name="visible">True</property>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="padding">5</property>
+                            <property name="position">3</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkRadioButton" id="import_write_fill">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="label" translatable="yes">Fill</property>
+                            <property name="response_id">0</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                          </widget>
+                          <packing>
+                            <property name="position">4</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkRadioButton" id="import_write_overwrite">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="label" translatable="yes">Overwrite</property>
+                            <property name="response_id">0</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">import_write_fill</property>
+                          </widget>
+                          <packing>
+                            <property name="position">5</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkRadioButton" id="import_write_replace">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="label" translatable="yes">Replace</property>
+                            <property name="response_id">0</property>
+                            <property name="active">True</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">import_write_fill</property>
+                          </widget>
+                          <packing>
+                            <property name="position">6</property>
                           </packing>
                         </child>
                       </widget>
@@ -5289,29 +5363,6 @@
             <property name="position">1</property>
           </packing>
         </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="GtkMenu" id="flights_options_menu">
-    <property name="visible">True</property>
-    <child>
-      <widget class="GtkRadioMenuItem" id="flights_edit_ga">
-        <property name="visible">True</property>
-        <property name="label" translatable="yes">General Aviation</property>
-        <property name="use_underline">True</property>
-        <property name="draw_as_radio">True</property>
-        <property name="group">flights_edit_airline</property>
-        <signal name="toggled" handler="on_flights_edit_ga_toggled"/>
-      </widget>
-    </child>
-    <child>
-      <widget class="GtkRadioMenuItem" id="flights_edit_airline">
-        <property name="visible">True</property>
-        <property name="label" translatable="yes">Airline</property>
-        <property name="use_underline">True</property>
-        <property name="active">True</property>
-        <property name="draw_as_radio">True</property>
-        <signal name="toggled" handler="on_flights_edit_airline_toggled"/>
       </widget>
     </child>
   </widget>
