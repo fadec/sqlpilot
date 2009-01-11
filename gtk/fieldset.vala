@@ -1,0 +1,6 @@
+
+namespace SqlPilot {
+	interface FieldSet {
+		
+	}
+}

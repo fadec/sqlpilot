@@ -1,0 +1,26 @@
+using GLib;
+using CSV;
+
+namespace SqlPilot {
+	public class Importer {
+		private NiceDB db;
+		private HashTable<string, int> columns;
+
+		public Importer ( NiceDB database ) {
+			db = database;
+		}
+
+		public void do_import ( string csvtext ) {
+			read_column_headers ();
+		}
+
+		private void read_column_headers () {
+			
+		}	
+	}
+
+}
+
+public static int main (string[] args) {
+	return 0;
+}
