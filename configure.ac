@@ -39,6 +39,7 @@ AC_CONFIG_FILES([
 	libsqlpilot/Makefile
 	gtk/Makefile
 	import/Makefile
+	test/Makefile
 	])
 
 AC_OUTPUT

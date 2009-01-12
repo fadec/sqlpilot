@@ -11,7 +11,6 @@ BUILT_SOURCES = vala.stamp
 sqlpilot_import_VALASOURCES = importer.vala
 
 sqlpilot_import_SOURCES = \
-	sqlpilot.vala.stamp \
 	$(sqlpilot_import_VALASOURCES:.vala=.c) \
 	$(sqlpilot_import_VALASOURCES:.vala=.h)
 
@@ -29,10 +28,7 @@ vala.stamp: $(sqlpilot_import_VALASOURCES)
 
 sqlpilot_import_LDADD = \
 	$(GLIB_LIBS) \
-	../libsqlpilot/libsqlpilot.la \
-	$(NULL)
-
-sqlpilot_import_LDFLAGS = -lsqlite3
+	../libsqlpilot/libsqlpilot.la
 
 #vapidir = $(datadir)/vala/vapi
 

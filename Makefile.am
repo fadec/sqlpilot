@@ -2,7 +2,8 @@ SUBDIRS = \
 	libcsv \
 	libsqlpilot \
 	import \
-	gtk
+	gtk \
+	test
 
 
 
