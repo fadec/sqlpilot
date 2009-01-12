@@ -197,6 +197,7 @@ Status incsv_import(InCSV *incsv, DB *db, int write_strategy)
   int warnings = 0;
   DBStatement *existing, *stmt; /* Existing row, insert or update statement */
   int update = 0;               /* nonzero if stmt is an update */
+  int overwrite = 0;
 
   nrow = 0;
   while (csv_row_fread(incsv->fh,
