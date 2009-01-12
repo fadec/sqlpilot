@@ -1,12 +1,12 @@
 SqlPilot is logbook software for the professional pilot.
 
-It requires gtk2, sqlite3, and python to build.
-Edit config.mk to tune the build if needed.
+It requires vala, gtk2, sqlite3 to build.
 
 To see it run you can:
 
+  ./autogen.sh
   make
-  make db-reset
+  make check
   ./sqlpilot logbook.db
 
 

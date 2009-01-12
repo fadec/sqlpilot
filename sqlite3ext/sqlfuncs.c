@@ -17,16 +17,21 @@
 /* along with Sqlpilot.  If not, see <http://www.gnu.org/licenses/>.    */
 /************************************************************************/
 
-#include "db/db.h"
+/* Build like this:
+ * gcc -c -fPIC db.c
+ * gcc -shared -Wl,-soname,libdb.so -o libdb.so  db.o -lm -lsqlite3
+ * and load with sql:
+ * select load_extension("./libdb.so");
+ */
 
-#include <sqlite3.h>
+#include <sqlite3ext.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <glib.h>
 #include <ctype.h>
 #include <math.h>
 
+SQLITE_EXTENSION_INIT1
 
 /* Takes a numeric column representing minutes and converts it to a hh+mm string. */
 /* Returns null if result would be 00+00 */
@@ -166,264 +171,19 @@ static void linecount_func(sqlite3_context *context, int argc, sqlite3_value **a
   }
 }
 
-void db_register_sqlpilot_functions(DB* db)
-{
-  /* register custom functions */
+int sqlite3_extension_init(
+			   sqlite3 *db,          /* The database connection */
+			   char **pzErrMsg,      /* Write error messages here */
+			   const sqlite3_api_routines *pApi  /* API methods */
+			   ) {
+  SQLITE_EXTENSION_INIT2(pApi);
+
   sqlite3_create_function(db, "m_to_hhmm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
   sqlite3_create_function(db, "hm", 1, SQLITE_ANY, 0, m_to_hhmm_func, 0, 0);
   sqlite3_create_function(db, "hhmm_to_m", 1, SQLITE_ANY, 0, hhmm_to_m_func, 0, 0);
   sqlite3_create_function(db, "bool", 1, SQLITE_ANY, 0, bool_func, 0, 0);
   sqlite3_create_function(db, "linecount", 1, SQLITE_ANY, 0, linecount_func, 0, 0);
   sqlite3_create_function(db, "dist_nm", 4, SQLITE_ANY, 0, dist_nm, 0, 0);
-}
 
-DB* db_open(const char* filename)
-{
-	DB* db;
-	int rc;
-
-	rc = sqlite3_open(filename, &db);
-	if (rc) {
-	  sqlite3_close(db);
-	  fprintf(stderr, "Unable to open database\n");
-	  exit(1);
-	}
-	db_register_sqlpilot_functions(db);
-	return db;
-}
-
-void db_close(DB* db)
-{
-	sqlite3_close( (sqlite3*) db );
-}
-
-DBResults *db_get_table(DB *db, const char *sql, char **errormsg)
-{
-	char **data;
-	int nrow;
-	int ncolumn;
-	DBResults *results;
-	int code;
-	
-	if ((code = sqlite3_get_table(db, sql, &data, &nrow, &ncolumn, errormsg)) != SQLITE_OK)
-	{
-		return NULL;
-	}
-
-	results = malloc(sizeof(DBResults));
-	results->column_names = data;
-	results->table = data + ncolumn;
-	results->column_count = ncolumn;
-	results->row_count = nrow;
-	return results;
-}
-
-void db_results_free(DBResults *results)
-{
-	sqlite3_free_table(results->column_names); // column_names are actually the beginning of the sqlite3 allocated structure
-	free(results);
-}
-
-char *db_results_table_lookup(DBResults *results, int row, int column)
-{
-	return results->table[row * results->column_count + column];
-}
-
-char *db_results_column_name(DBResults *results, int column)
-{
-	return results->column_names[column];
-}
-
-/* int db_prepare(DB *db, const char *sql, DBStatement **stmt, const char **sql_tail) */
-/* { */
-/* 	return sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), (sqlite3_stmt **)stmt, sql_tail); */
-/* } */
-
-int db_prepare(DB *db, const char *sql, DBStatement **stmt)
-{
-  const char *sql_tail;
-  return sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), (sqlite3_stmt**)stmt, &sql_tail);
-}
-
-DBStatement *db_prep(DB *db, const char *sql)
-{
-  const char *sql_tail;
-  sqlite3_stmt *stmt;
-  int err;
-  if ((err = sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), &stmt, &sql_tail)) != SQLITE_OK)
-    {
-      fprintf(stderr, "Error preparing statement:\n%s\n\n", sql);
-      fprintf(stderr, "%s\n\n", db_errmsg(db));
-      sqlite3_close(db);
-      exit(2);
-    }
-  return stmt;
-}
-
-int db_bind_text(DBStatement *stmt, int i, const char *text)
-{
-  return sqlite3_bind_text(stmt, i, text, strlen(text), SQLITE_TRANSIENT);
-}
-
-int db_bind_int(DBStatement *stmt, int i, int n)
-{
-  return sqlite3_bind_int(stmt, i, n);
-}
-
-int db_bind_int64(DBStatement *stmt, int i, int n)
-{
-  return sqlite3_bind_int64(stmt, i, n);
-}
-
-int db_bind_double(DBStatement *stmt, int i, double n)
-{
-  return sqlite3_bind_double(stmt, i, n);
-}
-
-int db_bind_null(DBStatement *stmt, int i)
-{
-  return sqlite3_bind_null(stmt, i);
-}
-
-int db_bind_nonempty_text_else_null(DBStatement *stmt, int i, const char *text)
-{
-  return (text && *text) ? db_bind_text(stmt, i, text) : db_bind_null(stmt, i);
-}
-
-int db_clear_bindings(DBStatement *stmt)
-{
-  return sqlite3_clear_bindings(stmt);
-}
-
-int db_reset(DBStatement *stmt)
-{
-  return sqlite3_reset(stmt);
-}
-
-DB *db_handle(DBStatement *stmt)
-{
-  return sqlite3_db_handle(stmt);
-}
-
-int db_column_count(DBStatement *stmt)
-{
-	return sqlite3_column_count((sqlite3_stmt*)stmt);
-}
-
-int db_stp_res_clr(DBStatement *stmt)
-{
-  int ret;
-
-  ret = db_step(stmt);
-  db_reset(stmt);
-  db_clear_bindings(stmt);
-
-  return ret;
-}
-
-int db_finalize(DBStatement *stmt)
-{
-	return sqlite3_finalize(stmt);
-}
-
-int db_step(DBStatement *stmt)
-{
-	return sqlite3_step(stmt);
-}
-
-DBint64 db_last_insert_rowid(DB *db)
-{
-  return sqlite3_last_insert_rowid(db);
-}
-
-int db_column_type(DBStatement *stmt, int icolumn)
-{
-  return sqlite3_column_type((sqlite3_stmt *)stmt, icolumn);
-}
-
-const unsigned char *db_column_text(DBStatement *stmt, int icolumn)
-{
-	return sqlite3_column_text((sqlite3_stmt *)stmt, icolumn);
-}
-
-int db_column_int(DBStatement *stmt, int icolumn)
-{
-  return sqlite3_column_int(stmt, icolumn);
-}
-
-DBint64 db_column_int64(DBStatement *stmt, int i)
-{
-  return (DBint64) sqlite3_column_int64(stmt, i);
-}
-
-int db_column_bytes(DBStatement *stmt, int icolumn)
-{
-	return sqlite3_column_bytes((sqlite3_stmt *)stmt, icolumn);
-}
-
-const char *db_column_name(DBStatement *stmt, int icolumn)
-{
-	return sqlite3_column_name((sqlite3_stmt *)stmt, icolumn);
-}
-
-// incomplete
-DBResults *db_get_list(DB *db, const char *sql, char **errormsg)
-{
-	sqlite3_stmt *stmt;
-	const char *unused_sql;
-	int result_code;
-	int column_count;
-	int i;
-	const unsigned char *text;
-	unsigned char **row;
-	GSList *list = NULL;
-	DBResults *results;
-
-	sqlite3_prepare_v2((sqlite3*)db, sql, strlen(sql), &stmt, &unused_sql);
-	column_count = sqlite3_column_count(stmt);
-
-	while ((result_code = sqlite3_step(stmt)) == SQLITE_ROW)
-	{
-		row = malloc(sizeof(unsigned char*) * column_count);
-		//printf("%d\n", row);
-		for(i = 0; i < column_count; i++)
-		{
-			text = sqlite3_column_text(stmt, i);
-			row[i] = malloc(sqlite3_column_bytes(stmt, i) + 1);
-			strcpy( ((char **)row)[i], (char *)text);
-		}
-		list = g_slist_prepend(list, row);
-		//printf("%s\n", ((unsigned char **)list->data)[0]);
-	}
-
-	sqlite3_finalize(stmt);
-	
-	results = malloc(sizeof(DBResults));
-	results->column_count = column_count;
-	results->row_count = g_slist_length(list);
-	// I think reverse is in place - no new list is allocated??
-	list = g_slist_reverse(list);
-	results->list = list;
-	
-	return results;
-}
-
-const char **db_get_one(DB *db, const char *sql);
-
-int db_exec_simple(DB *db, const char *sql)
-{
-  char *errmsg;
-  int rc;
-  rc = sqlite3_exec((sqlite3*) db, sql, NULL, NULL, &errmsg);
-  if (errmsg) {
-    fprintf(stdout, "%s\n", errmsg);
-    sqlite3_free(errmsg);
-    //    exit(1);
-  }
-  return rc;
-}
-
-const char *db_errmsg(DB *db)
-{
-  return sqlite3_errmsg((sqlite3*)db);
+  return 0;
 }

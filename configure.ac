@@ -21,21 +21,24 @@ GLIB_REQUIRED=2.10.0
 PKG_CHECK_MODULES(GLIB, [
 	glib-2.0 >= $GLIB_REQUIRED
 	gobject-2.0 >= $GLIB_REQUIRED
-	gtk+-2.0 >= 2.10.0
-	sqlite3
 ])
+
+PKG_CHECK_MODULES(GTK, [
+	gtk+-2.0 >= 2.10.0
+])
+
+PKG_CHECK_MODULES(SQLITE, [
+	sqlite3 >= 3.6.7
+])
+
 
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 
-dnl AC_CONFIG_FILES([Makefile
-dnl            sqlpilot-0.0.pc
-dnl            gtk/Makefile
-dnl            tests/Makefile])
-
 AC_CONFIG_FILES([
 	Makefile
 	libcsv/Makefile
+	sqlite3ext/Makefile
 	libsqlpilot/Makefile
 	gtk/Makefile
 	import/Makefile

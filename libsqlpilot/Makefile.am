@@ -33,7 +33,8 @@ vala.stamp: $(libsqlpilot_la_VALASOURCES)
 	touch $@
 
 libsqlpilot_la_LIBADD = \
-	$(GLIB_LIBS)
+	$(GLIB_LIBS)    \
+	$(SQLITE_LIBS)
+
 
 EXTRA_DIST += vala.stamp
-

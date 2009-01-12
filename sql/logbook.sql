@@ -252,60 +252,60 @@ create index routing_flight_id on routing(flight_id);
 create index routing_airport_id on routing(airport_id);
 
 
-select flights.id as '_\\id'
- , a.id as '_\\aircraft_id'
- , r.id as '_\\role_id'
- , dep.id as '_\\dep_id'
- , arr.id as '_\\arr_id'
- , flights.Date as Date
- , flights.Leg as Leg
- , a.tail as Tail
- , a.fleetno as FleetNo
- , m.ident as Model
- , r.ident as Role
- , dep.iata as DepIATA
- , dep.icao as DepICAO
- , arr.iata as ArrIATA
- , arr.icao as ArrICAO
- , dep.iata || ' ' || group_concat(rta.iata, ' ') || ' ' || arr.iata AS RtIATA
- , dep.icao || ' ' || group_concat(rta.icao, ' ') || ' ' || arr.icao AS RtICAO
- , flights.aout as AOut
- , flights.AOutUTC as AOutUTC
- , flights.ain as AIn
- , flights.AInUTC as AInUTC
- , m_to_hhmm(flights.dur) as Dur
- , m_to_hhmm(flights.night) as Night
- , m_to_hhmm(flights.inst) as Inst
- , m_to_hhmm(flights.siminst) as SimInst
- , bool(flights.hold) as Hold
- , flights.aprch as Aprch
- , linecount(flights.aprch) as nApr
- , bool(flights.xc) as XC
- , round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as Dist
- , flights.dland as DLand
- , flights.nland as NLand
- , flights.crew as Crew
- , linecount(flights.crew) as Crw
- , flights.notes as Notes
- , linecount(flights.notes) as Nts
- , flights.fltno as FltNo
- , flights.sout as SOut
- , flights.SOutUTC as SOutUTC
- , flights.sin as SIn
- , flights.SInUTC as SInUTC
- , m_to_hhmm(flights.sdur) as SDur
- , flights.trip as Trip
- , flights.TripDate as TripDate
- , m_to_hhmm(flights.dur - flights.sdur) as Over
-  from flights
-  left join aircraft a on flights.aircraft_id = a.id
-  left join models m on a.model_id = m.id
-  left join roles r on flights.role_id = r.id
-  left join airports dep on flights.dep_id = dep.id
-  left join airports arr on flights.arr_id = arr.id
-  left join routing rt on rt.flight_id = flights.id
-  left join airports rta on rt.airport_id = rta.id
-  group by flights.id	
+-- select flights.id as '_\\id'
+--  , a.id as '_\\aircraft_id'
+--  , r.id as '_\\role_id'
+--  , dep.id as '_\\dep_id'
+--  , arr.id as '_\\arr_id'
+--  , flights.Date as Date
+--  , flights.Leg as Leg
+--  , a.tail as Tail
+--  , a.fleetno as FleetNo
+--  , m.ident as Model
+--  , r.ident as Role
+--  , dep.iata as DepIATA
+--  , dep.icao as DepICAO
+--  , arr.iata as ArrIATA
+--  , arr.icao as ArrICAO
+--  , dep.iata || ' ' || group_concat(rta.iata, ' ') || ' ' || arr.iata AS RtIATA
+--  , dep.icao || ' ' || group_concat(rta.icao, ' ') || ' ' || arr.icao AS RtICAO
+--  , flights.aout as AOut
+--  , flights.AOutUTC as AOutUTC
+--  , flights.ain as AIn
+--  , flights.AInUTC as AInUTC
+--  , m_to_hhmm(flights.dur) as Dur
+--  , m_to_hhmm(flights.night) as Night
+--  , m_to_hhmm(flights.inst) as Inst
+--  , m_to_hhmm(flights.siminst) as SimInst
+--  , bool(flights.hold) as Hold
+--  , flights.aprch as Aprch
+--  , linecount(flights.aprch) as nApr
+--  , bool(flights.xc) as XC
+--  , round(dist_nm(dep.lat, dep.lon, arr.lat, arr.lon)) as Dist
+--  , flights.dland as DLand
+--  , flights.nland as NLand
+--  , flights.crew as Crew
+--  , linecount(flights.crew) as Crw
+--  , flights.notes as Notes
+--  , linecount(flights.notes) as Nts
+--  , flights.fltno as FltNo
+--  , flights.sout as SOut
+--  , flights.SOutUTC as SOutUTC
+--  , flights.sin as SIn
+--  , flights.SInUTC as SInUTC
+--  , m_to_hhmm(flights.sdur) as SDur
+--  , flights.trip as Trip
+--  , flights.TripDate as TripDate
+--  , m_to_hhmm(flights.dur - flights.sdur) as Over
+--   from flights
+--   left join aircraft a on flights.aircraft_id = a.id
+--   left join models m on a.model_id = m.id
+--   left join roles r on flights.role_id = r.id
+--   left join airports dep on flights.dep_id = dep.id
+--   left join airports arr on flights.arr_id = arr.id
+--   left join routing rt on rt.flight_id = flights.id
+--   left join airports rta on rt.airport_id = rta.id
+--   group by flights.id	
 
 
 

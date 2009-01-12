@@ -4,7 +4,8 @@ bin_PROGRAMS = sqlpilot-gtk
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
-	$(GLIB_CFLAGS)
+	$(GLIB_CFLAGS)  \
+	$(GTK_CFLAGS)
 
 BUILT_SOURCES = vala.stamp
 
@@ -32,6 +33,8 @@ vala.stamp: $(sqlpilot_gtk_VALASOURCES)
 
 sqlpilot_gtk_LDADD = \
 	$(GLIB_LIBS) \
+	$(GTK_LIBS) \
+	$(SQLITE_LIBS) \
 	../libsqlpilot/libsqlpilot.la
 
 #vapidir = $(datadir)/vala/vapi
