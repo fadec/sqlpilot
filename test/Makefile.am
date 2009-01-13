@@ -1,14 +1,19 @@
 include $(top_srcdir)/Makefile.decl
 
-TESTS = test-csv
+check_PROGRAMS = \
+	test-csv \
+	test-logbook
 
-check_PROGRAMS = test-csv
+TESTS = $(check_PROGRAMS)
+
+TESTS_ENVIRONMENT = $(srcdir)/runner.sh
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	$(GLIB_CFLAGS)
 
-BUILT_SOURCES = vala.stamp
+BUILT_SOURCES = test_csv.vala.stamp test_logbook.vala.stamp
+
 
 test_csv_VALASOURCES = testcsv.vala
 
@@ -17,7 +22,7 @@ test_csv_SOURCES = \
 	$(test_csv_VALASOURCES:.vala=.h)
 
 
-vala.stamp: $(test_csv_VALASOURCES)
+test_csv.vala.stamp: $(test_csv_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir) \
 	--vapidir $(top_srcdir)/libcsv --pkg libcsv -C $^
 	touch $@
@@ -25,5 +30,23 @@ vala.stamp: $(test_csv_VALASOURCES)
 test_csv_LDADD = \
 	$(GLIB_LIBS) \
 	$(top_srcdir)/libcsv/libcsv.la
+
+
+test_logbook_VALASOURCES = testlogbook.vala
+
+test_logbook_SOURCES = \
+	$(test_logbook_VALASOURCES:.vala=.c) \
+	$(test_logbook_VALASOURCES:.vala=.h)
+
+
+test_logbook.vala.stamp: $(test_logbook_VALASOURCES)
+	$(VALAC) --basedir $(top_srcdir) \
+	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot --pkg sqlite3 -C $^
+	touch $@
+
+test_logbook_LDADD = \
+	$(GLIB_LIBS) \
+	$(SQLITE_LIBS) \
+	$(top_srcdir)/libsqlpilot/libsqlpilot.la
 
 

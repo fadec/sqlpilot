@@ -22,29 +22,41 @@ namespace SqlPilot {
 				stderr.printf ( "Some db error while opening" );
 				return false;
 			}
-			transaction = new Transaction ( this );
- 			flight = new FlightCrud ( this );
-			role = new RoleCrud ( this );
 			load_db_extensions ();
+			transaction = new Transaction (this);
+ 			flight = new FlightCrud (this);
+			role = new RoleCrud (this);
+			aircraft = new AircraftCrud (this);
+			model = new ModelCrud (this);
+			airport = new AirportCrud (this);
+			routing = new RoutingCrud (this);
+
 			return true;
 		}
 
+
 		public Statement? prepare_statement ( string sql ) {
 			Statement stmt;
+			int err;
 			if (db.prepare (sql, (int)sql.length, out stmt) == OK) {
 				return stmt;
 			} else {
+				message ("Error preparing statement.\n%s\n%s", sql, db.errmsg ());
 				return null;
 			}
 		}
 
 		private bool load_db_extensions () {
-			var sofile = "sqlite3ext/.libs/libsqlpilot-sqlite3ext.so";
+			string errmsg;
+			var	sofile = "libsqlpilot-sqlite3ext.so";
 			if ( ! FileUtils.test (sofile, FileTest.EXISTS)) {
-				sofile = "libsqlpilot-sqlite3ext.so";
+				sofile = "../sqlite3ext/.libs/libsqlpilot-sqlite3ext.so";
 			}
-			var query = "SELECT load_extension(" + sofile + ");";
-			db.exec (query);
+			var query = "SELECT load_extension(\"" + sofile + "\");";
+			db.enable_load_extension (true);
+			if (db.exec (query, null, out errmsg) != OK) {
+				message ("Failed to load sqlite3 extension\n%s", errmsg);
+			};
 			return true;
 		}
 	}

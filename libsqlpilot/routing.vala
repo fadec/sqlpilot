@@ -2,8 +2,38 @@ using Sqlite;
 namespace SqlPilot {
 	public class Routing : Record {
 
-		public Record flight;
-		public Airport airport;
+		private int64 flight_id;
+		private Flight? _flight;
+		public Flight? flight {
+			get {
+				if (_flight == null && flight_id != 0) {
+					_flight = crud.logbook.flight.find_by_id (flight_id);
+				}
+				return _flight;
+			}
+			set {
+				_flight = value;
+				flight_id = value.id;
+			}
+		}
+
+
+		private int64 airport_id;
+		private Airport? _airport;
+		public Airport? airport {
+			get {
+				if (_airport == null && airport_id != 0) {
+					_airport = crud.logbook.airport.find_by_id (airport_id);
+				}
+				return _airport;
+			}
+			set {
+				_airport = value;
+				airport_id = value.id;
+			}
+		}
+
+
 		public int seq;
 
 		public Routing (RoutingCrud crud) {
@@ -12,12 +42,17 @@ namespace SqlPilot {
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
-			// bind here and return id column
+			stmt.bind_int64 (i++, flight_id);
+			stmt.bind_int64 (i++, airport_id);
+			stmt.bind_int   (i++, seq);
 			return i;
 		}
 
 		public override void set_from_stmt (Statement stmt) {
-			var i = 0;
+			var i = 1;
+			flight_id  = stmt.column_int64 (i++);
+			airport_id = stmt.column_int64 (i++);
+			seq        = stmt.column_int (i++);
 		}
 	}
 }

@@ -1,8 +1,8 @@
 using Sqlite;
 namespace SqlPilot {
 	public class Role : Record {
-		public string ident;
-		public string name;
+		public string ident = "";
+		public string name = "";
 		public bool pic;
 		public bool sic;
 		public bool fe;
@@ -13,6 +13,10 @@ namespace SqlPilot {
 
 		public Role ( RoleCrud crud ) {
 			base (crud);
+		}
+
+		public override string to_string () {
+			return "<Role %s>".printf (ident);
 		}
 
 		protected override int bind_for_save (Statement stmt) {
@@ -27,10 +31,11 @@ namespace SqlPilot {
 			stmt.bind_int (i++, (int) instruct);
 			stmt.bind_int (i++, (int) total);
 			return i;
+			
 		}
 
 		protected override void set_from_stmt (Statement stmt) {
-			var i = 0;
+			var i = 1;
 			ident = stmt.column_text(i++);
 			name = stmt.column_text(i++);
 			pic = (bool) stmt.column_int(i++);

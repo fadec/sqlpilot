@@ -2,6 +2,14 @@
 namespace SqlPilot {
 
 	public class Duration {
-		private ulong _seconds;
+		private int64 _seconds;
+		
+		public int64 to_seconds () {
+			return _seconds;
+		}
+
+		public Duration set_from_seconds ( int64 _seconds ) {
+			return this;
+		}
 	}
 }

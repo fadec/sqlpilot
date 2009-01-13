@@ -11,41 +11,50 @@ namespace SqlPilot {
 
 		public int64 id;
 
-		public bool new_record;
-		public bool modified;
+		public bool is_new;
+
+		public bool is_modified;
 
 		public abstract Record ( Crud c ) {
 			crud = c;
-			modified = true;
-			new_record = true;
+			is_modified = true;
+			is_new = true;
+			id = 0;
 		}
 
 		public bool save () {
-			if ( ! modified ) return true;
+			if ( ! is_modified ) return true;
+			int ncol = 0;
 			weak Statement stmt;
 			save_dependencies ();
-			if (new_record) {
+			if (is_new) {
 				stmt = crud.insert;
-				bind_for_save (stmt);
+				ncol = bind_for_save (stmt);
 			} else {
 				stmt = crud.update;
 				bind_for_save (stmt);
-				var where_id_column = bind_for_save (stmt);
-				stmt.bind_int64 (where_id_column, id);
+				ncol = bind_for_save (stmt);
+				stmt.bind_int64 (ncol, id);
+			}
+			// If my bind_for_save methods are correct the counts should match.
+			if (ncol != crud.column_names.length) {
+				message ("bind_for_save returned incorrect count of %d for %s which has %d columns",
+						 ncol, crud.table_name, crud.column_names.length);
+				assert (false);
 			}
 			stmt.step ();
 			stmt.reset ();
 			stmt.clear_bindings ();
-			if (new_record) {
+			if (is_new) {
 				id = stmt.db_handle().last_insert_rowid ();
-				new_record = false;
+				is_new = false;
 			}
 			save_dependents ();
 			return true;
 		}
 
 		public bool delete () {
-			if (new_record) return false;
+			if (is_new) return false;
 			weak Statement stmt = crud.destroy;
 			stmt.bind_int64 (1, id);
 			stmt.step ();

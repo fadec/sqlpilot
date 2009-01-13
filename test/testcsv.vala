@@ -7,16 +7,16 @@ public static int main ( string[] args ) {
 	try {
 		reader.open ( "test.csv" );
 	} catch {
-		stderr.printf ( "error - exiting\n" );
+//		stderr.printf ( "error - exiting\n" );
 		return 1;
 	}
 	weak string[] fields;
 	while ((fields = reader.read_row ()) != null) {
 		foreach (string s in fields ) {
-			stderr.printf ("%s\n", s);
+//			stderr.printf ("%s\n", s);
 		}
 	}
 
-	stderr.printf("Leaving Main\n");
+//	stderr.printf("Leaving Main\n");
 	return 0;
 }

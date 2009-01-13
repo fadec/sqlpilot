@@ -15,33 +15,100 @@ namespace SqlPilot {
 		public Statement insert;
 		public Statement update;
 		public Statement destroy;
+		public string table_name;
+		public string[] column_names;
 
-		protected void init_crud_statements (Logbook logbook,
-										string find_sql,
-										string insert_sql,
-										string update_sql,
-										string destroy_sql) {
+		protected Crud (Logbook logbook, string table_name) {
+				
 			this.logbook = logbook;
-			find   = logbook.prepare_statement (find_sql);
-			insert = logbook.prepare_statement (insert_sql);
-			update = logbook.prepare_statement (update_sql);
-			destroy = logbook.prepare_statement (destroy_sql);
+			this.table_name = table_name;
+			column_names = table_column_names (table_name);
+			find   = logbook.prepare_statement (make_find_sql (table_name));
+			insert = logbook.prepare_statement (make_insert_sql (table_name));
+			update = logbook.prepare_statement (make_update_sql (table_name));
+			destroy = logbook.prepare_statement (make_destroy_sql (table_name));
 		}
 
+		// new_record is abstract so it can call the correct contsructor on the record,
+		// thus ensuring that the correct crud gets passed to the constructor.
+		// Abstract records can't be instantiated anyway so new_record must know its
+		// friend Record type.
+		// Unfortunately it can only return a Record so each concrete Crud should
+		// implement a beget() function that casts new_record() to its friend type.
+		// e.g. FlightCrud#beget() returns a Flight
 		public abstract Record new_record ();
+ 		
 
- 		protected Record? record_find_by_id (int64 id) {
+		private string make_find_sql ( string table_name ) {
+			return "SELECT * FROM " + table_name + " WHERE id = ?;";
+		}
+
+		private string make_insert_sql ( string table_name ) {
+			var names = table_column_names (table_name);
+			string sql = "INSERT INTO " + table_name + " (";
+			// start at index 1 to skip "id" column at index 0
+			for (int i = 1; i < names.length; i++) {
+				if (i > 1) sql += ",";
+				sql += names[i];
+			}
+			sql += ") VALUES (";
+			for (int i = 1; i < names.length; i++) {
+				if (i > 1) sql += ",";
+				sql += "?";
+			}
+			sql += ");";
+			return sql;
+		}
+
+		private string make_update_sql ( string table_name ) {
+			var names = table_column_names (table_name);
+			string sql = "UPDATE " + table_name + " SET ";
+			for (int i = 1; i < names.length; i++) {
+				if (i > 1) sql += ",";
+				sql += names[i];
+				sql += " = ?";
+			}
+			sql += " WHERE id = ?;";
+			return sql;
+		}
+
+		private string make_destroy_sql ( string table_name ) {
+			return "DELETE FROM " + table_name + " WHERE id = ?;";
+		}
+
+		public string make_select_all_sql ( string table_name ) {
+			return "SELECT * FROM " + table_name + ";"; 
+		}
+
+		public string[] table_column_names ( string table_name ) {
+			var statement = logbook.prepare_statement (make_select_all_sql (table_name));
+			return statement_colunm_names (statement);
+		}
+
+		public string[] statement_colunm_names ( Statement select ) {
+			int ncol = 0;
+			ncol = select.column_count ();
+			var names = new string[] {};
+			names.resize (ncol);
+			for (int i = 0; i < ncol; i++) {
+				names[i] = select.column_name (i);
+			}
+			return names;
+		}
+
+		public Record? record_find_by_id (int64 id) {
 			find.bind_int64 (1, id);
  			return record_find_first(find);
  		}
 
 		protected Record? record_find_first (Statement stmt) {
 			Record? record;
-			if (stmt.step () != DONE) {
+			if (stmt.step () == ROW) {
 				record = new_record ();
+				record.id = stmt.column_int64 (0);
 				record.set_from_stmt (stmt);
-				record.modified = false;
-				record.new_record = false;
+				record.is_modified = false;
+				record.is_new = false;
 			} else {
 				record = null;
 			}
