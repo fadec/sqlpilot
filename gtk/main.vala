@@ -1,4 +1,4 @@
-using SqlPilot;
+using SqlPilotGtk;
 
 public static int main ( string[] args ) {
 	Gtk.init( ref args );		
@@ -9,10 +9,6 @@ public static int main ( string[] args ) {
 			window.add_logbook ( logbook );
 			window.show_all ();
 			Gtk.main ();
-		}
-		catch (NiceDBError e) {
-			stderr.printf ( "%s\n", e.message );
-			return 1;
 		}
 		catch (Error e) {
 			stderr.printf ( "%s\n", e.message );

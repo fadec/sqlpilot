@@ -2,7 +2,7 @@
 using Gtk;
 using GLib;
 
-namespace SqlPilot {
+namespace SqlPilotGtk {
 	public class Gui {
 		private HashTable <string, Gtk.Object> objects;
 

@@ -5,7 +5,8 @@ bin_PROGRAMS = sqlpilot-gtk
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	$(GLIB_CFLAGS)  \
-	$(GTK_CFLAGS)
+	$(GTK_CFLAGS)   \
+	$(SQLITE_CFLAGS)
 
 BUILT_SOURCES = vala.stamp
 
@@ -25,9 +26,10 @@ sqlpilot_gtk_SOURCES = \
 	$(sqlpilot_gtk_VALASOURCES:.vala=.h)
 
 vala.stamp: $(sqlpilot_gtk_VALASOURCES)
-	$(VALAC) --basedir . \
+	$(VALAC) --basedir $(top_srcdir) \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--pkg gtk+-2.0 \
+	--pkg sqlite3 \
 	-C $^
 	touch $@
 

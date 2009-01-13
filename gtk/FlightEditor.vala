@@ -1,4 +1,4 @@
-namespace SqlPilot {
+namespace SqlPilotGtk {
 	public class FlightEditor : Editor {
 		private weak Logbook logbook;
 

@@ -4,6 +4,7 @@ bin_PROGRAMS = sqlpilot-import
 
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
+	-I$(top_srcdir)/libsqlpilot \
 	$(GLIB_CFLAGS)
 
 BUILT_SOURCES = vala.stamp
@@ -20,7 +21,7 @@ sqlpilot_import_SOURCES = \
 
 
 vala.stamp: $(sqlpilot_import_VALASOURCES)
-	$(VALAC) --basedir .                                \
+	$(VALAC) --basedir $(top_srcdir)                            \
 	--vapidir $(top_srcdir)/libcsv --pkg libcsv         \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--pkg sqlite3 -C $^

@@ -1,7 +1,7 @@
 using GLib;
 using Gtk;
 
-namespace SqlPilot {
+namespace SqlPilotGtk {
 	public class MainWindow : Window {
 		construct {
 			this.title = "SqlPilot";

@@ -10,23 +10,32 @@ BUILT_SOURCES = vala.stamp
 
 libsqlpilot_la_VALASOURCES = \
 	aircraft.vala \
+	aircraftcrud.vala \
 	airport.vala \
+	airportcrud.vala \
+	crud.vala \
 	date.vala \
 	duration.vala \
 	flight.vala \
+	flightcrud.vala \
+	logbook.vala \
 	model.vala \
-	nicedb.vala \
+	modelcrud.vala \
 	record.vala \
 	role.vala \
+	rolecrud.vala \
 	routing.vala \
-	timeofday.vala
+	routingcrud.vala \
+	timeofday.vala \
+	util.vala
 
 libsqlpilot_la_SOURCES = \
 	$(libsqlpilot_la_VALASOURCES:.vala=.c) \
 	$(libsqlpilot_la_VALASOURCES:.vala=.h)
 
-# sqlpilotinclude_HEADERS = \
-# 	$(libgee_la_VALASOURCES:.vala=.h)
+# libsqlpilotincludedir = $(includedir)/libsqlpilot
+# libsqlpilotinclude_HEADERS = \
+# 	$(libsqlpilot_la_VALASOURCES:.vala=.h)
 
 vala.stamp: $(libsqlpilot_la_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir) --library libsqlpilot --vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^

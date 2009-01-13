@@ -1,16 +1,18 @@
 
 using Gtk;
+using Sqlite;
 
-namespace SqlPilot {
+namespace SqlPilotGtk {
 
 	public class Logbook : Pane {
-		private NiceDB db;
+		private SqlPilot.Logbook logbook;
 
 		private FlightEditor flight_editor;
 
-		public Logbook ( string filename ) throws NiceDBError {
+		public Logbook ( string filename ) {
 			base ( "data/ui/logbook.xml" );
-			db = new NiceDB ( filename );
+			logbook = new SqlPilot.Logbook ();
+			logbook.open ( filename );
 			add_pages ();
 		}
 

@@ -1,6 +1,7 @@
 
 using Gtk;
-namespace SqlPilot {
+using SqlPilot;
+namespace SqlPilotGtk {
 
 	public class Editor : Pane {
 

@@ -1,5 +1,5 @@
 using Gtk;
-namespace SqlPilot {
+namespace SqlPilotGtk {
 	public class Pane {
 		
 		protected Gui gui;

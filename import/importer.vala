@@ -3,11 +3,11 @@ using CSV;
 
 namespace SqlPilot {
 	public class Importer {
-		private NiceDB db;
+		private Logbook logbook;
 		private HashTable<string, int> columns;
 
-		public Importer ( NiceDB database ) {
-			db = database;
+		public Importer ( Logbook logb ) {
+			logbook = logb;
 		}
 
 		public void do_import ( string csvtext ) {
