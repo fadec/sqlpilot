@@ -21,12 +21,26 @@ namespace SqlPilot {
 			is_new = true;
 			id = 0;
 		}
-
+		
+		// Flight -> Role, Aircraft, Airport, Airport
+		// Aircraft -> Model
+		// Routing -> Flight, Airport
+		// ---------------------------------------------
+		// Save loop: flight_1 -> routing_1 -> flight_1 -> ...
+		// Double update: flight_1 -> airport_1; flight_1 -> routing_1 -> airport_1 /"route a to b to a to c"
+		// Double insert: ""
+		// Overwrite: flight_1 -> airport_1; flight_1 -> routing_1 -> clone of airport_1
+		// save/delete: flight_1 -> save airport_1; flight_1 -> delete routing -> airport_1
 		public bool save () {
-			if ( ! is_modified ) return true;
+//			if ( ! is_modified ) return true;
 			int ncol = 0;
 			weak Statement stmt;
-			save_dependencies ();
+			weak Transaction transaction = crud.logbook.transaction;
+			transaction.begin ();
+			if (! save_dependencies ()) {
+				transaction.rollback ();
+				return false;
+			}
 			if (is_new) {
 				stmt = crud.insert;
 				ncol = bind_for_save (stmt);
@@ -40,7 +54,8 @@ namespace SqlPilot {
 			if (ncol != crud.column_names.length) {
 				message ("bind_for_save returned incorrect count of %d for %s which has %d columns",
 						 ncol, crud.table_name, crud.column_names.length);
-				assert (false);
+				transaction.rollback ();
+				return false;
 			}
 			stmt.step ();
 			stmt.reset ();
@@ -49,7 +64,11 @@ namespace SqlPilot {
 				id = stmt.db_handle().last_insert_rowid ();
 				is_new = false;
 			}
-			save_dependents ();
+			if (! save_dependents ()) {
+				transaction.rollback ();
+				return false;
+			}
+			transaction.commit ();
 			return true;
 		}
 

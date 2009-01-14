@@ -72,6 +72,8 @@ namespace SqlPilot {
 		private Statement ta_commit;
 		private Statement ta_rollback;
 
+		private bool in_progress = false;
+
 		public Transaction ( Logbook logb ) {
 			logbook = logb;
 			ta_begin = logbook.prepare_statement (ta_begin_sql);
@@ -80,18 +82,24 @@ namespace SqlPilot {
 		}
 
 		public void begin () {
+			if (in_progress) return;
 			ta_begin.step ();
 			ta_begin.reset ();
+			in_progress = true;
 		}
 
 		public void commit () {
+			if (! in_progress) return;
 			ta_commit.step ();
 			ta_commit.reset ();
+			in_progress = false;
 		}
 
 		public void rollback () {
+			if (! in_progress) return;
 			ta_rollback.step ();
 			ta_rollback.reset ();
+			in_progress = false;
 		}
 	}
 }

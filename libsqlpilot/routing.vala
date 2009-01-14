@@ -54,5 +54,15 @@ namespace SqlPilot {
 			airport_id = stmt.column_int64 (i++);
 			seq        = stmt.column_int (i++);
 		}
+
+		protected override bool save_dependencies () {
+			if (airport != null && airport.save ()) airport_id = airport.id;
+			return true;
+		}
+
+		protected override bool save_dependents () {
+
+			return true;
+		}
 	}
 }

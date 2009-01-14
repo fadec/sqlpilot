@@ -15,12 +15,17 @@ namespace SqlPilot {
 			set {
 				_model = value;
 				model_id = value.id;
+				is_modified = true;
 			}
 		}
 
-		public string tail = "";
-		public string fleetno = "";
-		public string notes = "";
+		private string _tail = "";
+		public string tail { get { return _tail; } set { _tail = value; is_modified = true; } }
+		private string _fleetno = "";
+		public string fleetno { get { return _fleetno; } set { _fleetno = value; is_modified = true; } }
+		private string _notes = "";
+		public string notes { get { return _notes; } set { _notes = value; is_modified = true; } }
+
 
 		public Aircraft (AircraftCrud crud) {
 			base (crud);
@@ -41,6 +46,15 @@ namespace SqlPilot {
 			tail = stmt.column_text (i++);
 			fleetno = stmt.column_text (i++);
 			notes = stmt.column_text (i++);
+		}
+
+		protected override bool save_dependencies () {
+			if (model != null && model.save ()) model_id = model.id;
+			return true;
+		}
+
+		protected override bool save_dependents () {
+			return true;
 		}
 
 	}

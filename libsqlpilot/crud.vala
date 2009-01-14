@@ -118,7 +118,19 @@ namespace SqlPilot {
 		}
 
 		protected List<Record> record_find_all (Statement stmt) {
-			return new List <Record>();
+			Record? record;
+			var records = new List<Record> ();
+			while (stmt.step () == ROW) {
+				record = new_record ();
+				record.id = stmt.column_int64 (0);
+				record.set_from_stmt (stmt);
+				record.is_modified = false;
+				record.is_new = false;
+				records.append (record);
+			}
+			stmt.reset ();
+			stmt.clear_bindings ();
+			return records;
 		}
 
 	}

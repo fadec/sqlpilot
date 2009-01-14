@@ -3,7 +3,7 @@ namespace SqlPilot {
 	public class Flight : Record {
 
 		public int64 aircraft_id;
-		private Aircraft? _aircraft;
+		private Aircraft? _aircraft = null;
 		public Aircraft? aircraft {
 			get {
 				if (_aircraft == null && aircraft_id != 0) {
@@ -14,6 +14,7 @@ namespace SqlPilot {
 			set {
 				_aircraft = value;
 				aircraft_id = value.id;
+				is_modified = true;
 			}
 		}
 
@@ -29,6 +30,7 @@ namespace SqlPilot {
 			set {
 				_role = value;
 				role_id = value.id;
+				is_modified = true;
 			}
 		}
 
@@ -44,6 +46,7 @@ namespace SqlPilot {
 			set {
 				_dep = value;
 				dep_id = value.id;
+				is_modified = true;
 			}
 		}
 
@@ -60,20 +63,22 @@ namespace SqlPilot {
 			set {
 				_arr = value;
 				arr_id = value.id;
+				is_modified = true;
 			}
 		}
 
 
-		private List<Routing>? _routing;
-		public List<Routing> routing {
+		private List<Routing>? _route;
+		public List<Routing> route {
 			get {
-				if (_routing == null) {
-					_routing = crud.logbook.routing.find_by_flight (this);
+				if (_route == null) {
+					_route = crud.logbook.routing.find_by_flight (this);
 				}
-				return _routing;
+				return _route;
 			}
 			set {
-				_routing = value.copy();
+				_route = value.copy();
+				is_modified = true;
 			}
 		}
 
@@ -171,15 +176,18 @@ namespace SqlPilot {
 		}
 
 		protected override bool save_dependencies () {
-			if (aircraft != null) aircraft.save ();
-			if (role != null) role.save ();
-			if (dep != null) dep.save ();
-			if (arr != null) arr.save ();
+			if (aircraft != null && aircraft.save ()) aircraft_id = aircraft.id;
+			if (role != null && role.save ()) role_id = role.id;
+			if (dep != null && dep.save ()) dep_id = dep.id;
+			if (arr != null && arr.save ()) arr_id = arr.id;
 			return true;
 		}
 
 		protected override bool save_dependents () {
-			foreach (Routing r in routing) {
+			int seq = 1;
+			foreach (Routing r in route) {
+				r.flight = this;
+				r.seq = seq++;
 				r.save ();
 			}
 			return true;
