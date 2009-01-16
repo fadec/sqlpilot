@@ -1,6 +1,6 @@
 namespace SqlPilot {
 
-	public class TimeOfDay {
+	public struct TimeOfDay {
 		private ulong _seconds;
 
 		public string to_iso8601 () {
@@ -11,7 +11,7 @@ namespace SqlPilot {
 			return this;
 		}
 
-		public TimeOfDay set_from_iso8601 ( string time ) {
+		public TimeOfDay from_iso8601 ( string time ) {
 			return this;
 		}
 

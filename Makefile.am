@@ -10,7 +10,13 @@ SUBDIRS = \
 
 db-reset: sql/logbook.sql
 	-rm -f logbook.db
-	cat sql/logbook.sql | ./sqlpilot-console logbook.db
+	cat sql/logbook.sql | script/console logbook.db
 
 db-reload: db-reset
 	-awk -f db/airports/airports.awk db/airports/airports.csv | sqlite3 logbook.db
+
+wc:
+	find -name '*.vala' | xargs wc
+
+gdb:
+	gdb --args import/sqlpilot-import logbook.db ttt

@@ -20,18 +20,18 @@ namespace SqlPilot {
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
-			bind_nonempty_text_else_null (stmt, i++, icao);
-			bind_nonempty_text_else_null (stmt, i++, iata);
-			bind_nonempty_text_else_null (stmt, i++, name);
-			bind_nonempty_text_else_null (stmt, i++, city);
-			bind_nonempty_text_else_null (stmt, i++, province);
-			bind_nonempty_text_else_null (stmt, i++, country);
-			bind_nonempty_text_else_null (stmt, i++, lat);
-			bind_nonempty_text_else_null (stmt, i++, lon);
-			bind_nonempty_text_else_null (stmt, i++, elev);
+			stmt.bind_nonempty_text (i++, icao);
+			stmt.bind_nonempty_text (i++, iata);
+			stmt.bind_nonempty_text (i++, name);
+			stmt.bind_nonempty_text (i++, city);
+			stmt.bind_nonempty_text (i++, province);
+			stmt.bind_nonempty_text (i++, country);
+			stmt.bind_nonempty_text (i++, lat);
+			stmt.bind_nonempty_text (i++, lon);
+			stmt.bind_nonempty_text (i++, elev);
 			i++; i++; // skip tzone offsets
-			bind_nonempty_text_else_null (stmt, i++, tzone);
-			bind_nonempty_text_else_null (stmt, i++, notes);
+			stmt.bind_nonempty_text (i++, tzone);
+			stmt.bind_nonempty_text (i++, notes);
 			return i;
 		}
 
@@ -51,7 +51,13 @@ namespace SqlPilot {
 			notes = stmt.column_text (i++);
 		}
 
-
+		public void set_ident (string? ident) {
+			if (ident == null) return;
+			switch (ident.length) {
+			case 3: iata = ident; break;
+			case 4: icao = ident; break;
+			}
+		}
 	}
 
 }

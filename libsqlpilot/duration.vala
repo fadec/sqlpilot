@@ -1,14 +1,18 @@
 
 namespace SqlPilot {
 
-	public class Duration {
+	public struct Duration {
 		private int64 _seconds;
 		
 		public int64 to_seconds () {
 			return _seconds;
 		}
 
-		public Duration set_from_seconds ( int64 _seconds ) {
+		public Duration from_seconds ( int64 _seconds ) {
+			return this;
+		}
+
+		public Duration from_string ( string str ) {
 			return this;
 		}
 	}

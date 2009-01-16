@@ -11,15 +11,16 @@ namespace SqlPilot {
 
 		public int64 id;
 
-		public bool is_new;
-
 		public bool is_modified;
 
 		public abstract Record ( Crud c ) {
 			crud = c;
 			is_modified = true;
-			is_new = true;
 			id = 0;
+		}
+
+		public bool is_new () {
+			return (id == 0);
 		}
 		
 		// Flight -> Role, Aircraft, Airport, Airport
@@ -41,7 +42,7 @@ namespace SqlPilot {
 				transaction.rollback ();
 				return false;
 			}
-			if (is_new) {
+			if (is_new ()) {
 				stmt = crud.insert;
 				ncol = bind_for_save (stmt);
 			} else {
@@ -60,10 +61,9 @@ namespace SqlPilot {
 			stmt.step ();
 			stmt.reset ();
 			stmt.clear_bindings ();
-			if (is_new) {
+			if (is_new ()) {
 				id = stmt.db_handle().last_insert_rowid ();
-				is_new = false;
-			}
+				}
 			if (! save_dependents ()) {
 				transaction.rollback ();
 				return false;
@@ -73,7 +73,7 @@ namespace SqlPilot {
 		}
 
 		public bool delete () {
-			if (is_new) return false;
+			if (is_new ()) return false;
 			weak Statement stmt = crud.destroy;
 			stmt.bind_int64 (1, id);
 			stmt.step ();

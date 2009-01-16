@@ -193,6 +193,18 @@ namespace Sqlite {
 		public weak Value column_value (int col);
 		public weak string column_name (int index);
 		public weak string sql ();
+ 
+		public int bind_nonempty_text (int col, string str) {
+			if ((str != null) && str[0] != 0) this.bind_text (col, str);
+			else this.bind_null (col);
+		}
+
+		public int step_reset_clear () {
+			int code = this.step ();
+			this.reset ();
+			this.clear_bindings ();
+			return code;
+		}
 	}
 
 	[Compact]

@@ -7,7 +7,8 @@ namespace CSV {
 
 		public char sep;
 
-		private FileStream instream;
+		public weak FileStream instream;
+		private FileStream owned_stream;
 		private char* buffer;
 		private char** row;
 		private weak string[] row_export;
@@ -23,9 +24,10 @@ namespace CSV {
 			row = malloc(ncolumns * sizeof(char*));
 		}
 
-		public void open ( string filename ) throws FileError {
+		public void file ( string filename ) throws FileError {
 			// previos instream should be closed automatically on unref
-			instream = FileStream.open ( filename, "r" );
+			owned_stream = FileStream.open ( filename, "r" );
+			instream = owned_stream;
 		}
 
 		public weak string[]? read_row () {

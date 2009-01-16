@@ -50,7 +50,7 @@ namespace SqlPilot {
 			string errmsg;
 			var	sofile = "libsqlpilot-sqlite3ext.so";
 			if ( ! FileUtils.test (sofile, FileTest.EXISTS)) {
-				sofile = "../sqlite3ext/.libs/libsqlpilot-sqlite3ext.so";
+				sofile = "sqlite3ext/.libs/libsqlpilot-sqlite3ext.so";
 			}
 			var query = "SELECT load_extension(\"" + sofile + "\");";
 			db.enable_load_extension (true);

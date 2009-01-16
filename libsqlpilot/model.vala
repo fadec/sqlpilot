@@ -40,9 +40,9 @@ namespace SqlPilot {
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
-			bind_nonempty_text_else_null (stmt, i++, ident);
-			bind_nonempty_text_else_null (stmt, i++, make);
-			bind_nonempty_text_else_null (stmt, i++, type);
+			stmt.bind_nonempty_text (i++, ident);
+			stmt.bind_nonempty_text (i++, make);
+			stmt.bind_nonempty_text (i++, type);
 			stmt.bind_int (i++, (int) airplane);
 			stmt.bind_int (i++, (int) rotorcraft);
 			stmt.bind_int (i++, (int) glider);

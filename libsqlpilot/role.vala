@@ -21,8 +21,8 @@ namespace SqlPilot {
 
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
-			bind_nonempty_text_else_null (stmt, i++, ident);
-			bind_nonempty_text_else_null (stmt, i++, name);
+			stmt.bind_nonempty_text (i++, ident);
+			stmt.bind_nonempty_text (i++, name);
 			stmt.bind_int (i++, (int) pic);
 			stmt.bind_int (i++, (int) sic);
 			stmt.bind_int (i++, (int) fe);

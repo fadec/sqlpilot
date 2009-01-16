@@ -1,4 +1,6 @@
 using Sqlite;
+using Stardate;
+
 namespace SqlPilot {
 	public class Flight : Record {
 
@@ -13,8 +15,8 @@ namespace SqlPilot {
 			}
 			set {
 				_aircraft = value;
+				if (value == null) return;
 				aircraft_id = value.id;
-				is_modified = true;
 			}
 		}
 
@@ -29,8 +31,8 @@ namespace SqlPilot {
 			}
 			set {
 				_role = value;
+				if (value == null) return;
 				role_id = value.id;
-				is_modified = true;
 			}
 		}
 
@@ -45,8 +47,8 @@ namespace SqlPilot {
 			}
 			set {
 				_dep = value;
+				if (value == null) return;
 				dep_id = value.id;
-				is_modified = true;
 			}
 		}
 
@@ -62,27 +64,28 @@ namespace SqlPilot {
 			}
 			set {
 				_arr = value;
+				if (value == null) return;
 				arr_id = value.id;
-				is_modified = true;
 			}
 		}
 
 
-		private List<Routing>? _route;
-		public List<Routing> route {
+		private Route? _route;
+		public Route route {
 			get {
 				if (_route == null) {
-					_route = crud.logbook.routing.find_by_flight (this);
+					_route = new Route (crud.logbook.routing);
+					_route.flight = this;
 				}
 				return _route;
 			}
 			set {
-				_route = value.copy();
-				is_modified = true;
+				if (value == null) _route.clear;
+				else _route = value;
 			}
 		}
 
-		public Date? date;
+		public Stardate.Date date;
 		public int leg;
 		public TimeOfDay? aout;
 		public TimeOfDay? ain;
@@ -102,7 +105,7 @@ namespace SqlPilot {
 		public TimeOfDay? sin;
 		public Duration? sdur;
 		public string trip = "";
-		public Date? trip_date;
+		public Stardate.Date trip_date;
 
 		public Flight ( FlightCrud crud ) {
 			base (crud);
@@ -148,16 +151,16 @@ namespace SqlPilot {
 			role_id     = stmt.column_int64 (i++);
 			dep_id      = stmt.column_int64 (i++);
 			arr_id      = stmt.column_int64 (i++);
-			date        = new Date ().set_from_iso8601 (stmt.column_text (i++));
+			date        = Stardate.Date ().from_iso8601 (stmt.column_text (i++));
 			leg         = stmt.column_int   (i++);
 			i++; // skip local
-			aout        = new TimeOfDay ().set_from_iso8601 (stmt.column_text (i++));
+			aout        = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
 			i++;
-			ain         = new TimeOfDay ().set_from_iso8601 (stmt.column_text (i++));
-			dur         = new Duration ().set_from_seconds (stmt.column_int64 (i++));
-			night       = new Duration ().set_from_seconds (stmt.column_int64 (i++));
-			inst        = new Duration ().set_from_seconds (stmt.column_int64 (i++));
-			sim_inst    = new Duration ().set_from_seconds (stmt.column_int64 (i++));
+			ain         = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
+			dur         = Duration ().from_seconds (stmt.column_int64 (i++));
+			night       = Duration ().from_seconds (stmt.column_int64 (i++));
+			inst        = Duration ().from_seconds (stmt.column_int64 (i++));
+			sim_inst    = Duration ().from_seconds (stmt.column_int64 (i++));
 			hold        = (bool) stmt.column_int (i++);
 			aprch       = stmt.column_text (i++);
 			xc          = (bool) stmt.column_int (i++);
@@ -167,12 +170,12 @@ namespace SqlPilot {
 			notes       = stmt.column_text (i++);
 			fltno       = stmt.column_text (i++);
 			i++; // skip local
-			sout        = new TimeOfDay ().set_from_iso8601 (stmt.column_text (i++));
+			sout        = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
 			i++;
-			sin         = new TimeOfDay ().set_from_iso8601 (stmt.column_text (i++));
-			sdur        = new Duration ().set_from_seconds (stmt.column_int64 (i++));
+			sin         = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
+			sdur        = Duration ().from_seconds (stmt.column_int64 (i++));
 			trip        = stmt.column_text (i++);
-			trip_date   = new Date ().set_from_iso8601 (stmt.column_text (i++));
+			trip_date   = Stardate.Date ().from_iso8601 (stmt.column_text (i++));
 		}
 
 		protected override bool save_dependencies () {
@@ -184,12 +187,7 @@ namespace SqlPilot {
 		}
 
 		protected override bool save_dependents () {
-			int seq = 1;
-			foreach (Routing r in route) {
-				r.flight = this;
-				r.seq = seq++;
-				r.save ();
-			}
+			route.save ();
 			return true;
 		}
 	}

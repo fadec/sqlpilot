@@ -108,7 +108,6 @@ namespace SqlPilot {
 				record.id = stmt.column_int64 (0);
 				record.set_from_stmt (stmt);
 				record.is_modified = false;
-				record.is_new = false;
 			} else {
 				record = null;
 			}
@@ -125,7 +124,6 @@ namespace SqlPilot {
 				record.id = stmt.column_int64 (0);
 				record.set_from_stmt (stmt);
 				record.is_modified = false;
-				record.is_new = false;
 				records.append (record);
 			}
 			stmt.reset ();

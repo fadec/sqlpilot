@@ -34,9 +34,9 @@ namespace SqlPilot {
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
 			stmt.bind_int64 (i++, model_id);
-			bind_nonempty_text_else_null (stmt, i++, tail);
-			bind_nonempty_text_else_null (stmt, i++, fleetno);
-			bind_nonempty_text_else_null (stmt, i++, notes);
+			stmt.bind_nonempty_text (i++, tail);
+			stmt.bind_nonempty_text (i++, fleetno);
+			stmt.bind_nonempty_text (i++, notes);
 			return i;
 		}
 

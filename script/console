@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sqlite3 -init sql/load_extensions.sql $@

@@ -5,6 +5,7 @@ bin_PROGRAMS = sqlpilot-import
 AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	-I$(top_srcdir)/libsqlpilot \
+	-I$(top_srcdir)/libcsv \
 	$(GLIB_CFLAGS)
 
 BUILT_SOURCES = vala.stamp
@@ -21,7 +22,8 @@ sqlpilot_import_SOURCES = \
 
 
 vala.stamp: $(sqlpilot_import_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir)                            \
+	$(VALAC) --basedir $(top_srcdir)     \
+	--vapidir $(top_srcdir)/vapi --pkg stardate         \
 	--vapidir $(top_srcdir)/libcsv --pkg libcsv         \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--pkg sqlite3 -C $^
@@ -29,6 +31,7 @@ vala.stamp: $(sqlpilot_import_VALASOURCES)
 
 sqlpilot_import_LDADD = \
 	$(GLIB_LIBS) \
+	../libcsv/libcsv.la \
 	../libsqlpilot/libsqlpilot.la
 
 #vapidir = $(datadir)/vala/vapi
@@ -38,4 +41,3 @@ sqlpilot_import_LDADD = \
 
 
 # EXTRA_DIST += sqlpilot
-
