@@ -28,14 +28,13 @@ int main ( string[] args) {
   	flight.dep = logbook.airport.beget ();
   	flight.arr = logbook.airport.beget ();
 
-	assert (flight.is_new == true);
+	assert (flight.is_new () == true);
 	assert (flight.aircraft is Aircraft);
 
 	flight.save ();
 	var fid = flight.id;
-	assert (flight.is_new == false);
-	flight = logbook.flight.find_by_id (fid);
-	assert (flight.is_new == false);
+	assert (flight.is_new () == false); flight = logbook.flight.find_by_id (fid);
+	assert (flight.is_new () == false);
 	assert (flight.role != null);
 	assert (flight.role.ident == "CA");
 	assert (flight.aircraft != null);
@@ -67,7 +66,7 @@ int main ( string[] args) {
 	
 //	assert (flight.route is List<Routing>); // Vala generates undefined identifiers for this
 
-	assert (flight.route.length () == 0);
+	assert (flight.route.length == 0);
 
 	flight.dep = minneapolis;
 	flight.arr = grand_forks;
@@ -83,18 +82,18 @@ int main ( string[] args) {
 // 	assert (flight.route.length () == 2);
 
 	// Also a PITA
- 	List<Routing> route = new List<Routing>();
- 	route.append (fargo_stop);
- 	route.append (thief_river_stop);
-	flight.route = route;
-	assert (flight.route.length () == 2);
+ 	// List<Routing> route = new List<Routing>();
+//  	route.append (fargo_stop);
+//  	route.append (thief_river_stop);
+// 	flight.route = route;
+// 	assert (flight.route.length () == 2);
 
 
 	flight.save ();
 
 	flight = logbook.flight.find_by_id (fid);
 
-	assert (flight.route.length () == 2);
+	assert (flight.route.length == 2);
 
 	return 0;
 }

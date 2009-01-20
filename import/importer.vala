@@ -22,7 +22,7 @@ namespace SqlPilot {
 			Airport?  arr;
 			while (row.next ()) {
 			
-				var date_str    = row.col ("date");
+				var date        = Stardate.Date ().from_iso8601 (row.col ("date"));
 				var fltno       = row.col ("fltno");
 				var dep_ident   = row.col ("dep");
 				var arr_ident   = row.col ("arr");
@@ -30,14 +30,13 @@ namespace SqlPilot {
 				var model_ident = row.col ("model");
 				var role_ident  = row.col ("role");
 
-
 				if ((flight =
-					 logbook.flight.find_by_date_fltno_dep_arr (date_str,
+					 logbook.flight.find_by_date_fltno_dep_arr (date.to_iso8601 (),
 																fltno,
 																dep_ident,
 																arr_ident)) == null) {
 					flight       = logbook.flight.beget ();
-					flight.date  = Stardate.Date ().from_iso8601 (date_str);
+					flight.date  = date;
 					flight.fltno = fltno;
 					flight.dep   = logbook.airport.find_by_ident (dep_ident);
 					flight.arr   = logbook.airport.find_by_ident (arr_ident);
@@ -52,7 +51,7 @@ namespace SqlPilot {
 				if ((model =
 					 logbook.model.find_by_ident (model_ident)) == null) {
 					model = logbook.model.beget ();
-					model.ident = fleetno;
+					model.ident = model_ident;
 				}
 				
 				if ((role =
@@ -128,8 +127,9 @@ namespace SqlPilot {
 				if ((fields = csv.read_row ()) != null) {
 					for (int i = 0; i < fields.length; i++) {
 						if (fields[i] != null) {
-							if ((int?)columns.lookup (fields[i]) == null) {
-								columns.insert (fields[i].down(), i);
+							// Hash should return zero for not found, offest real index by + 1
+							if (columns.lookup (fields[i]) == 0) {
+								columns.insert (fields[i].down(), i + 1);
 							} else {
 								// duplicate key
 							}
@@ -140,10 +140,10 @@ namespace SqlPilot {
 
 			public string? col (string column_name) {
 				int index = columns.lookup (column_name);
-				if (index != 123456) { // what if key isn't found?
+				if (index != 0) {
 					message ("%d", index);
 					stderr.printf("index:%d\n", index);
-					return current_row[index];
+					return current_row[index - 1];
 				} else {
 					return null;
 				}

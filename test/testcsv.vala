@@ -5,7 +5,7 @@ public static int main ( string[] args ) {
 	var reader = new Reader ( 10, 50 );
 
 	try {
-		reader.open ( "test.csv" );
+		reader.file ( "test.csv" );
 	} catch {
 //		stderr.printf ( "error - exiting\n" );
 		return 1;

@@ -6,7 +6,7 @@ namespace SqlPilot {
 
 		public ModelCrud ( Logbook logbook ) {
 			base (logbook, "Models");
-			var find_by_ident_sql = "SELECT * FROM Roles WHERE Ident = ?;";
+			var find_by_ident_sql = "SELECT * FROM Models WHERE Ident = ?;";
 			find_by_ident_stmt = logbook.prepare_statement (find_by_ident_sql);
 		}
 

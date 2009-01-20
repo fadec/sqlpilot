@@ -15,8 +15,7 @@ namespace SqlPilot {
 			}
 			set {
 				_aircraft = value;
-				if (value == null) return;
-				aircraft_id = value.id;
+				aircraft_id = (value == null) ? 0 : value.id;
 			}
 		}
 
@@ -31,8 +30,7 @@ namespace SqlPilot {
 			}
 			set {
 				_role = value;
-				if (value == null) return;
-				role_id = value.id;
+				role_id = (value == null) ? 0 : value.id;
 			}
 		}
 
@@ -47,8 +45,7 @@ namespace SqlPilot {
 			}
 			set {
 				_dep = value;
-				if (value == null) return;
-				dep_id = value.id;
+				dep_id = (value == null) ? 0 : value.id;
 			}
 		}
 
@@ -64,8 +61,7 @@ namespace SqlPilot {
 			}
 			set {
 				_arr = value;
-				if (value == null) return;
-				arr_id = value.id;
+				arr_id = (value == null) ? 0 : value.id;
 			}
 		}
 

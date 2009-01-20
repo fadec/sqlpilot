@@ -41,12 +41,11 @@ test_logbook_SOURCES = \
 
 test_logbook.vala.stamp: $(test_logbook_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir) \
-	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot --pkg sqlite3 -C $^
+	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
+	--vapidir $(top_srcdir)/vapi --pkg sqlite3 --pkg stardate -C $^
 	touch $@
 
 test_logbook_LDADD = \
 	$(GLIB_LIBS) \
 	$(SQLITE_LIBS) \
 	$(top_srcdir)/libsqlpilot/libsqlpilot.la
-
-

@@ -15,6 +15,10 @@ namespace SqlPilot {
 			}
 		}
 
+		public uint length {
+			get { return routings.length (); }
+		}
+
 		private List<Routing> routings;
 		private RoutingCrud crud;
 

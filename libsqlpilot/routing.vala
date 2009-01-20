@@ -13,7 +13,7 @@ namespace SqlPilot {
 			}
 			set {
 				_flight = value;
-				flight_id = value.id;
+				flight_id = (value == null) ? 0 : value.id;
 			}
 		}
 
@@ -29,7 +29,7 @@ namespace SqlPilot {
 			}
 			set {
 				_airport = value;
-				airport_id = value.id;
+				airport_id = (value == null) ? 0 : value.id;
 			}
 		}
 

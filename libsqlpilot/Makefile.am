@@ -39,7 +39,7 @@ libsqlpilot_la_SOURCES = \
 
 vala.stamp: $(libsqlpilot_la_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir) --library libsqlpilot \
-	--vapidir $(top_srcdir)/vapi --pkg sqlite3 \
+	--vapidir $(top_srcdir)/vapi --pkg sqlite3 --pkg stardate \
 	--pkg stardate \
 	-C $^
 	touch $@

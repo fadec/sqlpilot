@@ -122,8 +122,8 @@ namespace Stardate {
 		public string to_iso8601 () {
 			DateDay y;
 			int m;
-			DateYear d;			
-			return "la la la";
+			DateYear d;
+			return "%d-%d-%d".printf (y, m, d);
 		}
 
 		public Date from_iso8601 (string date) {

@@ -14,8 +14,7 @@ namespace SqlPilot {
 			}
 			set {
 				_model = value;
-				model_id = value.id;
-				is_modified = true;
+				model_id = (value == null) ? 0 : value.id;
 			}
 		}
 
