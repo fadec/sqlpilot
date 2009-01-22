@@ -9,9 +9,25 @@ namespace SqlPilot {
 		public int get_minute () { return (int)(seconds % 3600) / 60; }
 		public int get_second () { return (int)(seconds % 60); }
 
-		public TimeOfDay () {
-			seconds = 0;
-  			this.timezone = Timezone ("UTC");
+		public static TimeOfDay from_tzname_time (string timezone_string, string time_string) {
+			var tod = TimeOfDay ();
+			tod.timezone = Timezone (timezone_string);
+			tod.read_iso8601 (time_string);
+			return tod;
+		}
+
+		public static TimeOfDay from_timezone_time (Timezone timezone, string time_string) {
+			var tod = TimeOfDay ();
+			tod.timezone = timezone;
+			tod.read_iso8601 (time_string);
+			return tod;
+		}
+
+		public static TimeOfDay from_iso8601 (string time_string) {
+			var tod = TimeOfDay ();
+			tod.timezone = Timezone ("UTC");
+			tod.read_iso8601 (time_string);
+			return tod;
 		}
 
 		public string to_iso8601 () {
@@ -22,16 +38,8 @@ namespace SqlPilot {
 			return "%02d:%02d".printf((int)h, (int)m);
 		}
 
-// Confuses vala with circular dependency
-// 		public Datetime to_datetime (Date date) {
-// 			var dt = Datetime ();
-// 			dt.date = date;
-// 			dt.time_of_day = this;
-// 			return dt;
-// 		}
-
-		public TimeOfDay from_iso8601 (string time) {
-			if ((time == null) || (! time.validate ())) return this;
+		public void read_iso8601 (string time) {
+			if ((time == null) || (! time.validate ())) return;
 			int h = 0;
 			int m = 0;
 			int s = 0;
@@ -44,17 +52,11 @@ namespace SqlPilot {
 			} while ((rem = rem.next_char ()) != "\0" && digits.len < 6);
 			digits.str.scanf ("%2d%2d%2d", out h, out m, out s);
 			set_hms (h, m, s);
-			return this;
+			return;
 		}
 
-		public TimeOfDay set_hms (int h, int m, int s) {
+		public void set_hms (int h, int m, int s) {
 			seconds = h * 3600 + m * 60 + s;
-			return this;
-		}
-
-		public TimeOfDay set_timezone (Timezone tz) {
-			this.timezone = tz;
-			return this;
 		}
 
 	}

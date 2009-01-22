@@ -21,7 +21,7 @@ namespace SqlPilot {
 			Airport?  arr;
 			while (row.next ()) {
 			
-				var date        = Date ().from_iso8601 (row.col ("date"));
+				var date        = Date.from_iso8601 (row.col ("date"));
 				var fltno       = row.col ("fltno");
 				var dep_ident   = row.col ("dep");
 				var arr_ident   = row.col ("arr");
@@ -78,15 +78,15 @@ namespace SqlPilot {
 				flight.dep				= dep;
 				flight.arr				= arr;
 				flight.leg				= row.col ("leg").to_int ();
-				flight.aout				= TimeOfDay ().set_timezone (dep.timezone).from_iso8601 (row.col ("aout"));
-				flight.ain				= TimeOfDay ().set_timezone (arr.timezone).from_iso8601 (row.col ("ain"));
-				flight.sout				= TimeOfDay ().set_timezone (dep.timezone).from_iso8601 (row.col ("sout"));
-				flight.sin				= TimeOfDay ().set_timezone (arr.timezone).from_iso8601 (row.col ("sin"));
-				flight.dur				= Duration ().from_string (row.col ("dur"));
-				flight.sdur				= Duration ().from_string (row.col ("sdur"));
-				flight.night			= Duration ().from_string (row.col ("night"));
-				flight.inst				= Duration ().from_string (row.col ("inst"));
-				flight.sim_inst			= Duration ().from_string (row.col ("siminst"));
+				flight.aout				= TimeOfDay.from_timezone_time (dep.timezone, row.col ("aout"));
+				flight.ain				= TimeOfDay.from_timezone_time (arr.timezone, row.col ("ain"));
+				flight.sout				= TimeOfDay.from_timezone_time (dep.timezone, row.col ("sout"));
+				flight.sin				= TimeOfDay.from_timezone_time (arr.timezone, row.col ("sin"));
+				flight.dur				= Duration.from_string (row.col ("dur"));
+				flight.sdur				= Duration.from_string (row.col ("sdur"));
+				flight.night			= Duration.from_string (row.col ("night"));
+				flight.inst				= Duration.from_string (row.col ("inst"));
+				flight.sim_inst			= Duration.from_string (row.col ("siminst"));
 				flight.aprch			= row.col ("aprch");
 				flight.xc				= str_to_bool (row.col ("xc"));
 				flight.hold				= str_to_bool (row.col ("hold"));
@@ -95,7 +95,7 @@ namespace SqlPilot {
 				flight.notes			= row.col ("notes");
 				flight.crew				= row.col ("crew");
 				flight.trip				= row.col ("trip");
-				flight.trip_date		= Date ().from_iso8601 (row.col ("tripdate"));
+				flight.trip_date		= Date.from_iso8601 (row.col ("tripdate"));
 				flight.route.clear ();
 				flight.route.read (row.col ("route"));
 				flight.save ();

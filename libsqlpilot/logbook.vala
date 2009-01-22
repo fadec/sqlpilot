@@ -83,7 +83,6 @@ namespace SqlPilot {
 		}
 
 		public void begin () {
-			return;
 			if (nesting++ > 0) return;
 			ta_begin.step ();
 			ta_begin.reset ();
@@ -91,7 +90,6 @@ namespace SqlPilot {
 		}
 
 		public void commit () {
-			return;
 			if (--nesting > 0) return;
 			ta_commit.step ();
 			ta_commit.reset ();
@@ -99,7 +97,6 @@ namespace SqlPilot {
 		}
 
 		public void rollback () {
-			return;
 			if (--nesting > 0) return;
 			ta_rollback.step ();
 			ta_rollback.reset ();

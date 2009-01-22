@@ -16,21 +16,33 @@ namespace SqlPilot {
 			return date.to_iso8601 () + " " + time_of_day.to_iso8601 ();
 		}
 
-		time_t mktime()
+		public time_t mktime()
 		{
 			time_of_day.timezone.use ();
 			return to_glib_time ().mktime ();
 		}
 
+		public time_t diff (Datetime other) {
+//			return difftime (mktime (), other.mktime ());
+			return mktime () - other.mktime ();
+		}
+
 		// sets time and possibly changes date
-		public Datetime move_to_timezone (Timezone timezone) {
-			if (timezone.is_equal (time_of_day.timezone)) return this;
+		public void move_to_timezone (Timezone timezone) {
+			if (timezone.is_equal (time_of_day.timezone)) return;
 			var this_t = mktime ();
 			timezone.use ();
 			var tm = Time.local (this_t);
 			time_of_day.timezone = timezone;
 			time_of_day.set_hms (tm.hour, tm.minute, tm.second);
-			return this;
+			return;
+		}
+
+		// same as move_to_timezone but returns a new struct instead of mutating this
+		public Datetime in_timezone (Timezone timezone) {
+			var new_datetime = this;
+			new_datetime.move_to_timezone (timezone);
+			return new_datetime;
 		}
 
 		private GLib.Time to_glib_time () {
