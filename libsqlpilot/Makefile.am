@@ -14,6 +14,8 @@ libsqlpilot_la_VALASOURCES = \
 	airport.vala \
 	airportcrud.vala \
 	crud.vala \
+	date.vala \
+	datetime.vala \
 	duration.vala \
 	flight.vala \
 	flightcrud.vala \
@@ -27,6 +29,7 @@ libsqlpilot_la_VALASOURCES = \
 	routing.vala \
 	routingcrud.vala \
 	timeofday.vala \
+	timezone.vala \
 	util.vala
 
 libsqlpilot_la_SOURCES = \
@@ -39,8 +42,7 @@ libsqlpilot_la_SOURCES = \
 
 vala.stamp: $(libsqlpilot_la_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir) --library libsqlpilot \
-	--vapidir $(top_srcdir)/vapi --pkg sqlite3 --pkg stardate \
-	--pkg stardate \
+	--vapidir $(top_srcdir)/vapi --pkg sqlite3 --pkg time \
 	-C $^
 	touch $@
 

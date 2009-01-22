@@ -23,7 +23,7 @@ sqlpilot_import_SOURCES = \
 
 vala.stamp: $(sqlpilot_import_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir)     \
-	--vapidir $(top_srcdir)/vapi --pkg stardate         \
+	--vapidir $(top_srcdir)/vapi \
 	--vapidir $(top_srcdir)/libcsv --pkg libcsv         \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--pkg sqlite3 -C $^

@@ -31,10 +31,14 @@ int main ( string[] args) {
 	assert (flight.is_new () == true);
 	assert (flight.aircraft is Aircraft);
 
-	flight.save ();
+ 	flight.save ();
+//	flight.save ();
+
 	var fid = flight.id;
-	assert (flight.is_new () == false); flight = logbook.flight.find_by_id (fid);
 	assert (flight.is_new () == false);
+
+ 	flight = logbook.flight.find_by_id (fid);
+ 	assert (flight.is_new () == false);
 	assert (flight.role != null);
 	assert (flight.role.ident == "CA");
 	assert (flight.aircraft != null);
@@ -42,57 +46,37 @@ int main ( string[] args) {
 	assert (flight.aircraft.model != null);
 	assert (flight.aircraft.model.ident == "PA28");
 
-	var minneapolis = logbook.airport.beget ();
-	minneapolis.icao = "KMSP";
-	minneapolis.iata = "MSP";
+ 	var minneapolis = logbook.airport.beget ();
+ 	minneapolis.icao = "KMSP";
+ 	minneapolis.iata = "MSP";
 
-	var thief_river = logbook.airport.beget ();
-	thief_river.icao = "KTVF";
-	thief_river.iata = "TVF";
+ 	var thief_river = logbook.airport.beget ();
+ 	thief_river.icao = "KTVF";
+ 	thief_river.iata = "TVF";
 
-	var grand_forks = logbook.airport.beget ();
-	grand_forks.icao = "KGFK";
-	grand_forks.iata = "GFK";
+ 	var grand_forks = logbook.airport.beget ();
+ 	grand_forks.icao = "KGFK";
+ 	grand_forks.iata = "GFK";
 
-	var fargo = logbook.airport.beget ();
-	fargo.icao = "KFAR";
-	fargo.iata = "FAR";
-
-	var fargo_stop = logbook.routing.beget ();
-	fargo_stop.airport = fargo;
-
-	var thief_river_stop = logbook.routing.beget ();
-	thief_river_stop.airport = thief_river;
-	
-//	assert (flight.route is List<Routing>); // Vala generates undefined identifiers for this
+ 	var fargo = logbook.airport.beget ();
+ 	fargo.icao = "KFAR";
+ 	fargo.iata = "FAR";
 
 	assert (flight.route.length == 0);
 
 	flight.dep = minneapolis;
 	flight.arr = grand_forks;
 
-//  Bad C code -- testlogbook.c:130: error: lvalue required as left operand of assignment
-//	flight.route.append (fargo_stop); 
-//	flight.route.append (thief_river_stop);
+	flight.route.append_airport (fargo);
+	flight.route.append_airport (thief_river);
 
-//	This is a pain and it doesn't modify the real routing in the flight? Strange.
-// 	weak List<Routing> wroute = flight.route;
-// 	wroute.append (fargo_stop);
-// 	wroute.append (fargo_stop);
-// 	assert (flight.route.length () == 2);
-
-	// Also a PITA
- 	// List<Routing> route = new List<Routing>();
-//  	route.append (fargo_stop);
-//  	route.append (thief_river_stop);
-// 	flight.route = route;
-// 	assert (flight.route.length () == 2);
-
-
-	flight.save ();
-
+ 	flight.save ();
 	flight = logbook.flight.find_by_id (fid);
 
+	assert (flight.dep.icao == "KMSP");
+	assert (flight.dep.iata == "MSP");
+	assert (flight.arr.icao == "KGFK");
+	assert (flight.arr.iata == "GFK");
 	assert (flight.route.length == 2);
 
 	return 0;

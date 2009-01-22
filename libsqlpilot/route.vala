@@ -32,7 +32,7 @@ namespace SqlPilot {
 		}
 
 		public Route lookup () {
-			if (_flight != null) routings = crud.find_by_flight (_flight);
+			if (_flight != null && (! _flight.is_new ())) routings = crud.find_by_flight (_flight);
 			return this;
 		}
 
@@ -42,11 +42,12 @@ namespace SqlPilot {
 			routings.append (routing);
 		}
 
-		public Route read (string str) {
+		public Route read (string? str) {
 			clear ();
-
-			foreach (string ident in str.split ("-")) {
-				append_airport (crud.logbook.airport.find_by_ident (ident));
+			if (str != null) {
+				foreach (string ident in str.split ("-")) {
+					append_airport (crud.logbook.airport.find_by_ident (ident));
+				}
 			}
 			return this;
 		}

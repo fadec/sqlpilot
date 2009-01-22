@@ -11,7 +11,7 @@ namespace SqlPilot {
 		public string lat; //float
 		public string lon; //float
 		public string elev; //int
-		public string tzone;
+		public Timezone timezone = Timezone ("UTC");
 		public string notes;
 
 		public Airport (AirportCrud crud) {
@@ -29,8 +29,8 @@ namespace SqlPilot {
 			stmt.bind_nonempty_text (i++, lat);
 			stmt.bind_nonempty_text (i++, lon);
 			stmt.bind_nonempty_text (i++, elev);
-			i++; i++; // skip tzone offsets
-			stmt.bind_nonempty_text (i++, tzone);
+			i++; i++; // skip timezone offsets
+			stmt.bind_nonempty_text (i++, timezone.name);
 			stmt.bind_nonempty_text (i++, notes);
 			return i;
 		}
@@ -47,7 +47,7 @@ namespace SqlPilot {
 			lon = stmt.column_text (i++);
 			elev = stmt.column_text (i++);
 			i++; i++;
-			tzone = stmt.column_text (i++);
+			timezone = Timezone (stmt.column_text (i++));
 			notes = stmt.column_text (i++);
 		}
 

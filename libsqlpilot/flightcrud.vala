@@ -38,15 +38,7 @@ namespace SqlPilot {
 			stmt.bind_text (i++, dep_ident);
 			stmt.bind_text (i++, arr_ident);
 			stmt.bind_text (i++, arr_ident);
-			if (stmt.step () == ROW) {
-				var flight = beget ();
-				flight.set_from_stmt (stmt);
-				flight.is_modified = false;
-				return flight;
-			} else {
-				return null;
-			}
-
+			return record_find_first (stmt) as Flight;
 		}
 
 	}

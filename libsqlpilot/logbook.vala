@@ -48,9 +48,9 @@ namespace SqlPilot {
 
 		private bool load_db_extensions () {
 			string errmsg;
-			var	sofile = "libsqlpilot-sqlite3ext.so";
+			var	sofile = "./libsqlpilot-sqlite3ext.so";
 			if ( ! FileUtils.test (sofile, FileTest.EXISTS)) {
-				sofile = "sqlite3ext/.libs/libsqlpilot-sqlite3ext.so";
+				sofile = "libsqlpilot-sqlite3ext.so";
 			}
 			var query = "SELECT load_extension(\"" + sofile + "\");";
 			db.enable_load_extension (true);
@@ -72,34 +72,38 @@ namespace SqlPilot {
 		private Statement ta_commit;
 		private Statement ta_rollback;
 
-		private bool in_progress = false;
+		private int nesting;
 
 		public Transaction ( Logbook logb ) {
 			logbook = logb;
+			nesting = 0;
 			ta_begin = logbook.prepare_statement (ta_begin_sql);
 			ta_commit = logbook.prepare_statement (ta_commit_sql);
 			ta_rollback = logbook.prepare_statement (ta_rollback_sql);
 		}
 
 		public void begin () {
-			if (in_progress) return;
+			return;
+			if (nesting++ > 0) return;
 			ta_begin.step ();
 			ta_begin.reset ();
-			in_progress = true;
+			nesting = 0;
 		}
 
 		public void commit () {
-			if (! in_progress) return;
+			return;
+			if (--nesting > 0) return;
 			ta_commit.step ();
 			ta_commit.reset ();
-			in_progress = false;
+			nesting = 0;
 		}
 
 		public void rollback () {
-			if (! in_progress) return;
+			return;
+			if (--nesting > 0) return;
 			ta_rollback.step ();
 			ta_rollback.reset ();
-			in_progress = false;
+			nesting = 0;
 		}
 	}
 }

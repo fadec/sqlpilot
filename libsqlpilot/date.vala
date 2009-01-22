@@ -1,0 +1,29 @@
+using GLib;
+
+namespace SqlPilot {
+	public struct Date {
+		public GLib.Date gdate;
+
+		public int get_year () { return (int) gdate.get_year (); }
+		public int get_month () { return (int) gdate.get_month (); }
+		public int get_day () { return (int) gdate.get_day (); }
+
+		public string to_iso8601 () {
+			var s = "0000-00-00";
+			if (gdate.valid ()) {
+				gdate.strftime((char[])s, "%Y-%m-%d");
+			}
+			return s;
+		}
+
+		public Date from_iso8601 (string date) {
+			GLib.DateDay d;
+			int m;
+			GLib.DateYear y;
+			date.scanf("%d-%d-%d", out y, out m, out d);
+ 			gdate.set_dmy(d,m,y);
+			return this;
+		}
+
+	}
+}

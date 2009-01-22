@@ -1,7 +1,6 @@
 using GLib;
 using CSV;
 using SqlPilot; // for main
-using Stardate;
 
 namespace SqlPilot {
 	public class Importer {
@@ -22,7 +21,7 @@ namespace SqlPilot {
 			Airport?  arr;
 			while (row.next ()) {
 			
-				var date        = Stardate.Date ().from_iso8601 (row.col ("date"));
+				var date        = Date ().from_iso8601 (row.col ("date"));
 				var fltno       = row.col ("fltno");
 				var dep_ident   = row.col ("dep");
 				var arr_ident   = row.col ("arr");
@@ -30,17 +29,18 @@ namespace SqlPilot {
 				var model_ident = row.col ("model");
 				var role_ident  = row.col ("role");
 
-				if ((flight =
-					 logbook.flight.find_by_date_fltno_dep_arr (date.to_iso8601 (),
-																fltno,
-																dep_ident,
-																arr_ident)) == null) {
+				flight = logbook.flight.find_by_date_fltno_dep_arr (date.to_iso8601 (),
+																	fltno,
+																	dep_ident,
+																	arr_ident);
+				if (flight == null) {
+					stderr.printf("new\n");
 					flight       = logbook.flight.beget ();
 					flight.date  = date;
 					flight.fltno = fltno;
 					flight.dep   = logbook.airport.find_by_ident (dep_ident);
 					flight.arr   = logbook.airport.find_by_ident (arr_ident);
-				}
+				} else stderr.printf("update flight_id = %d\n", (int)flight.id);
 
 				if ((aircraft =
 					 logbook.aircraft.find_by_fleetno (fleetno)) == null) {
@@ -78,10 +78,10 @@ namespace SqlPilot {
 				flight.dep				= dep;
 				flight.arr				= arr;
 				flight.leg				= row.col ("leg").to_int ();
-				flight.aout				= TimeOfDay ().from_iso8601 (row.col ("aout"));
-				flight.ain				= TimeOfDay ().from_iso8601 (row.col ("ain"));
-				flight.sout				= TimeOfDay ().from_iso8601 (row.col ("sout"));
-				flight.sin				= TimeOfDay ().from_iso8601 (row.col ("sin"));
+				flight.aout				= TimeOfDay ().set_timezone (dep.timezone).from_iso8601 (row.col ("aout"));
+				flight.ain				= TimeOfDay ().set_timezone (arr.timezone).from_iso8601 (row.col ("ain"));
+				flight.sout				= TimeOfDay ().set_timezone (dep.timezone).from_iso8601 (row.col ("sout"));
+				flight.sin				= TimeOfDay ().set_timezone (arr.timezone).from_iso8601 (row.col ("sin"));
 				flight.dur				= Duration ().from_string (row.col ("dur"));
 				flight.sdur				= Duration ().from_string (row.col ("sdur"));
 				flight.night			= Duration ().from_string (row.col ("night"));
@@ -95,7 +95,7 @@ namespace SqlPilot {
 				flight.notes			= row.col ("notes");
 				flight.crew				= row.col ("crew");
 				flight.trip				= row.col ("trip");
-				flight.trip_date		= Stardate.Date ().from_iso8601 (row.col ("tripdate"));
+				flight.trip_date		= Date ().from_iso8601 (row.col ("tripdate"));
 				flight.route.clear ();
 				flight.route.read (row.col ("route"));
 				flight.save ();
@@ -138,11 +138,9 @@ namespace SqlPilot {
 				}
 			}
 
-			public string? col (string column_name) {
+			public weak string? col (string column_name) {
 				int index = columns.lookup (column_name);
 				if (index != 0) {
-					message ("%d", index);
-					stderr.printf("index:%d\n", index);
 					return current_row[index - 1];
 				} else {
 					return null;

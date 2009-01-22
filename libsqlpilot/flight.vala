@@ -1,5 +1,4 @@
 using Sqlite;
-using Stardate;
 
 namespace SqlPilot {
 	public class Flight : Record {
@@ -45,7 +44,11 @@ namespace SqlPilot {
 			}
 			set {
 				_dep = value;
-				dep_id = (value == null) ? 0 : value.id;
+				if (value == null) {
+					dep_id = 0;
+				} else {
+					dep_id = value.id;
+				}
 			}
 		}
 
@@ -61,7 +64,11 @@ namespace SqlPilot {
 			}
 			set {
 				_arr = value;
-				arr_id = (value == null) ? 0 : value.id;
+				if (value == null) {
+					arr_id = 0;
+				} else {
+					arr_id = value.id;
+				}
 			}
 		}
 
@@ -72,6 +79,7 @@ namespace SqlPilot {
 				if (_route == null) {
 					_route = new Route (crud.logbook.routing);
 					_route.flight = this;
+					_route.lookup ();
 				}
 				return _route;
 			}
@@ -81,14 +89,14 @@ namespace SqlPilot {
 			}
 		}
 
-		public Stardate.Date date;
+		public Date date;
 		public int leg;
-		public TimeOfDay? aout;
-		public TimeOfDay? ain;
-		public Duration? dur;
-		public Duration? night;
-		public Duration? inst;
-		public Duration? sim_inst;
+		public TimeOfDay aout;
+		public TimeOfDay ain;
+		public Duration dur;
+		public Duration night;
+		public Duration inst;
+		public Duration sim_inst;
 		public bool hold;
 		public string aprch = "";
 		public bool xc;
@@ -97,11 +105,11 @@ namespace SqlPilot {
 		public string crew = "";
 		public string notes = "";
 		public string fltno = "";
-		public TimeOfDay? sout;
-		public TimeOfDay? sin;
-		public Duration? sdur;
+		public TimeOfDay sout;
+		public TimeOfDay sin;
+		public Duration sdur;
 		public string trip = "";
-		public Stardate.Date trip_date;
+		public Date trip_date;
 
 		public Flight ( FlightCrud crud ) {
 			base (crud);
@@ -115,10 +123,12 @@ namespace SqlPilot {
 			stmt.bind_int64 (i++, arr_id);
 			stmt.bind_text  (i++, date.to_iso8601 ());
 			stmt.bind_int   (i++, leg);
-			stmt.bind_text  (i++, aout.to_iso8601 ());
-			stmt.bind_text  (i++, aout.to_utc ().to_iso8601 ());
-			stmt.bind_text  (i++, ain.to_iso8601 ());
-			stmt.bind_text  (i++, ain.to_utc ().to_iso8601 ());
+			// Combine TimeOfDay "aout, ..." with date, move the timezone, extract the new time_of_day; parens needed for gcc
+//			stmt.bind_text  (i++, ((Datetime (date, aout).move_to_timezone (dep.timezone).time_of_day).to_iso8601 ()));
+//			stmt.bind_text  (i++, (Datetime (date, aout).move_to_timezone (Timezone ("UTC")).time_of_day).to_iso8601 ());
+//			stmt.bind_text  (i++, (Datetime (date, ain).move_to_timezone (arr.timezone).time_of_day).to_iso8601 ());
+//			stmt.bind_text  (i++, (Datetime (date, ain).move_to_timezone (Timezone ("UTC")).time_of_day).to_iso8601 ());
+			i += 4;
 			stmt.bind_int64 (i++, dur.to_seconds ());
 			stmt.bind_int64 (i++, night.to_seconds ());
 			stmt.bind_int64 (i++, inst.to_seconds ());
@@ -131,10 +141,12 @@ namespace SqlPilot {
 			stmt.bind_text  (i++, crew);
 			stmt.bind_text  (i++, notes);
 			stmt.bind_text  (i++, fltno);
-			stmt.bind_text  (i++, sout.to_iso8601 ());
-			stmt.bind_text  (i++, sout.to_utc ().to_iso8601 ());
-			stmt.bind_text  (i++, sin.to_iso8601 ());
-			stmt.bind_text  (i++, sin.to_utc ().to_iso8601 ());
+// 			stmt.bind_text  (i++, (Datetime (date, sout).move_to_timezone (dep.timezone).time_of_day).to_iso8601 ());
+//			var ttt = Datetime (date, sout);
+ 			stmt.bind_text  (i++, ((Datetime (date, sout)).move_to_timezone (Timezone ("UTC")).time_of_day).to_iso8601 ());  // these leak
+// 			stmt.bind_text  (i++, (Datetime (date, sin).move_to_timezone (dep.timezone).time_of_day).to_iso8601 ());
+// 			stmt.bind_text  (i++, (Datetime (date, sin).move_to_timezone (Timezone ("UTC")).time_of_day).to_iso8601 ());
+			i += 3;
 			stmt.bind_int64 (i++, sdur.to_seconds ());
 			stmt.bind_text  (i++, trip);
 			stmt.bind_text  (i++, trip_date.to_iso8601() );
@@ -147,11 +159,11 @@ namespace SqlPilot {
 			role_id     = stmt.column_int64 (i++);
 			dep_id      = stmt.column_int64 (i++);
 			arr_id      = stmt.column_int64 (i++);
-			date        = Stardate.Date ().from_iso8601 (stmt.column_text (i++));
+			date        = Date ().from_iso8601 (stmt.column_text (i++));
 			leg         = stmt.column_int   (i++);
-			i++; // skip local
+			i++; // skip local ss read
 			aout        = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
-			i++;
+			i++; // skip local
 			ain         = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
 			dur         = Duration ().from_seconds (stmt.column_int64 (i++));
 			night       = Duration ().from_seconds (stmt.column_int64 (i++));
@@ -167,11 +179,12 @@ namespace SqlPilot {
 			fltno       = stmt.column_text (i++);
 			i++; // skip local
 			sout        = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
-			i++;
+			i++; // skip local
 			sin         = TimeOfDay ().from_iso8601 (stmt.column_text (i++));
 			sdur        = Duration ().from_seconds (stmt.column_int64 (i++));
 			trip        = stmt.column_text (i++);
-			trip_date   = Stardate.Date ().from_iso8601 (stmt.column_text (i++));
+			trip_date   = Date ().from_iso8601 (stmt.column_text (i++));
+//			stderr.printf("WTF: %s\n", sout.timezone.name);
 		}
 
 		protected override bool save_dependencies () {

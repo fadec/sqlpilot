@@ -31,7 +31,6 @@ vala.stamp: $(sqlpilot_gtk_VALASOURCES)
 	--vapidir $(top_srcdir)/vapi \
 	--pkg gtk+-2.0 \
 	--pkg sqlite3 \
-	--pkg stardate \
 	-C $^
 	touch $@
 

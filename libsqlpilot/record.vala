@@ -38,6 +38,7 @@ namespace SqlPilot {
 			weak Statement stmt;
 			weak Transaction transaction = crud.logbook.transaction;
 			transaction.begin ();
+			message ("<%s>", crud.table_name);
 			if (! save_dependencies ()) {
 				transaction.rollback ();
 				return false;
@@ -58,7 +59,9 @@ namespace SqlPilot {
 				transaction.rollback ();
 				return false;
 			}
+			message("before step %s", crud.table_name);
 			stmt.step ();
+			message("after step %s", crud.table_name);
 			stmt.reset ();
 			stmt.clear_bindings ();
 			if (is_new ()) {
@@ -69,6 +72,7 @@ namespace SqlPilot {
 				return false;
 			}
 			transaction.commit ();
+			message ("</%s>", crud.table_name);
 			return true;
 		}
 

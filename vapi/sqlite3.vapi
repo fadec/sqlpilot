@@ -161,6 +161,12 @@ namespace Sqlite {
 	public const int MUTEX_FAST;
 	[CCode (cname = "SQLITE_MUTEX_RECURSIVE")]
 	public const int MUTEX_RECURSIVE;
+    [CCode (cname = "SQLITE_STATIC")]
+	public const int STATIC;
+    [CCode (cname = "SQLITE_TRANSIENT")]
+	public const int TRANSIENT;
+
+	
 
 	/* SQL Statement Object */
 	[Compact]
@@ -194,7 +200,7 @@ namespace Sqlite {
 		public weak string column_name (int index);
 		public weak string sql ();
  
-		public int bind_nonempty_text (int col, string str) {
+		public int bind_nonempty_text (int col, string? str) {
 			if ((str != null) && str[0] != 0) this.bind_text (col, str);
 			else this.bind_null (col);
 		}
