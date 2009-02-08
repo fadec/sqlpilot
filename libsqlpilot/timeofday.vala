@@ -2,7 +2,7 @@ namespace SqlPilot {
 
 	public struct TimeOfDay {
 
-		public ulong seconds;
+		public long seconds;
 		public Timezone timezone;
 
 		public int get_hour () { return (int)seconds / 3600; }
@@ -11,23 +11,39 @@ namespace SqlPilot {
 
 		public static TimeOfDay from_tzname_time (string timezone_string, string time_string) {
 			var tod = TimeOfDay ();
-			tod.timezone = Timezone (timezone_string);
-			tod.read_iso8601 (time_string);
+			if (time_string == "") {
+				tod.seconds = -1;
+			} else {
+				tod.timezone = Timezone (timezone_string);
+				tod.read_iso8601 (time_string);
+			}
 			return tod;
 		}
 
 		public static TimeOfDay from_timezone_time (Timezone timezone, string time_string) {
 			var tod = TimeOfDay ();
-			tod.timezone = timezone;
-			tod.read_iso8601 (time_string);
+			if (time_string == "") {
+				tod.seconds = -1;
+			} else {
+				tod.timezone = timezone;
+				tod.read_iso8601 (time_string);
+			}
 			return tod;
 		}
 
 		public static TimeOfDay from_iso8601 (string time_string) {
 			var tod = TimeOfDay ();
-			tod.timezone = Timezone ("UTC");
-			tod.read_iso8601 (time_string);
+			if (time_string == "") {
+				tod.seconds = -1;
+			} else {
+				tod.timezone = Timezone ("UTC");
+				tod.read_iso8601 (time_string);
+			}
 			return tod;
+		}
+
+		public bool valid () {
+			return (seconds >= 0);
 		}
 
 		public string to_iso8601 () {
@@ -35,7 +51,7 @@ namespace SqlPilot {
 			var h = r / 3600;
 			var m = (r % 3600) / 60;
 			//var s = r % 60;
-			return "%02d:%02d".printf((int)h, (int)m);
+			return (valid ()) ? "%02d:%02d".printf((int)h, (int)m) : "";
 		}
 
 		public void read_iso8601 (string time) {

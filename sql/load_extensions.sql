@@ -1,0 +1,1 @@
+SELECT load_extension("./libsqlpilot-sqlite3ext.so");

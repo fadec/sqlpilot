@@ -13,7 +13,7 @@ db-reset: sql/logbook.sql
 	cat sql/logbook.sql | script/console logbook.db
 
 db-reload: db-reset
-	-awk -f db/airports/airports.awk db/airports/airports.csv | sqlite3 logbook.db
+	awk -f sql/airports/airports.awk sql/airports/airports.csv | script/console logbook.db
 
 wc:
 	find -name '*.vala' | xargs wc

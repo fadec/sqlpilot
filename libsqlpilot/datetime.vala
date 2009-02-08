@@ -9,6 +9,17 @@ namespace SqlPilot {
 			date = d;
 			time_of_day = t;
 		}
+		
+		public bool valid () {
+			return date.valid () && time_of_day.valid (); // but not all times are valid on all days. could round trip to mktime?
+		}
+//		public static Datetime from_iso8601 (string str) {
+// 			string d;
+// 			string t;
+// 		    string format = "%as[^ T]%as";
+// 			format.scanf (str, out d, out t);
+// 			return Datetime (Date.from_iso8601 (d), TimeOfDay.from_iso8601 (t));
+//		}
 
 		// 2008-12-25T10:00-05:00
 		// 2008-12-25T10:00+02:30
@@ -23,8 +34,30 @@ namespace SqlPilot {
 		}
 
 		public time_t diff (Datetime other) {
-//			return difftime (mktime (), other.mktime ());
+			// return difftime (mktime (), other.mktime ());
 			return mktime () - other.mktime ();
+		}
+
+		public Duration duration (Datetime other) {
+			return Duration.from_seconds (diff (other));
+		}
+
+		
+		public Datetime next_datetime_for_time_of_day (TimeOfDay t1) {
+			var d1 = this.date;
+			d1.subtract_days (1);
+			Datetime dt1;
+			time_t difference;
+			do {
+				dt1 = Datetime (d1, t1);
+				difference = dt1.diff (this); // this call will cause tz changes, could be slow in loop
+				d1.add_days (1);
+			} while (difference < 0);
+			return dt1;
+		}
+
+		public Duration duration_to_time_of_day (TimeOfDay t1) {
+			return Duration.from_seconds (next_datetime_for_time_of_day (t1).diff (this));
 		}
 
 		// sets time and possibly changes date

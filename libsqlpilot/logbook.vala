@@ -37,7 +37,7 @@ namespace SqlPilot {
 
 		public Statement? prepare_statement ( string sql ) {
 			Statement stmt;
-			int err;
+			//	int err;
 			if (db.prepare (sql, (int)sql.length, out stmt) == OK) {
 				return stmt;
 			} else {

@@ -17,17 +17,17 @@ namespace SqlPilot {
 			Role?     role;
 			Aircraft? aircraft;
 			Model?    model;
-			Airport?  dep;
-			Airport?  arr;
+			Airport?  dep = null;
+			Airport?  arr = null;
 			while (row.next ()) {
 			
-				var date        = Date.from_iso8601 (row.col ("date"));
-				var fltno       = row.col ("fltno");
-				var dep_ident   = row.col ("dep");
-				var arr_ident   = row.col ("arr");
-				var fleetno     = row.col ("fleetno");
-				var model_ident = row.col ("model");
-				var role_ident  = row.col ("role");
+				var date        = Date.from_iso8601 (row.colstr ("date"));
+				var fltno       = row.colstr ("fltno");
+				var dep_ident   = row.colstr ("dep");
+				var arr_ident   = row.colstr ("arr");
+				var fleetno     = row.colstr ("fleetno");
+				var model_ident = row.colstr ("model");
+				var role_ident  = row.colstr ("role");
 
 				flight = logbook.flight.find_by_date_fltno_dep_arr (date.to_iso8601 (),
 																	fltno,
@@ -38,66 +38,96 @@ namespace SqlPilot {
 					flight       = logbook.flight.beget ();
 					flight.date  = date;
 					flight.fltno = fltno;
-					flight.dep   = logbook.airport.find_by_ident (dep_ident);
-					flight.arr   = logbook.airport.find_by_ident (arr_ident);
 				} else stderr.printf("update flight_id = %d\n", (int)flight.id);
 
-				if ((aircraft =
-					 logbook.aircraft.find_by_fleetno (fleetno)) == null) {
-					aircraft = logbook.aircraft.beget ();
-					aircraft.fleetno = fleetno;
-				}
-
-				if ((model =
-					 logbook.model.find_by_ident (model_ident)) == null) {
-					model = logbook.model.beget ();
-					model.ident = model_ident;
+				if (fleetno != "") {
+					if ((aircraft =
+						 logbook.aircraft.find_by_fleetno (fleetno)) == null) {
+						aircraft = logbook.aircraft.beget ();
+						aircraft.fleetno = fleetno;
+					}
+					flight.aircraft = aircraft;
+					if (model_ident != "") {
+						if ((model =
+							 logbook.model.find_by_ident (model_ident)) == null) {
+							model = logbook.model.beget ();
+							model.ident = model_ident;
+						}
+						aircraft.model = model;
+					}
 				}
 				
-				if ((role =
-					 logbook.role.find_by_ident (role_ident)) == null) {
-					role = logbook.role.beget ();
-					role.ident = role_ident;
+				if (role_ident != "") {
+					if ((role =
+						 logbook.role.find_by_ident (role_ident)) == null) {
+						role = logbook.role.beget ();
+						role.ident = role_ident;
+					}
+					flight.role	= role;
 				}
 
-				if ((dep =
-					 logbook.airport.find_by_ident (dep_ident)) == null) {
-					dep = logbook.airport.beget ();
-					dep.set_ident (dep_ident);
+				if (dep_ident != "") {
+					if ((dep =
+						 logbook.airport.find_by_ident (dep_ident)) == null) {
+						dep = logbook.airport.beget ();
+						dep.set_ident (dep_ident);
+					}
+					flight.dep = dep;
+				}
+				
+				if (arr_ident != "") {
+					if ((arr =
+						 logbook.airport.find_by_ident (arr_ident)) == null) {
+						arr = logbook.airport.beget ();
+						arr.set_ident (arr_ident);
+					}
+					flight.arr = arr;
 				}
 
-				if ((arr =
-					 logbook.airport.find_by_ident (arr_ident)) == null) {
-					arr = logbook.airport.beget ();
-					arr.set_ident (arr_ident);
+				flight.leg				= row.colstr ("leg").to_int ();
+
+				var aout				= TimeOfDay.from_timezone_time (dep.timezone, row.colstr ("aout"));
+				var ain					= TimeOfDay.from_timezone_time (arr.timezone, row.colstr ("ain"));
+				var aout_datetime		= Datetime (date, aout);
+				var ain_datetime		= aout_datetime.next_datetime_for_time_of_day (ain);
+
+				var sout				= TimeOfDay.from_timezone_time (dep.timezone, row.colstr ("sout"));
+				var sin					= TimeOfDay.from_timezone_time (arr.timezone, row.colstr ("sin"));
+				var sout_datetime		= Datetime (date, sout);
+				var sin_datetime		= sout_datetime.next_datetime_for_time_of_day (sin);
+
+				flight.aout				= aout;
+				flight.ain				= ain;
+				flight.sout				= sout;
+				flight.sin				= sin;
+
+				var dur_str = row.colstr ("dur");
+				if (false && dur_str != "") {
+					flight.dur = Duration.from_string (dur_str);
+				} else {
+					flight.dur = ain_datetime.duration (aout_datetime);
+				}
+				var sdur_str = row.colstr ("sdur");
+				if (false && sdur_str != "") {
+					flight.sdur = Duration.from_string (sdur_str);
+				} else {
+					flight.sdur = sin_datetime.duration (sout_datetime);
 				}
 
-				flight.role				= role;
-				flight.aircraft			= aircraft;
-				aircraft.model			= model;
-				flight.dep				= dep;
-				flight.arr				= arr;
-				flight.leg				= row.col ("leg").to_int ();
-				flight.aout				= TimeOfDay.from_timezone_time (dep.timezone, row.col ("aout"));
-				flight.ain				= TimeOfDay.from_timezone_time (arr.timezone, row.col ("ain"));
-				flight.sout				= TimeOfDay.from_timezone_time (dep.timezone, row.col ("sout"));
-				flight.sin				= TimeOfDay.from_timezone_time (arr.timezone, row.col ("sin"));
-				flight.dur				= Duration.from_string (row.col ("dur"));
-				flight.sdur				= Duration.from_string (row.col ("sdur"));
-				flight.night			= Duration.from_string (row.col ("night"));
-				flight.inst				= Duration.from_string (row.col ("inst"));
-				flight.sim_inst			= Duration.from_string (row.col ("siminst"));
-				flight.aprch			= row.col ("aprch");
-				flight.xc				= str_to_bool (row.col ("xc"));
-				flight.hold				= str_to_bool (row.col ("hold"));
-				flight.dland			= row.col ("dland").to_int ();
-				flight.nland			= row.col ("nland").to_int ();
-				flight.notes			= row.col ("notes");
-				flight.crew				= row.col ("crew");
-				flight.trip				= row.col ("trip");
-				flight.trip_date		= Date.from_iso8601 (row.col ("tripdate"));
+				flight.night			= Duration.from_string (row.colstr ("night"));
+				flight.inst				= Duration.from_string (row.colstr ("inst"));
+				flight.sim_inst			= Duration.from_string (row.colstr ("siminst"));
+				flight.aprch			= row.colstr ("aprch");
+				flight.xc				= str_to_bool (row.colstr ("xc"));
+				flight.hold				= str_to_bool (row.colstr ("hold"));
+				flight.dland			= row.colstr ("dland").to_int ();
+				flight.nland			= row.colstr ("nland").to_int ();
+				flight.notes			= row.colstr ("notes");
+				flight.crew				= row.colstr ("crew");
+				flight.trip				= row.colstr ("trip");
+				flight.trip_date		= Date.from_iso8601 (row.colstr ("tripdate"));
 				flight.route.clear ();
-				flight.route.read (row.col ("route"));
+				flight.route.read (row.colstr ("route"));
 				flight.save ();
 			}
 		}
@@ -145,6 +175,11 @@ namespace SqlPilot {
 				} else {
 					return null;
 				}
+			}
+			
+			public weak string colstr (string column_name) {
+				weak string s = col (column_name);
+				return (s == null) ? "" : s;
 			}
 
 		} // end Row

@@ -117,38 +117,58 @@ namespace SqlPilot {
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_int64 (i++, aircraft_id);
-			stmt.bind_int64 (i++, role_id);
-			stmt.bind_int64 (i++, dep_id);
-			stmt.bind_int64 (i++, arr_id);
-			stmt.bind_text  (i++, date.to_iso8601 ());
-			stmt.bind_int   (i++, leg);
-			// Combine TimeOfDay "aout, ..." with date, move the timezone, extract the new time_of_day; parens needed for gcc
-//			stmt.bind_text  (i++, ((Datetime (date, aout).move_to_timezone (dep.timezone).time_of_day).to_iso8601 ()));
-//			stmt.bind_text  (i++, (Datetime (date, aout).move_to_timezone (Timezone ("UTC")).time_of_day).to_iso8601 ());
-//			stmt.bind_text  (i++, (Datetime (date, ain).move_to_timezone (arr.timezone).time_of_day).to_iso8601 ());
-//			stmt.bind_text  (i++, (Datetime (date, ain).move_to_timezone (Timezone ("UTC")).time_of_day).to_iso8601 ());
-			i += 4;
-			stmt.bind_int64 (i++, dur.to_seconds ());
-			stmt.bind_int64 (i++, night.to_seconds ());
-			stmt.bind_int64 (i++, inst.to_seconds ());
-			stmt.bind_int64 (i++, sim_inst.to_seconds ());
-			stmt.bind_int   (i++, (int) hold);
-			stmt.bind_text  (i++, aprch);
-			stmt.bind_int   (i++, (int) xc);
-			stmt.bind_int   (i++, dland);
-			stmt.bind_int   (i++, nland);
-			stmt.bind_text  (i++, crew);
-			stmt.bind_text  (i++, notes);
-			stmt.bind_text  (i++, fltno);
- 			stmt.bind_text  (i++, ((Datetime (date, sout).in_timezone (dep.timezone)).time_of_day).to_iso8601 ());
-  			stmt.bind_text  (i++, ((Datetime (date, sout).in_timezone (Timezone ("UTC"))).time_of_day).to_iso8601 ());  // these may leak
-			stmt.bind_text  (i++, ((Datetime (date, sin).in_timezone (dep.timezone)).time_of_day).to_iso8601 ());
-			stmt.bind_text  (i++, ((Datetime (date, sin).in_timezone (Timezone ("UTC"))).time_of_day).to_iso8601 ());
-			stmt.bind_int64 (i++, sdur.to_seconds ());
-			stmt.bind_text  (i++, trip);
-			stmt.bind_text  (i++, trip_date.to_iso8601() );
+			stmt.bind_int64				(i++, aircraft_id);
+			stmt.bind_int64				(i++, role_id);
+			stmt.bind_int64				(i++, dep_id);
+			stmt.bind_int64				(i++, arr_id);
+			stmt.bind_nonempty_text		(i++, date.to_iso8601 ());
+			stmt.bind_int				(i++, leg);
+
+			bind_time_of_day (stmt, ref i, aout, dep.timezone);
+			bind_time_of_day (stmt, ref i, aout, Timezone ("UTC"));
+			bind_time_of_day (stmt, ref i, ain, arr.timezone);
+			bind_time_of_day (stmt, ref i, ain, Timezone ("UTC"));
+
+			bind_duration (stmt, ref i, dur);
+			bind_duration (stmt, ref i, night);
+			bind_duration (stmt, ref i, inst);
+			bind_duration (stmt, ref i, sim_inst);
+
+			stmt.bind_int				(i++, (int) hold);
+			stmt.bind_nonempty_text		(i++, aprch);
+			stmt.bind_int				(i++, (int) xc);
+			stmt.bind_int				(i++, dland);
+			stmt.bind_int				(i++, nland);
+			stmt.bind_nonempty_text		(i++, crew);
+			stmt.bind_nonempty_text		(i++, notes);
+			stmt.bind_nonempty_text		(i++, fltno);
+
+			bind_time_of_day (stmt, ref i, sout, dep.timezone);
+			bind_time_of_day (stmt, ref i, sout, Timezone ("UTC"));
+			bind_time_of_day (stmt, ref i, sin, arr.timezone);
+			bind_time_of_day (stmt, ref i, sin, Timezone ("UTC"));
+
+			bind_duration (stmt, ref i, sdur);
+
+			stmt.bind_nonempty_text		(i++, trip);
+			stmt.bind_nonempty_text		(i++, trip_date.to_iso8601() );
 			return i;
+		}
+
+		private void bind_time_of_day (Statement stmt, ref int iter, TimeOfDay tod, Timezone in_timezone) {
+			if (tod.valid ()) {
+				stmt.bind_text (iter++, ((Datetime (date, tod).in_timezone (in_timezone)).time_of_day).to_iso8601 ());
+			} else {
+				stmt.bind_null (iter++);
+			}
+		}
+
+		private void bind_duration (Statement stmt, ref int iter, Duration dur) {
+			if (dur.to_minutes () > 0) {
+				stmt.bind_int64 (iter++, dur.to_minutes ());
+			} else {
+				stmt.bind_null (iter++);
+			}
 		}
 
 		public override void set_from_stmt (Statement stmt) {
@@ -163,10 +183,10 @@ namespace SqlPilot {
 			aout        = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			i++; // skip local
 			ain         = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			dur         = Duration.from_seconds (stmt.column_int64 (i++));
-			night       = Duration.from_seconds (stmt.column_int64 (i++));
-			inst        = Duration.from_seconds (stmt.column_int64 (i++));
-			sim_inst    = Duration.from_seconds (stmt.column_int64 (i++));
+			dur         = Duration.from_minutes (stmt.column_int64 (i++));
+			night       = Duration.from_minutes (stmt.column_int64 (i++));
+			inst        = Duration.from_minutes (stmt.column_int64 (i++));
+			sim_inst    = Duration.from_minutes (stmt.column_int64 (i++));
 			hold        = (bool) stmt.column_int (i++);
 			aprch       = stmt.column_text (i++);
 			xc          = (bool) stmt.column_int (i++);
@@ -179,7 +199,7 @@ namespace SqlPilot {
 			sout        = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			i++; // skip local
 			sin         = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			sdur        = Duration.from_seconds (stmt.column_int64 (i++));
+			sdur        = Duration.from_minutes (stmt.column_int64 (i++));
 			trip        = stmt.column_text (i++);
 			trip_date   = Date.from_iso8601 (stmt.column_text (i++));
 //			stderr.printf("WTF: %s\n", sout.timezone.name);

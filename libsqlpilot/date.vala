@@ -29,6 +29,18 @@ namespace SqlPilot {
 			date.scanf("%d-%d-%d", out y, out m, out d);
  			gdate.set_dmy(d,m,y);
 		}
+		
+		public void add_days (uint days) {
+			gdate.add_days (days);
+		}
+		
+		public void subtract_days (uint days) {
+			gdate.subtract_days (days);
+		}
+		
+		public bool valid () {
+			return gdate.valid ();
+		}
 
 	}
 }

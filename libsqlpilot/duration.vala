@@ -16,12 +16,27 @@ namespace SqlPilot {
 		}
 
 		public static Duration from_string ( string str ) {
-			var dur = Duration (69);
-			return dur;
+			if ((str == null) || (! str.validate ())) return from_minutes (0);
+			int a = 0;
+			int b = 0;
+			var matched = str.scanf ("%d+%d", out a, out b);
+			return from_minutes ((matched - 1) * 60 * a + b);
 		}
 
 		public int64 to_seconds () {
 			return _seconds;
+		}
+
+		public int64 to_minutes () {
+			return _seconds / 60;
+		}
+
+		public int64 to_hours () {
+			return _seconds / 3600;
+		}
+
+		public string to_string () {
+			return "%l+%l".printf (_seconds / 3600, (_seconds / 60) % 60);
 		}
 	}
 }

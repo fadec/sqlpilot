@@ -3,8 +3,11 @@ include $(top_srcdir)/Makefile.decl
 check_PROGRAMS = \
 	test-csv \
 	test-date \
+	test-timeofday \
 	test-datetime \
+	test-duration \
 	test-logbook
+
 
 TESTS = $(check_PROGRAMS)
 
@@ -14,7 +17,14 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir) \
 	$(GLIB_CFLAGS)
 
-BUILT_SOURCES = test_csv.vala.stamp test_logbook.vala.stamp test_date.vala.stamp test_datetime.vala.stamp
+BUILT_SOURCES = \
+	test_csv.vala.stamp \
+	test_date.vala.stamp \
+	test_timeofday.vala.stamp \
+	test_datetime.vala.stamp \
+	test_duration.vala.stamp \
+	test_logbook.vala.stamp
+
 
 test_csv_VALASOURCES = testcsv.vala
 
@@ -72,6 +82,25 @@ test_date_LDADD = \
 	$(top_srcdir)/libsqlpilot/libsqlpilot.la
 
 
+test_timeofday_VALASOURCES = testtimeofday.vala
+
+test_timeofday_SOURCES = \
+	$(test_timeofday_VALASOURCES:.vala=.c) \
+	$(test_timeofday_VALASOURCES:.vala=.h)
+
+
+test_timeofday.vala.stamp: $(test_timeofday_VALASOURCES)
+	$(VALAC) --basedir $(top_srcdir) \
+	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
+	--vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^
+	touch $@
+
+test_timeofday_LDADD = \
+	$(GLIB_LIBS) \
+	$(SQLITE_LIBS) \
+	$(top_srcdir)/libsqlpilot/libsqlpilot.la
+
+
 
 test_datetime_VALASOURCES = testdatetime.vala
 
@@ -87,6 +116,26 @@ test_datetime.vala.stamp: $(test_datetime_VALASOURCES)
 	touch $@
 
 test_datetime_LDADD = \
+	$(GLIB_LIBS) \
+	$(SQLITE_LIBS) \
+	$(top_srcdir)/libsqlpilot/libsqlpilot.la
+
+
+
+test_duration_VALASOURCES = testduration.vala
+
+test_duration_SOURCES = \
+	$(test_duration_VALASOURCES:.vala=.c) \
+	$(test_duration_VALASOURCES:.vala=.h)
+
+
+test_duration.vala.stamp: $(test_duration_VALASOURCES)
+	$(VALAC) --basedir $(top_srcdir) \
+	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
+	--vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^
+	touch $@
+
+test_duration_LDADD = \
 	$(GLIB_LIBS) \
 	$(SQLITE_LIBS) \
 	$(top_srcdir)/libsqlpilot/libsqlpilot.la
