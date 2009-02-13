@@ -1,17 +1,17 @@
 
 using Gtk;
 using Sqlite;
-
+using SqlPilot;
 namespace SqlPilotGtk {
-
-	public class Logbook : Pane {
-		private SqlPilot.Logbook logbook;
+	// A Book is the gui wrapper for the Logbook data object
+	public class Book : Pane {
+		public Logbook logbook;
 
 		private FlightEditor flight_editor;
 
-		public Logbook ( string filename ) {
-			base ( "data/ui/logbook.xml" );
-			logbook = new SqlPilot.Logbook ();
+		public Book ( string filename ) {
+			base ( "logbook" );
+			logbook = new Logbook ();
 			logbook.open ( filename );
 			add_pages ();
 		}

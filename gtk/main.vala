@@ -4,9 +4,9 @@ public static int main ( string[] args ) {
 	Gtk.init( ref args );		
 	if ( args.length > 1 ) {
 		try {
-			var logbook = new Logbook ( args[1] );
+			var book = new Book ( args[1] );
 			var window = new MainWindow ();
-			window.add_logbook ( logbook );
+			window.add_book ( book );
 			window.show_all ();
 			Gtk.main ();
 		}

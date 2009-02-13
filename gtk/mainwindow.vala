@@ -8,8 +8,8 @@ namespace SqlPilotGtk {
 			this.destroy += Gtk.main_quit;
 		}
 
-		public void add_logbook (Logbook logbook) {
-			add ( logbook.top_widget () );
+		public void add_book (Book book) {
+			add ( book.top_widget () );
 		}
 	}
 }

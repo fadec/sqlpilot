@@ -24,11 +24,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry1">
+              <object class="GtkEntry" id="tripdate">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="width_chars">6</property>
+                <signal name="changed" handler="on_tripdate_changed"/>
+                <signal name="focus_out_event" handler="on_tripdate_focus_out_event"/>
+                <signal name="focus_in_event" handler="on_tripdate_focus_in_event"/>
               </object>
               <packing>
                 <property name="pack_type">end</property>
@@ -55,11 +58,14 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry2">
+              <object class="GtkEntry" id="date">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="width_chars">6</property>
+                <signal name="changed" handler="on_date_changed"/>
+                <signal name="focus_out_event" handler="on_date_focus_out_event"/>
+                <signal name="focus_in_event" handler="on_date_focus_in_event"/>
               </object>
               <packing>
                 <property name="pack_type">end</property>
@@ -295,7 +301,6 @@
               <object class="GtkSpinButton" id="spinbutton1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="adjustment">adjustment6</property>
                 <property name="snap_to_ticks">True</property>
                 <property name="numeric">True</property>
               </object>
@@ -791,7 +796,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="adjustment">adjustment5</property>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -821,7 +825,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="adjustment">adjustment4</property>
               </object>
               <packing>
                 <property name="position">1</property>

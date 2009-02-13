@@ -1,5 +1,6 @@
 
 using Gtk;
+using Sqlite;
 using SqlPilot;
 namespace SqlPilotGtk {
 
@@ -32,19 +33,26 @@ namespace SqlPilotGtk {
 		private Action _paste_record;
 		private Label  _message;
 
-		public Editor ( string fields_xml, string toolbar_xml ) {
-			base ( "data/ui/editor.xml" );
-			fieldset = new Pane ( fields_xml );
+		public Editor ( Pane fieldset, Pane toolbar ) {
+			base ( "editor" );
 			add_child ( "fields", fieldset );
-			toolbar = new Pane ( toolbar_xml );
 			add_child ( "toolbar", toolbar );
 		}
 
+		protected virtual Statement? prepare_list_statement () {
+			return null;
+		}
+
 		private virtual void load_selection () {
+		}
+
+		private virtual void refresh () {
+			
 		}
 		
 		private virtual void save () {
 			_current_record.save();
 		}
+
 	}
 }

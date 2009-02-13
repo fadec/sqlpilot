@@ -16,9 +16,10 @@ sqlpilot_gtk_VALASOURCES = \
 	fieldset.vala \
 	flighteditor.vala \
 	gui.vala \
-	logbook.vala \
+	book.vala \
 	mainwindow.vala \
-	pane.vala
+	pane.vala \
+	cbflightfieldsairline.vala
 
 sqlpilot_gtk_SOURCES = \
 	sqlpilot.vala.stamp \
@@ -27,7 +28,7 @@ sqlpilot_gtk_SOURCES = \
 
 vala.stamp: $(sqlpilot_gtk_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir) \
-	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
+	--vapidir $(top_srcdir)/libsqlpilot --pkg gmodule-2.0 --pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi \
 	--pkg gtk+-2.0 \
 	--pkg sqlite3 \
