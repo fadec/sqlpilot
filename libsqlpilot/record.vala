@@ -4,7 +4,7 @@
 // is instantiated by the crud.
 
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public abstract class Record {
 		
 		protected weak Crud crud;

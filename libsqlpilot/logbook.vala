@@ -1,7 +1,7 @@
 using Sqlite;
 using GLib;
 
-namespace SqlPilot {
+namespace Sqlp {
 	public class Logbook {
 
 		private Database _db;

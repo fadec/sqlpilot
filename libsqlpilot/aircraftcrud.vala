@@ -1,6 +1,6 @@
 using Sqlite;
 
-namespace SqlPilot {
+namespace Sqlp {
 	public class AircraftCrud : Crud {
 
 		Statement find_by_fleetno_stmt;

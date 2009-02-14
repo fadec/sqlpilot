@@ -8,7 +8,7 @@
 // to save, delete, etc. or to lookup associations.
 
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public abstract class Crud {
 		public weak Logbook logbook;
 		public Statement find;

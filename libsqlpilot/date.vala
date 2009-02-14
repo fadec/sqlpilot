@@ -1,6 +1,6 @@
 using GLib;
 
-namespace SqlPilot {
+namespace Sqlp {
 	public struct Date {
 		public GLib.Date gdate;
 

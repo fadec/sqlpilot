@@ -1,5 +1,5 @@
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public class RoutingCrud : Crud {
 		protected Statement find_by_flight_id_stmt;
 		protected Statement destroy_by_flight_id_stmt;

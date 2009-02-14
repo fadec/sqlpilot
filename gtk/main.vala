@@ -1,4 +1,4 @@
-using SqlPilotGtk;
+using SqlpGtk;
 
 public static int main ( string[] args ) {
 	Gtk.init( ref args );		

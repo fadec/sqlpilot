@@ -1,7 +1,7 @@
-namespace SqlPilot {
+namespace Sqlp {
 
 	public static int main ( string[] args ) {
-		var date = SqlPilot.Date.from_iso8601 ("1979-01-15");
+		var date = Sqlp.Date.from_iso8601 ("1979-01-15");
 		var time = TimeOfDay.from_tzname_time ("UTC", "10:00");
 		var datetime = Datetime (date, time);
 		assert (datetime.time_of_day.timezone.name == "UTC");

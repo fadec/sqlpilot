@@ -1,10 +1,10 @@
 using GLib;
 using Gtk;
 
-namespace SqlPilotGtk {
+namespace SqlpGtk {
 	public class MainWindow : Window {
 		construct {
-			this.title = "SqlPilot";
+			this.title = "Sqlp";
 			this.destroy += Gtk.main_quit;
 		}
 

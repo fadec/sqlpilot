@@ -1,5 +1,5 @@
 
-namespace SqlPilotGtk {
+namespace SqlpGtk {
 	interface FieldSet {
 		
 	}

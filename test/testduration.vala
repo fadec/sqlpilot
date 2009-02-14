@@ -1,4 +1,4 @@
-using SqlPilot;
+using Sqlp;
 
 static int main ( string[] args ) {
 	var d1 = Duration.from_string ("1+32");

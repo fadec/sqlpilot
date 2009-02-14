@@ -1,5 +1,5 @@
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public class Airport : Record {
 
 		public string icao;

@@ -1,5 +1,5 @@
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public class Model : Record {
 
 		public string ident;

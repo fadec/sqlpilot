@@ -1,5 +1,5 @@
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public class FlightCrud : Crud {
 
 		protected Statement find_by_date_fltno_dep_arr_stmt;

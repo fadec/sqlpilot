@@ -1,5 +1,5 @@
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public class RoleCrud : Crud {
 		
 		private Statement find_by_ident_stmt;

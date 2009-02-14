@@ -19,7 +19,8 @@ sqlpilot_gtk_VALASOURCES = \
 	book.vala \
 	mainwindow.vala \
 	pane.vala \
-	cbflightfieldsairline.vala
+	airlineflightfields.vala \
+	querylist.vala
 
 sqlpilot_gtk_SOURCES = \
 	sqlpilot.vala.stamp \

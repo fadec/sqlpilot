@@ -1,5 +1,5 @@
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public class ModelCrud : Crud {
 
 		private Statement find_by_ident_stmt;

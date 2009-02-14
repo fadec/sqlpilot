@@ -1,12 +1,11 @@
 using Gtk;
-namespace SqlPilotGtk {
+namespace SqlpGtk {
 	public class Pane {
 		
 		protected Gui gui;
 		protected List<Pane> children;
 
 		public Pane ( string name ) {
-			stderr.printf ("%s\n", name );
 			gui = new Gui ( name, this );
 			children = new List<Pane> ();
 		}

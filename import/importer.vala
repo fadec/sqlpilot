@@ -1,8 +1,8 @@
 using GLib;
 using CSV;
-using SqlPilot; // for main
+using Sqlp; // for main
 
-namespace SqlPilot {
+namespace Sqlp {
 	public class Importer {
 		private Logbook logbook;
 

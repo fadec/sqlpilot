@@ -1,7 +1,7 @@
 // Collection class for flight routing
 
 using GLib;
-namespace SqlPilot {
+namespace Sqlp {
 	public class Route {
 
 		private Flight? _flight;

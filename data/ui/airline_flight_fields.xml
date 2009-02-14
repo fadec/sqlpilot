@@ -102,11 +102,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry3">
+              <object class="GtkEntry" id="trip">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="width_chars">10</property>
+                <signal name="changed" handler="on_trip_changed"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -132,11 +133,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry4">
+              <object class="GtkEntry" id="fltno">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="width_chars">10</property>
+                <signal name="changed" handler="on_fltno_changed"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -192,11 +194,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry5">
+              <object class="GtkEntry" id="role">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="width_chars">6</property>
+                <signal name="changed" handler="on_role_changed"/>
               </object>
               <packing>
                 <property name="pack_type">end</property>
@@ -242,30 +245,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox9">
+              <object class="GtkEntry" id="aircraft">
                 <property name="visible">True</property>
-                <child>
-                  <object class="GtkEntry" id="entry6">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="width_chars">10</property>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="entry7">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="width_chars">10</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can_focus">True</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="width_chars">10</property>
+                <signal name="changed" handler="on_aircraft_changed"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -298,7 +283,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spinbutton1">
+              <object class="GtkSpinButton" id="leg">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="snap_to_ticks">True</property>
@@ -347,30 +332,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox12">
+              <object class="GtkEntry" id="dep">
                 <property name="visible">True</property>
-                <child>
-                  <object class="GtkEntry" id="entry8">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="width_chars">4</property>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="entry9">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="width_chars">4</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can_focus">True</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="width_chars">4</property>
+                <signal name="changed" handler="on_dep_changed"/>
+                <signal name="focus_out_event" handler="on_dep_focus_out_event"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -414,30 +382,13 @@
               </packing>
             </child>
             <child>
-              <object class="GtkVBox" id="vbox14">
+              <object class="GtkEntry" id="arr">
                 <property name="visible">True</property>
-                <child>
-                  <object class="GtkEntry" id="entry10">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="width_chars">4</property>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="entry11">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="width_chars">4</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can_focus">True</property>
+                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="width_chars">4</property>
+                <signal name="changed" handler="on_arr_changed"/>
+                <signal name="focus_out_event" handler="on_arr_focus_out_event"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -460,11 +411,14 @@
         <property name="n_rows">4</property>
         <property name="n_columns">3</property>
         <child>
-          <object class="GtkEntry" id="entry12">
+          <object class="GtkEntry" id="sout">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_sout_changed"/>
+            <signal name="focus_out_event" handler="on_sout_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_sout_focus_in_event"/>
           </object>
           <packing>
             <property name="top_attach">1</property>
@@ -472,11 +426,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="entry13">
+          <object class="GtkEntry" id="sin">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_sin_changed"/>
+            <signal name="focus_out_event" handler="on_sin_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_sin_focus_in_event"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -486,11 +443,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="entry14">
+          <object class="GtkEntry" id="sdur">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_sdur_changed"/>
+            <signal name="focus_out_event" handler="on_sdur_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_sdur_focus_in_event"/>
           </object>
           <packing>
             <property name="left_attach">2</property>
@@ -500,11 +460,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="entry15">
+          <object class="GtkEntry" id="dur">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_dur_changed"/>
+            <signal name="focus_out_event" handler="on_dur_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_dur_focus_in_event"/>
           </object>
           <packing>
             <property name="left_attach">2</property>
@@ -514,11 +477,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="entry16">
+          <object class="GtkEntry" id="ain">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_ain_changed"/>
+            <signal name="focus_out_event" handler="on_ain_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_ain_focus_in_event"/>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -528,11 +494,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="entry17">
+          <object class="GtkEntry" id="aout">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_aout_changed"/>
+            <signal name="focus_out_event" handler="on_aout_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_aout_focus_in_event"/>
           </object>
           <packing>
             <property name="top_attach">3</property>
@@ -660,33 +629,42 @@
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
         <property name="homogeneous">True</property>
         <child>
-          <object class="GtkEntry" id="entry18">
+          <object class="GtkEntry" id="inst">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_inst_changed"/>
+            <signal name="focus_out_event" handler="on_inst_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_inst_focus_in_event"/>
           </object>
           <packing>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="entry19">
+          <object class="GtkEntry" id="siminst">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_siminst_changed"/>
+            <signal name="focus_out_event" handler="on_siminst_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_siminst_focus_in_event"/>
           </object>
           <packing>
             <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <object class="GtkEntry" id="entry20">
+          <object class="GtkEntry" id="night">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <property name="width_chars">4</property>
+            <signal name="changed" handler="on_night_changed"/>
+            <signal name="focus_out_event" handler="on_night_focus_out_event"/>
+            <signal name="focus_in_event" handler="on_night_focus_in_event"/>
           </object>
           <packing>
             <property name="position">2</property>
@@ -718,11 +696,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkEntry" id="entry21">
+              <object class="GtkEntry" id="aprch">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="width_chars">11</property>
+                <signal name="changed" handler="on_aprch_changed"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -738,26 +717,28 @@
             <property name="visible">True</property>
             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
             <child>
-              <object class="GtkCheckButton" id="checkbutton1">
+              <object class="GtkCheckButton" id="xc">
                 <property name="label" translatable="yes">XC</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_xc_toggled"/>
               </object>
               <packing>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkCheckButton" id="checkbutton2">
+              <object class="GtkCheckButton" id="hold">
                 <property name="label" translatable="yes">Hold</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_hold_toggled"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -792,10 +773,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spinbutton2">
+              <object class="GtkSpinButton" id="dland">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <signal name="value_changed" handler="on_dland_value_changed"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -821,10 +803,11 @@
               </packing>
             </child>
             <child>
-              <object class="GtkSpinButton" id="spinbutton3">
+              <object class="GtkSpinButton" id="nland">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <signal name="value_changed" handler="on_nland_value_changed"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -853,10 +836,11 @@
             <property name="hscrollbar_policy">automatic</property>
             <property name="vscrollbar_policy">automatic</property>
             <child>
-              <object class="GtkTextView" id="textview1">
+              <object class="GtkTextView" id="crew_view">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="buffer">crew</property>
               </object>
             </child>
           </object>
@@ -885,11 +869,11 @@
             <property name="hscrollbar_policy">automatic</property>
             <property name="vscrollbar_policy">automatic</property>
             <child>
-              <object class="GtkTextView" id="textview2">
+              <object class="GtkTextView" id="notes_view">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="pixels_above_lines">10</property>
+                <property name="buffer">notes</property>
               </object>
             </child>
           </object>
@@ -905,5 +889,11 @@
         <property name="position">10</property>
       </packing>
     </child>
+  </object>
+  <object class="GtkTextBuffer" id="crew">
+    <signal name="changed" handler="on_crew_changed"/>
+  </object>
+  <object class="GtkTextBuffer" id="notes">
+    <signal name="changed" handler="on_notes_changed"/>
   </object>
 </interface>

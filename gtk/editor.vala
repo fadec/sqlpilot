@@ -1,8 +1,9 @@
-
+using GLib;
 using Gtk;
 using Sqlite;
-using SqlPilot;
-namespace SqlPilotGtk {
+using Sqlp;
+
+namespace SqlpGtk {
 
 	public class Editor : Pane {
 
@@ -34,7 +35,7 @@ namespace SqlPilotGtk {
 		private Label  _message;
 
 		public Editor ( Pane fieldset, Pane toolbar ) {
-			base ( "editor" );
+			base ("editor");
 			add_child ( "fields", fieldset );
 			add_child ( "toolbar", toolbar );
 		}
@@ -52,6 +53,27 @@ namespace SqlPilotGtk {
 		
 		private virtual void save () {
 			_current_record.save();
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_armdel_btn_toggled(ToggleButton button)
+		{
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_del_btn_clicked(Button button)
+		{
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_new_btn_clicked(Button button)
+		{
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_save_btn_clicked(Button button)
+		{
+			save ();
 		}
 
 	}

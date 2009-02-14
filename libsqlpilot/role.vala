@@ -1,5 +1,5 @@
 using Sqlite;
-namespace SqlPilot {
+namespace Sqlp {
 	public class Role : Record {
 		public string ident = "";
 		public string name = "";

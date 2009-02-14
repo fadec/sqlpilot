@@ -1,6 +1,6 @@
 using Sqlite;
 
-namespace SqlPilot {
+namespace Sqlp {
 	public class Flight : Record {
 
 		public int64 aircraft_id;

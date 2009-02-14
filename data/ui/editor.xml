@@ -99,7 +99,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="query_summary">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">NNN Rows</property>
                   </object>
                   <packing>
@@ -109,9 +108,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkProgressBar" id="query_progress">
-                    <property name="visible">True</property>
-                  </object>
+                  <object class="GtkProgressBar" id="query_progress"/>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
@@ -127,7 +124,6 @@
             </child>
             <child>
               <object class="GtkLabel" id="query_error">
-                <property name="visible">True</property>
                 <property name="label" translatable="yes">sql error ...</property>
                 <property name="selectable">True</property>
               </object>
@@ -151,7 +147,12 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <child>
-                  <placeholder/>
+                  <object class="GtkVBox" id="view_columns">
+                    <property name="visible">True</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
                 </child>
                 <child type="label">
                   <object class="GtkLabel" id="label2">

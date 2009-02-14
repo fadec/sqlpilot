@@ -1,5 +1,5 @@
 
-namespace SqlPilot {
+namespace Sqlp {
 	public class Crew {
 		
 		public Crew () {

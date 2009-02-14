@@ -1,4 +1,4 @@
-using SqlPilot;
+using Sqlp;
 
 int main (string[] args) {
 	var tod = TimeOfDay.from_tzname_time ("UTC", "");

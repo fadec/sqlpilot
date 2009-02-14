@@ -1,8 +1,8 @@
 
 using Gtk;
 using Sqlite;
-using SqlPilot;
-namespace SqlPilotGtk {
+using Sqlp;
+namespace SqlpGtk {
 	// A Book is the gui wrapper for the Logbook data object
 	public class Book : Pane {
 		public Logbook logbook;

@@ -2,7 +2,7 @@
 using Gtk;
 using GLib;
 
-namespace SqlPilotGtk {
+namespace SqlpGtk {
 	public class Gui {
 		private static const string guidir = "data/ui/";
 		private static GLib.Module? callback_module = null;
@@ -61,7 +61,7 @@ namespace SqlPilotGtk {
 									  GLib.ConnectFlags flags) {
 			//message (signal_name);
 			void* symbol;
-			var full_symbol_name = "sql_pilot_gtk_cb_" + this.name + "_" + handler_name;
+			var full_symbol_name = "sqlp_gtk_" + this.name + "_" + handler_name;
 			if (callback_module.symbol (full_symbol_name, out symbol)) {
 				object.connect ("signal::" + signal_name, symbol, callback_data, null);
 			} else {

@@ -1,4 +1,4 @@
-namespace SqlPilot {
+namespace Sqlp {
 
 	public struct TimeOfDay {
 

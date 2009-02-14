@@ -1,5 +1,5 @@
 
-namespace SqlPilot {
+namespace Sqlp {
 
 	public struct Duration {
 		private int64 _seconds;
