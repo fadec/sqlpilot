@@ -1,31 +1,23 @@
 using Sqlite;
 
 namespace Sqlp {
-	public class AircraftCrud : Crud {
+	public class AircraftCrud : Crud <Aircraft> {
 
-		Statement find_by_fleetno_stmt;
+		Statement find_by_tail_stmt;
 		public AircraftCrud ( Logbook logbook ) {
-			base (logbook, "Aircraft");
-			var find_by_fleetno_sql = "SELECT * FROM AIRCRAFT WHERE FleetNo = ?;";
-			find_by_fleetno_stmt = logbook.prepare_statement (find_by_fleetno_sql);
+			this.record_type = typeof (Aircraft);
+			this.logbook = logbook;
+			this.table_name = "Aircraft";
 		}
 
-		public override Record new_record () {
-			return new Aircraft ( this ) as Record;
+		construct {
+			var find_by_tail_sql = "SELECT * FROM AIRCRAFT WHERE Tail = ?;";
+			find_by_tail_stmt = logbook.prepare_statement (find_by_tail_sql);
 		}
-		public Aircraft beget () { return new_record () as Aircraft; }
 
-		public Aircraft? find_first (Statement stmt) {
-			return (record_find_first (stmt) as Aircraft);
-		}
-		
- 		public Aircraft? find_by_id (int64 id) {
-			return (record_find_by_id (id) as Aircraft);
- 		}
-		
-		public Aircraft? find_by_fleetno (string fleetno) {
-			find_by_fleetno_stmt.bind_text (1, fleetno);
-			return find_first (find_by_fleetno_stmt);
+		public Aircraft? find_by_tail (string tail) {
+			find_by_tail_stmt.bind_text (1, tail);
+			return find_first (find_by_tail_stmt);
 		}
 
 	}

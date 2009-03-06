@@ -3,7 +3,7 @@ using Gtk;
 using Sqlite;
 
 namespace SqlpGtk {
-	public class QueryList : Widget {
+	public class QueryList : Component {
 
 		protected enum ColumnKind {
 			STRING, STRING_NUMERIC, STRING_FLOAT
@@ -14,17 +14,36 @@ namespace SqlpGtk {
 			public bool visible;
 		}
 
-		protected ListStore store;
-		protected TreeView view;
-		protected HashTable <string, ColumnInfo> column_infos;
+ 		private Statement _statement;
+		public Statement statement {
+			get { return _statement; }
+			owned construct {
+				_statement = (owned) value;
+			}
+		}
 
-		public QueryList (Statement stmt) {
+		private ScrolledWindow scrolled_window;
+		private ListStore store;
+		private TreeView view;
+		private HashTable <string, ColumnInfo> column_infos;
+
+ 		public QueryList (owned Statement stmt) {
+ 			this.statement = (owned) stmt;
+ 		}
+
+		construct {
 			column_infos = new HashTable <string, ColumnInfo> (str_hash, str_equal);
-			store = store_from_stmt (stmt);
+			store = store_from_stmt (this.statement);
 			view = new TreeView.with_model (store);
 			view.set_rules_hint (true);
 			view.set_search_column (0);
-			add_view_columns (stmt);
+			add_view_columns (this.statement);
+			view.show ();
+			scrolled_window = new ScrolledWindow (null, null);
+			scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
+			scrolled_window.add_with_viewport (view);
+			scrolled_window.show ();
+			this.top_widget = scrolled_window;
 		}
 
 		private ListStore store_from_stmt (Statement stmt) {
@@ -41,19 +60,19 @@ namespace SqlpGtk {
 
 			var store = new ListStore.newv (types);
 
-			for (n = 0; n < ncol; n++) {
-				switch (column_infos.lookup (stmt.column_name (n)).kind) {
-				default:
-					break;
-				case ColumnKind.STRING:
-					break;
-				case ColumnKind.STRING_NUMERIC:
-					break;
-				case ColumnKind.STRING_FLOAT:
-					store.set_sort_func (n, iter_compare_by_str_float_column);
-					break;
-				}
-			}
+// 			for (n = 0; n < ncol; n++) {
+// 				switch (column_infos.lookup (stmt.column_name (n)).kind) {
+// 				default:
+// 					break;
+// 				case ColumnKind.STRING:
+// 					break;
+// 				case ColumnKind.STRING_NUMERIC:
+// 					break;
+// 				case ColumnKind.STRING_FLOAT:
+// 					store.set_sort_func (n, iter_compare_by_str_float_column);
+// 					break;
+// 				}
+// 			}
 			return store;
 		}
 

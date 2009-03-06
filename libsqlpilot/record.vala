@@ -5,18 +5,18 @@
 
 using Sqlite;
 namespace Sqlp {
-	public abstract class Record {
+	public abstract class Record : Object {
 		
-		protected weak Crud crud;
+		public weak Crud crud { construct; get; }
 
 		public int64 id;
 
 		public bool is_modified;
 
 		public abstract Record ( Crud c ) {
-			crud = c;
-			is_modified = true;
-			id = 0;
+			this.crud = c;
+			this.is_modified = true;
+			this.id = 0;
 		}
 
 		public bool is_new () {

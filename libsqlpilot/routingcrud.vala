@@ -1,12 +1,19 @@
+using GLib;
 using Sqlite;
 namespace Sqlp {
-	public class RoutingCrud : Crud {
+	public class RoutingCrud : Crud <Routing> {
 		protected Statement find_by_flight_id_stmt;
 		protected Statement destroy_by_flight_id_stmt;
 
-		public RoutingCrud ( Logbook logbook ) {
-			base (logbook, "Routing");
+		private Routing dummy_for_header_inclusion_delete_me_later_sorry_im_here {get; set;}
 
+		public RoutingCrud ( Logbook logbook ) {
+			this.record_type = typeof (Routing);
+			this.logbook = logbook;
+			this.table_name = "Routing";
+		}
+
+		construct {
 			var find_by_flight_id_sql = "SELECT * FROM Routing WHERE flight_id = ?;";
 			find_by_flight_id_stmt = logbook.prepare_statement (find_by_flight_id_sql);
 
@@ -14,14 +21,9 @@ namespace Sqlp {
 			destroy_by_flight_id_stmt = logbook.prepare_statement (destroy_by_flight_id_sql);
 		}
 
-		public override Record new_record () {
-			return new Routing ( this ) as Record;
-		}
-		public Routing beget () { return new_record () as Routing; }
-
 		public List<Routing> find_by_flight ( Flight f ) {
 			find_by_flight_id_stmt.bind_int64 (1, f.id);
-			return record_find_all (find_by_flight_id_stmt); // as List<Routing>
+			return find_all (find_by_flight_id_stmt);
 		}
 
 

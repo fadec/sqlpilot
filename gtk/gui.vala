@@ -1,9 +1,10 @@
 
 using Gtk;
 using GLib;
+using Glade;
 
 namespace SqlpGtk {
-	public class Gui {
+	public class Gui : GLib.Object {
 		private static const string guidir = "data/ui/";
 		private static GLib.Module? callback_module = null;
 		
@@ -16,24 +17,38 @@ namespace SqlpGtk {
 			this.callback_data = callback_data;
 			this.objects = new HashTable <string, Widget> (str_hash, str_equal);
 			init_callback_module ();
-			var builder = new Gtk.Builder ();
 			try {
+				var builder = new Gtk.Builder ();
 				builder.add_from_file ( guidir + name + ".xml" );
-			} catch (Error e) {
-				stderr.printf ( "%s\n", e.message );
-				var msg = new MessageDialog ( null, DialogFlags.MODAL,
-											  MessageType.ERROR, ButtonsType.CANCEL, 
-											  "Failed to load UI\n%s", e.message );
-				msg.run ();
+				weak SList<Gtk.Object> builder_objects = builder.get_objects ();
+				foreach ( var obj in builder_objects ) {
+					if ( obj is Widget ) {
+						objects.insert ( (obj as Widget).name, (obj as Gtk.Object) );
+//					stderr.printf ("--%s\n", (obj as Widget).name);
+					}
+				}
+				builder.connect_signals_full (connect_callback_builder);
 			}
-			weak SList<Gtk.Object> builder_objects = builder.get_objects ();
-			foreach ( var obj in builder_objects ) {
-				if ( obj is Widget ) {
-				   	objects.insert ( (obj as Widget).name, (obj as Gtk.Object) );
-					//stderr.printf ("--%s\n", (obj as Widget).name);
+			catch (Error e) {
+				var glade_xml = new Glade.XML (guidir + name + ".xml", null, null);
+				if (glade_xml != null) {
+					weak List<Gtk.Widget> glade_widgets = glade_xml.get_widget_prefix ("");
+					foreach ( var widget in glade_widgets ) {
+						objects.insert (widget.name, widget as Gtk.Object);
+					}
+					glade_xml.signal_autoconnect_full (connect_callback_glade);
+				} else {
+					stderr.printf ( "%s\n", e.message );
+					var msg = new MessageDialog ( null, DialogFlags.MODAL,
+												  MessageType.ERROR, ButtonsType.CANCEL, 
+												  "Failed to load UI\n%s", e.message );
+					msg.run ();
 				}
 			}
-			builder.connect_signals_full (connect_callback);
+		}
+
+		public Gtk.Object? object (string name) {
+			return this.objects.lookup (name) as Gtk.Object;
 		}
 
 		public Widget widget ( string name ) {
@@ -53,13 +68,27 @@ namespace SqlpGtk {
 			return ( b as Box );
 		}
 
-		public void connect_callback (Gtk.Builder builder,
+		private void connect_callback_builder (Gtk.Builder builder,
 									  GLib.Object object,
 									  string signal_name,
 									  string handler_name,
 									  GLib.Object? connect_object,
 									  GLib.ConnectFlags flags) {
-			//message (signal_name);
+			connect_callback (object, signal_name, handler_name);
+		}
+
+		private void connect_callback_glade (string handler_name,
+											GLib.Object object,
+											string signal_name,
+											string? signal_data,
+											GLib.Object? connect_object,
+											bool after) {
+			connect_callback (object, signal_name, handler_name);
+		}
+
+		private void connect_callback (GLib.Object object,
+									  string signal_name,
+									  string handler_name) {
 			void* symbol;
 			var full_symbol_name = "sqlp_gtk_" + this.name + "_" + handler_name;
 			if (callback_module.symbol (full_symbol_name, out symbol)) {

@@ -21,126 +21,284 @@ CREATE TABLE Flights (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,aircraft_id INTEGER
 	,role_id INTEGER
-	,dep_id INTEGER
-	,arr_id INTEGER
+	,origin_airport_id INTEGER
+	,destination_airport_id INTEGER
 	,Date DATE
 	,Leg INTEGER
-	,AOut TIME
-	,AOutUTC TIME
-	,AIn TIME
-	,AInUTC TIME
-	,Dur INTEGER
+	,ActualOut TIME
+	,ActualOutZ TIME
+	,ActualIn TIME
+	,ActualInZ TIME
+	,Duration INTEGER
 	,Night INTEGER
-	,Inst INTEGER
-	,SimInst INTEGER
-	,Hold BOOLEAN
-	,Aprch VARCHAR
-	,XC BOOLEAN
-	,DLand INTEGER
-	,NLand INTEGER
-	,Crew TEXT
+	,Instrument INTEGER
+	,Hood INTEGER
+	,CrossCountry BOOLEAN
 	,Notes TEXT
-	/* Schedule Stuff */
-	,FltNo VARCHAR
-	,SOut TIME
-	,SOutUTC TIME
-	,SIn TIME
-	,SInUTC TIME
-	,SDur INTEGER
+	-- Schedule stuff: tied to Flights for preflight import simplicity on crew/aircraft/airports
+	,FlightNumber VARCHAR
+	,ScheduledOut TIME
+	,ScheduledOutZ TIME
+	,ScheduledIn TIME
+	,ScheduledInZ TIME
+	,ScheduledDuration INTEGER
 	,Trip VARCHAR
 	,TripDate DATE
 );
 
+CREATE TABLE FlightTags (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Name CHAR
+	,Abbreviation CHAR
+);
+
+CREATE TABLE FlightTaggings (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER
+	,flight_tag_id INTEGER
+);
+
 CREATE TABLE Routing (
-       id INTEGER PRIMARY KEY AUTOINCREMENT
-       ,flight_id INTEGER
-       ,airport_id INTEGER
-       ,Seq INTEGER
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER
+	,airport_id INTEGER
+	,Sequence INTEGER
 );
 
 CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Ident CHAR
+	,Abbreviation CHAR
 	,Name CHAR
 	,PIC BOOLEAN
 	,SIC BOOLEAN
-	,FE BOOLEAN
+	,FlightEngineer BOOLEAN
 	,Solo BOOLEAN
-	,Dual BOOLEAN
-	,Instruct BOOLEAN
+	,DualReceived BOOLEAN
+	,Instructor BOOLEAN
+	,Military BOOLEAN
 	,Total BOOLEAN
+);
+
+CREATE TABLE RoleTags (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Name CHAR
+	,Abbreviation CHAR
+);
+
+CREATE TABLE RoleTaggings (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,role_id INTEGER
+	,role_tag_id INTEGER
 );
 
 CREATE TABLE Aircraft (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,model_id INTEGER
+	,Registration CHAR
 	,Tail CHAR
-	,FleetNo CHAR
 	,Notes TEXT
 );
 
 CREATE TABLE Models (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Ident CHAR
+	,Abbreviation CHAR
 	,Make CHAR
 	,Type CHAR
+	,Category CHAR
+	,Class CHAR
 	,Airplane BOOLEAN
 	,Rotorcraft BOOLEAN
 	,Glider BOOLEAN
-	,LTA BOOLEAN
+	,Sailplane BOOLEAN
+	,LighterThanAir BOOLEAN
 	,PoweredLift BOOLEAN
-	,PPC BOOLEAN
+	,Parachute BOOLEAN
+	,Paraglider BOOLEAN
+	,Powered BOOLEAN
 	,Weightshift BOOLEAN
-	,Heli BOOLEAN
-	,Gyro BOOLEAN
+	,Helicopter BOOLEAN
+	,Gyroplane BOOLEAN
 	,Airship BOOLEAN
-	,Balloon BOOLEAN
-	,Single BOOLEAN
-	,Multi BOOLEAN
+	,FreeBalloon BOOLEAN
+	,SingleEngine BOOLEAN
+	,MultiEngine BOOLEAN
+	,FuelInjected BOOLEAN
+	,Turbocharged BOOLEAN
+	,Radial BOOLEAN
 	,Land BOOLEAN
-	,Sea BOOLEAN
+	,Floats BOOLEAN
+	,FlyingBoat BOOLEAN
+	,Amphibious BOOLEAN
+	,Skids BOOLEAN
+	,Skis BOOLEAN
 	,Turbine BOOLEAN
-	,Jet BOOLEAN
-	,HighPerf BOOLEAN
-	,Retract BOOLEAN
+	,Turbojet BOOLEAN
+	,HighPerformance BOOLEAN
+	,Retractable BOOLEAN
+	,Tailwheel BOOLEAN
 	,Complex BOOLEAN
 	,Pressurized BOOLEAN
 	,Large BOOLEAN
+	,Warbird BOOLEAN
+	,Experimental BOOLEAN
 	,Sport BOOLEAN
 	,Ultralight BOOLEAN
 	,Footlaunch BOOLEAN
-	,Sim BOOLEAN
-	,FTD BOOLEAN
+	,Aerobatic BOOLEAN
+	,Metal BOOLEAN
+	,Composite BOOLEAN
+	,Wood BOOLEAN
+	,Canard BOOLEAN
+	,Biplane BOOLEAN
+	,EFIS BOOLEAN
+	,Simulator BOOLEAN
+	,FlightTrainingDevice BOOLEAN
 	,Total BOOLEAN
+);
+
+CREATE TABLE ModelTags (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Name CHAR
+	,Abbreviation CHAR
+);
+
+CREATE TABLE ModelTaggings (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,model_id INTEGER
+	,model_tag_id INTEGER
 );
 
 CREATE TABLE Airports (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ICAO CHAR
 	,IATA CHAR
+	,Abbreviation CHAR -- For glider launch sites/ships
 	,Name CHAR
 	,City CHAR
 	,Province CHAR
 	,Country CHAR
-	,Lat FLOAT
-	,Lon FLOAT
-	,Elev INTEGER
-	,OffUTC FLOAT
-	,OffDST FLOAT
-	,TZone CHAR
+	,Latitude FLOAT
+	,Longitude FLOAT
+	,Elevation INTEGER
+	,OffsetUTC FLOAT
+	,OffsetDST FLOAT
+	,Timezone CHAR
 	,Notes TEXT
 );
 
-CREATE TABLE Employers (
+CREATE TABLE ApproachLandings (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER
+	,airport_id INTEGER
+	-- Approach Info
+	,approach_type_id CHAR
+	,Sequence INTEGER
+	,ApproachRunway CHAR -- 35L
+	,Visibility FLOAT
+	,Ceiling FLOAT
+	,Coupled BOOLEAN
+	-- Landing Info
+	,termination_type_id INTEGER
+	,surface_id INTEGER
+	,LandingRunway CHAR
+	,Crosswind FLOAT
+	,Night BOOLEAN
+	,NightVisionGoggles BOOLEAN
+	,Autoland BOOLEAN
+);
+
+CREATE TABLE TerminationTypes (
        id INTEGER PRIMARY KEY AUTOINCREMENT
-       ,Ident CHAR
        ,Name CHAR
+       ,Landing BOOLEAN
+);
+
+CREATE TABLE ApproachTypes (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Abbreviation CHAR
+	,Name CHAR
+	,InstrumentCurrency
+	,Display
+);
+
+CREATE TABLE Holds (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER
+	,Location CHAR
+	,Turns INTEGER
+	,Duration INTEGER
+);
+
+CREATE TABLE Takeoffs (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER
+	,airport_id INTEGER
+	,surface_id INTEGER
+	,Sequence INTEGER
+	,Runway CHAR -- 35L
+	,Visibility FLOAT
+	,Crosswind FLOAT
+	,Aborted BOOLEAN
+	,Night BOOLEAN
+);
+
+CREATE TABLE Surfaces (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Abbreviation CHAR
+	,Name CHAR -- grass, pavement-good, pavement-fair, ship, glacier, ...
+);
+
+CREATE TABLE Glides (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER
+	,launch_type_id INTEGER
+	,Sequence INTEGER
+	,Duration INTEGER
+	,Distance FLOAT
+	,ReleaseAltitude FLOAT
+	,EngineStartAltitude FLOAT
+	,MaxAltitude FLOAT
+);
+
+CREATE TABLE LaunchTypes (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Name CHAR
+);
+
+-- 	,Aerotow BOOLEAN
+-- 	,Autotow BOOLEAN
+-- 	,Winch BOOLEAN
+-- 	,SelfLaunch BOOLEAN
+-- 	,Hill BOOLEAN
+-- 	,Bungee BOOLEAN
+-- 	,BalloonDrop BOOLEAN
+
+
+CREATE TABLE People (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,LastName CHAR
+	,FirstName CHAR
+	,Badge CHAR
+	,Notes CHAR
+);
+
+CREATE TABLE Crew (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER
+	,person_id INTEGER
+	,role_id INTEGER
+);
+
+CREATE TABLE Employers (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Abbreviation CHAR
+	,Name CHAR
 );
 
 CREATE TABLE Reports (
-       id INTEGER PRIMARY KEY AUTOINCREMENT
-       ,Title CHAR
-       ,SQL TEXT
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Title CHAR
+	,SQL TEXT
 );
 create unique index reports_title on Reports(title);
 
@@ -150,6 +308,7 @@ CREATE TABLE Registry (
        ,value INTEGER
 );
 create unique index registry_path_key on Registry(path, key);
+
 
 INSERT INTO Reports (Title, SQL) VALUES ("Time in Model", "select Model, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by model;");
 
@@ -235,21 +394,22 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Over",     0);
 
 INSERT INTO Registry (path, key, value) VALUES ("flights", "UTC", 0);
 
-create unique index airports_icao on airports(icao);
-create unique index airports_ident on airports(iata);
-create unique index aircraft_tail on aircraft(tail);
-create unique index aircraft_fleetno on aircraft(fleetno);
-create unique index roles_ident on roles(ident);
-create unique index model_ident on models(ident);
+create unique	 index airports_icao			 on airports(icao);
+create unique	 index airports_iata			 on airports(iata);
+create unique	 index airports_abbreviaton		 on airports(abbreviation);
+create unique	 index aircraft_registration		 on aircraft(registration);
+create unique	 index aircraft_tail			 on aircraft(tail);
+create unique	 index roles_abbreviation		 on roles(abbreviation);
+create unique	 index model_abbreviation		 on models(abbreviation);
 
-create index flights_role_id on flights (role_id);
-create index flights_dep_id on flights (dep_id);
-create index flights_arr_id on flights (arr_id);
-create index flights_aircraft_id on flights(aircraft_id);
-create index flights_date on flights(date);
-create index aircraft_model_id on aircraft(model_id);
-create index routing_flight_id on routing(flight_id);
-create index routing_airport_id on routing(airport_id);
+create		 index flights_role_id			 on flights (role_id);
+create		 index flights_origin_airport_id	 on flights (origin_airport_id);
+create		 index flights_destination_airport_id	 on flights (destination_airport_id);
+create		 index flights_aircraft_id		 on flights(aircraft_id);
+create		 index flights_date			 on flights(date);
+create		 index aircraft_model_id		 on aircraft(model_id);
+create		 index routing_flight_id		 on routing(flight_id);
+create		 index routing_airport_id		 on routing(airport_id);
 
 
 -- select flights.id as '_\\id'
@@ -309,157 +469,157 @@ create index routing_airport_id on routing(airport_id);
 
 
 
-CREATE VIEW Routes AS
-SELECT f.id as flight_id
-,dep.id AS dep_id
-,arr.id as arr_id
-,dep.iata AS DepIATA
-,dep.icao AS DepICAO
-,arr.iata AS ArrIATA
-,arr.icao AS ArrICAO
-,dep.lat AS DepLat
-,dep.lon AS DepLon
-,arr.lat AS ArrLat
-,arr.lon AS ArrLon
-,dep.iata || ' ' || group_concat(ts.iata, ' ') || ' ' || arr.iata AS RtIATA
-,dep.icao || ' ' || group_concat(ts.icao, ' ') || ' ' || arr.icao AS RtICAO
-FROM flights f
-LEFT JOIN airports dep ON f.dep_id = dep.id
-LEFT JOIN airports arr ON f.arr_id = arr.id
-LEFT JOIN Routing r ON r.flight_id = f.id
-LEFT JOIN airports ts ON r.airport_id = ts.id
-GROUP BY f.id;
+-- CREATE VIEW Routes AS
+-- SELECT f.id as flight_id
+-- ,dep.id AS dep_id
+-- ,arr.id as arr_id
+-- ,dep.iata AS DepIATA
+-- ,dep.icao AS DepICAO
+-- ,arr.iata AS ArrIATA
+-- ,arr.icao AS ArrICAO
+-- ,dep.lat AS DepLat
+-- ,dep.lon AS DepLon
+-- ,arr.lat AS ArrLat
+-- ,arr.lon AS ArrLon
+-- ,dep.iata || ' ' || group_concat(ts.iata, ' ') || ' ' || arr.iata AS RtIATA
+-- ,dep.icao || ' ' || group_concat(ts.icao, ' ') || ' ' || arr.icao AS RtICAO
+-- FROM flights f
+-- LEFT JOIN airports dep ON f.dep_id = dep.id
+-- LEFT JOIN airports arr ON f.arr_id = arr.id
+-- LEFT JOIN Routing r ON r.flight_id = f.id
+-- LEFT JOIN airports ts ON r.airport_id = ts.id
+-- GROUP BY f.id;
 
-CREATE VIEW Departures AS
-SELECT airports.id as _id
-,airports.iata as IATA
-,airports.icao as ICAO
-,airports.name as Name
-,airports.city as City
-,airports.country as Country
-,airports.province as Province
-,airports.lat as Lat
-,airports.lon as Lon
-,airports.elev as Elev
-,airports.offutc as OffUTC
-,airports.offdst as OffDST
-,airports.tzone as TZone
-,airports.notes as _Notes
-from airports
-inner join flights on flights.dep_id = airports.id;
+-- CREATE VIEW Departures AS
+-- SELECT airports.id as _id
+-- ,airports.iata as IATA
+-- ,airports.icao as ICAO
+-- ,airports.name as Name
+-- ,airports.city as City
+-- ,airports.country as Country
+-- ,airports.province as Province
+-- ,airports.lat as Lat
+-- ,airports.lon as Lon
+-- ,airports.elev as Elev
+-- ,airports.offutc as OffUTC
+-- ,airports.offdst as OffDST
+-- ,airports.tzone as TZone
+-- ,airports.notes as _Notes
+-- from airports
+-- inner join flights on flights.dep_id = airports.id;
 
-CREATE VIEW Arrivals AS
-SELECT airports.id as _id
-,airports.IATA as IATA
-,airports.icao as ICAO
-,airports.name as Name
-,airports.city as City
-,airports.country as Country
-,airports.province as Province
-,airports.lat as Lat
-,airports.lon as Lon
-,airports.elev as Elev
-,airports.offutc as OffUTC
-,airports.offdst as OffDST
-,airports.tzone as TZone
-,airports.notes as _Notes
-from airports
-inner join flights on flights.dep_id = airports.id;
+-- CREATE VIEW Arrivals AS
+-- SELECT airports.id as _id
+-- ,airports.IATA as IATA
+-- ,airports.icao as ICAO
+-- ,airports.name as Name
+-- ,airports.city as City
+-- ,airports.country as Country
+-- ,airports.province as Province
+-- ,airports.lat as Lat
+-- ,airports.lon as Lon
+-- ,airports.elev as Elev
+-- ,airports.offutc as OffUTC
+-- ,airports.offdst as OffDST
+-- ,airports.tzone as TZone
+-- ,airports.notes as _Notes
+-- from airports
+-- inner join flights on flights.dep_id = airports.id;
 
-CREATE VIEW MyAirports AS
-SELECT * FROM Departures UNION SELECT * FROM Arrivals;
+-- CREATE VIEW MyAirports AS
+-- SELECT * FROM Departures UNION SELECT * FROM Arrivals;
 
-CREATE VIEW MyAircraft AS
-SELECT aircraft.id as id
-,aircraft.tail as Tail
-,models.ident as Model
-,aircraft.fleetno as FleetNo
-,aircraft.notes as Notes
-FROM aircraft
-LEFT JOIN models on aircraft.model_id = models.id;
+-- CREATE VIEW MyAircraft AS
+-- SELECT aircraft.id as id
+-- ,aircraft.tail as Tail
+-- ,models.ident as Model
+-- ,aircraft.fleetno as FleetNo
+-- ,aircraft.notes as Notes
+-- FROM aircraft
+-- LEFT JOIN models on aircraft.model_id = models.id;
 
-CREATE VIEW Experience AS
-SELECT flights.id as _id
-,flights.date as Date
-,roles.ident as Role
-,models.ident as Model
-,models.make as Make
-,models.type as Type
-,aircraft.Tail as Aircraft
-,aircraft.fleetno as FleetNo
-,flights.sdur as SDur
-,flights.dur as Dur
-,flights.sout as SOut
-,flights.sin as SIn
-,flights.aout as AOut
-,flights.ain as AIn
-,flights.soututc as SOutUTC
-,flights.sinutc as SInUTC
-,flights.aoututc as AOutUTC
-,flights.ainutc as AInUTC
-,dep_airports.IATA as DepIATA
-,arr_airports.IATA as ArrIATA
-,dep_airports.lat as DepLat
-,dep_airports.lon as DepLon
-,arr_airports.lat as ArrLat
-,arr_airports.lon as ArrLon
-,dep_airports.iata || ' ' || group_concat(route_airports.iata, ' ') || ' ' || arr_airports.iata AS RtIATA
-,dep_airports.icao || ' ' || group_concat(route_airports.icao, ' ') || ' ' || arr_airports.icao AS RtICAO
-,round(dist_nm(dep_airports.lat, dep_airports.lon, arr_airports.lat, arr_airports.lon), 1) as Dist
-,dep_airports.country as DepCountry
-,dep_airports.city as DepCity
-,dep_airports.province as DepProvince
-,arr_airports.country as ArrCountry
-,arr_airports.city as ArrCity
-,arr_airports.province as ArrProvice
-,flights.night as Night
-,flights.inst as Inst
-,flights.siminst as SimInst
-,flights.xc * flights.dur as XC
-,flights.aprch as Aprch
-,flights.dur * roles.pic as PIC
-,flights.dur * roles.sic as SIC
-,flights.dur * roles.fe as FE
-,flights.dur * roles.solo as Solo
-,flights.dur * roles.dual as Dual
-,flights.dur * roles.instruct as Instruct
-,flights.dur * models.airplane as Airplane
-,flights.dur * models.rotorcraft as Rotorcraft
-,flights.dur * models.glider as Glider
-,flights.dur * models.lta as LTA
-,flights.dur * models.poweredlift as PoweredLift
-,flights.dur * models.ppc as PPC
-,flights.dur * models.weightshift as Weightshift
-,flights.dur * models.heli as Heli
-,flights.dur * models.gyro as Gyro
-,flights.dur * models.airship as Airship
-,flights.dur * models.balloon as Ballon
-,flights.dur * models.single as Single
-,flights.dur * models.multi as Multi
-,flights.dur * models.land as Land
-,flights.dur * models.sea as Sea
-,flights.dur * models.turbine as Turbine
-,flights.dur * models.jet as Jet
-,flights.dur * models.highperf as HighPerf
-,flights.dur * models.retract as Retract
-,flights.dur * models.complex as Complex
-,flights.dur * models.pressurized as Pressurized
-,flights.dur * models.large as Large
-,flights.dur * models.sport as Sport
-,flights.dur * models.ultralight as Ultralight
-,flights.dur * models.footlaunch as Footlaunch
-,flights.dur * models.sim as Sim
-,flights.dur * models.ftd as FTD
-,flights.dur * roles.total * models.total as Total
-,dland as DLand
-,nland as NLand
-FROM flights
-LEFT JOIN airports dep_airports ON flights.dep_id = dep_airports.id
-LEFT JOIN airports arr_airports ON flights.arr_id = arr_airports.id
-LEFT JOIN roles ON flights.role_id = roles.id
-LEFT JOIN aircraft ON flights.aircraft_id = aircraft.id
-LEFT JOIN models ON aircraft.model_id = models.id
-LEFT JOIN routing ON routing.flight_id = flights.id
-LEFT JOIN airports route_airports ON routing.airport_id = route_airports.id
-GROUP BY flights.id				
-ORDER BY flights.date;
+-- CREATE VIEW Experience AS
+-- SELECT flights.id as _id
+-- ,flights.date as Date
+-- ,roles.ident as Role
+-- ,models.ident as Model
+-- ,models.make as Make
+-- ,models.type as Type
+-- ,aircraft.Tail as Aircraft
+-- ,aircraft.fleetno as FleetNo
+-- ,flights.sdur as SDur
+-- ,flights.dur as Dur
+-- ,flights.sout as SOut
+-- ,flights.sin as SIn
+-- ,flights.aout as AOut
+-- ,flights.ain as AIn
+-- ,flights.soututc as SOutUTC
+-- ,flights.sinutc as SInUTC
+-- ,flights.aoututc as AOutUTC
+-- ,flights.ainutc as AInUTC
+-- ,dep_airports.IATA as DepIATA
+-- ,arr_airports.IATA as ArrIATA
+-- ,dep_airports.lat as DepLat
+-- ,dep_airports.lon as DepLon
+-- ,arr_airports.lat as ArrLat
+-- ,arr_airports.lon as ArrLon
+-- ,dep_airports.iata || ' ' || group_concat(route_airports.iata, ' ') || ' ' || arr_airports.iata AS RtIATA
+-- ,dep_airports.icao || ' ' || group_concat(route_airports.icao, ' ') || ' ' || arr_airports.icao AS RtICAO
+-- ,round(dist_nm(dep_airports.lat, dep_airports.lon, arr_airports.lat, arr_airports.lon), 1) as Dist
+-- ,dep_airports.country as DepCountry
+-- ,dep_airports.city as DepCity
+-- ,dep_airports.province as DepProvince
+-- ,arr_airports.country as ArrCountry
+-- ,arr_airports.city as ArrCity
+-- ,arr_airports.province as ArrProvice
+-- ,flights.night as Night
+-- ,flights.inst as Inst
+-- ,flights.siminst as SimInst
+-- ,flights.xc * flights.dur as XC
+-- ,flights.aprch as Aprch
+-- ,flights.dur * roles.pic as PIC
+-- ,flights.dur * roles.sic as SIC
+-- ,flights.dur * roles.fe as FE
+-- ,flights.dur * roles.solo as Solo
+-- ,flights.dur * roles.dual as Dual
+-- ,flights.dur * roles.instruct as Instruct
+-- ,flights.dur * models.airplane as Airplane
+-- ,flights.dur * models.rotorcraft as Rotorcraft
+-- ,flights.dur * models.glider as Glider
+-- ,flights.dur * models.lta as LTA
+-- ,flights.dur * models.poweredlift as PoweredLift
+-- ,flights.dur * models.ppc as PPC
+-- ,flights.dur * models.weightshift as Weightshift
+-- ,flights.dur * models.heli as Heli
+-- ,flights.dur * models.gyro as Gyro
+-- ,flights.dur * models.airship as Airship
+-- ,flights.dur * models.balloon as Ballon
+-- ,flights.dur * models.single as Single
+-- ,flights.dur * models.multi as Multi
+-- ,flights.dur * models.land as Land
+-- ,flights.dur * models.sea as Sea
+-- ,flights.dur * models.turbine as Turbine
+-- ,flights.dur * models.jet as Jet
+-- ,flights.dur * models.highperf as HighPerf
+-- ,flights.dur * models.retract as Retract
+-- ,flights.dur * models.complex as Complex
+-- ,flights.dur * models.pressurized as Pressurized
+-- ,flights.dur * models.large as Large
+-- ,flights.dur * models.sport as Sport
+-- ,flights.dur * models.ultralight as Ultralight
+-- ,flights.dur * models.footlaunch as Footlaunch
+-- ,flights.dur * models.sim as Sim
+-- ,flights.dur * models.ftd as FTD
+-- ,flights.dur * roles.total * models.total as Total
+-- ,dland as DLand
+-- ,nland as NLand
+-- FROM flights
+-- LEFT JOIN airports dep_airports ON flights.dep_id = dep_airports.id
+-- LEFT JOIN airports arr_airports ON flights.arr_id = arr_airports.id
+-- LEFT JOIN roles ON flights.role_id = roles.id
+-- LEFT JOIN aircraft ON flights.aircraft_id = aircraft.id
+-- LEFT JOIN models ON aircraft.model_id = models.id
+-- LEFT JOIN routing ON routing.flight_id = flights.id
+-- LEFT JOIN airports route_airports ON routing.airport_id = route_airports.id
+-- GROUP BY flights.id				
+-- ORDER BY flights.date;

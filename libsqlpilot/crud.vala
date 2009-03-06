@@ -9,19 +9,25 @@
 
 using Sqlite;
 namespace Sqlp {
-	public abstract class Crud {
-		public weak Logbook logbook;
+	public abstract class Crud <T> : Object {
+		public weak Logbook logbook { construct; get; }
+		public string table_name { construct; get; }
+		public Type record_type { construct; get; }
 		public Statement find;
 		public Statement insert;
 		public Statement update;
 		public Statement destroy;
-		public string table_name;
 		public string[] column_names;
 
-		protected Crud (Logbook logbook, string table_name) {
-				
+		private GLib.HashTable <string, int> column_indexes;
+
+		protected Crud (Type record_type, Logbook logbook, string table_name) {
+			this.record_type = record_type;
 			this.logbook = logbook;
 			this.table_name = table_name;
+		}
+
+		construct {
 			column_names = table_column_names (table_name);
 			find   = logbook.prepare_statement (make_find_sql (table_name));
 			insert = logbook.prepare_statement (make_insert_sql (table_name));
@@ -29,18 +35,75 @@ namespace Sqlp {
 			destroy = logbook.prepare_statement (make_destroy_sql (table_name));
 		}
 
-		// new_record is abstract so it can call the correct contsructor on the record,
-		// thus ensuring that the correct crud gets passed to the constructor.
-		// Abstract records can't be instantiated anyway so new_record must know its
-		// friend Record type.
-		// Unfortunately it can only return a Record so each concrete Crud should
-		// implement a beget() function that casts new_record() to its friend type.
-		// e.g. FlightCrud#beget() returns a Flight
-		public abstract Record new_record ();
- 		
+		public virtual T new_record () {
+			return Object.new (this.record_type, "crud", this);
+		}
 
 		private string make_find_sql ( string table_name ) {
 			return "SELECT * FROM " + table_name + " WHERE id = ?;";
+		}
+
+		public string[] table_column_names ( string table_name ) {
+			var statement = logbook.prepare_statement (make_select_all_sql (table_name));
+			return statement_colunm_names (statement);
+		}
+
+		public string[] statement_colunm_names ( Statement select ) {
+			int ncol = 0;
+			ncol = select.column_count ();
+			var names = new string[] {};
+			names.resize (ncol);
+			for (int i = 0; i < ncol; i++) {
+				names[i] = select.column_name (i);
+			}
+			return names;
+		}
+
+		public virtual T? find_by_id (int64 id) {
+			find.bind_int64 (1, id);
+ 			return find_first(find);
+ 		}
+
+		public virtual T? find_first (Statement stmt) {
+			Record? record;
+			if (stmt.step () == ROW) {
+				record = new_record () as Record;
+				record.id = stmt.column_int64 (0);
+				record.set_from_stmt (stmt);
+				record.is_modified = false;
+			} else {
+				record = null;
+			}
+			stmt.reset ();
+			stmt.clear_bindings ();
+			return record;
+		}
+
+		public List<T> find_all (Statement stmt) {
+			Record? record;
+			var records = new List<Record> ();
+			while (stmt.step () == ROW) {
+				record = new_record () as Record;
+				record.id = stmt.column_int64 (0);
+				record.set_from_stmt (stmt);
+				record.is_modified = false;
+				records.append (record);
+			}
+			stmt.reset ();
+			stmt.clear_bindings ();
+			return records;
+		}
+
+		// First column is 1. -1 if not found.
+		protected int column_index (string name) {
+			if (column_indexes == null) {
+				column_indexes = new HashTable <string, int> (str_hash, str_equal);
+				for (int i=0; i < column_names.length; i++) {
+					column_indexes.insert (column_names[i], i + 1);
+				}
+			}
+			var idx = column_indexes.lookup (name);
+			return idx > 0 ? idx : -1;
 		}
 
 		private string make_insert_sql ( string table_name ) {
@@ -76,60 +139,8 @@ namespace Sqlp {
 			return "DELETE FROM " + table_name + " WHERE id = ?;";
 		}
 
-		public string make_select_all_sql ( string table_name ) {
+		private string make_select_all_sql ( string table_name ) {
 			return "SELECT * FROM " + table_name + ";"; 
 		}
-
-		public string[] table_column_names ( string table_name ) {
-			var statement = logbook.prepare_statement (make_select_all_sql (table_name));
-			return statement_colunm_names (statement);
-		}
-
-		public string[] statement_colunm_names ( Statement select ) {
-			int ncol = 0;
-			ncol = select.column_count ();
-			var names = new string[] {};
-			names.resize (ncol);
-			for (int i = 0; i < ncol; i++) {
-				names[i] = select.column_name (i);
-			}
-			return names;
-		}
-
-		public Record? record_find_by_id (int64 id) {
-			find.bind_int64 (1, id);
- 			return record_find_first(find);
- 		}
-
-		protected Record? record_find_first (Statement stmt) {
-			Record? record;
-			if (stmt.step () == ROW) {
-				record = new_record ();
-				record.id = stmt.column_int64 (0);
-				record.set_from_stmt (stmt);
-				record.is_modified = false;
-			} else {
-				record = null;
-			}
-			stmt.reset ();
-			stmt.clear_bindings ();
-			return record;
-		}
-
-		protected List<Record> record_find_all (Statement stmt) {
-			Record? record;
-			var records = new List<Record> ();
-			while (stmt.step () == ROW) {
-				record = new_record ();
-				record.id = stmt.column_int64 (0);
-				record.set_from_stmt (stmt);
-				record.is_modified = false;
-				records.append (record);
-			}
-			stmt.reset ();
-			stmt.clear_bindings ();
-			return records;
-		}
-
 	}
 }

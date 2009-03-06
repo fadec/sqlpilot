@@ -1,27 +1,23 @@
 using Sqlite;
 namespace Sqlp {
-	public class RoleCrud : Crud {
+	public class RoleCrud : Crud <Role> {
 		
-		private Statement find_by_ident_stmt;
+		private Statement find_by_abbreviation_stmt;
 		
 		public RoleCrud ( Logbook logbook ) {
-			base (logbook, "Roles");
-			var find_by_ident_sql = "SELECT * FROM Roles WHERE Ident = ?;";
-			find_by_ident_stmt = logbook.prepare_statement (find_by_ident_sql);
+			this.record_type = typeof (Role);
+			this.logbook = logbook;
+			this.table_name = "Roles";
 		}
-		
-		public override Record new_record () {
-			return new Role ( this );
-		}
-		public Role beget () { return new_record () as Role; }
-		
- 		public Role? find_by_id (int64 id) {
-			return (record_find_by_id (id) as Role);
- 		}
 
-		public Role? find_by_ident (string ident) {
-			find_by_ident_stmt.bind_text (1, ident);
-			return (record_find_first (find_by_ident_stmt) as Role);
+		construct {
+			var find_by_abbreviation_sql = "SELECT * FROM Roles WHERE Abbreviation = ?;";
+			find_by_abbreviation_stmt = logbook.prepare_statement (find_by_abbreviation_sql);
+		}
+
+		public Role? find_by_abbreviation (string abbreviation) {
+			find_by_abbreviation_stmt.bind_text (1, abbreviation);
+			return find_first (find_by_abbreviation_stmt);
 		}
 
 	}

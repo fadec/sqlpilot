@@ -91,29 +91,20 @@ namespace Sqlp {
 
 		public Date date;
 		public int leg;
-		public TimeOfDay aout;
-		public TimeOfDay ain;
-		public Duration dur;
+		public TimeOfDay actual_out;
+		public TimeOfDay actual_in;
+		public Duration duration;
 		public Duration night;
-		public Duration inst;
-		public Duration sim_inst;
-		public bool hold;
-		public string aprch = "";
-		public bool xc;
-		public int dland;
-		public int nland;
+		public Duration instrument;
+		public Duration hood;
 		public string crew = "";
 		public string notes = "";
-		public string fltno = "";
-		public TimeOfDay sout;
-		public TimeOfDay sin;
-		public Duration sdur;
+		public string flight_number = "";
+		public TimeOfDay scheduled_out;
+		public TimeOfDay scheduled_in;
+		public Duration scheduled_duration;
 		public string trip = "";
 		public Date trip_date;
-
-		public Flight ( FlightCrud crud ) {
-			base (crud);
-		}
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
@@ -124,84 +115,76 @@ namespace Sqlp {
 			stmt.bind_nonempty_text		(i++, date.to_iso8601 ());
 			stmt.bind_int				(i++, leg);
 
-			bind_time_of_day (stmt, ref i, aout, dep.timezone);
-			bind_time_of_day (stmt, ref i, aout, Timezone ("UTC"));
-			bind_time_of_day (stmt, ref i, ain, arr.timezone);
-			bind_time_of_day (stmt, ref i, ain, Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, actual_out, dep.timezone);
+			bind_time_of_day (stmt, i++, actual_out, Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, actual_in, arr.timezone);
+			bind_time_of_day (stmt, i++, actual_in, Timezone ("UTC"));
 
-			bind_duration (stmt, ref i, dur);
-			bind_duration (stmt, ref i, night);
-			bind_duration (stmt, ref i, inst);
-			bind_duration (stmt, ref i, sim_inst);
+			bind_duration (stmt, i++, duration);
+			bind_duration (stmt, i++, night);
+			bind_duration (stmt, i++, instrument);
+			bind_duration (stmt, i++, hood);
 
-			stmt.bind_int				(i++, (int) hold);
-			stmt.bind_nonempty_text		(i++, aprch);
-			stmt.bind_int				(i++, (int) xc);
-			stmt.bind_int				(i++, dland);
-			stmt.bind_int				(i++, nland);
 			stmt.bind_nonempty_text		(i++, crew);
 			stmt.bind_nonempty_text		(i++, notes);
-			stmt.bind_nonempty_text		(i++, fltno);
+			stmt.bind_nonempty_text		(i++, flight_number);
 
-			bind_time_of_day (stmt, ref i, sout, dep.timezone);
-			bind_time_of_day (stmt, ref i, sout, Timezone ("UTC"));
-			bind_time_of_day (stmt, ref i, sin, arr.timezone);
-			bind_time_of_day (stmt, ref i, sin, Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, scheduled_out, dep.timezone);
+			bind_time_of_day (stmt, i++, scheduled_out, Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, scheduled_in, arr.timezone);
+			bind_time_of_day (stmt, i++, scheduled_in, Timezone ("UTC"));
 
-			bind_duration (stmt, ref i, sdur);
+			bind_duration (stmt, i++, scheduled_duration);
 
 			stmt.bind_nonempty_text		(i++, trip);
 			stmt.bind_nonempty_text		(i++, trip_date.to_iso8601() );
 			return i;
 		}
 
-		private void bind_time_of_day (Statement stmt, ref int iter, TimeOfDay tod, Timezone in_timezone) {
+		private void bind_time_of_day (Statement stmt, int iter, TimeOfDay tod, Timezone in_timezone) {
 			if (tod.valid ()) {
-				stmt.bind_text (iter++, ((Datetime (date, tod).in_timezone (in_timezone)).time_of_day).to_iso8601 ());
+				var dt = Datetime (date, tod).in_timezone (in_timezone);
+				var str = dt.time_of_day.to_iso8601 ();
+				stmt.bind_text (iter, str);
 			} else {
-				stmt.bind_null (iter++);
+				stmt.bind_null (iter);
 			}
 		}
 
-		private void bind_duration (Statement stmt, ref int iter, Duration dur) {
+		private void bind_duration (Statement stmt, int iter, Duration dur) {
 			if (dur.to_minutes () > 0) {
-				stmt.bind_int64 (iter++, dur.to_minutes ());
+				stmt.bind_int64 (iter, dur.to_minutes ());
 			} else {
-				stmt.bind_null (iter++);
+				stmt.bind_null (iter);
 			}
 		}
 
 		public override void set_from_stmt (Statement stmt) {
 			var i = 1;
-			aircraft_id = stmt.column_int64 (i++);
-			role_id     = stmt.column_int64 (i++);
-			dep_id      = stmt.column_int64 (i++);
-			arr_id      = stmt.column_int64 (i++);
-			date        = Date.from_iso8601 (stmt.column_text (i++));
-			leg         = stmt.column_int   (i++);
+			aircraft_id			= stmt.column_int64 (i++);
+			role_id				= stmt.column_int64 (i++);
+			dep_id				= stmt.column_int64 (i++);
+			arr_id				= stmt.column_int64 (i++);
+			date				= Date.from_iso8601 (stmt.column_text (i++));
+			leg					= stmt.column_int   (i++);
 			i++; // skip local ss read
-			aout        = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
+			actual_out			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			i++; // skip local
-			ain         = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			dur         = Duration.from_minutes (stmt.column_int64 (i++));
-			night       = Duration.from_minutes (stmt.column_int64 (i++));
-			inst        = Duration.from_minutes (stmt.column_int64 (i++));
-			sim_inst    = Duration.from_minutes (stmt.column_int64 (i++));
-			hold        = (bool) stmt.column_int (i++);
-			aprch       = stmt.column_text (i++);
-			xc          = (bool) stmt.column_int (i++);
-			dland       = stmt.column_int (i++);
-			nland       = stmt.column_int (i++);
-			crew        = stmt.column_text (i++);
-			notes       = stmt.column_text (i++);
-			fltno       = stmt.column_text (i++);
+			actual_in			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
+			duration			= Duration.from_minutes (stmt.column_int64 (i++));
+			night				= Duration.from_minutes (stmt.column_int64 (i++));
+			instrument			= Duration.from_minutes (stmt.column_int64 (i++));
+			hood				= Duration.from_minutes (stmt.column_int64 (i++));
+			crew				= stmt.column_text (i++);
+			notes				= stmt.column_text (i++);
+			flight_number       = stmt.column_text (i++);
 			i++; // skip local
-			sout        = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
+			scheduled_out		= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			i++; // skip local
-			sin         = TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			sdur        = Duration.from_minutes (stmt.column_int64 (i++));
-			trip        = stmt.column_text (i++);
-			trip_date   = Date.from_iso8601 (stmt.column_text (i++));
+			scheduled_in		= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
+			scheduled_duration  = Duration.from_minutes (stmt.column_int64 (i++));
+			trip				= stmt.column_text (i++);
+			trip_date			= Date.from_iso8601 (stmt.column_text (i++));
 //			stderr.printf("WTF: %s\n", sout.timezone.name);
 		}
 

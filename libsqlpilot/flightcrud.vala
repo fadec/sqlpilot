@@ -1,30 +1,26 @@
 using Sqlite;
 namespace Sqlp {
-	public class FlightCrud : Crud {
+	public class FlightCrud : Crud <Flight> {
 
 		protected Statement find_by_date_fltno_dep_arr_stmt;
 
 		public FlightCrud ( Logbook logbook ) {
-			base (logbook, "Flights");
+			this.record_type = typeof (Flight);
+			this.logbook = logbook;
+			this.table_name = "Flights";
+		}
+
+		construct {
 			var find_by_date_fltno_dep_arr_sql =
 			"SELECT * FROM Flights " +
-			"LEFT JOIN Airports dep ON dep_id = dep.id " +
-			"LEFT JOIN Airports arr ON arr_id = arr.id " +
-			"WHERE Date = ? AND FltNo = ? AND " +
-			"(dep.ICAO = ? OR dep.IATA = ?) AND " +
-			"(arr.ICAO = ? OR arr.IATA = ?);";
+			"LEFT JOIN Airports origin ON origin_airport_id = origin.id " +
+			"LEFT JOIN Airports destination ON destination_airport_id = destination.id " +
+			"WHERE Date = ? AND FlightNumber = ? AND " +
+			"(origin.ICAO = ? OR destination.IATA = ?) AND " +
+			"(destination.ICAO = ? OR destination.IATA = ?);";
 			find_by_date_fltno_dep_arr_stmt =
 			logbook.prepare_statement (find_by_date_fltno_dep_arr_sql);
 		}
-
-		public override Record new_record () {
-			return new Flight ( this ) as Record;
-		}
-		public Flight beget () { return new_record () as Flight; }
-
- 		public Flight? find_by_id (int64 id) {
-			return (record_find_by_id (id) as Flight);
- 		}
 
 		public Flight? find_by_date_fltno_dep_arr (string date_str,
 												   string fltno,
@@ -38,7 +34,7 @@ namespace Sqlp {
 			stmt.bind_text (i++, dep_ident);
 			stmt.bind_text (i++, arr_ident);
 			stmt.bind_text (i++, arr_ident);
-			return record_find_first (stmt) as Flight;
+			return find_first (stmt);
 		}
 
 	}

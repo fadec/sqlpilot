@@ -2,7 +2,7 @@
 
 using GLib;
 namespace Sqlp {
-	public class Route {
+	public class Route : Object {
 
 		private Flight? _flight;
 		public Flight flight {
@@ -27,6 +27,13 @@ namespace Sqlp {
 			clear ();
 		}
 
+		public string to_string_icao () {
+			return "bla icao";
+		}
+		public string to_string_iata () {
+			return "bla iata";
+		}
+		
 		public void clear () {
 			routings = new List<Routing> ();
 		}
@@ -37,7 +44,7 @@ namespace Sqlp {
 		}
 
 		public void append_airport (Airport airport) {
-			var routing = new Routing (crud);
+			var routing = crud.new_record ();
 			routing.airport = airport;
 			routings.append (routing);
 		}

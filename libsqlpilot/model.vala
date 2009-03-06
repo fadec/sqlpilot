@@ -2,7 +2,7 @@ using Sqlite;
 namespace Sqlp {
 	public class Model : Record {
 
-		public string ident;
+		public string abbreviation;
 		public string make;
 		public string type;
 		public bool airplane;
@@ -34,13 +34,9 @@ namespace Sqlp {
 		public bool ftd;
 		public bool total;
 
-		public Model (ModelCrud crud) {
-			base (crud);
-		}
-
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_nonempty_text (i++, ident);
+			stmt.bind_nonempty_text (i++, abbreviation);
 			stmt.bind_nonempty_text (i++, make);
 			stmt.bind_nonempty_text (i++, type);
 			stmt.bind_int (i++, (int) airplane);
@@ -76,7 +72,7 @@ namespace Sqlp {
 
 		public override void set_from_stmt (Statement stmt) {
 			var i = 1;
-			ident				= stmt.column_text (i++);
+			abbreviation		= stmt.column_text (i++);
 			make				= stmt.column_text (i++);
 			type				= stmt.column_text (i++);
 			airplane			= (bool) stmt.column_int (i++);

@@ -5,9 +5,9 @@ public static int main ( string[] args ) {
 	if ( args.length > 1 ) {
 		try {
 			var book = new Book ( args[1] );
-			var window = new MainWindow ();
-			window.add_book ( book );
-			window.show_all ();
+			var application = new Application ();
+			application.add_book ( book );
+			application.top_widget.show ();
 			Gtk.main ();
 		}
 		catch (Error e) {

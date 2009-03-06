@@ -36,10 +36,6 @@ namespace Sqlp {
 
 		public int seq;
 
-		public Routing (RoutingCrud crud) {
-			base (crud);
-		}
-
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
 			stmt.bind_int64 (i++, flight_id);

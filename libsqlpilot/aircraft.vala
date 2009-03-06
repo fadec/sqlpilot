@@ -25,11 +25,6 @@ namespace Sqlp {
 		private string _notes = "";
 		public string notes { get { return _notes; } set { _notes = value; is_modified = true; } }
 
-
-		public Aircraft (AircraftCrud crud) {
-			base (crud);
-		}
-
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
 			stmt.bind_int64 (i++, model_id);

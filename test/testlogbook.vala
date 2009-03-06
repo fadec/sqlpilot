@@ -5,28 +5,33 @@ int main ( string[] args) {
 	var logbook = new Logbook ();
 	logbook.open ( "test-logbook.db" );
 
-	var role = logbook.role.beget ();
+	assert (logbook.role is RoleCrud);
+
+	var role = logbook.role.new_record ();
 	assert (role is Role);
+
 	role.pic = true;
-	role.ident = "CA";
+	role.abbreviation = "CA";
 	assert (role.pic == true);
-	assert (role.ident == "CA");
+	assert (role.abbreviation == "CA");
 	role.save ();
+	assert (role.id == 1);
 	role = logbook.role.find_by_id(1);
 	assert (role is Role);
+
 	assert (role != null);
 	assert (role.pic == true);
-	assert (role.ident == "CA");
+	assert (role.abbreviation == "CA");
 
-	var flight = logbook.flight.beget ();
+	var flight = logbook.flight.new_record ();
   	flight.role = role;
-  	flight.aircraft = logbook.aircraft.beget ();
+  	flight.aircraft = logbook.aircraft.new_record ();
 	flight.aircraft.tail = "N12345";
-  	flight.aircraft.model = logbook.model.beget ();
+  	flight.aircraft.model = logbook.model.new_record ();
 	assert (flight.aircraft.model != null);
-	flight.aircraft.model.ident = "PA28";
-  	flight.dep = logbook.airport.beget ();
-  	flight.arr = logbook.airport.beget ();
+	flight.aircraft.model.abbreviation = "PA28";
+  	flight.dep = logbook.airport.new_record ();
+  	flight.arr = logbook.airport.new_record ();
 
 	assert (flight.is_new () == true);
 	assert (flight.aircraft is Aircraft);
@@ -40,25 +45,25 @@ int main ( string[] args) {
  	flight = logbook.flight.find_by_id (fid);
  	assert (flight.is_new () == false);
 	assert (flight.role != null);
-	assert (flight.role.ident == "CA");
+	assert (flight.role.abbreviation == "CA");
 	assert (flight.aircraft != null);
 	assert (flight.aircraft.tail == "N12345");
 	assert (flight.aircraft.model != null);
-	assert (flight.aircraft.model.ident == "PA28");
+	assert (flight.aircraft.model.abbreviation == "PA28");
 
- 	var minneapolis = logbook.airport.beget ();
+ 	var minneapolis = logbook.airport.new_record ();
  	minneapolis.icao = "KMSP";
  	minneapolis.iata = "MSP";
 
- 	var thief_river = logbook.airport.beget ();
+ 	var thief_river = logbook.airport.new_record ();
  	thief_river.icao = "KTVF";
  	thief_river.iata = "TVF";
 
- 	var grand_forks = logbook.airport.beget ();
+ 	var grand_forks = logbook.airport.new_record ();
  	grand_forks.icao = "KGFK";
  	grand_forks.iata = "GFK";
 
- 	var fargo = logbook.airport.beget ();
+ 	var fargo = logbook.airport.new_record ();
  	fargo.icao = "KFAR";
  	fargo.iata = "FAR";
 

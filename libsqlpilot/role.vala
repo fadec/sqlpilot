@@ -1,7 +1,7 @@
 using Sqlite;
 namespace Sqlp {
 	public class Role : Record {
-		public string ident = "";
+		public string abbreviation = "";
 		public string name = "";
 		public bool pic;
 		public bool sic;
@@ -9,19 +9,16 @@ namespace Sqlp {
 		public bool solo;
 		public bool dual;
 		public bool instruct;
+		public bool military;
 		public bool total;
 
-		public Role ( RoleCrud crud ) {
-			base (crud);
-		}
-
 		public override string to_string () {
-			return "<Role %s>".printf (ident);
+			return "<Role %s>".printf (abbreviation);
 		}
 
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_nonempty_text (i++, ident);
+			stmt.bind_nonempty_text (i++, abbreviation);
 			stmt.bind_nonempty_text (i++, name);
 			stmt.bind_int (i++, (int) pic);
 			stmt.bind_int (i++, (int) sic);
@@ -29,6 +26,7 @@ namespace Sqlp {
 			stmt.bind_int (i++, (int) solo);
 			stmt.bind_int (i++, (int) dual);
 			stmt.bind_int (i++, (int) instruct);
+			stmt.bind_int (i++, (int) military);
 			stmt.bind_int (i++, (int) total);
 			return i;
 			
@@ -36,15 +34,16 @@ namespace Sqlp {
 
 		protected override void set_from_stmt (Statement stmt) {
 			var i = 1;
-			ident = stmt.column_text(i++);
-			name = stmt.column_text(i++);
-			pic = (bool) stmt.column_int(i++);
-			sic = (bool) stmt.column_int(i++);
-			fe = (bool) stmt.column_int(i++);
-			solo = (bool) stmt.column_int(i++);
-			dual = (bool) stmt.column_int(i++);
-			instruct = (bool) stmt.column_int(i++);
-			total = (bool) stmt.column_int(i++);
+			abbreviation = stmt.column_text(i++);
+			name = stmt.column_text (i++);
+			pic = (bool) stmt.column_int (i++);
+			sic = (bool) stmt.column_int (i++);
+			fe = (bool) stmt.column_int (i++);
+			solo = (bool) stmt.column_int (i++);
+			dual = (bool) stmt.column_int (i++);
+			instruct = (bool) stmt.column_int (i++);
+			military = (bool) stmt.column_int (i++);
+			total = (bool) stmt.column_int (i++);
 		}
 
 	}

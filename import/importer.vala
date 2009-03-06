@@ -19,117 +19,117 @@ namespace Sqlp {
 			Model?    model;
 			Airport?  dep = null;
 			Airport?  arr = null;
-			while (row.next ()) {
+// 			while (row.next ()) {
 			
-				var date        = Date.from_iso8601 (row.colstr ("date"));
-				var fltno       = row.colstr ("fltno");
-				var dep_ident   = row.colstr ("dep");
-				var arr_ident   = row.colstr ("arr");
-				var fleetno     = row.colstr ("fleetno");
-				var model_ident = row.colstr ("model");
-				var role_ident  = row.colstr ("role");
+// 				var date        = Date.from_iso8601 (row.colstr ("date"));
+// 				var fltno       = row.colstr ("fltno");
+// 				var dep_ident   = row.colstr ("dep");
+// 				var arr_ident   = row.colstr ("arr");
+// 				var fleetno     = row.colstr ("fleetno");
+// 				var model_ident = row.colstr ("model");
+// 				var role_ident  = row.colstr ("role");
 
-				flight = logbook.flight.find_by_date_fltno_dep_arr (date.to_iso8601 (),
-																	fltno,
-																	dep_ident,
-																	arr_ident);
-				if (flight == null) {
-					stderr.printf("new\n");
-					flight       = logbook.flight.beget ();
-					flight.date  = date;
-					flight.fltno = fltno;
-				} else stderr.printf("update flight_id = %d\n", (int)flight.id);
+// 				flight = logbook.flight.find_by_date_fltno_dep_arr (date.to_iso8601 (),
+// 																	fltno,
+// 																	dep_ident,
+// 																	arr_ident);
+// 				if (flight == null) {
+// 					stderr.printf("new\n");
+// 					flight       = logbook.flight.beget ();
+// 					flight.date  = date;
+// 					flight.flight_number = flight_number;
+// 				} else stderr.printf("update flight_id = %d\n", (int)flight.id);
 
-				if (fleetno != "") {
-					if ((aircraft =
-						 logbook.aircraft.find_by_fleetno (fleetno)) == null) {
-						aircraft = logbook.aircraft.beget ();
-						aircraft.fleetno = fleetno;
-					}
-					flight.aircraft = aircraft;
-					if (model_ident != "") {
-						if ((model =
-							 logbook.model.find_by_ident (model_ident)) == null) {
-							model = logbook.model.beget ();
-							model.ident = model_ident;
-						}
-						aircraft.model = model;
-					}
-				}
+// 				if (fleetno != "") {
+// 					if ((aircraft =
+// 						 logbook.aircraft.find_by_fleetno (fleetno)) == null) {
+// 						aircraft = logbook.aircraft.beget ();
+// 						aircraft.fleetno = fleetno;
+// 					}
+// 					flight.aircraft = aircraft;
+// 					if (model_ident != "") {
+// 						if ((model =
+// 							 logbook.model.find_by_ident (model_ident)) == null) {
+// 							model = logbook.model.beget ();
+// 							model.ident = model_ident;
+// 						}
+// 						aircraft.model = model;
+// 					}
+// 				}
 				
-				if (role_ident != "") {
-					if ((role =
-						 logbook.role.find_by_ident (role_ident)) == null) {
-						role = logbook.role.beget ();
-						role.ident = role_ident;
-					}
-					flight.role	= role;
-				}
+// 				if (role_ident != "") {
+// 					if ((role =
+// 						 logbook.role.find_by_ident (role_ident)) == null) {
+// 						role = logbook.role.beget ();
+// 						role.ident = role_ident;
+// 					}
+// 					flight.role	= role;
+// 				}
 
-				if (dep_ident != "") {
-					if ((dep =
-						 logbook.airport.find_by_ident (dep_ident)) == null) {
-						dep = logbook.airport.beget ();
-						dep.set_ident (dep_ident);
-					}
-					flight.dep = dep;
-				}
+// 				if (dep_ident != "") {
+// 					if ((dep =
+// 						 logbook.airport.find_by_ident (dep_ident)) == null) {
+// 						dep = logbook.airport.beget ();
+// 						dep.set_ident (dep_ident);
+// 					}
+// 					flight.dep = dep;
+// 				}
 				
-				if (arr_ident != "") {
-					if ((arr =
-						 logbook.airport.find_by_ident (arr_ident)) == null) {
-						arr = logbook.airport.beget ();
-						arr.set_ident (arr_ident);
-					}
-					flight.arr = arr;
-				}
+// 				if (arr_ident != "") {
+// 					if ((arr =
+// 						 logbook.airport.find_by_ident (arr_ident)) == null) {
+// 						arr = logbook.airport.beget ();
+// 						arr.set_ident (arr_ident);
+// 					}
+// 					flight.arr = arr;
+// 				}
 
-				flight.leg				= row.colstr ("leg").to_int ();
+// 				flight.leg				= row.colstr ("leg").to_int ();
 
-				var aout				= TimeOfDay.from_timezone_time (dep.timezone, row.colstr ("aout"));
-				var ain					= TimeOfDay.from_timezone_time (arr.timezone, row.colstr ("ain"));
-				var aout_datetime		= Datetime (date, aout);
-				var ain_datetime		= aout_datetime.next_datetime_for_time_of_day (ain);
+// 				var aout				= TimeOfDay.from_timezone_time (dep.timezone, row.colstr ("aout"));
+// 				var ain					= TimeOfDay.from_timezone_time (arr.timezone, row.colstr ("ain"));
+// 				var aout_datetime		= Datetime (date, aout);
+// 				var ain_datetime		= aout_datetime.next_datetime_for_time_of_day (ain);
 
-				var sout				= TimeOfDay.from_timezone_time (dep.timezone, row.colstr ("sout"));
-				var sin					= TimeOfDay.from_timezone_time (arr.timezone, row.colstr ("sin"));
-				var sout_datetime		= Datetime (date, sout);
-				var sin_datetime		= sout_datetime.next_datetime_for_time_of_day (sin);
+// 				var sout				= TimeOfDay.from_timezone_time (dep.timezone, row.colstr ("sout"));
+// 				var sin					= TimeOfDay.from_timezone_time (arr.timezone, row.colstr ("sin"));
+// 				var sout_datetime		= Datetime (date, sout);
+// 				var sin_datetime		= sout_datetime.next_datetime_for_time_of_day (sin);
 
-				flight.aout				= aout;
-				flight.ain				= ain;
-				flight.sout				= sout;
-				flight.sin				= sin;
+// 				flight.aout				= aout;
+// 				flight.ain				= ain;
+// 				flight.sout				= sout;
+// 				flight.sin				= sin;
 
-				var dur_str = row.colstr ("dur");
-				if (false && dur_str != "") {
-					flight.dur = Duration.from_string (dur_str);
-				} else {
-					flight.dur = ain_datetime.duration (aout_datetime);
-				}
-				var sdur_str = row.colstr ("sdur");
-				if (false && sdur_str != "") {
-					flight.sdur = Duration.from_string (sdur_str);
-				} else {
-					flight.sdur = sin_datetime.duration (sout_datetime);
-				}
+// 				var dur_str = row.colstr ("dur");
+// 				if (false && dur_str != "") {
+// 					flight.dur = Duration.from_string (dur_str);
+// 				} else {
+// 					flight.dur = ain_datetime.duration (aout_datetime);
+// 				}
+// 				var sdur_str = row.colstr ("sdur");
+// 				if (false && sdur_str != "") {
+// 					flight.sdur = Duration.from_string (sdur_str);
+// 				} else {
+// 					flight.sdur = sin_datetime.duration (sout_datetime);
+// 				}
 
-				flight.night			= Duration.from_string (row.colstr ("night"));
-				flight.inst				= Duration.from_string (row.colstr ("inst"));
-				flight.sim_inst			= Duration.from_string (row.colstr ("siminst"));
-				flight.aprch			= row.colstr ("aprch");
-				flight.xc				= str_to_bool (row.colstr ("xc"));
-				flight.hold				= str_to_bool (row.colstr ("hold"));
-				flight.dland			= row.colstr ("dland").to_int ();
-				flight.nland			= row.colstr ("nland").to_int ();
-				flight.notes			= row.colstr ("notes");
-				flight.crew				= row.colstr ("crew");
-				flight.trip				= row.colstr ("trip");
-				flight.trip_date		= Date.from_iso8601 (row.colstr ("tripdate"));
-				flight.route.clear ();
-				flight.route.read (row.colstr ("route"));
-				flight.save ();
-			}
+// 				flight.night			= Duration.from_string (row.colstr ("night"));
+// 				flight.inst				= Duration.from_string (row.colstr ("inst"));
+// 				flight.sim_inst			= Duration.from_string (row.colstr ("siminst"));
+// 				flight.aprch			= row.colstr ("aprch");
+// 				flight.xc				= str_to_bool (row.colstr ("xc"));
+// 				flight.hold				= str_to_bool (row.colstr ("hold"));
+// 				flight.dland			= row.colstr ("dland").to_int ();
+// 				flight.nland			= row.colstr ("nland").to_int ();
+// 				flight.notes			= row.colstr ("notes");
+// 				flight.crew				= row.colstr ("crew");
+// 				flight.trip				= row.colstr ("trip");
+// 				flight.trip_date		= Date.from_iso8601 (row.colstr ("tripdate"));
+// 				flight.route.clear ();
+// 				flight.route.read (row.colstr ("route"));
+//				flight.save ();
+//			}
 		}
 
 		private class RowIterator {
@@ -184,7 +184,6 @@ namespace Sqlp {
 
 		} // end Row
 	}
-
 }
 
 public static int main (string[] args) {

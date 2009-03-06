@@ -5,6 +5,7 @@
   <object class="GtkNotebook" id="top">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
+    <property name="homogeneous">True</property>
     <child>
       <object class="GtkVBox" id="flights">
         <property name="visible">True</property>
@@ -12,9 +13,12 @@
           <placeholder/>
         </child>
       </object>
+      <packing>
+        <property name="tab_expand">True</property>
+      </packing>
     </child>
     <child type="tab">
-      <object class="GtkLabel" id="label1">
+      <object class="GtkLabel" id="label4">
         <property name="visible">True</property>
         <property name="label" translatable="yes">Flights</property>
       </object>
@@ -34,7 +38,7 @@
       </packing>
     </child>
     <child type="tab">
-      <object class="GtkLabel" id="label2">
+      <object class="GtkLabel" id="label5">
         <property name="visible">True</property>
         <property name="label" translatable="yes">Roles</property>
       </object>
@@ -55,7 +59,7 @@
       </packing>
     </child>
     <child type="tab">
-      <object class="GtkLabel" id="label3">
+      <object class="GtkLabel" id="label6">
         <property name="visible">True</property>
         <property name="label" translatable="yes">Aircraft</property>
       </object>
@@ -76,7 +80,7 @@
       </packing>
     </child>
     <child type="tab">
-      <object class="GtkLabel" id="label4">
+      <object class="GtkLabel" id="label7">
         <property name="visible">True</property>
         <property name="label" translatable="yes">Models</property>
       </object>
@@ -94,10 +98,11 @@
       </object>
       <packing>
         <property name="position">4</property>
+        <property name="tab_fill">False</property>
       </packing>
     </child>
     <child type="tab">
-      <object class="GtkLabel" id="label5">
+      <object class="GtkLabel" id="label8">
         <property name="visible">True</property>
         <property name="label" translatable="yes">Airports</property>
       </object>

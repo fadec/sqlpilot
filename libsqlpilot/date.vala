@@ -41,6 +41,9 @@ namespace Sqlp {
 		public bool valid () {
 			return gdate.valid ();
 		}
-
+		
+		public void clear () {
+			gdate.clear ();
+		}
 	}
 }

@@ -2,10 +2,10 @@ using Sqlite;
 using GLib;
 
 namespace Sqlp {
-	public class Logbook {
+	public class Logbook : Object {
 
 		private Database _db;
-		public weak Database db { public get {return _db;} }
+		public weak Database db { get {return _db;} }
 
 		public Transaction transaction;
 		public FlightCrud flight;
@@ -61,7 +61,7 @@ namespace Sqlp {
 		}
 	}
 
-	public class Transaction {
+	public class Transaction : Object {
 		private static const string ta_begin_sql    = "BEGIN TRANSACTION;";
 		private static const string ta_commit_sql   = "COMMIT;";
 		private static const string ta_rollback_sql = "ROLLBACK;";

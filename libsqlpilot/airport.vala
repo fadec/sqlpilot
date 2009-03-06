@@ -14,10 +14,6 @@ namespace Sqlp {
 		public Timezone timezone = Timezone ("UTC");
 		public string notes;
 
-		public Airport (AirportCrud crud) {
-			base (crud);
-		}
-
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
 			stmt.bind_nonempty_text (i++, icao);

@@ -29,3 +29,24 @@ Associated model change toggles inclusion in where clause
 Data imported
 
 Emphasize refresh
+
+flights/roles/aircraft/models/airports/people
+flight -- general/scheduled/takeoff/landing/glide/holding/crew/notes
+
+
+water takeoff/landing
+shipboard takeoff/landing
+wind cross/head
+go around
+night vision goggle landing
+ground launch
+powered launches
+aerotow
+category/class
+autoland
+cat II/III
+pax count/ passengers
+floats / amphib / skids /skis /experimental/fuel inject/warbird/ turbocharged /military /tailwheel / pressurized /efis / radial /aerobatic
+aircraft owner/operator
+metal/composite/wood/
+canard
