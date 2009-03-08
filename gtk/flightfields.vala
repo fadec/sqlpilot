@@ -1,4 +1,3 @@
-using Gnome;
 using Gtk;
 using Gdk;
 using Sqlp;

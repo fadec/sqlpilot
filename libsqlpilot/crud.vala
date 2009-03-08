@@ -9,7 +9,7 @@
 
 using Sqlite;
 namespace Sqlp {
-	public abstract class Crud <T> : Object {
+	public abstract class Crud <RT> : Object {
 		public weak Logbook logbook { construct; get; }
 		public string table_name { construct; get; }
 		public Type record_type { construct; get; }
@@ -35,7 +35,7 @@ namespace Sqlp {
 			destroy = logbook.prepare_statement (make_destroy_sql (table_name));
 		}
 
-		public virtual T new_record () {
+		public virtual RT new_record () {
 			return Object.new (this.record_type, "crud", this);
 		}
 
@@ -59,12 +59,12 @@ namespace Sqlp {
 			return names;
 		}
 
-		public virtual T? find_by_id (int64 id) {
+		public virtual RT? find_by_id (int64 id) {
 			find.bind_int64 (1, id);
  			return find_first(find);
  		}
 
-		public virtual T? find_first (Statement stmt) {
+		public virtual RT? find_first (Statement stmt) {
 			Record? record;
 			if (stmt.step () == ROW) {
 				record = new_record () as Record;
@@ -79,7 +79,7 @@ namespace Sqlp {
 			return record;
 		}
 
-		public List<T> find_all (Statement stmt) {
+		public List<RT> find_all (Statement stmt) {
 			Record? record;
 			var records = new List<Record> ();
 			while (stmt.step () == ROW) {

@@ -91,8 +91,8 @@ namespace Sqlp {
 
 		public Date date;
 		public int leg;
-		public TimeOfDay actual_out;
-		public TimeOfDay actual_in;
+		public TimeOfDay actual_out = TimeOfDay ();
+		public TimeOfDay actual_in = TimeOfDay ();
 		public Duration duration;
 		public Duration night;
 		public Duration instrument;
@@ -100,8 +100,8 @@ namespace Sqlp {
 		public string crew = "";
 		public string notes = "";
 		public string flight_number = "";
-		public TimeOfDay scheduled_out;
-		public TimeOfDay scheduled_in;
+		public TimeOfDay scheduled_out = TimeOfDay ();
+		public TimeOfDay scheduled_in = TimeOfDay ();
 		public Duration scheduled_duration;
 		public string trip = "";
 		public Date trip_date;
@@ -115,9 +115,9 @@ namespace Sqlp {
 			stmt.bind_nonempty_text		(i++, date.to_iso8601 ());
 			stmt.bind_int				(i++, leg);
 
-			bind_time_of_day (stmt, i++, actual_out, dep.timezone);
+			bind_time_of_day (stmt, i++, actual_out, (dep != null) ? dep.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, actual_out, Timezone ("UTC"));
-			bind_time_of_day (stmt, i++, actual_in, arr.timezone);
+			bind_time_of_day (stmt, i++, actual_in, (arr != null) ? arr.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, actual_in, Timezone ("UTC"));
 
 			bind_duration (stmt, i++, duration);
@@ -129,9 +129,9 @@ namespace Sqlp {
 			stmt.bind_nonempty_text		(i++, notes);
 			stmt.bind_nonempty_text		(i++, flight_number);
 
-			bind_time_of_day (stmt, i++, scheduled_out, dep.timezone);
+			bind_time_of_day (stmt, i++, scheduled_out, (dep != null) ? dep.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, scheduled_out, Timezone ("UTC"));
-			bind_time_of_day (stmt, i++, scheduled_in, arr.timezone);
+			bind_time_of_day (stmt, i++, scheduled_in, (arr != null) ? arr.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, scheduled_in, Timezone ("UTC"));
 
 			bind_duration (stmt, i++, scheduled_duration);

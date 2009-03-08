@@ -4,6 +4,20 @@ namespace Sqlp {
 	public struct Date {
 		public GLib.Date gdate;
 
+		private	const string[] month_names =
+			{ "Invalid"	,
+			  "January"	, "Febuary"  , "March",
+			  "April"	, "May"      , "June",
+			  "July"	, "August"   , "September",
+			  "October"	, "November" , "December" };
+
+		private	const string[] month_abbreviations =
+			{ "Inv"	,
+			  "Jan"	, "Feb"  , "Mar",
+			  "Apr"	, "May"  , "Jun",
+			  "Jul"	, "Aug"  , "Sep",
+			  "Oct"	, "Nov"  , "Dec" };		
+
 		public int get_year () { return (int) gdate.get_year (); }
 		public int get_month () { return (int) gdate.get_month (); }
 		public int get_day () { return (int) gdate.get_day (); }
@@ -15,11 +29,13 @@ namespace Sqlp {
 		}
 
 		public string to_iso8601 () {
-			var s = "0000-00-00";
 			if (gdate.valid ()) {
+				var s = "0000-00-00";			
 				gdate.strftime((char[])s, "%Y-%m-%d");
+				return s;
+			} else {
+				return "";
 			}
-			return s;
 		}
 
 		public void read_iso8601 (string date) {
@@ -45,5 +61,13 @@ namespace Sqlp {
 		public void clear () {
 			gdate.clear ();
 		}
+
+ 		public static string month_name (int m) {
+ 			return month_names[(m >= 1 && m <= 12) ? m : 0];
+ 		}
+
+ 		public static string month_abbreviation (int m) {
+ 			return month_abbreviations[(m >= 1 && m <= 12) ? m : 0];
+ 		}
 	}
 }

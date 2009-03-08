@@ -51,7 +51,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry40">
+                  <object class="GtkEntry" id="route">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="width_chars">11</property>
@@ -140,7 +140,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkSpinButton" id="spinbutton3">
+                          <object class="GtkSpinButton" id="leg">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">2</property>
@@ -198,7 +198,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxEntry" id="comboboxentry3">
+                  <object class="GtkComboBoxEntry" id="role">
                     <property name="visible">True</property>
                   </object>
                   <packing>
@@ -225,7 +225,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxEntry" id="comboboxentry4">
+                  <object class="GtkComboBoxEntry" id="aircraft">
                     <property name="visible">True</property>
                   </object>
                   <packing>
@@ -236,21 +236,21 @@
                   <object class="GtkVBox" id="vbox2">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkRadioButton" id="radiobutton7">
+                      <object class="GtkRadioButton" id="registration">
                         <property name="label" translatable="yes">Registration</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="active">True</property>
                         <property name="draw_indicator">True</property>
-                        <property name="group">radiobutton8</property>
+                        <property name="group">tail</property>
                       </object>
                       <packing>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkRadioButton" id="radiobutton8">
+                      <object class="GtkRadioButton" id="tail">
                         <property name="label" translatable="yes">Tail</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -312,7 +312,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry28">
+                          <object class="GtkEntry" id="duration">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -341,7 +341,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry29">
+                          <object class="GtkEntry" id="scheduled_duration">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -370,7 +370,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry42">
+                          <object class="GtkEntry" id="night">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -408,7 +408,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry23">
+                          <object class="GtkEntry" id="out">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -437,7 +437,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry24">
+                          <object class="GtkEntry" id="scheduled_out">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -466,7 +466,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry27">
+                          <object class="GtkEntry" id="instrument">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -504,7 +504,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry20">
+                          <object class="GtkEntry" id="in">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -533,7 +533,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry21">
+                          <object class="GtkEntry" id="scheduled_in">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -562,7 +562,7 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEntry" id="entry22">
+                          <object class="GtkEntry" id="hood">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="width_chars">6</property>
@@ -593,21 +593,21 @@
               <object class="GtkVBox" id="vbox1">
                 <property name="visible">True</property>
                 <child>
-                  <object class="GtkRadioButton" id="radiobutton5">
+                  <object class="GtkRadioButton" id="utc">
                     <property name="label" translatable="yes">UTC</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
                     <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <property name="group">radiobutton4</property>
+                    <property name="group">local</property>
                   </object>
                   <packing>
                     <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkRadioButton" id="radiobutton4">
+                  <object class="GtkRadioButton" id="local">
                     <property name="label" translatable="yes">Local</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -658,7 +658,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry1">
+                  <object class="GtkEntry" id="flight_number">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="width_chars">11</property>
@@ -687,7 +687,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry4">
+                  <object class="GtkEntry" id="trip_date">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="width_chars">11</property>
@@ -716,7 +716,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry3">
+                  <object class="GtkEntry" id="trip_number">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="width_chars">11</property>

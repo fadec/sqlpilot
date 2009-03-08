@@ -8,12 +8,13 @@ AM_CPPFLAGS = \
 	$(GTK_CFLAGS)   \
 	$(SQLITE_CFLAGS) \
 	$(LIBGLADE_CFLAGS) \
-	$(LIBGNOMEUI_CFLAGS)
+	$(GEE_CFLAGS)
 
 BUILT_SOURCES = vala.stamp
 
 sqlpilot_gtk_VALASOURCES = \
 	main.vala \
+	util.vala \
 	browser.vala \
 	fieldset.vala \
 	filters.vala \
@@ -27,7 +28,7 @@ sqlpilot_gtk_VALASOURCES = \
 	airlineflightfields.vala \
 	querylist.vala \
 	component.vala \
-	idtreemodelfilter.vala
+	settreemodelfilter.vala
 
 sqlpilot_gtk_SOURCES = \
 	sqlpilot.vala.stamp \
@@ -41,7 +42,7 @@ vala.stamp: $(sqlpilot_gtk_VALASOURCES)
 	--pkg gtk+-2.0 \
 	--pkg sqlite3 \
 	--pkg libglade-2.0 \
-	--pkg libgnomeui-2.0 \
+	--pkg gee-1.0 \
 	-C $^
 	touch $@
 
@@ -50,7 +51,7 @@ sqlpilot_gtk_LDADD = \
 	$(GTK_LIBS) \
 	$(SQLITE_LIBS) \
 	$(LIBGLADE_LIBS) \
-	$(LIBGNOMEUI_LIBS) \
+	$(GEE_LIBS) \
 	../libsqlpilot/libsqlpilot.la
 
 #vapidir = $(datadir)/vala/vapi

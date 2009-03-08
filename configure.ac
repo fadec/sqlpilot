@@ -37,8 +37,8 @@ PKG_CHECK_MODULES(LIBGLADE, [
 	libglade-2.0
 ])
 
-PKG_CHECK_MODULES(LIBGNOMEUI, [
-	libgnomeui-2.0
+PKG_CHECK_MODULES(GEE, [
+	gee-1.0
 ])
 
 
