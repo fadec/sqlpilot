@@ -86,7 +86,7 @@ namespace SqlpGtk {
 
 		[CCode (instance_pos = -1)]
 		public void on_date_changed (Entry entry) {
-//			this.modified = true;
+			edited = true;
 		}
 		
 		[CCode (instance_pos = -1)]
@@ -96,7 +96,10 @@ namespace SqlpGtk {
 
 		[CCode (instance_pos = -1)]
 		public bool on_date_focus_out_event (Entry entry, EventFocus ev) {
-			set_date ();
+			if (edited) {
+				set_date ();
+				save ();
+			}
 			return false;
 		}
 
@@ -110,29 +113,55 @@ namespace SqlpGtk {
 				record.date = newdate;
 				date.set_text (newdate.to_iso8601 ());
 			} else {
-				Idle.add (select_date);
+				Idle.add ( select_date );
 			}
 		}
 
 		private bool select_date () {
-			date.grab_focus ();
-			date.select_region (0, -1);
+			return select_entry (date);
+		}
+
+		private bool select_entry (Entry e) {
+			e.grab_focus ();
+			e.select_region (0, -1);
 			return false;
 		}
 
 		[CCode (instance_pos = -1)]
-		public void on_tripdate_changed (Entry entry) {
-//			this.modified = true;
+		public void on_trip_date_changed (Entry entry) {
+			this.edited = true;
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool on_tripdate_focus_in_event (Entry entry, EventFocus ev) {
+		public bool on_trip_date_focus_in_event (Entry entry, EventFocus ev) {
 			return false;
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool on_tripdate_focus_out_event (Entry entry, EventFocus ev) {
+		public bool on_trip_date_focus_out_event (Entry entry, EventFocus ev) {
+			if (edited) {
+				set_trip_date ();
+				save ();
+			}
 			return false;
+		}
+
+		private void set_trip_date () {
+			if (trip_date.get_text ().length == 0) {
+				record.trip_date.clear ();
+				return;
+			}
+			var newdate = Sqlp.Date.from_iso8601 (trip_date.get_text ());
+			if (newdate.valid ()) {
+				record.trip_date = newdate;
+				trip_date.set_text (newdate.to_iso8601 ());
+			} else {
+				Idle.add (select_trip_date);
+			}
+		}
+
+		private bool select_trip_date () {
+			return select_entry (trip_date);
 		}
 
 		[CCode (instance_pos = -1)]

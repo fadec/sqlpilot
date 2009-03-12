@@ -58,7 +58,7 @@ namespace Sqlp {
 			}
 			return names;
 		}
-
+		
 		public virtual RT? find_by_id (int64 id) {
 			find.bind_int64 (1, id);
  			return find_first(find);
@@ -92,6 +92,18 @@ namespace Sqlp {
 			stmt.reset ();
 			stmt.clear_bindings ();
 			return records;
+		}
+
+// 		public void destroy_ids (List<int64> ids) {
+			
+// 		}
+
+		public void destroy_id (int64 id) {
+			unowned Statement stmt = this.destroy;
+			stmt.bind_int64 (1, id);
+			stmt.step ();
+			stmt.reset ();
+			stmt.clear_bindings ();
 		}
 
 		// First column is 1. -1 if not found.
@@ -138,6 +150,24 @@ namespace Sqlp {
 		private string make_destroy_sql ( string table_name ) {
 			return "DELETE FROM " + table_name + " WHERE id = ?;";
 		}
+
+// 		private string make_destroy_all_sql (string table_name, Collection<int64?> ids) {
+// 			var sb = new StringBuilder ();
+// 			sb.append ("DELETE FROM ");
+// 			sb.append (table_name);
+// 			sb.append (" WHERE ");
+// 			sb.append (" id IN (");
+// 			builder_append_strings (sb, ids, ", ");
+// 			sb.append (");");
+// 		}
+
+// 		private Collection<string> strings_from_ids (Collection<int64?> ids) {
+// 			var ls = new Gee.ArrayList<string> ();
+// 			foreach (var id in ids) {
+// 				ls.append (id);
+// 			}
+// 			return ls;
+// 		}
 
 		private string make_select_all_sql ( string table_name ) {
 			return "SELECT * FROM " + table_name + ";"; 

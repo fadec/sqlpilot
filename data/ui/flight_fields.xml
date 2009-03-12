@@ -691,6 +691,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="width_chars">11</property>
+                    <signal name="changed" handler="on_trip_date_changed"/>
+                    <signal name="focus_out_event" handler="on_trip_date_focus_out_event"/>
+                    <signal name="focus_in_event" handler="on_trip_date_focus_in_event"/>
                   </object>
                   <packing>
                     <property name="position">1</property>

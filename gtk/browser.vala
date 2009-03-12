@@ -7,15 +7,6 @@ using Gee;
 namespace SqlpGtk {
 
 	public class Browser : Pane {
-
-		private enum State {
-			EMPTY,		   // --> treeselect->SELECTED | editing->MODIFIED | editing->INVALID | paste->(MODIFIED | INVALID)
-			SELECTED,	   // --> cancel->EMPTY | editing->MODIFIED | editing->INVALID | arm->DELETE_ARMED | copy | paste->(MODIFIED | INVALID)
-			MULTIPLE,	   // --> arm->DELETE_ARMED
-			MODIFIED,      // --> save->SELECTED | cancel->(SELECTED | EMPTY) | copy | paste->(MODIFIED | INVALID)
-			INVALID,	   // --> cancel->SELECTED | cancel->EMPTY | copy | paste->(MODIFIED | INVALID)
-			DELETE_ARMED,  // --> unarm->(SELECTED | MULTIPLE) | delete->EMPTY
-		}
 		
 		// owns this
 		public weak Book book { construct; get; }
@@ -33,6 +24,7 @@ namespace SqlpGtk {
 				if (_fieldset == null) return;
 				_fieldset.browser = this;
 				set_slot ("fields", _fieldset);
+				_fieldset.saved += on_fieldset_saved;
 			}
 		}
 
@@ -53,7 +45,6 @@ namespace SqlpGtk {
 		private Record _current_record;
 		private Record _copied_record;
 
-		private State _state;
 		private TreeView _tree_view;
 		private TreeSelection _tree_selection;
 		private Action _new;
@@ -87,25 +78,27 @@ namespace SqlpGtk {
 			delete_btn			= gui.object ("delete")			as ToolButton;
 			arm_delete_btn		= gui.object ("arm_delete")		as ToggleToolButton;
 
-			var query_statement = prepare_query_statement ();
-			this.query_list = new QueryList ((owned)query_statement);
+			this.query_list = new QueryList (book.logbook, view_name);
 			set_slot ("query_list", query_list);
    			query_list.selection_changed += (query_list) => {
-				if (query_list.count_selected_rows() == 1)
+				if (query_list.count_selected_rows() == 1) {
 					fieldset.record = crud.find_by_id (query_list.get_selected_ids ()[0]);
-				else fieldset.record = crud.new_record ();
+					fieldset.top_widget.sensitive = true;
+				} else {
+					fieldset.record = crud.new_record ();
+					fieldset.top_widget.sensitive = false;
+				}
   			};
 			this.filters = new Filters ();
 			filters.changed += () => {
 				where_clause.set_text (filters.where_clause);
 				refilter ();
 			};
+			assert (this != null);
 		}
 
-		private Statement prepare_query_statement () {
-			var stmt = book.logbook.prepare_statement (
-				"SELECT * FROM " + this.view_name + ";");
-			return stmt;
+		private void on_fieldset_saved (Fieldset fs, int64 id) {
+			query_list.update_id (id);
 		}
 
 		private virtual void load_selection () {
@@ -127,11 +120,6 @@ namespace SqlpGtk {
 			return s;
 		}
 
-		
-		private virtual void save () {
-			_current_record.save();
-		}
-
 		[CCode (instance_pos = -1)]
 		public void on_refresh_clicked(ToolButton button)
 		{
@@ -147,6 +135,11 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_delete_clicked(ToolButton button)
 		{
+			var selected_ids = query_list.get_selected_ids ();
+			foreach (var id in selected_ids) {
+				crud.destroy_id (id);
+			}
+			query_list.remove_selected_ids ();
 			this.arm_delete_btn.active = false;
 		}
 
@@ -156,15 +149,7 @@ namespace SqlpGtk {
 			var record = crud.new_record ();
 			// todo set default according to filters
 			if (record.save ()) {
-				var sql = "SELECT * FROM " + view_name + " WHERE id = ?;";
-				var select_statement = book.logbook.prepare_statement (sql);
-				select_statement.bind_int64 (1, record.id);
-
-				// This is totally redundant but seems to sync things for iterators.
-				// need to fix
-				refilter ();
-
-				var iter = query_list.append (select_statement);
+				var iter = query_list.add_id (record.id);
 
  				if (! query_list.iter_is_visible (iter)) {
 					where_clause.set_text ("");
@@ -176,7 +161,6 @@ namespace SqlpGtk {
 					}
 				}
 				query_list.focus_iter (iter);
-
 			}
 		}
 

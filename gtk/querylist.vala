@@ -2,19 +2,16 @@ using GLib;
 using Gtk;
 using Sqlite;
 using Gee;
+using Sqlp;
 
 namespace SqlpGtk {
 	public class QueryList : Component {
 
- 		private Statement _statement;
-		public Statement statement {
-			get { return _statement; }
-			owned construct {
-				_statement = (owned) value;
-			}
-		}
-
 		public signal void selection_changed ();
+
+		public weak Logbook logbook { get; construct; }
+
+		public string view_name { get; construct; }
 
 		private enum ColumnKind {
 			STRING, STRING_NUMERIC, STRING_FLOAT
@@ -25,6 +22,9 @@ namespace SqlpGtk {
 			public bool visible;
 		}
 
+		private Statement select_statement;
+		private Statement select_id_statement;
+
 		private ScrolledWindow scrolled_window;
 		private ListStore store;
 		private SetTreeModelFilter<int64?> filter;
@@ -32,13 +32,16 @@ namespace SqlpGtk {
 		private TreeView view;
 		private HashTable <string, ColumnInfo> column_infos;
 
- 		public QueryList (owned Statement stmt) {
- 			this.statement = (owned) stmt;
+ 		public QueryList (Logbook logbook, string view_name) {
+ 			this.logbook = logbook;
+			this.view_name = view_name;
  		}
 
 		construct {
+			select_statement = logbook.prepare_statement (select_sql ());
+			select_id_statement = logbook.prepare_statement (select_id_sql ());
 			column_infos = new HashTable <string, ColumnInfo> (str_hash, str_equal);
-			store = store_from_stmt (this.statement);
+			store = store_from_stmt (select_statement);
 			filter = new SetTreeModelFilter<int64?> (null, 0, store);
 			sort = new TreeModelSort.with_model (filter);
 			view = new TreeView.with_model (sort);
@@ -46,7 +49,7 @@ namespace SqlpGtk {
 			view.rubber_banding = true;
 			view.set_rules_hint (true);
 			view.set_search_column (0);
-			add_view_columns (this.statement);
+			add_view_columns (this.select_statement);
 			view.show ();
 			scrolled_window = new ScrolledWindow (null, null);
 			scrolled_window.set_policy (PolicyType.AUTOMATIC, PolicyType.AUTOMATIC);
@@ -54,6 +57,14 @@ namespace SqlpGtk {
 			scrolled_window.show ();
 			this.top_widget = scrolled_window;
 			populate ();
+		}
+
+		private string select_sql () {
+			return "SELECT * FROM " + view_name + ";";
+		}
+
+		private string select_id_sql () {
+			return "SELECT * FROM " + view_name + " WHERE id = ?";
 		}
 
 		private void init_tree_selection (TreeView view) {
@@ -88,26 +99,36 @@ namespace SqlpGtk {
 			var selection = view.get_selection ();
 			var paths = selection.get_selected_rows (out sort);
 			int64[] ids = {0};
+			ids.resize (selection.count_selected_rows ());
 			int i=0;
 			foreach (var path in paths) {
 				TreeIter iter;
 				int64 id;
-				store.get_iter (out iter, path);
+				store.get_iter (out iter, convert_sort_path_to_model_path(path));
 				store.get (iter, 0, out id);
-				if (i > ids.length) ids.resize (ids.length += 2000);
-				ids[i] = id;
+				ids[i++] = id;
 			}
 			return ids;
 		}
 
+		public void remove_selected_ids () {
+			var selection = view.get_selection ();
+			var paths = selection.get_selected_rows (out sort);
+			foreach (var path in paths) {
+				TreeIter iter;
+				store.get_iter (out iter, path);
+				store.remove (iter);
+			}
+		}
+
 		public void set_visible_ids (HashSet<int64?> ids) {
 			//  This is fast and screws up iter conversion from filter to sort
- 			this.filter = new SetTreeModelFilter <int64?> (ids, 0, this.store);
- 			this.sort = new TreeModelSort.with_model (this.filter);
- 			this.view.model = this.sort;
+//  			this.filter = new SetTreeModelFilter <int64?> (ids, 0, this.store);
+//  			this.sort = new TreeModelSort.with_model (this.filter);
+//  			this.view.model = this.sort;
 
 			// this is slower and still screws up iters.
-//			this.filter.visible = ids;
+			this.filter.visible = ids;
 		}
 
 		private ListStore store_from_stmt (Statement stmt) {
@@ -161,45 +182,76 @@ namespace SqlpGtk {
 		}
 
 		// returns iter for base model
-		public TreeIter append (Statement statement) {
-			TreeIter iter = TreeIter ();
-			while (statement.step () == Sqlite.ROW) {
-				store.append (out iter);
-				set_row (iter, statement);
-			}
-			statement.reset ();
-			statement.clear_bindings ();
+		public TreeIter add_id (int64 id) {
+			select_id_statement.bind_int64 (1, id);
 
-//			TreeRowReference rowref = TreeRowReference.new (list, list.get_path (iter));
+			TreeIter iter = TreeIter ();
+			while (select_id_statement.step () == Sqlite.ROW) {
+				store.append (out iter);
+				set_row (iter, select_id_statement);
+			}
+			select_id_statement.reset ();
+			select_id_statement.clear_bindings ();
+
+			return iter;
+		}
+
+		public void update_id (int64 id) {
+			select_id_statement.bind_int64 (1, id);
+
+			while (select_id_statement.step () == Sqlite.ROW) {
+				var iter = get_iter_at_id (id);
+				set_row (iter, select_id_statement);
+			}
+			select_id_statement.reset ();
+			select_id_statement.clear_bindings ();
+		}
+
+		private TreeIter get_iter_at_id (int64 id) {
+			int64 anid = 0;
+			var iter = TreeIter ();
+			if (store.get_iter_first (out iter)) {
+				while (store.iter_next (ref iter)) {
+					store.get (iter, 0, &anid);
+					if (id == anid) return iter;
+				}
+			}
 			return iter;
 		}
 
 		public void focus_iter (TreeIter iter) {
-			set_selection_and_cursor_on_iter (iter);
+			assert (store.iter_is_valid (iter));
+			set_selection_and_cursor_on_model_iter (iter);
 			scroll_to_cursor ();
 		}
 
 		public bool iter_is_visible (TreeIter iter) {
-			var sort_iter = sort_iter_from_model_iter (iter);
-			var sort_path = sort.get_path (sort_iter);
-			return (sort_path != null);
+			return (convert_model_path_to_sort_path (store.get_path (iter)) != null);
 		}
 
-		private void set_selection_and_cursor_on_iter (TreeIter model_iter) {
-			var sort_iter = sort_iter_from_model_iter (model_iter);
+		private void set_selection_and_cursor_on_model_iter (TreeIter model_iter) {
+			var model_path = store.get_path (model_iter);
+			var sort_path = convert_model_path_to_sort_path (model_path);
 			view.get_selection ().unselect_all ();
-			view.get_selection ().select_iter (sort_iter);
-			var sort_path = sort.get_path (sort_iter);
+			view.get_selection ().select_path (sort_path);
 			view.set_cursor (sort_path, null, false);
 		}
 
 		// stack is TreeView(TreeModelSort(TreeModelFilter(TreeModel)))
-		private TreeIter sort_iter_from_model_iter (TreeIter model_iter) {
-			TreeIter filter_iter;
-			TreeIter sort_iter;
-			filter.convert_child_iter_to_iter (out filter_iter, model_iter);
-			sort.convert_child_iter_to_iter (out sort_iter, filter_iter);
-			return sort_iter;
+		private TreePath? convert_model_path_to_sort_path (TreePath model_path) {
+			var filter_path = filter.convert_child_path_to_path (model_path);
+			
+			if (filter_path != null) {
+				return filter.convert_child_path_to_path (filter_path);
+			} else {
+				return null;
+			}
+		}
+
+		private TreePath convert_sort_path_to_model_path (TreePath sort_path) {
+			var filter_path = sort.convert_path_to_child_path (sort_path);
+			var model_path = filter.convert_path_to_child_path (filter_path);
+			return model_path;
 		}
 
 		private void scroll_to_cursor () {
@@ -210,6 +262,7 @@ namespace SqlpGtk {
 		}
 
 		private void populate () {
+			weak Statement statement = select_statement;
 			TreeIter iter;
 			while (statement.step () == Sqlite.ROW) {
 				store.append (out iter);
