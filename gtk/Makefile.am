@@ -13,22 +13,25 @@ AM_CPPFLAGS = \
 BUILT_SOURCES = vala.stamp
 
 sqlpilot_gtk_VALASOURCES = \
-	main.vala \
-	util.vala \
+	about.vala \
+	aircraftfields.vala \
+	airportfields.vala \
+	application.vala \
+	book.vala \
 	browser.vala \
+	component.vala \
 	fieldset.vala \
 	filters.vala \
 	filtertree.vala \
 	flightfields.vala \
 	gui.vala \
+	main.vala \
+	modelfields.vala \
 	pane.vala \
-	application.vala \
-	about.vala \
-	book.vala \
 	querylist.vala \
-	component.vala \
 	rolefields.vala \
-	settreemodelfilter.vala
+	settreemodelfilter.vala \
+	util.vala
 
 sqlpilot_gtk_SOURCES = \
 	sqlpilot.vala.stamp \

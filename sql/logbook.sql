@@ -69,6 +69,7 @@ CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
 	,Name CHAR
+	,Total BOOLEAN
 	,PIC BOOLEAN
 	,SIC BOOLEAN
 	,FlightEngineer BOOLEAN
@@ -76,7 +77,6 @@ CREATE TABLE Roles (
 	,DualReceived BOOLEAN
 	,Instructor BOOLEAN
 	,Military BOOLEAN
-	,Total BOOLEAN
 );
 
 CREATE TABLE RoleTags (
@@ -175,7 +175,7 @@ CREATE TABLE Airports (
 	,Abbreviation CHAR -- For glider launch sites/ships
 	,Name CHAR
 	,City CHAR
-	,Province CHAR
+	,State CHAR
 	,Country CHAR
 	,Latitude FLOAT
 	,Longitude FLOAT

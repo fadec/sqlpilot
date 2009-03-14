@@ -25,6 +25,7 @@ namespace SqlpGtk {
 				_fieldset.browser = this;
 				set_slot ("fields", _fieldset);
 				_fieldset.saved += on_fieldset_saved;
+				_fieldset.top_widget.sensitive = (query_list.count_selected_rows () == 1);
 			}
 		}
 
@@ -81,6 +82,10 @@ namespace SqlpGtk {
 			this.query_list = new QueryList (book.logbook, view_name);
 			set_slot ("query_list", query_list);
    			query_list.selection_changed += (query_list) => {
+				// attempt to save edited record ... e.g. text entries still in
+				// focus but gtk wont fire focus-out-event for selection change.
+				if (fieldset.edited) fieldset.save ();
+
 				if (query_list.count_selected_rows() == 1) {
 					fieldset.record = crud.find_by_id (query_list.get_selected_ids ()[0]);
 					fieldset.top_widget.sensitive = true;

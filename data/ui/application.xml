@@ -178,7 +178,7 @@
                       </widget>
                     </child>
                     <child>
-                      <widget class="GtkMenuItem" id="menuitem1">
+                      <widget class="GtkMenuItem" id="menuitem10">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">Reports</property>
                         <property name="use_underline">True</property>
@@ -226,7 +226,7 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkStatusbar" id="statusbar1">
+          <widget class="GtkStatusbar" id="status_bar">
             <property name="visible">True</property>
             <property name="spacing">2</property>
           </widget>

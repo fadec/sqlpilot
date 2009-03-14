@@ -40,6 +40,12 @@ namespace SqlpGtk {
 			name.set_text (record.name != null ? record.name : "");
  			total.active = record.total;
 			pic.active = record.pic;
+			sic.active = record.sic;
+			flight_engineer.active = record.flight_engineer;
+			solo.active = record.solo;
+			dual_received.active = record.dual_received;
+			instructor.active = record.instructor;
+			military.active = record.military;
 		}
 
 		protected override void set_record_from_fields () {
@@ -55,7 +61,9 @@ namespace SqlpGtk {
 		public bool on_abbreviation_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
 				record.abbreviation = entry.get_text ();
-				save ();
+				if (! save ()) {
+					Idle.add ( () => { select_entry (this.abbreviation); } );
+				}
 			}
 			return false;
 		}
@@ -83,6 +91,42 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_pic_toggled (CheckButton cb) {
 			record.pic = cb.active;
+			save ();
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_sic_toggled (CheckButton cb) {
+			record.sic = cb.active;
+			save ();
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_flight_engineer_toggled (CheckButton cb) {
+			record.flight_engineer = cb.active;
+			save ();
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_solo_toggled (CheckButton cb) {
+			record.solo = cb.active;
+			save ();
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_dual_received_toggled (CheckButton cb) {
+			record.dual_received = cb.active;
+			save ();
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_instructor_toggled (CheckButton cb) {
+			record.instructor = cb.active;
+			save ();
+		}
+
+		[CCode (instance_pos = -1)]
+		public void on_military_toggled (CheckButton cb) {
+			record.military = cb.active;
 			save ();
 		}
 

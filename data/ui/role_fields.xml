@@ -122,6 +122,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_sic_toggled"/>
               </object>
               <packing>
                 <property name="position">1</property>
@@ -134,6 +135,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_flight_engineer_toggled"/>
               </object>
               <packing>
                 <property name="position">2</property>
@@ -146,6 +148,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_solo_toggled"/>
               </object>
               <packing>
                 <property name="position">3</property>
@@ -158,6 +161,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_dual_received_toggled"/>
               </object>
               <packing>
                 <property name="position">4</property>
@@ -170,6 +174,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_instructor_toggled"/>
               </object>
               <packing>
                 <property name="position">5</property>
@@ -182,6 +187,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="draw_indicator">True</property>
+                <signal name="toggled" handler="on_military_toggled"/>
               </object>
               <packing>
                 <property name="position">6</property>

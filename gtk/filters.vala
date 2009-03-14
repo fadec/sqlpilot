@@ -44,6 +44,12 @@ namespace SqlpGtk {
 			something_has_indeed_changed ();
 		}
 
+		[CCode (instance_pos = -1)]
+		public void on_clear_clicked(Button button)
+		{
+			select_none ();
+		}
+
 		public void select_none () {
 			filter_tree.select_none ();
 		}

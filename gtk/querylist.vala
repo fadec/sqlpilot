@@ -210,11 +210,11 @@ namespace SqlpGtk {
 			int64 anid = 0;
 			var iter = TreeIter ();
 			if (store.get_iter_first (out iter)) {
-				while (store.iter_next (ref iter)) {
+				do {
 					message ("get_iter_at_id");
 					store.get (iter, 0, &anid);
 					if (id == anid) return iter;
-				}
+				} while (store.iter_next (ref iter));
 			}
 			return iter;
 		}

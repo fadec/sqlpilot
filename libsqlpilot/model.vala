@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class Model : Record {
+	public class Model : Record <ModelCrud> {
 
 		public string abbreviation;
 		public string make;

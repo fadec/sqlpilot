@@ -10,8 +10,9 @@ namespace SqlpGtk {
 
 		public bool edited { get; set; }
 
-		protected RecordType _record;
+		private bool save_disabled;
 
+		protected Record _record;
 		public RecordType record {
 			get {
 				assert (this is Fieldset);
@@ -20,12 +21,12 @@ namespace SqlpGtk {
 				return this._record;
 			}
 			set {
-				// Record has erased type so vala doesn't know to ref it (but it still deletes with unref??)
-				_record = value;
+				_record = value as Record;
 				if (value == null) ensure_record ();
-				else (_record as Record).ref();
 				assert (_record is Record);
+				save_disabled = true;
 				set_fields_from_record ();
+				save_disabled = false;
 				edited = false;
 			}
 		}
@@ -37,7 +38,8 @@ namespace SqlpGtk {
 		protected abstract void set_fields_from_record ();
 		protected abstract void set_record_from_fields ();
 
-		protected bool save () {
+		public bool save () {
+			if (save_disabled) return false;
 		    weak Record r = record as Record;
 			assert (r is Record);
 			if (r.save ()) {

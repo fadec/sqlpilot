@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class Airport : Record {
+	public class Airport : Record <AirportCrud> {
 
 		public string icao;
 		public string iata;

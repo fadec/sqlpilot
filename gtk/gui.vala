@@ -39,10 +39,6 @@ namespace SqlpGtk {
 					glade_xml.signal_autoconnect_full (connect_callback_glade);
 				} else {
 					stderr.printf ( "%s\n", e.message );
-					var msg = new MessageDialog ( null, DialogFlags.MODAL,
-												  MessageType.ERROR, ButtonsType.CANCEL, 
-												  "Failed to load UI\n%s", e.message );
-					msg.run ();
 				}
 			}
 		}

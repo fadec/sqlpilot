@@ -113,18 +113,8 @@ namespace SqlpGtk {
 				record.date = newdate;
 				date.set_text (newdate.to_iso8601 ());
 			} else {
-				Idle.add ( select_date );
+				Idle.add ( () => { select_entry (this.date); } );
 			}
-		}
-
-		private bool select_date () {
-			return select_entry (date);
-		}
-
-		private bool select_entry (Entry e) {
-			e.grab_focus ();
-			e.select_region (0, -1);
-			return false;
 		}
 
 		[CCode (instance_pos = -1)]
@@ -156,12 +146,8 @@ namespace SqlpGtk {
 				record.trip_date = newdate;
 				trip_date.set_text (newdate.to_iso8601 ());
 			} else {
-				Idle.add (select_trip_date);
+				Idle.add ( () => { select_entry (this.trip_date); } );
 			}
-		}
-
-		private bool select_trip_date () {
-			return select_entry (trip_date);
 		}
 
 		[CCode (instance_pos = -1)]

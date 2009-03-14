@@ -151,6 +151,18 @@ namespace Sqlp {
 			return "DELETE FROM " + table_name + " WHERE id = ?;";
 		}
 
+		// Subclasses can use these to make unique checks for valid();
+		protected Statement prepare_unique_column_statement (string column, bool use_like = false) {
+			return logbook.prepare_statement (make_find_duplicate_sql (table_name, column, use_like));
+		}
+
+		// Case insensitive dup finder
+		private string make_find_duplicate_sql (string table_name, string column, bool use_like) {
+			return
+			"SELECT 1 as Found FROM " + table_name + " WHERE " + column +
+			(use_like ? " LIKE" : " =") + " ? AND id != ?;";
+		}
+
 // 		private string make_destroy_all_sql (string table_name, Collection<int64?> ids) {
 // 			var sb = new StringBuilder ();
 // 			sb.append ("DELETE FROM ");

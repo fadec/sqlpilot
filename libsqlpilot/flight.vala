@@ -1,7 +1,7 @@
 using Sqlite;
 
 namespace Sqlp {
-	public class Flight : Record {
+	public class Flight : Record <FlightCrud> {
 
 		public int64 aircraft_id;
 		private Aircraft? _aircraft = null;

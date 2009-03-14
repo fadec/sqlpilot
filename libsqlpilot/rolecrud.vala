@@ -3,6 +3,7 @@ namespace Sqlp {
 	public class RoleCrud : Crud <Role> {
 		
 		private Statement find_by_abbreviation_stmt;
+		public Statement unique_abbreviation_stmt;
 		
 		public RoleCrud ( Logbook logbook ) {
 			this.record_type = typeof (Role);
@@ -13,6 +14,7 @@ namespace Sqlp {
 		construct {
 			var find_by_abbreviation_sql = "SELECT * FROM Roles WHERE Abbreviation = ?;";
 			find_by_abbreviation_stmt = logbook.prepare_statement (find_by_abbreviation_sql);
+			unique_abbreviation_stmt = prepare_unique_column_statement ("Abbreviation");
 		}
 
 		public Role? find_by_abbreviation (string abbreviation) {

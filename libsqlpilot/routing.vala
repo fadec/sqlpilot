@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class Routing : Record {
+	public class Routing : Record <RoutingCrud> {
 
 		private int64 flight_id;
 		private Flight? _flight;
