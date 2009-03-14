@@ -198,7 +198,6 @@ namespace SqlpGtk {
 
 		public void update_id (int64 id) {
 			select_id_statement.bind_int64 (1, id);
-
 			while (select_id_statement.step () == Sqlite.ROW) {
 				var iter = get_iter_at_id (id);
 				set_row (iter, select_id_statement);
@@ -212,6 +211,7 @@ namespace SqlpGtk {
 			var iter = TreeIter ();
 			if (store.get_iter_first (out iter)) {
 				while (store.iter_next (ref iter)) {
+					message ("get_iter_at_id");
 					store.get (iter, 0, &anid);
 					if (id == anid) return iter;
 				}

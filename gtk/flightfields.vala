@@ -38,23 +38,23 @@ namespace SqlpGtk {
 				on_date_focus_out_event (date_edit, event_focus);
 			};
 			
-			date = date_edit;
-			leg = gui.object ("leg") as SpinButton;
-			route = gui.object ("route") as Entry;
-			role = gui.object ("role") as Entry;
-			aircraft = gui.object ("aircraft") as Entry;
-			duration = gui.object ("duration") as Entry;
-			actual_out = gui.object ("actual_out") as Entry;
-			actual_in = gui.object ("actual_in") as Entry;
-			scheduled_duration = gui.object ("scheduled_duration") as Entry;
-			scheduled_out = gui.object ("scheduled_out") as Entry;
-			scheduled_in = gui.object ("scheduled_in") as Entry;
-			night = gui.object ("night") as Entry;
-			instrument = gui.object ("instrument") as Entry;
-			hood = gui.object ("hood") as Entry;
-			flight_number = gui.object ("flight_number") as Entry;
-			trip = gui.object ("trip") as Entry;
-			trip_date = gui.object ("trip_date") as Entry;
+			date				= date_edit;
+			leg					= gui.object ("leg")					 as SpinButton;
+			route				= gui.object ("route")					 as Entry;
+			role				= gui.object ("role")					 as Entry;
+			aircraft			= gui.object ("aircraft")				 as Entry;
+			duration			= gui.object ("duration")				 as Entry;
+			actual_out			= gui.object ("actual_out")				 as Entry;
+			actual_in			= gui.object ("actual_in")				 as Entry;
+			scheduled_duration	= gui.object ("scheduled_duration")		 as Entry;
+			scheduled_out		= gui.object ("scheduled_out")			 as Entry;
+			scheduled_in		= gui.object ("scheduled_in")			 as Entry;
+			night				= gui.object ("night")					 as Entry;
+			instrument			= gui.object ("instrument")				 as Entry;
+			hood				= gui.object ("hood")					 as Entry;
+			flight_number		= gui.object ("flight_number")			 as Entry;
+			trip				= gui.object ("trip")					 as Entry;
+			trip_date			= gui.object ("trip_date")				 as Entry;
 		}
 
 		protected override void set_fields_from_record () {

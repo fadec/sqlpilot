@@ -39,11 +39,11 @@ namespace SqlpGtk {
 		}
 
 		private void add_pages () {
-			this.flight_browser = new Browser ("Flights", logbook.flight, this);
-			flight_browser.fieldset = new FlightFields ();
+ 			this.flight_browser = new Browser ("Flights", logbook.flight, this);
+ 			flight_browser.fieldset = new FlightFields ();
 
-			this.role_browser = new Browser ("Roles", logbook.role, this);
-			role_browser.fieldset = new FlightFields ();
+ 			this.role_browser = new Browser ("Roles", logbook.role, this);
+ 			role_browser.fieldset = new RoleFields ();
 		}
 	}
 }

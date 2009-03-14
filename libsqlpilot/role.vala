@@ -1,19 +1,23 @@
 using Sqlite;
 namespace Sqlp {
 	public class Role : Record {
-		public string abbreviation = "";
-		public string name = "";
-		public bool pic;
-		public bool sic;
-		public bool fe;
-		public bool solo;
-		public bool dual;
-		public bool instruct;
-		public bool military;
-		public bool total;
+		public string abbreviation { get; set; default = ""; }
+		public string name { get; set; default = ""; }
+		public bool pic { get; set; default = false; }
+		public bool sic { get; set; default = false; }
+		public bool fe { get; set; default = false; }
+		public bool solo { get; set; default = false; }
+		public bool dual { get; set; default = false; }
+		public bool instruct { get; set; default = false; }
+		public bool military { get; set; default = false; }
+		public bool total { get; set; default = false; }
 
 		public override string to_string () {
 			return "<Role %s>".printf (abbreviation);
+		}
+
+		construct {
+			message ("new role made");
 		}
 
 		protected override int bind_for_save (Statement stmt) {

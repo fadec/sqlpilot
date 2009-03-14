@@ -25,9 +25,9 @@ sqlpilot_gtk_VALASOURCES = \
 	application.vala \
 	about.vala \
 	book.vala \
-	airlineflightfields.vala \
 	querylist.vala \
 	component.vala \
+	rolefields.vala \
 	settreemodelfilter.vala
 
 sqlpilot_gtk_SOURCES = \
