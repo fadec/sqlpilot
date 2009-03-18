@@ -10,7 +10,7 @@ namespace SqlpGtk {
 
 		public bool edited { get; set; }
 
-		private bool save_disabled;
+		public bool setting_record { get; private set; }
 
 		protected Record _record;
 		public RecordType record {
@@ -24,10 +24,10 @@ namespace SqlpGtk {
 				_record = value as Record;
 				if (value == null) ensure_record ();
 				assert (_record is Record);
-				save_disabled = true;
+				setting_record = true;
 				set_fields_from_record ();
-				save_disabled = false;
 				edited = false;
+				setting_record = false;
 			}
 		}
 
@@ -39,10 +39,11 @@ namespace SqlpGtk {
 		protected abstract void set_record_from_fields ();
 
 		public bool save () {
-			if (save_disabled) return false;
+			if (setting_record) return true;
 		    weak Record r = record as Record;
 			assert (r is Record);
 			if (r.save ()) {
+				message ("this");
 				saved (r.id);
 				edited = false;
 				return true;

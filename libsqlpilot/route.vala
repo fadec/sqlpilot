@@ -52,7 +52,7 @@ namespace Sqlp {
 		public Route read (string? str) {
 			clear ();
 			if (str != null) {
-				foreach (string ident in str.split ("-")) {
+				foreach (string ident in str.split (" ")) {
 					append_airport (crud.logbook.airport.find_by_ident (ident));
 				}
 			}

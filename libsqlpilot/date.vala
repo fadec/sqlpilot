@@ -62,6 +62,10 @@ namespace Sqlp {
 			gdate.clear ();
 		}
 
+		public void set_dmy (DateDay d, DateMonth m, DateYear y) {
+			gdate.set_dmy (d, m, y);
+		}
+
  		public static string month_name (int m) {
  			return month_names[(m >= 1 && m <= 12) ? m : 0];
  		}

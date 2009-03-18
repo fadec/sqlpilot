@@ -17,9 +17,9 @@ namespace SqlpGtk {
 		public int column { construct; get; }
 
 		public SetTreeModelFilter (HashSet<T>? visible, int column, TreeModel child_model) {
-			this.visible = visible;
-			this.column = column;
 			this.child_model = child_model;
+			this.column = column;
+			this.visible = visible;
 		}
 
 		construct {

@@ -24,7 +24,6 @@ namespace SqlpGtk {
 				foreach ( var obj in builder_objects ) {
 					if ( obj is Widget ) {
 						objects.insert ( (obj as Widget).name, (obj as Gtk.Object) );
-//					stderr.printf ("--%s\n", (obj as Widget).name);
 					}
 				}
 				builder.connect_signals_full (connect_callback_builder);
@@ -88,7 +87,8 @@ namespace SqlpGtk {
 			void* symbol;
 			var full_symbol_name = "sqlp_gtk_" + this.name + "_" + handler_name;
 			if (callback_module.symbol (full_symbol_name, out symbol)) {
-				object.connect ("signal::" + signal_name, symbol, callback_data, null);
+				var full_signal_name = "signal::" + signal_name;
+				object.connect (full_signal_name, symbol, callback_data, null);
 			} else {
 				message ("no callback symbol: %s", full_symbol_name);
 			}

@@ -33,41 +33,41 @@ namespace Sqlp {
 			}
 		}
 
-		public int64 dep_id;
-		private Airport? _dep;
-		public Airport? dep {
+		public int64 origin_id;
+		private Airport? _origin;
+		public Airport? origin {
 			get {
-				if (_dep == null && dep_id != 0) {
-					_dep = crud.logbook.airport.find_by_id (dep_id);
+				if (_origin == null && origin_id != 0) {
+					_origin = crud.logbook.airport.find_by_id (origin_id);
 				}
-				return _dep;
+				return _origin;
 			}
 			set {
-				_dep = value;
+				_origin = value;
 				if (value == null) {
-					dep_id = 0;
+					origin_id = 0;
 				} else {
-					dep_id = value.id;
+					origin_id = value.id;
 				}
 			}
 		}
 
 
-		public int64 arr_id;
-		private Airport? _arr;
-		public Airport? arr {
+		public int64 destination_id;
+		private Airport? _destination;
+		public Airport? destination {
 			get {
-				if (_arr == null && arr_id != 0) {
-					_arr = crud.logbook.airport.find_by_id (arr_id);
+				if (_destination == null && destination_id != 0) {
+					_destination = crud.logbook.airport.find_by_id (destination_id);
 				}
-				return _arr;
+				return _destination;
 			}
 			set {
-				_arr = value;
+				_destination = value;
 				if (value == null) {
-					arr_id = 0;
+					destination_id = 0;
 				} else {
-					arr_id = value.id;
+					destination_id = value.id;
 				}
 			}
 		}
@@ -110,14 +110,14 @@ namespace Sqlp {
 			var i = 1;
 			stmt.bind_int64				(i++, aircraft_id);
 			stmt.bind_int64				(i++, role_id);
-			stmt.bind_int64				(i++, dep_id);
-			stmt.bind_int64				(i++, arr_id);
+			stmt.bind_int64				(i++, origin_id);
+			stmt.bind_int64				(i++, destination_id);
 			stmt.bind_nonempty_text		(i++, date.to_iso8601 ());
 			stmt.bind_int				(i++, leg);
 
-			bind_time_of_day (stmt, i++, actual_out, (dep != null) ? dep.timezone : Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, actual_out, (origin != null) ? origin.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, actual_out, Timezone ("UTC"));
-			bind_time_of_day (stmt, i++, actual_in, (arr != null) ? arr.timezone : Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, actual_in, (destination != null) ? destination.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, actual_in, Timezone ("UTC"));
 
 			bind_duration (stmt, i++, duration);
@@ -129,9 +129,9 @@ namespace Sqlp {
 			stmt.bind_nonempty_text		(i++, notes);
 			stmt.bind_nonempty_text		(i++, flight_number);
 
-			bind_time_of_day (stmt, i++, scheduled_out, (dep != null) ? dep.timezone : Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, scheduled_out, (origin != null) ? origin.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, scheduled_out, Timezone ("UTC"));
-			bind_time_of_day (stmt, i++, scheduled_in, (arr != null) ? arr.timezone : Timezone ("UTC"));
+			bind_time_of_day (stmt, i++, scheduled_in, (destination != null) ? destination.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, scheduled_in, Timezone ("UTC"));
 
 			bind_duration (stmt, i++, scheduled_duration);
@@ -139,6 +139,21 @@ namespace Sqlp {
 			stmt.bind_nonempty_text		(i++, trip);
 			stmt.bind_nonempty_text		(i++, trip_date.to_iso8601() );
 			return i;
+		}
+
+		public void read_full_route (string str) {
+			string[] idents = str.split (" ");
+			if (idents.length > 0) {
+				this.origin = crud.logbook.airport.find_by_ident (idents[0]);
+				for (var i=1; i < idents.length - 1; i++) {
+					route.append_airport (crud.logbook.airport.find_by_ident (idents[i]));
+				}
+				this.destination = crud.logbook.airport.find_by_ident (idents[idents.length - 1]);
+			}
+		}
+
+		public string show_full_route () {
+			return "uuuuuu";
 		}
 
 		private void bind_time_of_day (Statement stmt, int iter, TimeOfDay tod, Timezone in_timezone) {
@@ -163,18 +178,18 @@ namespace Sqlp {
 			var i = 1;
 			aircraft_id			= stmt.column_int64 (i++);
 			role_id				= stmt.column_int64 (i++);
-			dep_id				= stmt.column_int64 (i++);
-			arr_id				= stmt.column_int64 (i++);
+			origin_id			= stmt.column_int64 (i++);
+			destination_id  	= stmt.column_int64 (i++);
 			date				= Date.from_iso8601 (stmt.column_text (i++));
 			leg					= stmt.column_int   (i++);
 			i++; // skip local ss read
 			actual_out			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			i++; // skip local
 			actual_in			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			duration			= Duration.from_minutes (stmt.column_int64 (i++));
-			night				= Duration.from_minutes (stmt.column_int64 (i++));
-			instrument			= Duration.from_minutes (stmt.column_int64 (i++));
-			hood				= Duration.from_minutes (stmt.column_int64 (i++));
+			duration			= Duration.from_minutes (stmt.column_int (i++));
+			night				= Duration.from_minutes (stmt.column_int (i++));
+			instrument			= Duration.from_minutes (stmt.column_int (i++));
+			hood				= Duration.from_minutes (stmt.column_int (i++));
 			crew				= stmt.column_text (i++);
 			notes				= stmt.column_text (i++);
 			flight_number       = stmt.column_text (i++);
@@ -182,7 +197,7 @@ namespace Sqlp {
 			scheduled_out		= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			i++; // skip local
 			scheduled_in		= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			scheduled_duration  = Duration.from_minutes (stmt.column_int64 (i++));
+			scheduled_duration  = Duration.from_minutes (stmt.column_int (i++));
 			trip				= stmt.column_text (i++);
 			trip_date			= Date.from_iso8601 (stmt.column_text (i++));
 //			stderr.printf("WTF: %s\n", sout.timezone.name);
@@ -191,8 +206,8 @@ namespace Sqlp {
 		protected override bool save_dependencies () {
 			if (aircraft != null && aircraft.save ()) aircraft_id = aircraft.id;
 			if (role != null && role.save ()) role_id = role.id;
-			if (dep != null && dep.save ()) dep_id = dep.id;
-			if (arr != null && arr.save ()) arr_id = arr.id;
+			if (origin != null && origin.save ()) origin_id = origin.id;
+			if (destination != null && destination.save ()) destination_id = destination.id;
 			return true;
 		}
 

@@ -41,7 +41,6 @@ namespace Sqlp {
 		public Duration duration (Datetime other) {
 			return Duration.from_seconds (diff (other));
 		}
-
 		
 		public Datetime next_datetime_for_time_of_day (TimeOfDay t1) {
 			var d1 = this.date;
@@ -75,6 +74,24 @@ namespace Sqlp {
 		public Datetime in_timezone (Timezone timezone) {
 			var new_datetime = this;
 			new_datetime.move_to_timezone (timezone);
+			return new_datetime;
+		}
+
+		public Datetime add (Duration dur) {
+			var new_datetime = this;
+			time_of_day.timezone.use ();
+			var t = Time.local (mktime () + dur.to_time_t ());
+			new_datetime.time_of_day.set_hms (t.hour, t.minute, t.second);
+			new_datetime.date.set_dmy ((DateDay)t.day, (DateMonth)(t.month+1), (DateYear)(t.year+1900));
+			return new_datetime;
+		}
+
+		public Datetime subtract (Duration dur) {
+			var new_datetime = this;
+			time_of_day.timezone.use ();
+			var t = Time.local (mktime () - dur.to_time_t ());
+			new_datetime.time_of_day.set_hms (t.hour, t.minute, t.second);
+			new_datetime.date.set_dmy ((DateDay)t.day, (DateMonth)(t.month+1), (DateYear)(t.year+1900));
 			return new_datetime;
 		}
 

@@ -210,7 +210,7 @@
                   <object class="GtkVBox" id="vbox5">
                     <property name="visible">True</property>
                     <child>
-                      <object class="GtkLabel" id="label4">
+                      <object class="GtkLabel" id="record_summary">
                         <property name="visible">True</property>
                         <property name="label" translatable="yes">label</property>
                       </object>
