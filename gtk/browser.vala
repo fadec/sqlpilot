@@ -9,12 +9,10 @@ namespace SqlpGtk {
 	public class Browser : Pane {
 		
 		// owns this
-		public weak Book book { construct; get; }
+		public unowned Book book { construct; get; }
 
 		// owned by book.logbook
-		// Record is base type. Will correct destructor be called for e.g. Flight?
-		// Apparently so, since it uses g_object_unref as a destructor
-		public weak Sqlp.Table <Sqlp.Database, Record> table { construct; get; }
+		public unowned Sqlp.Table <Sqlp.Database, Record> table { construct; get; }
 
 		private Fieldset _fieldset;
 		public Fieldset fieldset {
@@ -168,12 +166,5 @@ namespace SqlpGtk {
 				query_list.focus_iter (iter);
 			}
 		}
-
-// 		[CCode (instance_pos = -1)]
-// 		public void on_save_btn_clicked(Button button)
-// 		{
-// 			save ();
-// 		}
-
 	}
 }

@@ -4,7 +4,7 @@ namespace SqlpGtk {
 	public abstract class Fieldset <RecordType> : Pane {
 
 		// owns this
-		public weak Browser browser { construct set; get; }
+		public unowned Browser browser { construct set; get; }
 
 		public signal void saved (int64 id);
 

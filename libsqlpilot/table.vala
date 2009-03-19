@@ -19,22 +19,23 @@ namespace Sqlp {
 		}
 		public string table_name { construct; get; }
 		public Type record_type { construct; get; }
-		public Statement find;
-		public Statement insert;
-		public Statement update;
-		public Statement destroy;
-		public string[] column_names;
+		protected Statement find;
+		protected Statement insert;
+		protected Statement update;
+		protected Statement destroy;
+		private string[] _column_names;
+		public string[] column_names { get { return _column_names; } }
 
 		private GLib.HashTable <string, int> column_indexes;
 
-		protected Table (Type record_type, Sqlp.Database database, string table_name) {
+		protected Table (Sqlp.Database database, Type record_type, string table_name) {
 			this.record_type = record_type;
 			this.database = database;
 			this.table_name = table_name;
 		}
 
 		construct {
-			column_names = table_column_names (table_name);
+			_column_names = table_column_names (table_name);
 			find   = _database.prepare_statement (make_find_sql (table_name));
 			insert = _database.prepare_statement (make_insert_sql (table_name));
 			update = _database.prepare_statement (make_update_sql (table_name));
