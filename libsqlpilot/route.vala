@@ -49,6 +49,11 @@ namespace Sqlp {
 			routings.append (routing);
 		}
 
+		public void append_maybe_airport (Airport? airport) {
+			if (airport == null || ! (airport is Airport)) return;
+			append_airport (airport);
+		}
+
 		public Route read (string? str) {
 			clear ();
 			if (str != null) {

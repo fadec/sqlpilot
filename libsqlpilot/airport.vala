@@ -4,6 +4,7 @@ namespace Sqlp {
 
 		public string icao;
 		public string iata;
+		public string abbreviation;
 		public string name;
 		public string city;
 		public string province;
@@ -18,6 +19,7 @@ namespace Sqlp {
 			var i = 1;
 			stmt.bind_nonempty_text (i++, icao);
 			stmt.bind_nonempty_text (i++, iata);
+			stmt.bind_nonempty_text (i++, abbreviation);
 			stmt.bind_nonempty_text (i++, name);
 			stmt.bind_nonempty_text (i++, city);
 			stmt.bind_nonempty_text (i++, province);
@@ -35,6 +37,7 @@ namespace Sqlp {
 			var i = 1;
 			icao = stmt.column_text (i++);
 			iata = stmt.column_text (i++);
+			abbreviation = stmt.column_text (i++);
 			name = stmt.column_text (i++);
 			city = stmt.column_text (i++);
 			province = stmt.column_text (i++);
@@ -50,9 +53,29 @@ namespace Sqlp {
 		public void set_ident (string? ident) {
 			if (ident == null) return;
 			switch (ident.length) {
-			case 3: iata = ident; break;
-			case 4: icao = ident; break;
+			case 3: iata = ident;
+				break;
+			case 4: icao = ident;
+				break;
+			case 5: // reserved for fixes
+				break;
+			default: abbreviation = ident;
+				break;
 			}
+		}
+
+		public override bool valid () {
+			if (icao.length != 0 && icao.length != 4) return false;
+			if (iata.length != 0 && iata.length != 3) return false;
+			if (abbreviation.length != 0 &&
+				(abbreviation.length == 1 ||
+				 abbreviation.length == 3 ||
+				 abbreviation.length == 4 ||
+				 abbreviation.length == 5)) return false;
+			if ((abbreviation.length == 0) &&
+				(icao.length == 0) &&
+				(iata.length == 0)) return false;
+			return true;
 		}
 	}
 

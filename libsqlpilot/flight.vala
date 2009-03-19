@@ -144,16 +144,20 @@ namespace Sqlp {
 		public void read_full_route (string str) {
 			string[] idents = str.split (" ");
 			if (idents.length > 0) {
-				this.origin = crud.logbook.airport.find_by_ident (idents[0]);
+				this.origin = crud.logbook.airport.find_or_create_by_ident (idents[0]);
 				for (var i=1; i < idents.length - 1; i++) {
-					route.append_airport (crud.logbook.airport.find_by_ident (idents[i]));
+					route.append_maybe_airport (crud.logbook.airport.find_or_create_by_ident (idents[i]));
 				}
-				this.destination = crud.logbook.airport.find_by_ident (idents[idents.length - 1]);
+				this.destination = crud.logbook.airport.find_or_create_by_ident (idents[idents.length - 1]);
 			}
 		}
 
-		public string show_full_route () {
-			return "uuuuuu";
+		public string show_full_route_icao () {
+			return (origin != null ? origin.icao : "?") + " " + (destination != null ? destination.icao : "?");
+		}
+
+		public string show_full_route_iata () {
+			return (origin != null ? origin.iata : "?") + " " + (destination != null ? destination.iata : "?");
 		}
 
 		private void bind_time_of_day (Statement stmt, int iter, TimeOfDay tod, Timezone in_timezone) {
