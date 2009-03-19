@@ -12,6 +12,7 @@ namespace SqlpGtk {
 		public unowned Book book { construct; get; }
 
 		// owned by book.logbook
+		// for crud operations
 		public unowned Sqlp.Table <Sqlp.Database, Record> table { construct; get; }
 
 		private Fieldset _fieldset;
@@ -22,7 +23,7 @@ namespace SqlpGtk {
 				if (_fieldset == null) return;
 				_fieldset.browser = this;
 				set_slot ("fields", _fieldset);
-				_fieldset.saved += on_fieldset_saved;
+				table.updated += on_table_updated;
 				_fieldset.top_widget.sensitive = (query_list.count_selected_rows () == 1);
 			}
 		}
@@ -39,6 +40,9 @@ namespace SqlpGtk {
 		}
 
 		public QueryList query_list { get; set; }
+
+		// view need not match crud table name as long as id column will
+		// will cause correct insert/update/delete operations in crud table
 		public string view_name { get; construct; }
 
 		private Record _current_record;
@@ -100,8 +104,8 @@ namespace SqlpGtk {
 			assert (this != null);
 		}
 
-		private void on_fieldset_saved (Fieldset fs, int64 id) {
-			query_list.update_id (id);
+		private void on_table_updated (Sqlp.Table t, Record r) {
+			query_list.update_id (r.id);
 		}
 
 		private virtual void load_selection () {

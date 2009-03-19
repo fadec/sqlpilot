@@ -25,6 +25,11 @@ namespace Sqlp {
 		protected Statement destroy;
 		private string[] _column_names;
 		public string[] column_names { get { return _column_names; } }
+		public int column_count { get { return _column_names.length; } }
+
+		public signal void inserted (Record record);
+		public signal void updated (Record record);
+		public signal void deleted (Record record);
 
 		private GLib.HashTable <string, int> column_indexes;
 
@@ -42,8 +47,20 @@ namespace Sqlp {
 			destroy = _database.prepare_statement (make_destroy_sql (table_name));
 		}
 
-		public virtual RecordType new_record () {
+		public RecordType new_record () {
 			return Object.new (this.record_type, "table", this);
+		}
+
+		public void tell_deleted (Record record) {
+			deleted (record);
+		}
+		
+		public void tell_inserted (Record record) {
+			inserted (record);
+		}
+
+		public void tell_updated (Record record) {
+			updated (record);
 		}
 
 		private string make_find_sql ( string table_name ) {

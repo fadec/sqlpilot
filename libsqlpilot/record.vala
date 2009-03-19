@@ -32,15 +32,6 @@ namespace Sqlp {
 			return (id == 0);
 		}
 		
-		// Flight -> Role, Aircraft, Airport, Airport
-		// Aircraft -> Model
-		// Routing -> Flight, Airport
-		// ---------------------------------------------
-		// Save loop: flight_1 -> routing_1 -> flight_1 -> ...
-		// Double update: flight_1 -> airport_1; flight_1 -> routing_1 -> airport_1 /"route a to b to a to c"
-		// Double insert: ""
-		// Overwrite: flight_1 -> airport_1; flight_1 -> routing_1 -> clone of airport_1
-		// save/delete: flight_1 -> save airport_1; flight_1 -> delete routing -> airport_1
 		public bool save () {
 //			if ( ! is_modified ) return true;
 			if (! valid ()) return false;
@@ -63,7 +54,7 @@ namespace Sqlp {
 				stmt.bind_int64 (ncol, id);
 			}
 			// If my bind_for_save methods are correct the counts should match.
-			if (ncol != _table.column_names.length) {
+			if (ncol != _table.column_count) {
 				message ("bind_for_save returned incorrect count of %d for %s which has %d columns",
 						 ncol, _table.table_name, _table.column_names.length);
 				transaction.rollback ();
@@ -83,6 +74,8 @@ namespace Sqlp {
 			}
 			transaction.commit ();
 			message ("</%s>", _table.table_name);
+			if (stmt == _table.insert) _table.tell_inserted (this);
+			else _table.tell_updated (this);
 			return true;
 		}
 
@@ -93,11 +86,10 @@ namespace Sqlp {
 			stmt.step ();
 			stmt.reset ();
 			stmt.clear_bindings ();
+			_table.tell_deleted (this);
 			return true;
 		}
 
-		// The correct statements will be passed to concrete objects as long as
-		// that concrete object has a Table of the correct type.
 		protected abstract void set_from_stmt (Statement stmt);
 		protected abstract int bind_for_save (Statement stmt);
 

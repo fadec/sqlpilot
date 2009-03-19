@@ -6,8 +6,6 @@ namespace SqlpGtk {
 		// owns this
 		public unowned Browser browser { construct set; get; }
 
-		public signal void saved (int64 id);
-
 		public bool edited { get; set; }
 
 		public bool setting_record { get; private set; }
@@ -43,8 +41,6 @@ namespace SqlpGtk {
 		    weak Record r = record as Record;
 			assert (r is Record);
 			if (r.save ()) {
-				message ("this");
-				saved (r.id);
 				edited = false;
 				return true;
 			}
