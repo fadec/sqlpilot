@@ -1,12 +1,12 @@
 using Sqlite;
 namespace Sqlp {
-	public class FlightTable : Table <Flight> {
+	public class FlightTable : Table <Logbook, Flight> {
 
 		protected Statement find_by_date_fltno_dep_arr_stmt;
 
 		public FlightTable ( Logbook logbook ) {
 			this.record_type = typeof (Flight);
-			this.logbook = logbook;
+			this.database = logbook;
 			this.table_name = "Flights";
 		}
 
@@ -19,7 +19,7 @@ namespace Sqlp {
 			"(origin.ICAO = ? OR destination.IATA = ?) AND " +
 			"(destination.ICAO = ? OR destination.IATA = ?);";
 			find_by_date_fltno_dep_arr_stmt =
-			logbook.prepare_statement (find_by_date_fltno_dep_arr_sql);
+			database.prepare_statement (find_by_date_fltno_dep_arr_sql);
 		}
 
 		public Flight? find_by_date_fltno_dep_arr (string date_str,

@@ -7,7 +7,7 @@ namespace Sqlp {
 		public Flight? flight {
 			get {
 				if (_flight == null && flight_id != 0) {
-					_flight = table.logbook.flight.find_by_id (flight_id);
+					_flight = table.database.flight.find_by_id (flight_id);
 				}
 				return _flight;
 			}
@@ -23,7 +23,7 @@ namespace Sqlp {
 		public Airport? airport {
 			get {
 				if (_airport == null && airport_id != 0) {
-					_airport = table.logbook.airport.find_by_id (airport_id);
+					_airport = table.database.airport.find_by_id (airport_id);
 				}
 				return _airport;
 			}

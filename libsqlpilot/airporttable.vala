@@ -1,18 +1,18 @@
 using Sqlite;
 namespace Sqlp {
-	public class AirportTable : Table <Airport> {
+	public class AirportTable : Table <Logbook, Airport> {
 
 		private Statement find_by_ident_stmt;
 
 		public AirportTable ( Logbook logbook ) {
 			this.record_type = typeof (Airport);
-			this.logbook = logbook;
+			this.database = logbook;
 			this.table_name = "Airports";
 		}
 
 		construct {
 			var find_by_ident_sql = "SELECT * FROM Airports WHERE ICAO = ? OR IATA = ? OR Abbreviation = ?;";
-			find_by_ident_stmt = logbook.prepare_statement (find_by_ident_sql);
+			find_by_ident_stmt = database.prepare_statement (find_by_ident_sql);
 		}
 
 		public Airport? find_by_ident (string ident) {

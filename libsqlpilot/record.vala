@@ -46,7 +46,7 @@ namespace Sqlp {
 			if (! valid ()) return false;
 			int ncol = 0;
 			weak Statement stmt;
-			weak Transaction transaction = _table.logbook.transaction;
+			weak Transaction transaction = ((Sqlp.Database)_table.database).transaction;
 			transaction.begin ();
 			message ("<%s>", _table.table_name);
 			if (! save_dependencies ()) {

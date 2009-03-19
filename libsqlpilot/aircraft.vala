@@ -8,7 +8,7 @@ namespace Sqlp {
 		public Model? model {
 			get {
 				if (_model == null && model_id != 0) {
-					_model = table.logbook.model.find_by_id (model_id);
+					_model = table.database.model.find_by_id (model_id);
 				}
 				return _model;
 			}

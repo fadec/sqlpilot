@@ -2,10 +2,9 @@ using Sqlp;
 
 int main ( string[] args) {
 
-	var logbook = new Logbook ();
-	logbook.open ( "test-logbook.db" );
+	var logbook = new Logbook ("test-logbook.db");
 
-	assert (logbook.role is RoleCrud);
+	assert (logbook.role is RoleTable);
 
 	var role = logbook.role.new_record ();
 	assert (role is Role);
@@ -30,8 +29,8 @@ int main ( string[] args) {
   	flight.aircraft.model = logbook.model.new_record ();
 	assert (flight.aircraft.model != null);
 	flight.aircraft.model.abbreviation = "PA28";
-  	flight.dep = logbook.airport.new_record ();
-  	flight.arr = logbook.airport.new_record ();
+  	flight.origin = logbook.airport.new_record ();
+  	flight.destination = logbook.airport.new_record ();
 
 	assert (flight.is_new () == true);
 	assert (flight.aircraft is Aircraft);
@@ -69,8 +68,8 @@ int main ( string[] args) {
 
 	assert (flight.route.length == 0);
 
-	flight.dep = minneapolis;
-	flight.arr = grand_forks;
+	flight.origin = minneapolis;
+	flight.destination = grand_forks;
 
 	flight.route.append_airport (fargo);
 	flight.route.append_airport (thief_river);
@@ -78,10 +77,10 @@ int main ( string[] args) {
  	flight.save ();
 	flight = logbook.flight.find_by_id (fid);
 
-	assert (flight.dep.icao == "KMSP");
-	assert (flight.dep.iata == "MSP");
-	assert (flight.arr.icao == "KGFK");
-	assert (flight.arr.iata == "GFK");
+	assert (flight.origin.icao == "KMSP");
+	assert (flight.origin.iata == "MSP");
+	assert (flight.destination.icao == "KGFK");
+	assert (flight.destination.iata == "GFK");
 	assert (flight.route.length == 2);
 
 	return 0;

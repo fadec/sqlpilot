@@ -1,18 +1,18 @@
 using Sqlite;
 namespace Sqlp {
-	public class ModelTable : Table <Model> {
+	public class ModelTable : Table <Logbook, Model> {
 
 		private Statement find_by_ident_stmt;
 
 		public ModelTable ( Logbook logbook ) {
 			this.record_type = typeof (Model);
-			this.logbook = logbook;
+			this.database = logbook;
 			this.table_name = "Models";
 		}
 
 		construct {
 			var find_by_ident_sql = "SELECT * FROM Models WHERE Abbreviation = ?;";
-			find_by_ident_stmt = logbook.prepare_statement (find_by_ident_sql);
+			find_by_ident_stmt = database.prepare_statement (find_by_ident_sql);
 		}
 
 		public Model? find_by_ident (string ident) {

@@ -58,7 +58,7 @@ namespace Sqlp {
 			clear ();
 			if (str != null) {
 				foreach (string ident in str.split (" ")) {
-					append_airport (table.logbook.airport.find_by_ident (ident));
+					append_airport (table.database.airport.find_by_ident (ident));
 				}
 			}
 			return this;

@@ -14,7 +14,7 @@ namespace SqlpGtk {
 		// owned by book.logbook
 		// Record is base type. Will correct destructor be called for e.g. Flight?
 		// Apparently so, since it uses g_object_unref as a destructor
-		public weak Sqlp.Table<Record> table { construct; get; }
+		public weak Sqlp.Table <Sqlp.Database, Record> table { construct; get; }
 
 		private Fieldset _fieldset;
 		public Fieldset fieldset {

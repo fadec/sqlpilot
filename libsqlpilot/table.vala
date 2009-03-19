@@ -1,6 +1,6 @@
 // Table is a create, retrieve, update, delete base class
-// that knows about the logbook to which it belongs and
-// contains statements for the logbook's database.
+// that knows about the database to which it belongs and
+// contains statements.
 // Every record object must hold a reference to a table
 // that matches the record's class.
 // Concrete Tables find and instantiate new records.
@@ -9,8 +9,14 @@
 
 using Sqlite;
 namespace Sqlp {
-	public abstract class Table <RT> : Object {
-		public weak Logbook logbook { construct; get; }
+	public abstract class Table <DatabaseType, RecordType> : Object {
+		private unowned Sqlp.Database _database;
+		public unowned DatabaseType database {
+			construct { _database = value as Sqlp.Database; }
+			get {
+				return _database;
+			}
+		}
 		public string table_name { construct; get; }
 		public Type record_type { construct; get; }
 		public Statement find;
@@ -21,21 +27,21 @@ namespace Sqlp {
 
 		private GLib.HashTable <string, int> column_indexes;
 
-		protected Table (Type record_type, Logbook logbook, string table_name) {
+		protected Table (Type record_type, Sqlp.Database database, string table_name) {
 			this.record_type = record_type;
-			this.logbook = logbook;
+			this.database = database;
 			this.table_name = table_name;
 		}
 
 		construct {
 			column_names = table_column_names (table_name);
-			find   = logbook.prepare_statement (make_find_sql (table_name));
-			insert = logbook.prepare_statement (make_insert_sql (table_name));
-			update = logbook.prepare_statement (make_update_sql (table_name));
-			destroy = logbook.prepare_statement (make_destroy_sql (table_name));
+			find   = _database.prepare_statement (make_find_sql (table_name));
+			insert = _database.prepare_statement (make_insert_sql (table_name));
+			update = _database.prepare_statement (make_update_sql (table_name));
+			destroy = _database.prepare_statement (make_destroy_sql (table_name));
 		}
 
-		public virtual RT new_record () {
+		public virtual RecordType new_record () {
 			return Object.new (this.record_type, "table", this);
 		}
 
@@ -44,7 +50,7 @@ namespace Sqlp {
 		}
 
 		public string[] table_column_names ( string table_name ) {
-			var statement = logbook.prepare_statement (make_select_all_sql (table_name));
+			var statement = _database.prepare_statement (make_select_all_sql (table_name));
 			return statement_colunm_names (statement);
 		}
 
@@ -59,12 +65,12 @@ namespace Sqlp {
 			return names;
 		}
 		
-		public virtual RT? find_by_id (int64 id) {
+		public virtual RecordType? find_by_id (int64 id) {
 			find.bind_int64 (1, id);
  			return find_first(find);
  		}
 
-		public virtual RT? find_first (Statement stmt) {
+		public virtual RecordType? find_first (Statement stmt) {
 			Record? record;
 			if (stmt.step () == ROW) {
 				record = new_record () as Record;
@@ -79,7 +85,7 @@ namespace Sqlp {
 			return record;
 		}
 
-		public List<RT> find_all (Statement stmt) {
+		public List<RecordType> find_all (Statement stmt) {
 			Record? record;
 			var records = new List<Record> ();
 			while (stmt.step () == ROW) {
@@ -153,7 +159,7 @@ namespace Sqlp {
 
 		// Subclasses can use these to make unique checks for valid();
 		protected Statement prepare_unique_column_statement (string column, bool use_like = false) {
-			return logbook.prepare_statement (make_find_duplicate_sql (table_name, column, use_like));
+			return _database.prepare_statement (make_find_duplicate_sql (table_name, column, use_like));
 		}
 
 		// Case insensitive dup finder
