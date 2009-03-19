@@ -187,11 +187,10 @@ namespace Sqlp {
 }
 
 public static int main (string[] args) {
-	var logbook = new Logbook ();
-	var importer = new Importer ();
 	if (args[1] == null) return 0;
 	if (args[2] == null) return 0;
-	logbook.open (args[1]);
+	var logbook = new Logbook (args[1]);
+	var importer = new Importer ();
 	importer.do_import (logbook, FileStream.open(args[2],"r"));
 	return 0;
 }

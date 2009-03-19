@@ -13,7 +13,7 @@ libsqlpilot_la_VALASOURCES = \
 	aircraftcrud.vala \
 	airport.vala \
 	airportcrud.vala \
-	crud.vala \
+	database.vala \
 	date.vala \
 	datetime.vala \
 	duration.vala \
@@ -28,8 +28,10 @@ libsqlpilot_la_VALASOURCES = \
 	route.vala \
 	routing.vala \
 	routingcrud.vala \
+	table.vala \
 	timeofday.vala \
 	timezone.vala \
+	transaction.vala \
 	util.vala
 
 libsqlpilot_la_SOURCES = \

@@ -308,8 +308,8 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public bool on_route_focus_out_event (Entry entry, EventFocus ev)
 		{
-			var origin = record.origin ? record.origin.id : 0;
-			var destination = record.destination ? record.destination.id : 0;
+			var origin = record.origin != null ? record.origin.id : 0;
+			var destination = record.destination != null ? record.destination.id : 0;
 			record.read_full_route (route.get_text ());
 			route.set_text (record.show_full_route_icao ());
 			if (origin != record.origin.id) {

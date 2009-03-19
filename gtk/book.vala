@@ -63,8 +63,7 @@ namespace SqlpGtk {
 		}
 
 		construct {
-			logbook = new Logbook ();
-			logbook.open ( logbook_filename );
+			logbook = new Logbook (logbook_filename);
 			add_pages ();
 		}
 
