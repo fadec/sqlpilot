@@ -1,10 +1,10 @@
 using Sqlite;
 
 namespace Sqlp {
-	public class AircraftCrud : Crud <Aircraft> {
+	public class AircraftTable : Table <Aircraft> {
 
 		Statement find_by_tail_stmt;
-		public AircraftCrud ( Logbook logbook ) {
+		public AircraftTable ( Logbook logbook ) {
 			this.record_type = typeof (Aircraft);
 			this.logbook = logbook;
 			this.table_name = "Aircraft";

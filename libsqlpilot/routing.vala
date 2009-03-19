@@ -1,13 +1,13 @@
 using Sqlite;
 namespace Sqlp {
-	public class Routing : Record <RoutingCrud> {
+	public class Routing : Record <RoutingTable> {
 
 		private int64 flight_id;
 		private Flight? _flight;
 		public Flight? flight {
 			get {
 				if (_flight == null && flight_id != 0) {
-					_flight = crud.logbook.flight.find_by_id (flight_id);
+					_flight = table.logbook.flight.find_by_id (flight_id);
 				}
 				return _flight;
 			}
@@ -23,7 +23,7 @@ namespace Sqlp {
 		public Airport? airport {
 			get {
 				if (_airport == null && airport_id != 0) {
-					_airport = crud.logbook.airport.find_by_id (airport_id);
+					_airport = table.logbook.airport.find_by_id (airport_id);
 				}
 				return _airport;
 			}

@@ -53,8 +53,8 @@ namespace SqlpGtk {
 
 		private void ensure_record () {
  			assert (browser != null);
- 			assert (browser.crud is Crud);
-			if (_record == null) _record = browser.crud.new_record ();
+ 			assert (browser.table is Table);
+			if (_record == null) _record = browser.table.new_record ();
  			assert (_record is Record);
 		}
 	}

@@ -1,10 +1,10 @@
 using Sqlite;
 namespace Sqlp {
-	public class FlightCrud : Crud <Flight> {
+	public class FlightTable : Table <Flight> {
 
 		protected Statement find_by_date_fltno_dep_arr_stmt;
 
-		public FlightCrud ( Logbook logbook ) {
+		public FlightTable ( Logbook logbook ) {
 			this.record_type = typeof (Flight);
 			this.logbook = logbook;
 			this.table_name = "Flights";

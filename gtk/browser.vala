@@ -14,7 +14,7 @@ namespace SqlpGtk {
 		// owned by book.logbook
 		// Record is base type. Will correct destructor be called for e.g. Flight?
 		// Apparently so, since it uses g_object_unref as a destructor
-		public weak Crud<Record> crud { construct; get; }
+		public weak Sqlp.Table<Record> table { construct; get; }
 
 		private Fieldset _fieldset;
 		public Fieldset fieldset {
@@ -64,10 +64,10 @@ namespace SqlpGtk {
 		private ToolButton delete_btn;
 		private ToggleToolButton arm_delete_btn;
 
-		public Browser (string view_name, Crud crud, Book book) {
+		public Browser (string view_name, Sqlp.Table table, Book book) {
 			this.gui_name = "browser";
 			this.view_name = view_name;
-			this.crud = crud;
+			this.table = table;
 			this.book = book;
 		}
 
@@ -87,10 +87,10 @@ namespace SqlpGtk {
 				if (fieldset.edited) fieldset.save ();
 
 				if (query_list.count_selected_rows() == 1) {
-					fieldset.record = crud.find_by_id (query_list.get_selected_ids ()[0]);
+					fieldset.record = table.find_by_id (query_list.get_selected_ids ()[0]);
 					fieldset.top_widget.sensitive = true;
 				} else {
-					fieldset.record = crud.new_record ();
+					fieldset.record = table.new_record ();
 					fieldset.top_widget.sensitive = false;
 				}
   			};
@@ -142,7 +142,7 @@ namespace SqlpGtk {
 		{
 			var selected_ids = query_list.get_selected_ids ();
 			foreach (var id in selected_ids) {
-				crud.destroy_id (id);
+				table.destroy_id (id);
 			}
 			query_list.remove_selected_ids ();
 			this.arm_delete_btn.active = false;
@@ -151,7 +151,7 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_add_clicked(ToolButton button)
 		{
-			var record = crud.new_record ();
+			var record = table.new_record ();
 			// todo set default according to filters
 			if (record.save ()) {
 				var iter = query_list.add_id (record.id);

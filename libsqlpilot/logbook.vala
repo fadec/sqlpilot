@@ -4,12 +4,12 @@ using GLib;
 namespace Sqlp {
 	public class Logbook : Sqlp.Database {
 
-		public FlightCrud flight;
- 		public RoleCrud role;
- 		public AircraftCrud aircraft;
- 		public ModelCrud model;
- 		public AirportCrud airport;
-		public RoutingCrud routing;
+		public FlightTable flight;
+ 		public RoleTable role;
+ 		public AircraftTable aircraft;
+ 		public ModelTable model;
+ 		public AirportTable airport;
+		public RoutingTable routing;
 
 		public Logbook (string filename) {
 			this.filename = filename;
@@ -17,12 +17,12 @@ namespace Sqlp {
 
 		construct {
 			load_db_extensions ();
- 			flight = new FlightCrud (this);
-			role = new RoleCrud (this);
-			aircraft = new AircraftCrud (this);
-			model = new ModelCrud (this);
-			airport = new AirportCrud (this);
-			routing = new RoutingCrud (this);
+ 			flight = new FlightTable (this);
+			role = new RoleTable (this);
+			aircraft = new AircraftTable (this);
+			model = new ModelTable (this);
+			airport = new AirportTable (this);
+			routing = new RoutingTable (this);
 		}
 
 		private void load_db_extensions () {

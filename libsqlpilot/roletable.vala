@@ -1,11 +1,11 @@
 using Sqlite;
 namespace Sqlp {
-	public class RoleCrud : Crud <Role> {
+	public class RoleTable : Table <Role> {
 		
 		private Statement find_by_abbreviation_stmt;
 		public Statement unique_abbreviation_stmt;
 		
-		public RoleCrud ( Logbook logbook ) {
+		public RoleTable ( Logbook logbook ) {
 			this.record_type = typeof (Role);
 			this.logbook = logbook;
 			this.table_name = "Roles";

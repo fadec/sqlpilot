@@ -1,14 +1,14 @@
 using Sqlite;
 
 namespace Sqlp {
-	public class Aircraft : Record <AircraftCrud> {
+	public class Aircraft : Record <AircraftTable> {
 
 		public int64 model_id;
 		private Model? _model;
 		public Model? model {
 			get {
 				if (_model == null && model_id != 0) {
-					_model = crud.logbook.model.find_by_id (model_id);
+					_model = table.logbook.model.find_by_id (model_id);
 				}
 				return _model;
 			}

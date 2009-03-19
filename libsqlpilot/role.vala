@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class Role : Record <RoleCrud> {
+	public class Role : Record <RoleTable> {
 		public string abbreviation { get; set; default = ""; }
 		public string name { get; set; default = ""; }
 		public bool total { get; set; default = false; }
@@ -51,7 +51,7 @@ namespace Sqlp {
 		}
 
 		protected override bool valid () {
-			if (! is_unique_text(crud.unique_abbreviation_stmt, this.abbreviation)) {
+			if (! is_unique_text(table.unique_abbreviation_stmt, this.abbreviation)) {
 				return false;
 			}
 			return true;

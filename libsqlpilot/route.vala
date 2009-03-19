@@ -20,10 +20,10 @@ namespace Sqlp {
 		}
 
 		private List<Routing> routings;
-		private RoutingCrud crud;
+		private RoutingTable table;
 
-		public Route (RoutingCrud rcrud) {
-			crud = rcrud;
+		public Route (RoutingTable rtable) {
+			table = rtable;
 			clear ();
 		}
 
@@ -39,12 +39,12 @@ namespace Sqlp {
 		}
 
 		public Route lookup () {
-			if (_flight != null && (! _flight.is_new ())) routings = crud.find_by_flight (_flight);
+			if (_flight != null && (! _flight.is_new ())) routings = table.find_by_flight (_flight);
 			return this;
 		}
 
 		public void append_airport (Airport airport) {
-			var routing = crud.new_record ();
+			var routing = table.new_record ();
 			routing.airport = airport;
 			routings.append (routing);
 		}
@@ -58,7 +58,7 @@ namespace Sqlp {
 			clear ();
 			if (str != null) {
 				foreach (string ident in str.split (" ")) {
-					append_airport (crud.logbook.airport.find_by_ident (ident));
+					append_airport (table.logbook.airport.find_by_ident (ident));
 				}
 			}
 			return this;

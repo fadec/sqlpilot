@@ -1,14 +1,14 @@
 using Sqlite;
 
 namespace Sqlp {
-	public class Flight : Record <FlightCrud> {
+	public class Flight : Record <FlightTable> {
 
 		public int64 aircraft_id;
 		private Aircraft? _aircraft = null;
 		public Aircraft? aircraft {
 			get {
 				if (_aircraft == null && aircraft_id != 0) {
-					_aircraft = crud.logbook.aircraft.find_by_id (aircraft_id);
+					_aircraft = table.logbook.aircraft.find_by_id (aircraft_id);
 				}
 				return _aircraft;
 			}
@@ -23,7 +23,7 @@ namespace Sqlp {
 		public Role? role {
 			get {
 				if (_role == null && role_id != 0) {
-					_role = crud.logbook.role.find_by_id (role_id);
+					_role = table.logbook.role.find_by_id (role_id);
 				}
 				return _role;
 			}
@@ -38,7 +38,7 @@ namespace Sqlp {
 		public Airport? origin {
 			get {
 				if (_origin == null && origin_id != 0) {
-					_origin = crud.logbook.airport.find_by_id (origin_id);
+					_origin = table.logbook.airport.find_by_id (origin_id);
 				}
 				return _origin;
 			}
@@ -58,7 +58,7 @@ namespace Sqlp {
 		public Airport? destination {
 			get {
 				if (_destination == null && destination_id != 0) {
-					_destination = crud.logbook.airport.find_by_id (destination_id);
+					_destination = table.logbook.airport.find_by_id (destination_id);
 				}
 				return _destination;
 			}
@@ -77,7 +77,7 @@ namespace Sqlp {
 		public Route route {
 			get {
 				if (_route == null) {
-					_route = new Route (crud.logbook.routing);
+					_route = new Route (table.logbook.routing);
 					_route.flight = this;
 					_route.lookup ();
 				}
@@ -144,11 +144,11 @@ namespace Sqlp {
 		public void read_full_route (string str) {
 			string[] idents = str.split (" ");
 			if (idents.length > 0) {
-				this.origin = crud.logbook.airport.find_or_create_by_ident (idents[0]);
+				this.origin = table.logbook.airport.find_or_create_by_ident (idents[0]);
 				for (var i=1; i < idents.length - 1; i++) {
-					route.append_maybe_airport (crud.logbook.airport.find_or_create_by_ident (idents[i]));
+					route.append_maybe_airport (table.logbook.airport.find_or_create_by_ident (idents[i]));
 				}
-				this.destination = crud.logbook.airport.find_or_create_by_ident (idents[idents.length - 1]);
+				this.destination = table.logbook.airport.find_or_create_by_ident (idents[idents.length - 1]);
 			}
 		}
 

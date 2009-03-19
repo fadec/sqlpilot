@@ -10,24 +10,24 @@ BUILT_SOURCES = vala.stamp
 
 libsqlpilot_la_VALASOURCES = \
 	aircraft.vala \
-	aircraftcrud.vala \
+	aircrafttable.vala \
 	airport.vala \
-	airportcrud.vala \
+	airporttable.vala \
 	database.vala \
 	date.vala \
 	datetime.vala \
 	duration.vala \
 	flight.vala \
-	flightcrud.vala \
+	flighttable.vala \
 	logbook.vala \
 	model.vala \
-	modelcrud.vala \
+	modeltable.vala \
 	record.vala \
 	role.vala \
-	rolecrud.vala \
+	roletable.vala \
 	route.vala \
 	routing.vala \
-	routingcrud.vala \
+	routingtable.vala \
 	table.vala \
 	timeofday.vala \
 	timezone.vala \

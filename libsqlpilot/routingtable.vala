@@ -1,13 +1,13 @@
 using GLib;
 using Sqlite;
 namespace Sqlp {
-	public class RoutingCrud : Crud <Routing> {
+	public class RoutingTable : Table <Routing> {
 		protected Statement find_by_flight_id_stmt;
 		protected Statement destroy_by_flight_id_stmt;
 
 		private Routing dummy_for_header_inclusion_delete_me_later_sorry_im_here {get; set;}
 
-		public RoutingCrud ( Logbook logbook ) {
+		public RoutingTable ( Logbook logbook ) {
 			this.record_type = typeof (Routing);
 			this.logbook = logbook;
 			this.table_name = "Routing";

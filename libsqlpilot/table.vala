@@ -1,15 +1,15 @@
-// Crud is a create, retrieve, update, delete base class
+// Table is a create, retrieve, update, delete base class
 // that knows about the logbook to which it belongs and
 // contains statements for the logbook's database.
-// Every record object must hold a reference to a crud
+// Every record object must hold a reference to a table
 // that matches the record's class.
-// Concrete Cruds find and instantiate new records.
-// Once a record is instantiated it uses its crud reference
+// Concrete Tables find and instantiate new records.
+// Once a record is instantiated it uses its table reference
 // to save, delete, etc. or to lookup associations.
 
 using Sqlite;
 namespace Sqlp {
-	public abstract class Crud <RT> : Object {
+	public abstract class Table <RT> : Object {
 		public weak Logbook logbook { construct; get; }
 		public string table_name { construct; get; }
 		public Type record_type { construct; get; }
@@ -21,7 +21,7 @@ namespace Sqlp {
 
 		private GLib.HashTable <string, int> column_indexes;
 
-		protected Crud (Type record_type, Logbook logbook, string table_name) {
+		protected Table (Type record_type, Logbook logbook, string table_name) {
 			this.record_type = record_type;
 			this.logbook = logbook;
 			this.table_name = table_name;
@@ -36,7 +36,7 @@ namespace Sqlp {
 		}
 
 		public virtual RT new_record () {
-			return Object.new (this.record_type, "crud", this);
+			return Object.new (this.record_type, "table", this);
 		}
 
 		private string make_find_sql ( string table_name ) {
