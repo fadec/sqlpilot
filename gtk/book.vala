@@ -57,6 +57,9 @@ namespace SqlpGtk {
 			}
 		}
 
+		private TableObserverStore flight_store;
+		private TableObserverStore role_store;
+
 		public Book ( string filename ) {
 			this.gui_name = "book";
 			this.logbook_filename = filename;
@@ -64,6 +67,10 @@ namespace SqlpGtk {
 
 		construct {
 			logbook = new Logbook (logbook_filename);
+			flight_store = new TableObserverStore (logbook, "Flights");
+			flight_store.observe (logbook.flight);
+			role_store = new TableObserverStore (logbook, "Roles");
+			role_store.observe (logbook.role);
 			add_pages ();
 		}
 

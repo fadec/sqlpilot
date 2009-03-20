@@ -31,6 +31,8 @@ sqlpilot_gtk_VALASOURCES = \
 	querylist.vala \
 	rolefields.vala \
 	settreemodelfilter.vala \
+	tableobserverstore.vala \
+	tableview.vala \
 	util.vala
 
 sqlpilot_gtk_SOURCES = \
