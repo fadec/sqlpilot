@@ -7,7 +7,7 @@ namespace Sqlp {
 		private static const string ta_commit_sql   = "COMMIT;";
 		private static const string ta_rollback_sql = "ROLLBACK;";
 
-		private unowned Database database;
+		public unowned Database database { get; construct; }
 
 		private Statement ta_begin;
 		private Statement ta_commit;
@@ -15,7 +15,7 @@ namespace Sqlp {
 
 		private int nesting;
 
-		public Transaction ( Database database ) {
+		public Transaction.on_database ( Database database ) {
 			this.database = database;
 		}
 

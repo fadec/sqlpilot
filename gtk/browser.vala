@@ -8,12 +8,9 @@ namespace SqlpGtk {
 
 	public class Browser : Pane {
 		
-		// owns this
-		public unowned Book book { construct; get; }
-
 		// owned by book.logbook
 		// for crud operations
-		public unowned Sqlp.Table <Sqlp.Database, Record> table { construct; get; }
+		public unowned Sqlp.Table <Sqlp.Database, Record> table { set construct; get; }
 
 		private Fieldset _fieldset;
 		public Fieldset fieldset {
@@ -22,9 +19,8 @@ namespace SqlpGtk {
 				_fieldset = value;
 				if (_fieldset == null) return;
 				_fieldset.browser = this;
+				set_fieldset_sensitivity ();
 				set_slot ("fields", _fieldset);
-				table.updated += on_table_updated;
-				_fieldset.top_widget.sensitive = (query_list.count_selected_rows () == 1);
 			}
 		}
 
@@ -39,25 +35,16 @@ namespace SqlpGtk {
 			}
 		}
 
-		public QueryList query_list { get; set; }
-
-		// view need not match crud table name as long as id column will
-		// will cause correct insert/update/delete operations in crud table
-		public string view_name { get; construct; }
-
-		private Record _current_record;
-		private Record _copied_record;
-
-		private TreeView _tree_view;
-		private TreeSelection _tree_selection;
-		private Action _new;
-		private Action _save;
-		private Action _cancel;
-		private Action _arm_delete;
-		private Action _delete;
-		private Action _copy_record;
-		private Action _paste_record;
-		private Label  _message;
+		private TableView _table_view;
+		public TableView table_view {
+			get { return _table_view; }
+			set {
+				_table_view = value;
+				setup_table_view ();
+				set_fieldset_sensitivity ();
+			}
+		}
+				
 
 		private Entry where_clause;
 		private Label query_error;
@@ -66,11 +53,8 @@ namespace SqlpGtk {
 		private ToolButton delete_btn;
 		private ToggleToolButton arm_delete_btn;
 
-		public Browser (string view_name, Sqlp.Table table, Book book) {
+		public Browser () {
 			this.gui_name = "browser";
-			this.view_name = view_name;
-			this.table = table;
-			this.book = book;
 		}
 
 		construct {
@@ -81,11 +65,25 @@ namespace SqlpGtk {
 			delete_btn			= gui.object ("delete")			as ToolButton;
 			arm_delete_btn		= gui.object ("arm_delete")		as ToggleToolButton;
 
-			this.query_list = new QueryList (book.logbook, view_name);
-			set_slot ("query_list", query_list);
-   			query_list.selection_changed += (query_list) => {
-				// attempt to save edited record ... e.g. text entries still in
-				// focus but gtk wont fire focus-out-event for selection change.
+			this.filters = new Filters ();
+			filters.changed += () => {
+				where_clause.set_text (filters.where_clause);
+				refilter ();
+			};
+			assert (this != null);
+		}
+
+		private void set_fieldset_sensitivity () {
+			if (_fieldset == null) return;
+			if (_table_view == null) {
+				_fieldset.top_widget.sensitive = false;
+				return;
+			}
+			_fieldset.top_widget.sensitive = (_table_view.count_selected_rows () == 1);
+		}
+
+		private void setup_table_view () {
+			table_view.selection_changed += (query_list) => {
 				if (fieldset.edited) fieldset.save ();
 
 				if (query_list.count_selected_rows() == 1) {
@@ -96,34 +94,22 @@ namespace SqlpGtk {
 					fieldset.top_widget.sensitive = false;
 				}
   			};
-			this.filters = new Filters ();
-			filters.changed += () => {
-				where_clause.set_text (filters.where_clause);
-				refilter ();
-			};
-			assert (this != null);
-		}
-
-		private void on_table_updated (Sqlp.Table t, Record r) {
-			query_list.update_id (r.id);
-		}
-
-		private virtual void load_selection () {
+			set_slot ("table_view", table_view);
 		}
 
 		private virtual void refilter () {
 			var ids = new HashSet <int64?> (int64_hash, int64_equal);
-			var statement = book.logbook.prepare_statement (where_query_sql ());
+			var statement = table.database.prepare_statement (where_query_sql ());
 			while (statement.step () == Sqlite.ROW) {
 				ids.add (statement.column_int64 (0));
 			}
-			query_list.set_visible_ids (ids);
+			table_view.set_visible_ids (ids);
 		}
 
 		// for filters
  		private string where_query_sql () {
 			string clause = where_clause.get_text ();
-			string s = "SELECT id FROM " + view_name + " WHERE " + (clause.length > 0 ? clause : "1=1") + ";";
+			string s = "SELECT id FROM " + table_view.model.view_name + " WHERE " + (clause.length > 0 ? clause : "1=1") + ";";
 			return s;
 		}
 
@@ -142,11 +128,10 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_delete_clicked(ToolButton button)
 		{
-			var selected_ids = query_list.get_selected_ids ();
+			var selected_ids = table_view.get_selected_ids ();
 			foreach (var id in selected_ids) {
 				table.destroy_id (id);
 			}
-			query_list.remove_selected_ids ();
 			this.arm_delete_btn.active = false;
 		}
 
@@ -156,18 +141,7 @@ namespace SqlpGtk {
 			var record = table.new_record ();
 			// todo set default according to filters
 			if (record.save ()) {
-				var iter = query_list.add_id (record.id);
-
- 				if (! query_list.iter_is_visible (iter)) {
-					where_clause.set_text ("");
-					// being careful not to refilter twice - a change in selected rows will refilter via signals
-					if (filters.count_selected_rows () > 0) {
-						filters.select_none ();
-					} else {
-						refilter ();
-					}
-				}
-				query_list.focus_iter (iter);
+				// check visible and adjust filters
 			}
 		}
 	}

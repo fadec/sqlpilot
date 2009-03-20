@@ -20,7 +20,7 @@ namespace Sqlp {
 			if (code != OK) {
 				stderr.printf ( "Some db error while opening" );
 			}
-			transaction = new Transaction (this);
+			transaction = new Transaction.on_database (this);
 		}
 
 		public virtual bool after_open () { return true; }

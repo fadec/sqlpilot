@@ -8,6 +8,12 @@ namespace SqlpGtk {
 	public class TableView : Component {
 
 		public signal void selection_changed ();
+		public TableObserverStore model {
+			get { return store; }
+			construct {
+				store = value;
+			}
+		}
 
 		private ScrolledWindow scrolled_window;
 		private TableObserverStore store;
@@ -15,8 +21,8 @@ namespace SqlpGtk {
 		private TreeModelSort sort;
 		private TreeView view;
 
- 		public TableView.with_store (TableObserverStore store) {
-			this.store = store;
+ 		public TableView.with_model (TableObserverStore model) {
+			this.model = model;
  		}
 
 		construct {

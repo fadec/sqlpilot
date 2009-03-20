@@ -195,7 +195,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <child>
-                  <object class="GtkVBox" id="query_list">
+                  <object class="GtkVBox" id="table_view">
                     <property name="visible">True</property>
                     <child>
                       <placeholder/>

@@ -75,20 +75,22 @@ namespace SqlpGtk {
 		}
 
 		private void add_pages () {
- 			this.flight_browser = new Browser ("Flights", logbook.flight, this);
- 			flight_browser.fieldset = new FlightFields ();
+//  			this.flight_browser = new Browser ();
+//  			flight_browser.fieldset = new FlightFields ();
 
- 			this.role_browser = new Browser ("Roles", logbook.role, this);
- 			role_browser.fieldset = new RoleFields ();
+			this.role_browser = new Browser ();
+			role_browser.table = logbook.role;
+			role_browser.fieldset = new RoleFields ();
+			role_browser.table_view = new TableView.with_model (role_store);
 
- 			this.aircraft_browser = new Browser ("Aircraft", logbook.aircraft, this);
- 			aircraft_browser.fieldset = new AircraftFields ();
+//  			this.aircraft_browser = new Browser ();
+//  			aircraft_browser.fieldset = new AircraftFields ();
 
- 			this.model_browser = new Browser ("Models", logbook.model, this);
- 			model_browser.fieldset = new ModelFields ();
+//  			this.model_browser = new Browser ();
+//  			model_browser.fieldset = new ModelFields ();
 
- 			this.airport_browser = new Browser ("Airports", logbook.airport, this);
- 			airport_browser.fieldset = new AirportFields ();
+//  			this.airport_browser = new Browser ();
+//  			airport_browser.fieldset = new AirportFields ();
 		}
 	}
 }
