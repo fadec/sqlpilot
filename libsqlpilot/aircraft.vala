@@ -20,16 +20,16 @@ namespace Sqlp {
 
 		private string _tail = "";
 		public string tail { get { return _tail; } set { _tail = value; is_modified = true; } }
-		private string _fleetno = "";
-		public string fleetno { get { return _fleetno; } set { _fleetno = value; is_modified = true; } }
+		private string _registration = "";
+		public string registration { get { return _registration; } set { _registration = value; is_modified = true; } }
 		private string _notes = "";
 		public string notes { get { return _notes; } set { _notes = value; is_modified = true; } }
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
 			stmt.bind_int64 (i++, model_id);
+			stmt.bind_nonempty_text (i++, registration);
 			stmt.bind_nonempty_text (i++, tail);
-			stmt.bind_nonempty_text (i++, fleetno);
 			stmt.bind_nonempty_text (i++, notes);
 			return i;
 		}
@@ -37,8 +37,8 @@ namespace Sqlp {
 		public override void set_from_stmt (Statement stmt) {
 			var i = 1;
 			model_id = stmt.column_int64 (i++);
+			registration = stmt.column_text (i++);
 			tail = stmt.column_text (i++);
-			fleetno = stmt.column_text (i++);
 			notes = stmt.column_text (i++);
 		}
 

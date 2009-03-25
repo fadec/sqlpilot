@@ -4,11 +4,23 @@ using Sqlp;
 using Sqlite;
 
 namespace SqlpGtk {
+
+	// This class observes a Table via signals and reacts on
+	// crud ops to that table.
+	// The colums come from a query that must relate to the
+	// observed table only on the id column.
+	// The identity of a row in this store must be related to
+	// the identity of a Record in Table.
 	public class TableObserverStore : ListStore {
-		// Database for view.
-		public unowned Sqlp.Database database { construct; get; }
-		// Name of view from which to load data.
-		public string view_name { construct; get; }
+
+		public unowned Sqlp.Database _database;
+		public unowned Sqlp.Database database {
+			get { return _database; }
+			set construct {
+				_database = value;
+				init ();
+			}
+		}
 	
 		private string[] _column_names;
 		public string[] column_names {
@@ -18,31 +30,87 @@ namespace SqlpGtk {
 			get { return _column_names.length; }
 		}
 
-		private Statement select_statement;
-		private Statement select_id_statement;
+		private string _select_sql;
+		public string select_sql {
+			get { return _select_sql; }
+			construct set {
+				this._select_sql = value;
+				init ();
+			}
+		}
 
-		public TableObserverStore (Sqlp.Database database, string view_name) {
+		private string _scope_sql;
+		public string scope_sql {
+			get { return _scope_sql != null ? _scope_sql : "1 = 1"; }
+			set construct {
+				_scope_sql = value;
+				init ();
+			}
+		}
+
+		public delegate int bind_scope (Statement stmt);
+
+		private string _id_column_name;
+		public string id_column_name {
+			get { return _id_column_name != null ? _id_column_name : "id"; }
+			set construct {
+				_id_column_name = value;
+				init ();
+			}
+		}
+
+		public string scoped_select_sql {
+			get;
+			private set;
+		}
+
+		private Statement select_statement;
+		private Statement select_by_id_statement;
+
+		public TableObserverStore.with_view (Sqlp.Database database, string view_name) {
 			this.database = database;
-			this.view_name = view_name;
+			this.select_sql = "SELECT * FROM " + view_name;
 		}
 
 		construct {
-			select_statement = database.prepare_statement (select_sql ());
-			select_id_statement = database.prepare_statement (select_id_sql ());
-			init_column_types ();
-			init_column_names ();
-			populate ();
+			bind_scope = default_bind_scope;
 		}
 
+		private int default_bind_scope (Statement stmt) {
+			// bound 0 variables
+			return 0;
+		}
+
+		protected void init () {
+			if (database == null ||
+				select_sql == null ||
+				id_column_name == null ||
+				scope_sql == null) return;
+			_scoped_select_sql = select_sql + " WHERE (" + scope_sql + ")";
+			select_statement = database.prepare_statement (scoped_select_sql);
+			select_by_id_statement = database.prepare_statement (scoped_select_sql + " AND (" + id_column_name + " = ?)");
+			if (column_names == null) {
+				// do once
+				init_column_types ();
+				init_column_names ();
+			}
+			repopulate ();
+		}
+
+		// Catch all table events.
+		// Scope applied elsewhere.
 		public void observe (Sqlp.Table table) {
 			table.inserted += (table, record) => {
 				add_id (record.id);
 			};
-			table.deleted += (table, record) => {
-				remove_id (record.id);
-			};
 			table.updated += (table, record) => {
 				update_id (record.id);
+			};
+			table.deleted += (table, id) => {
+				remove_id (id);
+			};
+			table.destroyed += (table, record) => {
+				remove_id (record.id);
 			};
 		}
 
@@ -74,32 +142,32 @@ namespace SqlpGtk {
 
 
 		private TreeIter add_id (int64 id) {
-			select_id_statement.bind_int64 (1, id);
+			select_by_id_statement.bind_int64 (1, id);
 
 			TreeIter iter = TreeIter ();
-			while (select_id_statement.step () == Sqlite.ROW) {
+			while (select_by_id_statement.step () == Sqlite.ROW) {
 				append (out iter);
-				set_row (iter, select_id_statement);
+				set_row (iter, select_by_id_statement);
 			}
-			select_id_statement.reset ();
-			select_id_statement.clear_bindings ();
-
+			select_by_id_statement.reset ();
+			select_by_id_statement.clear_bindings ();
 			return iter;
 		}
 
 		private void remove_id (int64 id) {
+			message (id.to_string ());
 			var iter = get_iter_at_id (id);
 			remove (iter);
 		}
 
 		private void update_id (int64 id) {
-			select_id_statement.bind_int64 (1, id);
-			while (select_id_statement.step () == Sqlite.ROW) {
+			select_by_id_statement.bind_int64 (1, id);
+			while (select_by_id_statement.step () == Sqlite.ROW) {
 				var iter = get_iter_at_id (id);
-				set_row (iter, select_id_statement);
+				set_row (iter, select_by_id_statement);
 			}
-			select_id_statement.reset ();
-			select_id_statement.clear_bindings ();
+			select_by_id_statement.reset ();
+			select_by_id_statement.clear_bindings ();
 		}
 
 		private TreeIter get_iter_at_id (int64 id) {
@@ -115,8 +183,9 @@ namespace SqlpGtk {
 			return iter;
 		}
 
-		private void populate () {
+		private void repopulate () {
 			TreeIter iter;
+			clear ();
 			while (select_statement.step () == Sqlite.ROW) {
 				append (out iter);
 				set_row (iter, select_statement);
@@ -132,14 +201,5 @@ namespace SqlpGtk {
 				set (iter, n, statement.column_text (n));
 			}			
 		}
-
-		private string select_sql () {
-			return "SELECT * FROM " + view_name + ";";
-		}
-
-		private string select_id_sql () {
-			return "SELECT * FROM " + view_name + " WHERE id = ?";
-		}
-
 	}
 }

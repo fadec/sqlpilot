@@ -2,9 +2,14 @@ using Sqlite;
 namespace Sqlp {
 	public class Model : Record <ModelTable> {
 
+		public string[] tags {
+			
+		}
+
 		public string abbreviation;
 		public string make;
 		public string type;
+		public bool total;
 		public bool airplane;
 		public bool rotorcraft;
 		public bool glider;
@@ -32,7 +37,6 @@ namespace Sqlp {
 		public bool footlaunch;
 		public bool sim;
 		public bool ftd;
-		public bool total;
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;

@@ -38,6 +38,7 @@ namespace Sqlp {
 			int ncol = 0;
 			weak Statement stmt;
 			weak Transaction transaction = ((Sqlp.Database)_table.database).transaction;
+			before_save ();
 			transaction.begin ();
 			message ("<%s>", _table.table_name);
 			if (! save_dependencies ()) {
@@ -61,7 +62,9 @@ namespace Sqlp {
 				return false;
 			}
 			message("before step %s", _table.table_name);
-			stmt.step ();
+			if (stmt.step () != Sqlite.OK) {
+				((Sqlp.Database)_table.database).dump_error ();
+			}
 			message("after step %s", _table.table_name);
 			stmt.reset ();
 			stmt.clear_bindings ();
@@ -79,14 +82,14 @@ namespace Sqlp {
 			return true;
 		}
 
-		public bool delete () {
-			if (is_new ()) return false;
+		public bool destroy () {
+			if (is_new () || ! deletable ()) return false;
 			weak Statement stmt = _table.destroy;
 			stmt.bind_int64 (1, id);
 			stmt.step ();
 			stmt.reset ();
 			stmt.clear_bindings ();
-			_table.tell_deleted (this);
+			_table.tell_destroyed (this);
 			return true;
 		}
 
@@ -101,15 +104,17 @@ namespace Sqlp {
 			return true;
 		}
 
-		public virtual string to_string () { return ""; }
+		public virtual string summary () { return ""; }
 		
-		public virtual bool deletable () { return false; }
+		public virtual bool deletable () { return true; }
 		
+		public virtual void before_save () {}
+
 		public virtual bool valid () { return true; }
 
 		// Use Table#prepare_unique_column_statement to prep query for first argument.
-		protected bool is_unique_text (Statement unique_stmt, string value) {
-			unique_stmt.bind_text (1, value);
+		protected bool is_unique_text (Statement unique_stmt, string? value) {
+			unique_stmt.bind_nonempty_text (1, value);
 			unique_stmt.bind_int64 (2, id);
 			var status = unique_stmt.step ();
 			unique_stmt.reset ();

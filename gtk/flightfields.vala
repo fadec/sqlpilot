@@ -9,8 +9,10 @@ namespace SqlpGtk {
 		private SpinButton leg;
 		private Entry route;
 		private ToggleButton icao;
-		private Entry role;
-		private Entry aircraft;
+		private ComboBoxEntry role;
+		private Entry role_entry;
+		private ComboBoxEntry aircraft;
+		private Entry aircraft_entry;
 		private ToggleButton tail;
 		private Entry duration;
 		private Entry actual_out;
@@ -79,8 +81,8 @@ namespace SqlpGtk {
 			leg					= gui.object ("leg")					as SpinButton;
 			route				= gui.object ("route")					as Entry;
 			icao				= gui.object ("icao")					as ToggleButton;
-			role				= gui.object ("role")					as Entry;
-			aircraft			= gui.object ("aircraft")				as Entry;
+			role				= gui.object ("role")					as ComboBoxEntry;
+			aircraft			= gui.object ("aircraft")				as ComboBoxEntry;
 			tail				= gui.object ("tail")					as ToggleButton;
 			duration			= gui.object ("duration")				as Entry;
 			actual_out			= gui.object ("actual_out")				as Entry;
@@ -96,14 +98,24 @@ namespace SqlpGtk {
 			trip				= gui.object ("trip")					as Entry;
 			trip_date			= gui.object ("trip_date")				as Entry;
 			takeoffs_view		= gui.object ("takeoffs_view")			as TreeView;
+
+
+			role_entry			= role.get_child ()						as Entry;
+			role_entry.changed += on_role_entry_changed;
+			role_entry.focus_out_event += on_role_entry_focus_out_event;
+
+			aircraft_entry      = aircraft.get_child ()                 as Entry;
+			aircraft_entry.changed += on_aircraft_entry_changed;
+			aircraft_entry.focus_out_event += on_aircraft_entry_focus_out_event;
+
 		}
 
 		protected override void set_fields_from_record () {
 			date.set_text  (record.date.to_iso8601 ());
 			leg.set_text (record.leg.to_string ());
 			route.set_text (record.route.to_string_icao ());
-			role.set_text (record.role == null ? "" : record.role.abbreviation);
-			aircraft.set_text (record.aircraft == null ? "" : record.aircraft.tail);
+		   	role_entry.set_text (record.role == null ? "" : record.role.abbreviation);
+			aircraft_entry.set_text (record.aircraft == null ? "" : (tail.active ? record.aircraft.tail : record.aircraft.registration));
 			duration.set_text (record.duration.to_string ());
 			actual_out.set_text (record.actual_out.to_iso8601 ());
 			actual_in.set_text (record.actual_in.to_iso8601 ());
@@ -260,15 +272,26 @@ namespace SqlpGtk {
 		}
 
 		[CCode (instance_pos = -1)]
-		public void on_role_changed (Entry entry) {
+		public void on_role_changed (ComboBoxEntry entry) {
 			this.edited = true;
-			
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool on_role_focus_out_event (Entry entry, EventFocus ev)
+		public bool on_role_focus_out_event (ComboBoxEntry entry, EventFocus ev)
 		{
-			//flights_refresh_role_utilized(logbook);
+			message ("on_role_focus_oute_event ()");
+			return false;
+		}
+
+		public void on_role_entry_changed (Entry entry) {
+			edited = true;
+		}
+
+		public bool on_role_entry_focus_out_event (Entry entry) {
+			if (edited) {
+				record.role = record.table.database.role.find_or_new_by_abbreviation (role_entry.get_text ());
+				save ();
+			}
 			return false;
 		}
 
@@ -289,13 +312,28 @@ namespace SqlpGtk {
 		}
 
 		[CCode (instance_pos = -1)]
-		public void on_aircraft_changed (Entry entry)
+		public void on_aircraft_changed (ComboBoxEntry entry)
 		{
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool on_aircraft_focus_out_event (Entry entry, EventFocus ev)
+		public bool on_aircraft_focus_out_event (ComboBoxEntry entry, EventFocus ev)
 		{
+			return false;
+		}
+
+		public void on_aircraft_entry_changed (Entry entry) {
+			edited = true;
+		}
+
+		public bool on_aircraft_entry_focus_out_event (Entry entry) {
+			if (edited) {
+				var aircraft_table = record.table.database.aircraft;
+				record.aircraft = tail.active ?
+					aircraft_table.find_or_new_by_tail (aircraft_entry.get_text ()) :
+					aircraft_table.find_or_new_by_registration (aircraft_entry.get_text ());
+				save ();
+			}
 			return false;
 		}
 

@@ -97,7 +97,7 @@ namespace Sqlp {
 		public Duration night;
 		public Duration instrument;
 		public Duration hood;
-		public string crew = "";
+		public bool cross_country;
 		public string notes = "";
 		public string flight_number = "";
 		public TimeOfDay scheduled_out = TimeOfDay ();
@@ -125,7 +125,7 @@ namespace Sqlp {
 			bind_duration (stmt, i++, instrument);
 			bind_duration (stmt, i++, hood);
 
-			stmt.bind_nonempty_text		(i++, crew);
+			stmt.bind_int (i++, (int) cross_country);
 			stmt.bind_nonempty_text		(i++, notes);
 			stmt.bind_nonempty_text		(i++, flight_number);
 
@@ -194,7 +194,7 @@ namespace Sqlp {
 			night				= Duration.from_minutes (stmt.column_int (i++));
 			instrument			= Duration.from_minutes (stmt.column_int (i++));
 			hood				= Duration.from_minutes (stmt.column_int (i++));
-			crew				= stmt.column_text (i++);
+			cross_country		= (bool) stmt.column_text (i++);
 			notes				= stmt.column_text (i++);
 			flight_number       = stmt.column_text (i++);
 			i++; // skip local
@@ -218,6 +218,10 @@ namespace Sqlp {
 		protected override bool save_dependents () {
 			route.save ();
 			return true;
+		}
+
+		public override string summary () {
+			return "uu";
 		}
 	}
 }

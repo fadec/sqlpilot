@@ -29,7 +29,8 @@ namespace Sqlp {
 
 		public signal void inserted (Record record);
 		public signal void updated (Record record);
-		public signal void deleted (Record record);
+		public signal void destroyed (Record record);
+		public signal void deleted (int64 id);
 
 		private GLib.HashTable <string, int> column_indexes;
 
@@ -48,11 +49,12 @@ namespace Sqlp {
 		}
 
 		public RecordType new_record () {
-			return Object.new (this.record_type, "table", this);
+			var record = Object.new (this.record_type, "table", this) as Record;
+			return record;
 		}
 
-		public void tell_deleted (Record record) {
-			deleted (record);
+		public void tell_destroyed (Record record) {
+			destroyed (record);
 		}
 		
 		public void tell_inserted (Record record) {
@@ -64,7 +66,7 @@ namespace Sqlp {
 		}
 
 		private string make_find_sql ( string table_name ) {
-			return "SELECT * FROM " + table_name + " WHERE id = ?;";
+			return "SELECT * FROM " + table_name + " WHERE id = ?";
 		}
 
 		public string[] table_column_names ( string table_name ) {
@@ -122,12 +124,13 @@ namespace Sqlp {
 			
 // 		}
 
-		public void destroy_id (int64 id) {
+		public void delete_id (int64 id) {
 			unowned Statement stmt = this.destroy;
 			stmt.bind_int64 (1, id);
 			stmt.step ();
 			stmt.reset ();
 			stmt.clear_bindings ();
+			deleted (id);
 		}
 
 		// First column is 1. -1 if not found.
@@ -155,7 +158,7 @@ namespace Sqlp {
 				if (i > 1) sql += ",";
 				sql += "?";
 			}
-			sql += ");";
+			sql += ")";
 			return sql;
 		}
 
@@ -167,12 +170,12 @@ namespace Sqlp {
 				sql += names[i];
 				sql += " = ?";
 			}
-			sql += " WHERE id = ?;";
+			sql += " WHERE id = ?";
 			return sql;
 		}
 
 		private string make_destroy_sql ( string table_name ) {
-			return "DELETE FROM " + table_name + " WHERE id = ?;";
+			return "DELETE FROM " + table_name + " WHERE id = ?";
 		}
 
 		// Subclasses can use these to make unique checks for valid();
@@ -184,7 +187,7 @@ namespace Sqlp {
 		private string make_find_duplicate_sql (string table_name, string column, bool use_like) {
 			return
 			"SELECT 1 as Found FROM " + table_name + " WHERE " + column +
-			(use_like ? " LIKE" : " =") + " ? AND id != ?;";
+			(use_like ? " LIKE" : " =") + " ? AND id != ?";
 		}
 
 // 		private string make_destroy_all_sql (string table_name, Collection<int64?> ids) {
@@ -194,7 +197,7 @@ namespace Sqlp {
 // 			sb.append (" WHERE ");
 // 			sb.append (" id IN (");
 // 			builder_append_strings (sb, ids, ", ");
-// 			sb.append (");");
+// 			sb.append (")");
 // 		}
 
 // 		private Collection<string> strings_from_ids (Collection<int64?> ids) {
@@ -206,7 +209,7 @@ namespace Sqlp {
 // 		}
 
 		private string make_select_all_sql ( string table_name ) {
-			return "SELECT * FROM " + table_name + ";"; 
+			return "SELECT * FROM " + table_name; 
 		}
 	}
 }

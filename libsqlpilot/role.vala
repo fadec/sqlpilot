@@ -12,7 +12,17 @@ namespace Sqlp {
 		public bool instructor { get; set; default = false; }
 		public bool military { get; set; default = false; }
 
-		public override string to_string () {
+		private List <Flight> _flights;
+		public List <Flight> flights {
+			get {
+				if (_flights == null) {
+					_flights = table.database.flight.find_by_role_id (id);
+				}
+				return _flights;
+			}
+		}
+
+		public override string summary () {
 			return "<Role %s>".printf (abbreviation);
 		}
 
@@ -33,7 +43,6 @@ namespace Sqlp {
 			stmt.bind_int (i++, (int) instructor);
 			stmt.bind_int (i++, (int) military);
 			return i;
-			
 		}
 
 		protected override void set_from_stmt (Statement stmt) {
@@ -50,12 +59,20 @@ namespace Sqlp {
 			military = (bool) stmt.column_int (i++);
 		}
 
+		public override bool deletable () {
+			return flights.length () == 0;
+		}
+
+		protected override void before_save () {
+			if (abbreviation == "") abbreviation = null;
+			if (name == "") name = null;
+		}
+
 		protected override bool valid () {
-			if (! is_unique_text(table.unique_abbreviation_stmt, this.abbreviation)) {
+			if (! is_unique_text(table.unique_abbreviation_stmt, abbreviation)) {
 				return false;
 			}
 			return true;
 		}
-
 	}
 }

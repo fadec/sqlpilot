@@ -60,18 +60,20 @@ CREATE TABLE Flights (
 CREATE TABLE FlightTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Name CHAR
-	,Abbreviation CHAR
+	,Description CHAR
 );
 
 CREATE TABLE FlightTaggings (
-	flight_id INTEGER NOT NULL
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER NOT NULL
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,flight_tag_id INTEGER NOT NULL
 		REFERENCES FlightTags (id) ON DELETE CASCADE
 );
 
 CREATE TABLE Routing (
-	flight_id INTEGER NOT NULL
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER NOT NULL
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,airport_id INTEGER NOT NULL
 		REFERENCES Airports (id) ON DELETE RESTRICT
@@ -89,11 +91,12 @@ CREATE TABLE Roles (
 CREATE TABLE RoleTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Name CHAR
-	,Abbreviation CHAR
+	,Description CHAR
 );
 
 CREATE TABLE RoleTaggings (
-	role_id INTEGER NOT NULL
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,role_id INTEGER NOT NULL
 		REFERENCES Roles (id) ON DELETE CASCADE
 	,role_tag_id INTEGER NOT NULL
 		REFERENCES RoleTags (id) ON DELETE CASCADE
@@ -120,11 +123,12 @@ CREATE TABLE Models (
 CREATE TABLE ModelTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Name CHAR
-	,Abbreviation CHAR
+	,Description CHAR
 );
 
 CREATE TABLE ModelTaggings (
-	model_id INTEGER NOT NULL
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,model_id INTEGER NOT NULL
 		REFERENCES Models (id) ON DELETE CASCADE
 	,model_tag_id INTEGER NOT NULL
 		REFERENCES ModelTags (id) ON DELETE CASCADE
@@ -241,13 +245,6 @@ CREATE TABLE LaunchTypes (
 	,Name CHAR
 );
 
-INSERT INTO LaunchTypes (Name) VALUES ("Aerotow");
-INSERT INTO LaunchTypes (Name) VALUES ("Winch");
-INSERT INTO LaunchTypes (Name) VALUES ("Self Launch");
-INSERT INTO LaunchTypes (Name) VALUES ("Hill");
-INSERT INTO LaunchTypes (Name) VALUES ("Bungee");
-INSERT INTO LaunchTypes (Name) VALUES ("Balloon Drop");
-
 CREATE TABLE People (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,LastName CHAR
@@ -278,7 +275,13 @@ CREATE TABLE Registry (
        ,key INTEGER		-- integer affinity for sort
        ,value INTEGER
 );
-create unique index registry_path_key on Registry(path, key);
+
+INSERT INTO LaunchTypes (Name) VALUES ("Aerotow");
+INSERT INTO LaunchTypes (Name) VALUES ("Winch");
+INSERT INTO LaunchTypes (Name) VALUES ("Self Launch");
+INSERT INTO LaunchTypes (Name) VALUES ("Hill");
+INSERT INTO LaunchTypes (Name) VALUES ("Bungee");
+INSERT INTO LaunchTypes (Name) VALUES ("Balloon Drop");
 
 
 INSERT INTO Reports (Title, SQL) VALUES ("Time in Model", "select Model, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by model;");
@@ -365,6 +368,7 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Over",     0);
 
 INSERT INTO Registry (path, key, value) VALUES ("flights", "UTC", 0);
 
+
 CREATE UNIQUE	 INDEX airports_icao			 ON airports(icao);
 CREATE UNIQUE	 INDEX airports_iata			 ON airports(iata);
 CREATE UNIQUE	 INDEX airports_abbreviaton		 ON airports(abbreviation);
@@ -382,4 +386,6 @@ CREATE		 INDEX aircraft_model_id		 ON aircraft(model_id);
 CREATE		 INDEX routing_flight_id		 ON routing(flight_id);
 CREATE		 INDEX routing_airport_id		 ON routing(airport_id);
 
-.genfkey --exec
+CREATE UNIQUE	 INDEX registry_path_key 		 ON Registry(path, key);
+
+--.genfkey --exec

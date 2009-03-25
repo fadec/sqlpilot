@@ -15,6 +15,11 @@ namespace Sqlp {
 			this.filename = filename;
 		}
 
+		~Database () {
+			message ("closing db");
+			_db.exec ("VACUUM;");
+		}
+
 		construct {
 			var code = Sqlite.Database.open (filename, out _db);
 			if (code != OK) {
@@ -22,8 +27,6 @@ namespace Sqlp {
 			}
 			transaction = new Transaction.on_database (this);
 		}
-
-		public virtual bool after_open () { return true; }
 
 		public Statement? prepare_statement (string sql) {
 			Statement stmt;
@@ -36,6 +39,10 @@ namespace Sqlp {
 			}
 		}
 
+		public void dump_error () {
+			message (_db.errmsg ());
+		}
+
 		public bool load_extension (string filename) {
 			string errmsg;
 			var query = "SELECT load_extension(\"" + filename + "\");";
@@ -45,6 +52,10 @@ namespace Sqlp {
 				return false;
 			}
 			return true;
+		}
+
+		public void use_exclusive_locking () {
+			_db.exec ("PRAGMA locking_mode = EXCLUSIVE;");
 		}
 	}
 }

@@ -71,19 +71,22 @@ namespace SqlpGtk {
 		construct {
 			logbook = new Logbook (logbook_filename);
 
-			flight_store = new TableObserverStore (logbook, "Flights");
+			// So this gui is the only thing that can chage db and thereby stay in sync with it.
+			logbook.use_exclusive_locking ();
+
+			flight_store = new TableObserverStore.with_view (logbook, "Flights");
 			flight_store.observe (logbook.flight);
 
-			role_store = new TableObserverStore (logbook, "Roles");
+			role_store = new TableObserverStore.with_view (logbook, "Roles");
 			role_store.observe (logbook.role);
 
-			aircraft_store = new TableObserverStore (logbook, "Aircraft");
+			aircraft_store = new TableObserverStore.with_view (logbook, "Aircraft");
 			aircraft_store.observe (logbook.aircraft);
 
-			model_store = new TableObserverStore (logbook, "Models");
+			model_store = new TableObserverStore.with_view (logbook, "Models");
 			model_store.observe (logbook.model);
 
-			airport_store = new TableObserverStore (logbook, "Airports");
+			airport_store = new TableObserverStore.with_view (logbook, "Airports");
 			airport_store.observe (logbook.airport);
 
 			add_pages ();
@@ -114,7 +117,6 @@ namespace SqlpGtk {
 			airport_browser.table = logbook.airport;
 			airport_browser.fieldset = new AirportFields ();
 			airport_browser.table_view = new TableView.with_model (airport_store);
-
 		}
 	}
 }

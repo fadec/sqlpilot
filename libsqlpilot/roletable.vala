@@ -4,8 +4,8 @@ namespace Sqlp {
 		
 		private Statement find_by_abbreviation_stmt;
 		public Statement unique_abbreviation_stmt;
-		
-		public RoleTable ( Logbook logbook ) {
+
+		public RoleTable (Logbook logbook) {
 			this.record_type = typeof (Role);
 			this.database = logbook;
 			this.table_name = "Roles";
@@ -22,5 +22,12 @@ namespace Sqlp {
 			return find_first (find_by_abbreviation_stmt);
 		}
 
+		public Role find_or_new_by_abbreviation (string ident) {
+			var role = find_by_abbreviation (ident);
+			if (role != null) return role;
+			role = new_record ();
+			role.abbreviation = ident;
+			return role;
+		}
 	}
 }

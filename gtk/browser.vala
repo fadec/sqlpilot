@@ -12,8 +12,8 @@ namespace SqlpGtk {
 		// for crud operations
 		public unowned Sqlp.Table <Sqlp.Database, Record> table { set construct; get; }
 
-		private Fieldset _fieldset;
-		public Fieldset fieldset {
+		private Fieldset <Record> _fieldset;
+		public Fieldset <Record> fieldset {
 			get { return _fieldset; }
 			set construct {
 				_fieldset = value;
@@ -44,7 +44,22 @@ namespace SqlpGtk {
 				set_fieldset_sensitivity ();
 			}
 		}
-				
+
+		private bool _allow_delete;
+		public bool allow_delete {
+			get { return _allow_delete; }
+			private set {
+				_allow_delete = value;
+				if (_allow_delete) {
+					arm_delete_btn.sensitive = true;
+					delete_btn.sensitive = true;
+				} else {
+					arm_delete_btn.active = false;
+					arm_delete_btn.sensitive = false;
+					delete_btn.sensitive = false;
+				}
+			}
+		}
 
 		private Entry where_clause;
 		private Label query_error;
@@ -52,6 +67,7 @@ namespace SqlpGtk {
 		private ToolButton add_btn;
 		private ToolButton delete_btn;
 		private ToggleToolButton arm_delete_btn;
+		private Label record_summary;
 
 		public Browser () {
 			this.gui_name = "browser";
@@ -64,6 +80,8 @@ namespace SqlpGtk {
 			add_btn				= gui.object ("add")			as ToolButton;
 			delete_btn			= gui.object ("delete")			as ToolButton;
 			arm_delete_btn		= gui.object ("arm_delete")		as ToggleToolButton;
+			record_summary = gui.object ("record_summary") as Label;
+			
 
 			this.filters = new Filters ();
 			filters.changed += () => {
@@ -89,9 +107,13 @@ namespace SqlpGtk {
 				if (query_list.count_selected_rows() == 1) {
 					fieldset.record = table.find_by_id (query_list.get_selected_ids ()[0]);
 					fieldset.top_widget.sensitive = true;
+					record_summary.set_text (fieldset.record.summary ());
+					this.allow_delete = fieldset.record.deletable ();
 				} else {
+					record_summary.set_text ("");
 					fieldset.record = table.new_record ();
 					fieldset.top_widget.sensitive = false;
+					this.allow_delete = false;
 				}
   			};
 			set_slot ("table_view", table_view);
@@ -109,7 +131,7 @@ namespace SqlpGtk {
 		// for filters
  		private string where_query_sql () {
 			string clause = where_clause.get_text ();
-			string s = "SELECT id FROM " + table_view.model.view_name + " WHERE " + (clause.length > 0 ? clause : "1=1") + ";";
+			string s = "SELECT id FROM (" + table_view.model.scoped_select_sql + ") WHERE " + (clause.length > 0 ? clause : "1=1");
 			return s;
 		}
 
@@ -130,7 +152,7 @@ namespace SqlpGtk {
 		{
 			var selected_ids = table_view.get_selected_ids ();
 			foreach (var id in selected_ids) {
-				table.destroy_id (id);
+				table.delete_id (id);
 			}
 			this.arm_delete_btn.active = false;
 		}
