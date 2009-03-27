@@ -110,7 +110,19 @@ namespace SqlpGtk {
 
 			this.model_browser = new Browser ();
 			model_browser.table = logbook.model;
-			model_browser.fieldset = new ModelFields ();
+			var tsd = new TagSchemaDescription ();
+			tsd.object_table_name = "Models";
+			tsd.object_id_column = "id";
+			tsd.tagging_table_name = "ModelTaggings";
+			tsd.tagging_id_column = "id";
+			tsd.tagging_object_id_column = "model_id";
+			tsd.tagging_tag_id_column = "model_tag_id";
+			tsd.tag_table_name = "ModelTags";
+			tsd.tag_id_column = "id";
+			tsd.tag_name_column = "Name";
+			tsd.tag_description_column = "Description";
+			var model_tag_manager = new TagManager (logbook.model, logbook.model_taggings, logbook.model_tags, tsd);
+			model_browser.fieldset = new ModelFields (model_tag_manager);
 			model_browser.table_view = new TableView.with_model (model_store);
 
 			this.airport_browser = new Browser ();

@@ -11,6 +11,8 @@ namespace SqlpGtk {
 	// observed table only on the id column.
 	// The identity of a row in this store must be related to
 	// the identity of a Record in Table.
+	// IOW it Observes a table object but its internal data is
+	// for the store is read directly from the Database object.
 	public class TableObserverStore : ListStore {
 
 		public unowned Sqlp.Database _database;
@@ -48,7 +50,8 @@ namespace SqlpGtk {
 			}
 		}
 
-		public delegate int bind_scope (Statement stmt);
+		public delegate int BindScopeType (Statement stmt);
+		public BindScopeType bind_scope;
 
 		private string _id_column_name;
 		public string id_column_name {
@@ -67,13 +70,18 @@ namespace SqlpGtk {
 		private Statement select_statement;
 		private Statement select_by_id_statement;
 
+		// keep init from running in property setter
+		private bool ready_for_init;
+
 		public TableObserverStore.with_view (Sqlp.Database database, string view_name) {
 			this.database = database;
 			this.select_sql = "SELECT * FROM " + view_name;
 		}
 
 		construct {
-			bind_scope = default_bind_scope;
+			this.bind_scope = default_bind_scope;
+			ready_for_init = true;
+			init ();
 		}
 
 		private int default_bind_scope (Statement stmt) {
@@ -82,6 +90,7 @@ namespace SqlpGtk {
 		}
 
 		protected void init () {
+			if (! ready_for_init) return;
 			if (database == null ||
 				select_sql == null ||
 				id_column_name == null ||
@@ -183,9 +192,10 @@ namespace SqlpGtk {
 			return iter;
 		}
 
-		private void repopulate () {
+		public void repopulate () {
 			TreeIter iter;
 			clear ();
+			bind_scope (select_statement);
 			while (select_statement.step () == Sqlite.ROW) {
 				append (out iter);
 				set_row (iter, select_statement);

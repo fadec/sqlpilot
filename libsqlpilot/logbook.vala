@@ -11,6 +11,9 @@ namespace Sqlp {
  		public AirportTable airport;
 		public RoutingTable routing;
 
+		public ModelTagTable model_tags;
+		public ModelTaggingTable model_taggings;
+
 		public Logbook (string filename) {
 			this.filename = filename;
 		}
@@ -23,6 +26,9 @@ namespace Sqlp {
 			model = new ModelTable (this);
 			airport = new AirportTable (this);
 			routing = new RoutingTable (this);
+
+			model_tags = new ModelTagTable (this);
+			model_taggings = new ModelTaggingTable (this);
 		}
 
 		private void load_db_extensions () {

@@ -114,7 +114,8 @@ CREATE TABLE Aircraft (
 CREATE TABLE Models (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
-	,Name CHAR
+	,Name
+	,Make CHAR
 	,Type CHAR
 	,Total BOOLEAN NOT NULL
 		DEFAULT 1

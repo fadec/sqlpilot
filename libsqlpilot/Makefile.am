@@ -22,6 +22,10 @@ libsqlpilot_la_VALASOURCES = \
 	logbook.vala \
 	model.vala \
 	modeltable.vala \
+	modeltag.vala \
+	modeltagging.vala \
+	modeltaggingtable.vala \
+	modeltagtable.vala \
 	record.vala \
 	role.vala \
 	roletable.vala \

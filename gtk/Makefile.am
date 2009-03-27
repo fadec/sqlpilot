@@ -33,6 +33,7 @@ sqlpilot_gtk_VALASOURCES = \
 	tableobserverstore.vala \
 	tableview.vala \
 	tagmanager.vala \
+	tagschemadescription.vala \
 	util.vala
 
 sqlpilot_gtk_SOURCES = \
