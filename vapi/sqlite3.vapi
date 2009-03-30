@@ -199,6 +199,8 @@ namespace Sqlite {
 		public weak Value column_value (int col);
 		public weak string column_name (int index);
 		public weak string sql ();
+
+		public weak string column_decltype (int col);
  
 		public int bind_nonempty_text (int col, string? str) {
 			if ((str != null) && str[0] != 0) this.bind_text (col, str);

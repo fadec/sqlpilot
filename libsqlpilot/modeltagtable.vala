@@ -1,9 +1,11 @@
+using GLib;
 using Sqlite;
+
 namespace Sqlp {
-	public class ModelTagTable : Table <Logbook, ModelTag> {
+	public class ModelTagTable : TagTable {
 
 		public ModelTagTable (Logbook logbook) {
-			this.record_type = typeof (ModelTag);
+			this.record_type = typeof (Tag);
 			this.database = logbook;
 			this.table_name = "ModelTags";
 		}

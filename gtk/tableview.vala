@@ -7,6 +7,7 @@ using Sqlp;
 namespace SqlpGtk {
 	public class TableView : Component {
 
+		public signal void edited (int64 record_id, string column_name, string new_text);
 		public signal void selection_changed ();
 		public TableObserverStore model {
 			get { return store; }
@@ -26,7 +27,7 @@ namespace SqlpGtk {
  		}
 
 		construct {
-			filter = new SetTreeModelFilter<int64?> (null, 0, store);
+			filter = new SetTreeModelFilter<int64?> (0, store);
 			sort = new TreeModelSort.with_model (filter);
 			view = new TreeView.with_model (sort);
 			init_tree_selection ();
@@ -63,9 +64,16 @@ namespace SqlpGtk {
 		}
 
 		public void set_visible_ids (HashSet<int64?> ids) {
-			this.filter.visible = ids;
+			this.filter.function = SetTreeModelFilterFunction.SHOW;
+			this.filter.hashset = ids;
+			this.filter.refilter ();
 		}
 
+		public void set_hidden_ids (HashSet<int64?> ids) {
+			this.filter.function = SetTreeModelFilterFunction.HIDE;
+			this.filter.hashset = ids;
+			this.filter.refilter ();
+		}
 
 		private void init_tree_selection () {
 			var selection = view.get_selection ();
@@ -83,6 +91,9 @@ namespace SqlpGtk {
 			int ncol = store.column_count;
 			for (int n = 0; n < ncol; n++) {
 				var renderer = new CellRendererText ();
+				renderer.editable = true;
+				renderer.edited += on_cell_renderer_edited;
+				renderer.set_data ("column-name", store.column_names[n]);
 				var column = new TreeViewColumn.with_attributes (store.column_names[n],
 																 renderer,
 																 "text",
@@ -93,6 +104,19 @@ namespace SqlpGtk {
 				column.set_resizable (true);
 				view.insert_column (column, n);
 			}
+		}
+
+		private void on_cell_renderer_edited (CellRendererText renderer, string path, string new_text) {
+			
+			edited (get_id_at_path (new TreePath.from_string (path)), (string)renderer.get_data ("column-name"), new_text);
+		}
+
+		private int64 get_id_at_path (TreePath path) {
+			TreeIter iter;
+			int64 id = 0;
+			store.get_iter (out iter, convert_sort_path_to_model_path (path));
+			store.get (iter, 0, &id);
+			return id;
 		}
 
 		public void focus_iter (TreeIter iter) {

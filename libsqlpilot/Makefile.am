@@ -22,8 +22,6 @@ libsqlpilot_la_VALASOURCES = \
 	logbook.vala \
 	model.vala \
 	modeltable.vala \
-	modeltag.vala \
-	modeltagging.vala \
 	modeltaggingtable.vala \
 	modeltagtable.vala \
 	record.vala \
@@ -33,6 +31,10 @@ libsqlpilot_la_VALASOURCES = \
 	routing.vala \
 	routingtable.vala \
 	table.vala \
+	tag.vala \
+	tagging.vala \
+	taggingtable.vala \
+	tagtable.vala \
 	timeofday.vala \
 	timezone.vala \
 	transaction.vala \

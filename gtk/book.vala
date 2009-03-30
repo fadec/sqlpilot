@@ -73,8 +73,10 @@ namespace SqlpGtk {
 
 			// So this gui is the only thing that can chage db and thereby stay in sync with it.
 			logbook.use_exclusive_locking ();
-
-			flight_store = new TableObserverStore.with_view (logbook, "Flights");
+			flight_store = new TableObserverStore ();
+			flight_store.default_column_type = typeof(string);
+			flight_store.select_sql = "SELECT * FROM Flights";
+			flight_store.database = logbook;
 			flight_store.observe (logbook.flight);
 
 			role_store = new TableObserverStore.with_view (logbook, "Roles");

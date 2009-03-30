@@ -2,6 +2,7 @@ using GLib;
 using Gtk;
 using Sqlp;
 using Sqlite;
+using Gee;
 
 namespace SqlpGtk {
 
@@ -23,7 +24,20 @@ namespace SqlpGtk {
 				init ();
 			}
 		}
-	
+
+		public GLib.Type default_column_type { get; set; default = typeof(string); }
+
+		public bool has_insert_row { default = false;
+			get;
+			set;
+		}
+		public string insert_row_text { default = "<new>";
+			get;
+			set;
+		}
+
+		public int row_count { get; private set; }
+
 		private string[] _column_names;
 		public string[] column_names {
 			get { return _column_names; }
@@ -50,7 +64,7 @@ namespace SqlpGtk {
 			}
 		}
 
-		public delegate int BindScopeType (Statement stmt);
+		public delegate int BindScopeType (Statement stmt, int i);
 		public BindScopeType bind_scope;
 
 		private string _id_column_name;
@@ -84,9 +98,9 @@ namespace SqlpGtk {
 			init ();
 		}
 
-		private int default_bind_scope (Statement stmt) {
+		private int default_bind_scope (Statement stmt, int i) {
 			// bound 0 variables
-			return 0;
+			return i;
 		}
 
 		protected void init () {
@@ -97,7 +111,7 @@ namespace SqlpGtk {
 				scope_sql == null) return;
 			_scoped_select_sql = select_sql + " WHERE (" + scope_sql + ")";
 			select_statement = database.prepare_statement (scoped_select_sql);
-			select_by_id_statement = database.prepare_statement (scoped_select_sql + " AND (" + id_column_name + " = ?)");
+			select_by_id_statement = database.prepare_statement (scoped_select_sql + " AND " + id_column_name + " = ?");
 			if (column_names == null) {
 				// do once
 				init_column_types ();
@@ -123,6 +137,20 @@ namespace SqlpGtk {
 			};
 		}
 
+		public HashSet <int64?> get_int64_column_hashset (int column) {
+			var s = new HashSet <int64?> (int64_hash, int64_equal);
+			int64 anid = 0;
+			var iter = TreeIter ();
+			if (get_iter_first (out iter)) {
+				do {
+					get (iter, column, &anid);
+					s.add (anid);
+					message (anid.to_string());
+				} while (iter_next (ref iter));
+			}
+			return s;
+		}
+
 		private int init_column_names () {
 			int ncol;
 			int n;
@@ -140,18 +168,22 @@ namespace SqlpGtk {
 			GLib.Type[] types = {};
 		
 			ncol = select_statement.column_count ();
+			if (ncol == 0) return;
+
 			types.resize (ncol);
-		
+			// column 0 must be int64 for id
 			types[0] = typeof (int64);
 			for (n = 1; n < ncol; n++) {
-				types[n] = typeof(string);
+				types[n] = statement_column_type (select_statement, n);
 			}
 			set_column_types (types);
 		}
 
 
 		private TreeIter add_id (int64 id) {
-			select_by_id_statement.bind_int64 (1, id);
+			var i = 1;
+			i = bind_scope (select_by_id_statement, i);
+			select_by_id_statement.bind_int64 (i, id);
 
 			TreeIter iter = TreeIter ();
 			while (select_by_id_statement.step () == Sqlite.ROW) {
@@ -170,7 +202,9 @@ namespace SqlpGtk {
 		}
 
 		private void update_id (int64 id) {
-			select_by_id_statement.bind_int64 (1, id);
+			var i = 1;
+			i = bind_scope (select_by_id_statement, i);
+			select_by_id_statement.bind_int64 (i, id);
 			while (select_by_id_statement.step () == Sqlite.ROW) {
 				var iter = get_iter_at_id (id);
 				set_row (iter, select_by_id_statement);
@@ -195,21 +229,59 @@ namespace SqlpGtk {
 		public void repopulate () {
 			TreeIter iter;
 			clear ();
-			bind_scope (select_statement);
+			int i = 1;
+			i = bind_scope (select_statement, 1);
+			row_count = 0;
 			while (select_statement.step () == Sqlite.ROW) {
 				append (out iter);
 				set_row (iter, select_statement);
+				row_count += 1;
 			}
 			select_statement.reset ();
 			select_statement.clear_bindings ();
+
+			if (has_insert_row) {
+				append (out iter);
+				set (iter, 1, insert_row_text);
+			}
 		}
 
 		private void set_row (TreeIter iter, Statement statement) {
 			set (iter, 0, statement.column_int64 (0));
 			var ncol = statement.column_count ();
-			for (int n=1; n < ncol; n++) {
-				set (iter, n, statement.column_text (n));
-			}			
+			for (int col=1; col < ncol; col++) {
+				switch (statement_column_type (statement, col)) {
+				case typeof(bool):
+					set (iter, col, statement.column_int (col));
+					break;
+				case typeof(int64):
+					set (iter, col, statement.column_int64 (col));
+					break;
+				case typeof(string):
+					set (iter, col, statement.column_text (col));
+					break;
+				}
+			}	
+		}
+
+		private GLib.Type statement_column_type (Statement statement, int col) {
+			switch (statement.column_decltype (col)) {
+			case "BOOLEAN":
+			case "BOOL":
+				return typeof(bool);
+				break;
+			case "INTEGER":
+				return typeof(int64);
+				break;
+			case "CHAR":
+			case "VARCHAR":
+			case "TEXT":
+				return typeof(string);
+				break;
+			default:
+				return default_column_type;
+				break;
+			}
 		}
 	}
 }

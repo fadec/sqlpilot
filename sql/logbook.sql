@@ -83,9 +83,7 @@ CREATE TABLE Routing (
 CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
-	,Name CHAR
-	,Total BOOLEAN NOT NULL
-		DEFAULT 1
+	,Description CHAR
 );
 
 CREATE TABLE RoleTags (
@@ -114,11 +112,8 @@ CREATE TABLE Aircraft (
 CREATE TABLE Models (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
-	,Name
 	,Make CHAR
-	,Type CHAR
-	,Total BOOLEAN NOT NULL
-		DEFAULT 1
+	,Name CHAR
 );
 
 CREATE TABLE ModelTags (

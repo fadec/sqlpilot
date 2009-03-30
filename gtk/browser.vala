@@ -101,11 +101,11 @@ namespace SqlpGtk {
 		}
 
 		private void setup_table_view () {
-			table_view.selection_changed += (query_list) => {
+			table_view.selection_changed += (table_view) => {
 				if (fieldset.edited) fieldset.save ();
 
-				if (query_list.count_selected_rows() == 1) {
-					fieldset.record = table.find_by_id (query_list.get_selected_ids ()[0]);
+				if (table_view.count_selected_rows() == 1) {
+					fieldset.record = table.find_by_id (table_view.get_selected_ids ()[0]);
 					fieldset.top_widget.sensitive = true;
 					record_summary.set_text (fieldset.record.summary ());
 					this.allow_delete = fieldset.record.deletable ();

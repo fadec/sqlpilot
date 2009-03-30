@@ -4,36 +4,37 @@ using Gee;
 
 namespace SqlpGtk {
 	// Not really generic. It's for int64 only until I can fix is_in_visible_set ().
+	public enum SetTreeModelFilterFunction { IGNORE, HIDE, SHOW }
 	class SetTreeModelFilter<T> : Gtk.TreeModelFilter {
 
-		private HashSet<T>? _visible;
-		public HashSet<T>? visible {
-			get { return _visible; }
+		private HashSet<T>? _hashset;
+		public HashSet<T>? hashset {
+			get { return _hashset; }
 			set construct {
-				_visible = value;
-				refilter ();
+				_hashset = value;
 			}
 		}
+
 		public int column { construct; get; }
 
-		public SetTreeModelFilter (HashSet<T>? visible, int column, TreeModel child_model) {
+		public SetTreeModelFilterFunction function { get; set; default = SetTreeModelFilterFunction.HIDE; }
+
+		public SetTreeModelFilter (int column, TreeModel child_model) {
 			this.child_model = child_model;
 			this.column = column;
-			this.visible = visible;
 		}
 
 		construct {
-			set_visible_func (is_in_visible_set);
+			set_visible_func (the_filter);
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool is_in_visible_set (TreeModel model, TreeIter iter) {
-			if (_visible == null) return true;
+		public bool the_filter (TreeModel model, TreeIter iter) {
+			if (_hashset == null || function == SetTreeModelFilterFunction.IGNORE) return true;
 			int64 value; // should be type T but it segfaults
 			model.get(iter, column, out value);
-			return _visible.contains (&value);
+			var found = _hashset.contains (&value);
+			return function == SetTreeModelFilterFunction.HIDE ? !found : found;
 		}
-
-
 	}	
 }
