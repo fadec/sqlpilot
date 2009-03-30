@@ -8,9 +8,8 @@ namespace SqlpGtk {
 	public class TagManager : GLib.Object {
 		
 		public unowned Sqlp.Table <Logbook, Record> object_table { get; construct; }
-		public unowned Sqlp.Table <Logbook, Tagging> tagging_table { get; construct; }
-		public unowned Sqlp.Table <Logbook, Tag> tag_table { get; construct; }
-		public TagSchemaDescription tsd { get; construct; }
+		public unowned Sqlp.TaggingTable tagging_table { get; construct; }
+		public unowned Sqlp.TagTable tag_table { get; construct; }
 
 		public string tag_header;
 		public string tagging_header;
@@ -78,11 +77,10 @@ namespace SqlpGtk {
 		}
 
 		
-		public TagManager (Sqlp.Table object_table, Sqlp.Table tagging_table, Sqlp.Table tag_table, TagSchemaDescription tsd) {
+		public TagManager (Sqlp.Table object_table, Sqlp.TaggingTable tagging_table, Sqlp.TagTable tag_table) {
 			this.object_table = object_table;
 			this.tagging_table = tagging_table;
 			this.tag_table = tag_table;
-			this.tsd = tsd;
 		}
 		
 		construct {
@@ -108,7 +106,7 @@ namespace SqlpGtk {
 			//GLib.Type[] types = { typeof(uint64), typeof(string), typeof(string) };
 			var tags = new TableObserverStore ();
 			tags.database = tag_table.database;
-			tags.select_sql = "SELECT id, Name, Description FROM " + tsd.tag_table_name;
+			tags.select_sql = "SELECT id, Name, Description FROM " + tag_table.table_name;
 			tags.observe (tag_table);
 			return tags;
 		}
@@ -150,29 +148,26 @@ namespace SqlpGtk {
 
 		private string find_taggings_by_object_id_select_sql () {
 			var s = new StringBuilder ();
-			s.append ("SELECT j.");
-			s.append (tsd.tagging_id_column);
+			s.append ("SELECT j.id");
 			s.append (" as id, j.");
-			s.append (tsd.tagging_object_id_column);
-			s.append (" as object_id, t.");
-			s.append (tsd.tag_id_column);
+			s.append (tagging_table.object_id_column_name);
+			s.append (" as object_id, t.id");
 			s.append (" as tag_id, t.");
-			s.append (tsd.tag_name_column);
+			s.append ("Name");
 			s.append (", t.");
-			s.append (tsd.tag_description_column);
+			s.append ("Description");
 			s.append (" FROM ");
-			s.append (tsd.tag_table_name);
+			s.append (tag_table.table_name);
 			s.append (" t INNER JOIN ");
-			s.append (tsd.tagging_table_name);
+			s.append (tagging_table.table_name);
 			s.append (" j ON j.");
-			s.append (tsd.tagging_tag_id_column);
-			s.append (" = t.");
-			s.append (tsd.tag_id_column);
+			s.append (tagging_table.tag_id_column_name);
+			s.append (" = t.id");
 			return s.str;
 		}
 
 		private string find_taggings_by_object_id_scope_sql () {
-			return "j." + tsd.tagging_object_id_column + " = ?";
+			return "j." + tagging_table.object_id_column_name + " = ?";
 		}
 
 		private void on_add_tagging_button_clicked (Button button) {
