@@ -107,7 +107,6 @@ namespace SqlpGtk {
 		}
 
 		private void on_cell_renderer_edited (CellRendererText renderer, string path, string new_text) {
-			
 			edited (get_id_at_path (new TreePath.from_string (path)), (string)renderer.get_data ("column-name"), new_text);
 		}
 

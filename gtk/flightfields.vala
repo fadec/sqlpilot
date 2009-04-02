@@ -5,6 +5,8 @@ using Sqlp;
 namespace SqlpGtk {
 	public class FlightFields : Fieldset <Flight> {
 
+		public TagManager tag_manager { get; construct; }
+
 		private Entry date;
 		private SpinButton leg;
 		private Entry route;
@@ -62,11 +64,20 @@ namespace SqlpGtk {
 
 		private TextView notes;
 
-		public FlightFields () {
+		public FlightFields (TagManager tag_manager) {
 			this.gui_name = "flight_fields";
+			this.tag_manager = tag_manager;
 		}
 
 		construct {
+
+			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
+			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
+			tag_manager.add_tag_button = gui.object ("add_tag") as Button;
+			tag_manager.remove_tag_button = gui.object ("remove_tag") as Button;
+			set_slot ("tags", tag_manager.tags_view);
+			set_slot ("taggings", tag_manager.taggings_view);
+
 			var date_edit = new Entry ();
 			gui.box ("date_slot").pack_start_defaults (date_edit);
 			date_edit.show ();

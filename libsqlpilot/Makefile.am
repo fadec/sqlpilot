@@ -19,6 +19,8 @@ libsqlpilot_la_VALASOURCES = \
 	duration.vala \
 	flight.vala \
 	flighttable.vala \
+	flighttagtable.vala \
+	flighttaggingtable.vala \
 	logbook.vala \
 	model.vala \
 	modeltable.vala \
@@ -27,6 +29,8 @@ libsqlpilot_la_VALASOURCES = \
 	record.vala \
 	role.vala \
 	roletable.vala \
+	roletagtable.vala \
+	roletaggingtable.vala \
 	route.vala \
 	routing.vala \
 	routingtable.vala \

@@ -6,8 +6,10 @@ namespace SqlpGtk {
 
 	public class RoleFields : Fieldset <Role> {
 
+		public TagManager tag_manager {	get; construct;	}
+
 		private Entry abbreviation;
-		private Entry name;
+		private Entry description;
 		private CheckButton total;
 		private CheckButton pic;
 		private CheckButton sic;
@@ -17,35 +19,27 @@ namespace SqlpGtk {
 		private CheckButton instructor;
 		private CheckButton military;
 
-		public RoleFields () {
+		public RoleFields (TagManager tag_manager) {
 			this.gui_name = "role_fields";
+			this.tag_manager = tag_manager;
 		}
 
 		construct {
 			abbreviation	= gui.object ("abbreviation")			 as Entry;
-			name			= gui.object ("name")					 as Entry;
-			total			= gui.object ("total")					 as CheckButton;
-			pic				= gui.object ("pic")					 as CheckButton;
-			sic				= gui.object ("sic")					 as CheckButton;
-			flight_engineer = gui.object ("flight_engineer")		 as CheckButton;
-			solo			= gui.object ("solo")					 as CheckButton;
-			dual_received	= gui.object ("dual_received")			 as CheckButton;
-			instructor		= gui.object ("instructor")				 as CheckButton;
-			military		= gui.object ("military")				 as CheckButton;
+			description		= gui.object ("description")			 as Entry;
+
+			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
+			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
+			tag_manager.add_tag_button = gui.object ("add_tag") as Button;
+			tag_manager.remove_tag_button = gui.object ("remove_tag") as Button;
+			set_slot ("tags", tag_manager.tags_view);
+			set_slot ("taggings", tag_manager.taggings_view);
 		}
 
 		protected override void set_fields_from_record () {
 			assert (record is Record);
  			abbreviation.set_text (record.abbreviation != null ? record.abbreviation : "");
-			name.set_text (record.name != null ? record.name : "");
- 			total.active = record.total;
-			pic.active = record.pic;
-			sic.active = record.sic;
-			flight_engineer.active = record.flight_engineer;
-			solo.active = record.solo;
-			dual_received.active = record.dual_received;
-			instructor.active = record.instructor;
-			military.active = record.military;
+			description.set_text (record.description != null ? record.description : "");
 		}
 
 		protected override void set_record_from_fields () {
@@ -69,66 +63,17 @@ namespace SqlpGtk {
 		}
 
 		[CCode (instance_pos = -1)]
-		public void on_name_changed (Entry entry) {
+		public void on_description_changed (Entry entry) {
 			edited = true;
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool on_name_focus_out_event (Entry entry, EventFocus ev) {
+		public bool on_description_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
-				record.name = entry.get_text ();
+				record.description = entry.get_text ();
 				save ();
 			}
 			return false;
 		}
-
-		[CCode (instance_pos = -1)]
-		public void on_total_toggled (CheckButton cb) {
-			record.total = cb.active;
-			save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_pic_toggled (CheckButton cb) {
-			record.pic = cb.active;
-			save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_sic_toggled (CheckButton cb) {
-			record.sic = cb.active;
-			save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_flight_engineer_toggled (CheckButton cb) {
-			record.flight_engineer = cb.active;
-			save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_solo_toggled (CheckButton cb) {
-			record.solo = cb.active;
-			save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_dual_received_toggled (CheckButton cb) {
-			record.dual_received = cb.active;
-			save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_instructor_toggled (CheckButton cb) {
-			record.instructor = cb.active;
-			save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_military_toggled (CheckButton cb) {
-			record.military = cb.active;
-			save ();
-		}
-
 	}
 }

@@ -31,10 +31,6 @@ namespace SqlpGtk {
 			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
 			tag_manager.add_tag_button = gui.object ("add_tag") as Button;
 			tag_manager.remove_tag_button = gui.object ("remove_tag") as Button;
-// 			(gui.object ("tags") as ScrolledWindow).add_with_viewport (tag_manager.tags_view);
-// 			(gui.object ("taggings") as ScrolledWindow).add_with_viewport (tag_manager.taggings_view);
-// 			tag_manager.tags_view.show ();
-// 			tag_manager.taggings_view.show ();
 			set_slot ("tags", tag_manager.tags_view);
 			set_slot ("taggings", tag_manager.taggings_view);
 		}

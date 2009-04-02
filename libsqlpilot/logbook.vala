@@ -13,6 +13,10 @@ namespace Sqlp {
 
 		public ModelTagTable model_tags;
 		public ModelTaggingTable model_taggings;
+		public RoleTagTable role_tags;
+		public RoleTaggingTable role_taggings;
+		public FlightTagTable flight_tags;
+		public FlightTaggingTable flight_taggings;
 
 		public Logbook (string filename) {
 			this.filename = filename;
@@ -29,6 +33,10 @@ namespace Sqlp {
 
 			model_tags = new ModelTagTable (this);
 			model_taggings = new ModelTaggingTable (this);
+			role_tags = new RoleTagTable (this);
+			role_taggings = new RoleTaggingTable (this);
+			flight_tags = new FlightTagTable (this);
+			flight_taggings = new FlightTaggingTable (this);
 		}
 
 		private void load_db_extensions () {
