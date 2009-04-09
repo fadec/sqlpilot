@@ -5,11 +5,11 @@ using Gee;
 using Sqlp;
 
 namespace SqlpGtk {
-	public class TableView : Component {
+	public class TableViewComponent : Component {
 
 		public signal void edited (int64 record_id, string column_name, string new_text);
 		public signal void selection_changed ();
-		public TableObserverStore model {
+		public TableStore model {
 			get { return store; }
 			construct {
 				store = value;
@@ -17,12 +17,12 @@ namespace SqlpGtk {
 		}
 
 		private ScrolledWindow scrolled_window;
-		private TableObserverStore store;
+		private TableStore store;
 		private SetTreeModelFilter<int64?> filter;
 		private TreeModelSort sort;
 		private TreeView view;
 
- 		public TableView.with_model (TableObserverStore model) {
+ 		public TableViewComponent.with_model (TableStore model) {
 			this.model = model;
  		}
 

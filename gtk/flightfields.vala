@@ -66,8 +66,8 @@ namespace SqlpGtk {
 
 		private TextView notes;
 
-		private TableObserverStore role_store;
-		private TableObserverStore aircraft_store;
+		private TableStore role_store;
+		private TableStore aircraft_store;
 
 		private TagManager tag_manager;
 
@@ -121,7 +121,7 @@ namespace SqlpGtk {
 
 
 			// Treemodel and combobox for picking a role
-			role_store = new TableObserverStore ();
+			role_store = new TableStore ();
 			role_store.select_sql = "SELECT * FROM Roles";
 			role_store.database = logbook;
 			role_store.observe (logbook.role);
@@ -134,7 +134,7 @@ namespace SqlpGtk {
 
 
 			// Tree model of aircraft for convenient picking
-			aircraft_store = new TableObserverStore ();
+			aircraft_store = new TableStore ();
 			aircraft_store.select_sql = "SELECT * FROM Aircraft";
 			aircraft_store.database = logbook;
 			aircraft_store.observe (logbook.aircraft);

@@ -14,7 +14,7 @@ namespace SqlpGtk {
 	// the identity of a Record in Table.
 	// IOW it Observes a table object but its internal data is
 	// for the store is read directly from the Database object.
-	public class TableObserverStore : ListStore {
+	public class TableStore : ListStore {
 
 		public unowned Sqlp.Database _database;
 		public unowned Sqlp.Database database {
@@ -87,7 +87,7 @@ namespace SqlpGtk {
 		// keep init from running in property setter
 		private bool ready_for_init;
 
-		public TableObserverStore.with_view (Sqlp.Database database, string view_name) {
+		public TableStore.with_view (Sqlp.Database database, string view_name) {
 			this.database = database;
 			this.select_sql = "SELECT * FROM " + view_name;
 		}

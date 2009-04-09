@@ -30,8 +30,8 @@ sqlpilot_gtk_VALASOURCES = \
 	pane.vala \
 	rolefields.vala \
 	settreemodelfilter.vala \
-	tableobserverstore.vala \
-	tableview.vala \
+	tablestore.vala \
+	tableviewcomponent.vala \
 	tableviewcolumn.vala \
 	tagmanager.vala \
 	util.vala
