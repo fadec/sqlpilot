@@ -5,7 +5,7 @@ using Sqlp;
 namespace SqlpGtk {
 	public class FlightFields : Fieldset <Flight> {
 
-		public TagManager tag_manager { get; construct; }
+		public unowned Logbook logbook { get; construct; }
 
 		private Entry date;
 		private SpinButton leg;
@@ -13,8 +13,10 @@ namespace SqlpGtk {
 		private ToggleButton icao;
 		private ComboBoxEntry role;
 		private Entry role_entry;
-		private ComboBoxEntry aircraft;
-		private Entry aircraft_entry;
+		private ComboBoxEntry aircraft_registration;
+		private Entry aircraft_registration_entry;
+		private ComboBoxEntry aircraft_tail;
+		private Entry aircraft_tail_entry;
 		private ToggleButton tail;
 		private Entry duration;
 		private Entry actual_out;
@@ -64,13 +66,22 @@ namespace SqlpGtk {
 
 		private TextView notes;
 
-		public FlightFields (TagManager tag_manager) {
+		private TableObserverStore role_store;
+		private TableObserverStore aircraft_store;
+
+		private TagManager tag_manager;
+
+		public FlightFields (Logbook logbook) {
 			this.gui_name = "flight_fields";
-			this.tag_manager = tag_manager;
+			this.logbook = logbook;
+		}
+
+		private Entry aircraft_entry {
+			get { return tail.active ? aircraft_tail_entry : aircraft_registration_entry; }
 		}
 
 		construct {
-
+			tag_manager = new TagManager (logbook.flight, logbook.flight_taggings, logbook.flight_tags);
 			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
 			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
 			tag_manager.add_tag_button = gui.object ("add_tag") as Button;
@@ -92,8 +103,6 @@ namespace SqlpGtk {
 			leg					= gui.object ("leg")					as SpinButton;
 			route				= gui.object ("route")					as Entry;
 			icao				= gui.object ("icao")					as ToggleButton;
-			role				= gui.object ("role")					as ComboBoxEntry;
-			aircraft			= gui.object ("aircraft")				as ComboBoxEntry;
 			tail				= gui.object ("tail")					as ToggleButton;
 			duration			= gui.object ("duration")				as Entry;
 			actual_out			= gui.object ("actual_out")				as Entry;
@@ -111,14 +120,46 @@ namespace SqlpGtk {
 			takeoffs_view		= gui.object ("takeoffs_view")			as TreeView;
 
 
-			role_entry			= role.get_child ()						as Entry;
+			// Treemodel and combobox for picking a role
+			role_store = new TableObserverStore ();
+			role_store.select_sql = "SELECT * FROM Roles";
+			role_store.database = logbook;
+			role_store.observe (logbook.role);
+			role = new ComboBoxEntry.with_model (role_store, 1);
+			role_entry = role.get_child () as Entry;
 			role_entry.changed += on_role_entry_changed;
 			role_entry.focus_out_event += on_role_entry_focus_out_event;
+			(gui.object ("role_slot") as Box).add (role);
+			role.show ();
 
-			aircraft_entry      = aircraft.get_child ()                 as Entry;
-			aircraft_entry.changed += on_aircraft_entry_changed;
-			aircraft_entry.focus_out_event += on_aircraft_entry_focus_out_event;
 
+			// Tree model of aircraft for convenient picking
+			aircraft_store = new TableObserverStore ();
+			aircraft_store.select_sql = "SELECT * FROM Aircraft";
+			aircraft_store.database = logbook;
+			aircraft_store.observe (logbook.aircraft);
+
+			// Combobox for aircraft registration.
+			aircraft_registration = new ComboBoxEntry.with_model (aircraft_store, 2);
+			aircraft_registration_entry = aircraft_registration.get_child () as Entry;
+			aircraft_registration_entry.changed += on_aircraft_entry_changed;
+			aircraft_registration_entry.focus_out_event += on_aircraft_entry_focus_out_event;
+			(gui.object ("aircraft_slot") as Box).add (aircraft_registration);
+
+			// And for aircraft tail.
+			aircraft_tail = new ComboBoxEntry.with_model (aircraft_store, 3);
+			aircraft_tail_entry = aircraft_tail.get_child () as Entry;
+			aircraft_tail_entry.changed += on_aircraft_entry_changed;
+			aircraft_tail_entry.focus_out_event += on_aircraft_entry_focus_out_event;
+			(gui.object ("aircraft_slot") as Box).add (aircraft_tail);
+
+			set_aircraft_combobox_visibility ();
+
+		}
+
+		private void set_aircraft_combobox_visibility () {
+			aircraft_tail.visible = tail.active;
+			aircraft_registration.visible = ! tail.active;
 		}
 
 		protected override void set_fields_from_record () {
@@ -136,9 +177,9 @@ namespace SqlpGtk {
 			night.set_text (record.night.to_string ());
 			instrument.set_text (record.instrument.to_string ());
 			hood.set_text (record.hood.to_string ());
-			trip.set_text (record.trip);
+			trip.set_text (empty_if_null(record.trip));
 			trip_date.set_text (record.trip_date.to_iso8601 ());
-			flight_number.set_text (record.flight_number);
+			flight_number.set_text (empty_if_null(record.flight_number));
 		}
 
 		public override void set_record_from_fields () {
@@ -307,7 +348,7 @@ namespace SqlpGtk {
 		}
 
 		[CCode (instance_pos = -1)]
-		public void on_trip_number_changed (Entry entry)
+		public void on_trip_changed (Entry entry)
 		{
 			
 		}
@@ -625,8 +666,8 @@ namespace SqlpGtk {
 		}
 
 		[CCode (instance_pos = -1)]
-		public void on_tail_toggled(ToggleButton button)
-		{
+		public void on_tail_toggled(ToggleButton button) {
+			set_aircraft_combobox_visibility ();
 		}
 
 		public void on_person_add_clicked (Button button) {

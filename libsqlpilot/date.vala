@@ -38,12 +38,12 @@ namespace Sqlp {
 			}
 		}
 
-		public void read_iso8601 (string date) {
+		public void read_iso8601 (string datestring) {
 			GLib.DateDay d;
 			int m;
 			GLib.DateYear y;
-			date.scanf("%d-%d-%d", out y, out m, out d);
- 			gdate.set_dmy(d,m,y);
+			datestring.scanf("%d-%d-%d", out y, out m, out d);
+ 			if (GLib.Date.valid_dmy (d, (GLib.DateMonth)m, y)) gdate.set_dmy (d, m, y);
 		}
 		
 		public void add_days (uint days) {

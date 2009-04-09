@@ -200,11 +200,11 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxEntry" id="role">
+                  <object class="GtkVBox" id="role_slot">
                     <property name="visible">True</property>
-                    <property name="model">roles_model</property>
-                    <signal name="changed" handler="on_role_changed"/>
-                    <signal name="focus_out_event" handler="on_role_focus_out_event"/>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="position">1</property>
@@ -230,9 +230,11 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkComboBoxEntry" id="aircraft">
+                  <object class="GtkVBox" id="aircraft_slot">
                     <property name="visible">True</property>
-                    <signal name="changed" handler="on_aircraft_changed"/>
+                    <child>
+                      <placeholder/>
+                    </child>
                   </object>
                   <packing>
                     <property name="position">1</property>
@@ -743,11 +745,11 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="trip_number">
+                  <object class="GtkEntry" id="trip">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="width_chars">11</property>
-                    <signal name="changed" handler="on_trip_number_changed"/>
+                    <signal name="changed" handler="on_trip_changed"/>
                   </object>
                   <packing>
                     <property name="position">1</property>

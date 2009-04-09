@@ -162,8 +162,13 @@ namespace Sqlp {
 
 		private void bind_time_of_day (Statement stmt, int iter, TimeOfDay tod, Timezone in_timezone) {
 			if (tod.valid ()) {
-				var dt = Datetime (date, tod).in_timezone (in_timezone);
-				var str = dt.time_of_day.to_iso8601 ();
+				string str;
+				if (date.valid ()) {
+					var dt = Datetime (date, tod).in_timezone (in_timezone);
+					str = dt.time_of_day.to_iso8601 ();
+				} else {
+					str = tod.to_iso8601 ();
+				}
 				stmt.bind_text (iter, str);
 			} else {
 				stmt.bind_null (iter);
@@ -184,7 +189,8 @@ namespace Sqlp {
 			role_id				= stmt.column_int64 (i++);
 			origin_id			= stmt.column_int64 (i++);
 			destination_id  	= stmt.column_int64 (i++);
-			date				= Date.from_iso8601 (stmt.column_text (i++));
+			// null roundtrip for date = read null -> "" -> invalid date -> dwrite null
+			date				= Date.from_iso8601 (empty_if_null(stmt.column_text (i++)));
 			leg					= stmt.column_int   (i++);
 			i++; // skip local ss read
 			actual_out			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
@@ -203,7 +209,7 @@ namespace Sqlp {
 			scheduled_in		= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			scheduled_duration  = Duration.from_minutes (stmt.column_int (i++));
 			trip				= stmt.column_text (i++);
-			trip_date			= Date.from_iso8601 (stmt.column_text (i++));
+			trip_date			= Date.from_iso8601 (empty_if_null(stmt.column_text (i++)));
 //			stderr.printf("WTF: %s\n", sout.timezone.name);
 		}
 
