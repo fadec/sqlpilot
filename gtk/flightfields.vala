@@ -5,7 +5,7 @@ using Sqlp;
 namespace SqlpGtk {
 	public class FlightFields : Fieldset <Flight> {
 
-		public unowned Logbook logbook { get; construct; }
+		private Logbook logbook;
 
 		private Entry date;
 		private SpinButton leg;
@@ -72,9 +72,9 @@ namespace SqlpGtk {
 
 		private TagManager tag_manager;
 
-		public FlightFields (Logbook logbook) {
+		public FlightFields (Sqlp.Table table) {
 			this.gui_name = "flight_fields";
-			this.logbook = logbook;
+			this.table = table;
 		}
 
 		private Entry aircraft_entry {
@@ -82,15 +82,17 @@ namespace SqlpGtk {
 		}
 
 		construct {
+			logbook = table.database;
+
 			glide_add = gui.object ("glide_add") as Button;
 			glide_remove = gui.object ("glide_remove") as Button;
 			glides = new TableObserverStore ();
 			glides.select_sql = "SELECT * FROM Glides";
-// 			glides.scope_sql = "flight_id = ?";
-// 			glides.bind_scope = (stmt, i) => {
-// 				stmt.bind_int64 (i++, record.id);
-// 				return i;
-// 			};
+			glides.scope_sql = "flight_id = ?";
+			glides.bind_scope = (stmt, i) => {
+				stmt.bind_int64 (i++, record.id);
+				return i;
+			};
 			glides.database = logbook;
 			glides.observe (logbook.glides);
 			glides_view = new TableView.with_model (glides);
@@ -178,6 +180,7 @@ namespace SqlpGtk {
 		}
 
 		protected override void set_fields_from_record () {
+			glides.repopulate ();
 			date.set_text  (record.date.to_iso8601 ());
 			leg.set_text (record.leg.to_string ());
 			route.set_text (record.route.to_string_icao ());

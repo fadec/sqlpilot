@@ -18,7 +18,6 @@ namespace SqlpGtk {
 			set construct {
 				_fieldset = value;
 				if (_fieldset == null) return;
-				_fieldset.browser = this;
 				set_fieldset_sensitivity ();
 				set_slot ("fields", _fieldset);
 			}

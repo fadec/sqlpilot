@@ -97,7 +97,7 @@ namespace SqlpGtk {
 		private void add_pages () {
 			this.flight_browser = new Browser ();
 			flight_browser.table = logbook.flight;
-			flight_browser.fieldset = new FlightFields (logbook);
+			flight_browser.fieldset = new FlightFields (logbook.flight);
 			flight_browser.table_view = new TableView.with_model (flight_store);
 
 			this.role_browser = new Browser ();
