@@ -238,7 +238,8 @@ CREATE TABLE Glides (
 
 CREATE TABLE LaunchTypes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Name CHAR
+	,Abbreviation CHAR
+	,Description CHAR
 );
 
 CREATE TABLE People (

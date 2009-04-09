@@ -21,6 +21,10 @@ libsqlpilot_la_VALASOURCES = \
 	flighttable.vala \
 	flighttagtable.vala \
 	flighttaggingtable.vala \
+	glide.vala \
+	glidetable.vala \
+	launchtype.vala \
+	launchtypetable.vala \
 	logbook.vala \
 	model.vala \
 	modeltable.vala \

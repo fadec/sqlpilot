@@ -1074,41 +1074,10 @@
       <object class="GtkVBox" id="vbox11">
         <property name="visible">True</property>
         <child>
-          <object class="GtkTreeView" id="glides_view">
+          <object class="GtkVBox" id="glides">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="model">glides_model</property>
-            <property name="headers_clickable">False</property>
-            <property name="search_column">0</property>
             <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn85">
-                <property name="title">Launch</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn86">
-                <property name="title">Duration</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn87">
-                <property name="title">Distance</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn88">
-                <property name="title">Release Altitude</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn89">
-                <property name="title">Max Altitude</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn90">
-                <property name="title">Engine Start Altitude</property>
-              </object>
+              <placeholder/>
             </child>
           </object>
           <packing>

@@ -42,10 +42,11 @@ namespace SqlpGtk {
 		private Button landing_remove;
 		private Label landing_summary;
 
-		private TreeView glides_view;
 		private Button glide_add;
 		private Button glide_remove;
 		private Label glide_summary;
+		private TableView glides_view;
+		private TableObserverStore glides;
 
 		private TreeView holds_view;
 		private Button hold_add;
@@ -81,6 +82,20 @@ namespace SqlpGtk {
 		}
 
 		construct {
+			glide_add = gui.object ("glide_add") as Button;
+			glide_remove = gui.object ("glide_remove") as Button;
+			glides = new TableObserverStore ();
+			glides.select_sql = "SELECT * FROM Glides";
+// 			glides.scope_sql = "flight_id = ?";
+// 			glides.bind_scope = (stmt, i) => {
+// 				stmt.bind_int64 (i++, record.id);
+// 				return i;
+// 			};
+			glides.database = logbook;
+			glides.observe (logbook.glides);
+			glides_view = new TableView.with_model (glides);
+			set_slot ("glides", glides_view);
+
 			tag_manager = new TagManager (logbook.flight, logbook.flight_taggings, logbook.flight_tags);
 			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
 			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
@@ -670,6 +685,7 @@ namespace SqlpGtk {
 			set_aircraft_combobox_visibility ();
 		}
 
+
 		public void on_person_add_clicked (Button button) {
 		}
 
@@ -700,10 +716,19 @@ namespace SqlpGtk {
 		public void on_hold_remove_clicked (Button button) {
 		}
 
+		[CCode (instance_pos = -1)]
 		public void on_glide_add_clicked (Button button) {
+			var glide = logbook.glides.new_record ();
+			glide.flight = record;
+			glide.save ();
 		}
 
+		[CCode (instance_pos = -1)]
 		public void on_glide_remove_clicked (Button button) {
+			var ids = glides_view.get_selected_ids ();
+			foreach (var id in ids) {
+				logbook.glides.delete_id (id);
+			}
 		}
 
 		[CCode (instance_pos = -1)]
