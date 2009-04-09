@@ -1180,26 +1180,10 @@
           </packing>
         </child>
         <child>
-          <object class="GtkTreeView" id="holds_view">
+          <object class="GtkVBox" id="holds">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="model">holds_model</property>
-            <property name="headers_clickable">False</property>
-            <property name="search_column">0</property>
             <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn91">
-                <property name="title">Location</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn92">
-                <property name="title">Turns</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn" id="treeviewcolumn93">
-                <property name="title">Duration</property>
-              </object>
+              <placeholder/>
             </child>
           </object>
           <packing>

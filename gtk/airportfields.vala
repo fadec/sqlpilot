@@ -11,8 +11,9 @@ namespace SqlpGtk {
 		private Entry iata;
 		private Entry name;
 
-		public AirportFields () {
+		public AirportFields (Sqlp.Table table) {
 			this.gui_name = "airport_fields";
+			this.table = table;
 		}
 
 		construct {

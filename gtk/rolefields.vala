@@ -19,9 +19,10 @@ namespace SqlpGtk {
 		private CheckButton instructor;
 		private CheckButton military;
 
-		public RoleFields (TagManager tag_manager) {
+		public RoleFields (Sqlp.Table table, TagManager tag_manager) {
 			this.gui_name = "role_fields";
 			this.tag_manager = tag_manager;
+			this.table = table;
 		}
 
 		construct {

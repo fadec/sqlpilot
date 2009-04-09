@@ -103,23 +103,23 @@ namespace SqlpGtk {
 			this.role_browser = new Browser ();
 			role_browser.table = logbook.role;
 			var role_tag_manager = new TagManager (logbook.role, logbook.role_taggings, logbook.role_tags);
-			role_browser.fieldset = new RoleFields (role_tag_manager);
+			role_browser.fieldset = new RoleFields (logbook.role, role_tag_manager);
 			role_browser.table_view = new TableView.with_model (role_store);
 
 			this.aircraft_browser = new Browser ();
 			aircraft_browser.table = logbook.aircraft;
-			aircraft_browser.fieldset = new AircraftFields ();
+			aircraft_browser.fieldset = new AircraftFields (logbook.aircraft);
 			aircraft_browser.table_view = new TableView.with_model (aircraft_store);
 
 			this.model_browser = new Browser ();
 			model_browser.table = logbook.model;
 			var model_tag_manager = new TagManager (logbook.model, logbook.model_taggings, logbook.model_tags);
-			model_browser.fieldset = new ModelFields (model_tag_manager);
+			model_browser.fieldset = new ModelFields (logbook.model, model_tag_manager);
 			model_browser.table_view = new TableView.with_model (model_store);
 
 			this.airport_browser = new Browser ();
 			airport_browser.table = logbook.airport;
-			airport_browser.fieldset = new AirportFields ();
+			airport_browser.fieldset = new AirportFields (logbook.airport);
 			airport_browser.table_view = new TableView.with_model (airport_store);
 		}
 	}

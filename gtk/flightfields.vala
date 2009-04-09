@@ -357,7 +357,7 @@ namespace SqlpGtk {
 			edited = true;
 		}
 
-		public bool on_role_entry_focus_out_event (Entry entry) {
+		public bool on_role_entry_focus_out_event (EventFocus ev) {
 			if (edited) {
 				record.role = record.table.database.role.find_or_new_by_abbreviation (role_entry.get_text ());
 				save ();
@@ -396,7 +396,7 @@ namespace SqlpGtk {
 			edited = true;
 		}
 
-		public bool on_aircraft_entry_focus_out_event (Entry entry) {
+		public bool on_aircraft_entry_focus_out_event (EventFocus ev) {
 			if (edited) {
 				var aircraft_table = record.table.database.aircraft;
 				record.aircraft = tail.active ?

@@ -21,8 +21,8 @@ You should have received a copy of the GNU General Public License along with Sql
 		}
 
 		construct {
-			this.delete_event += (ad) => { ad.hide_on_delete (); };
-			this.response += (ad) => { ad.hide (); };
+			this.delete_event += (event) => { hide_on_delete (); };
+			this.response += (event) => { hide (); };
 		}
 
 	}
