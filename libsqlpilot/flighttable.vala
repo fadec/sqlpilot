@@ -18,11 +18,11 @@ namespace Sqlp {
 			"LEFT JOIN Airports destination ON destination_airport_id = destination.id " +
 			"WHERE Date = ? AND FlightNumber = ? AND " +
 			"(origin.ICAO = ? OR destination.IATA = ?) AND " +
-			"(destination.ICAO = ? OR destination.IATA = ?);";
+			"(destination.ICAO = ? OR destination.IATA = ?)";
 			find_by_date_fltno_dep_arr_stmt = database.prepare_statement (
 				find_by_date_fltno_dep_arr_sql);
 			find_by_role_id_stmt = database.prepare_statement (
-				"SELECT * FROM Flights WHERE role_id = ?;");
+				"SELECT * FROM Flights WHERE role_id = ?");
 		}
 
 		public Flight? find_by_date_fltno_dep_arr (string date_str,

@@ -1,4 +1,5 @@
 using Sqlite;
+
 namespace Sqlp {
 	public class Airport : Record <AirportTable> {
 

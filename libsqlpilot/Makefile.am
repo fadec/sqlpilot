@@ -13,6 +13,10 @@ libsqlpilot_la_VALASOURCES = \
 	aircrafttable.vala \
 	airport.vala \
 	airporttable.vala \
+	approach.vala \
+	approachtable.vala \
+	approachtype.vala \
+	approachtypetable.vala \
 	database.vala \
 	date.vala \
 	datetime.vala \
@@ -21,6 +25,14 @@ libsqlpilot_la_VALASOURCES = \
 	flighttable.vala \
 	flighttagtable.vala \
 	flighttaggingtable.vala \
+	glide.vala \
+	glidetable.vala \
+	hold.vala \
+	holdtable.vala \
+	landing.vala \
+	landingtable.vala \
+	launchtype.vala \
+	launchtypetable.vala \
 	logbook.vala \
 	model.vala \
 	modeltable.vala \
@@ -34,11 +46,15 @@ libsqlpilot_la_VALASOURCES = \
 	route.vala \
 	routing.vala \
 	routingtable.vala \
+	surface.vala \
+	surfacetable.vala \
 	table.vala \
 	tag.vala \
 	tagging.vala \
 	taggingtable.vala \
 	tagtable.vala \
+	takeoff.vala \
+	takeofftable.vala \
 	timeofday.vala \
 	timezone.vala \
 	transaction.vala \

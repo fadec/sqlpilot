@@ -89,6 +89,16 @@ namespace Sqlp {
 			}
 		}
 
+		private List <Glide> _glides;
+		public List <Glide> glides {
+			get {
+				if (_glides == null) {
+					_glides = table.database.glides.find_by_flight_id (id);
+				}
+				return _glides;
+			}
+		}
+
 		public Date date;
 		public int leg;
 		public TimeOfDay actual_out = TimeOfDay ();

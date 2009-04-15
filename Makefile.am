@@ -8,6 +8,9 @@ SUBDIRS = \
 	gtk \
 	test
 
+clean-stamps:
+	find -name '*.stamp' | xargs rm
+
 db-reset: sql/logbook.sql
 	-rm -f logbook.db
 	cat sql/logbook.sql | script/console logbook.db

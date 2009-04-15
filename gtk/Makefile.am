@@ -14,26 +14,37 @@ BUILT_SOURCES = vala.stamp
 
 sqlpilot_gtk_VALASOURCES = \
 	about.vala \
+	aircraftbrowser.vala \
 	aircraftfields.vala \
+	airportbrowser.vala \
 	airportfields.vala \
 	application.vala \
+	approacheditor.vala \
 	book.vala \
 	browser.vala \
 	component.vala \
 	fieldset.vala \
 	filters.vala \
 	filtertree.vala \
+	flightbrowser.vala \
 	flightfields.vala \
+	glideeditor.vala \
 	gui.vala \
+	holdeditor.vala \
+	landingeditor.vala \
 	main.vala \
+	modelbrowser.vala \
 	modelfields.vala \
 	pane.vala \
+	parentchildeditor.vala \
+	rolebrowser.vala \
 	rolefields.vala \
 	settreemodelfilter.vala \
 	tablestore.vala \
 	tableviewcomponent.vala \
 	tableviewcolumn.vala \
 	tagmanager.vala \
+	takeoffeditor.vala \
 	util.vala
 
 sqlpilot_gtk_SOURCES = \

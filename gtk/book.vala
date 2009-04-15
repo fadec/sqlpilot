@@ -57,11 +57,10 @@ namespace SqlpGtk {
 			}
 		}
 
-		private TableStore flight_store;
-		private TableStore role_store;
-		private TableStore aircraft_store;
-		private TableStore model_store;
-		private TableStore airport_store;
+		private TableObserverStore role_store;
+		private TableObserverStore aircraft_store;
+		private TableObserverStore model_store;
+		private TableObserverStore airport_store;
 
 		public Book ( string filename ) {
 			this.gui_name = "book";
@@ -70,57 +69,17 @@ namespace SqlpGtk {
 
 		construct {
 			logbook = new Logbook (logbook_filename);
-
 			// So this gui is the only thing that can chage db and thereby stay in sync with it.
 			logbook.use_exclusive_locking ();
-			flight_store = new TableStore ();
-			flight_store.default_column_type = typeof(string);
-			flight_store.select_sql = "SELECT * FROM Flights";
-			flight_store.database = logbook;
-			flight_store.observe (logbook.flight);
-
-			role_store = new TableStore.with_view (logbook, "Roles");
-			role_store.observe (logbook.role);
-
-			aircraft_store = new TableStore.with_view (logbook, "Aircraft");
-			aircraft_store.observe (logbook.aircraft);
-
-			model_store = new TableStore.with_view (logbook, "Models");
-			model_store.observe (logbook.model);
-
-			airport_store = new TableStore.with_view (logbook, "Airports");
-			airport_store.observe (logbook.airport);
-
 			add_pages ();
 		}
 
 		private void add_pages () {
-			this.flight_browser = new Browser ();
-			flight_browser.table = logbook.flight;
-			flight_browser.fieldset = new FlightFields (logbook);
-			flight_browser.table_view = new TableViewComponent.with_model (flight_store);
-
-			this.role_browser = new Browser ();
-			role_browser.table = logbook.role;
-			var role_tag_manager = new TagManager (logbook.role, logbook.role_taggings, logbook.role_tags);
-			role_browser.fieldset = new RoleFields (role_tag_manager);
-			role_browser.table_view = new TableViewComponent.with_model (role_store);
-
-			this.aircraft_browser = new Browser ();
-			aircraft_browser.table = logbook.aircraft;
-			aircraft_browser.fieldset = new AircraftFields ();
-			aircraft_browser.table_view = new TableViewComponent.with_model (aircraft_store);
-
-			this.model_browser = new Browser ();
-			model_browser.table = logbook.model;
-			var model_tag_manager = new TagManager (logbook.model, logbook.model_taggings, logbook.model_tags);
-			model_browser.fieldset = new ModelFields (model_tag_manager);
-			model_browser.table_view = new TableViewComponent.with_model (model_store);
-
-			this.airport_browser = new Browser ();
-			airport_browser.table = logbook.airport;
-			airport_browser.fieldset = new AirportFields ();
-			airport_browser.table_view = new TableViewComponent.with_model (airport_store);
+			this.flight_browser = new FlightBrowser (logbook.flight);
+			this.role_browser = new RoleBrowser (logbook.role);
+			this.aircraft_browser = new AircraftBrowser (logbook.aircraft);
+			this.model_browser = new ModelBrowser (logbook.model);
+			this.airport_browser = new AirportBrowser (logbook.airport);
 		}
 	}
 }

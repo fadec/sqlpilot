@@ -5,7 +5,7 @@ using Sqlp;
 namespace SqlpGtk {
 	public class FlightFields : Fieldset <Flight> {
 
-		public unowned Logbook logbook { get; construct; }
+		private Logbook logbook;
 
 		private Entry date;
 		private SpinButton leg;
@@ -32,25 +32,9 @@ namespace SqlpGtk {
 		private Entry trip;
 		private Entry trip_date;
 
-		private TreeView takeoffs_view;
-		private Button takeoff_add;
-		private Button takeoff_remove;
-		private Label takeoff_summary;
-
-		private TreeView landings_view;
-		private Button landing_add;
-		private Button landing_remove;
-		private Label landing_summary;
-
-		private TreeView glides_view;
-		private Button glide_add;
-		private Button glide_remove;
-		private Label glide_summary;
-
-		private TreeView holds_view;
-		private Button hold_add;
-		private Button hold_remove;
-		private Label hold_summary;
+		private GlideEditor glide_editor;
+		private HoldEditor hold_editor;
+		private TakeoffEditor takeoff_editor;
 
 		private ToggleButton cross_country;
 
@@ -71,16 +55,27 @@ namespace SqlpGtk {
 
 		private TagManager tag_manager;
 
-		public FlightFields (Logbook logbook) {
+		public FlightFields (Sqlp.Table table) {
 			this.gui_name = "flight_fields";
-			this.logbook = logbook;
+			this.table = table;
 		}
 
 		private Entry aircraft_entry {
 			get { return tail.active ? aircraft_tail_entry : aircraft_registration_entry; }
 		}
-
+		
 		construct {
+			logbook = table.database;
+
+			glide_editor = new GlideEditor (logbook);
+			set_slot ("glides", glide_editor);
+
+			hold_editor = new HoldEditor (logbook);
+			set_slot ("holds", hold_editor);
+
+			takeoff_editor = new TakeoffEditor (logbook);
+			set_slot ("takeoffs", takeoff_editor);
+
 			tag_manager = new TagManager (logbook.flight, logbook.flight_taggings, logbook.flight_tags);
 			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
 			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
@@ -117,7 +112,6 @@ namespace SqlpGtk {
 			flight_number		= gui.object ("flight_number")			as Entry;
 			trip				= gui.object ("trip")					as Entry;
 			trip_date			= gui.object ("trip_date")				as Entry;
-			takeoffs_view		= gui.object ("takeoffs_view")			as TreeView;
 
 
 			// Treemodel and combobox for picking a role
@@ -180,6 +174,10 @@ namespace SqlpGtk {
 			trip.set_text (empty_if_null(record.trip));
 			trip_date.set_text (record.trip_date.to_iso8601 ());
 			flight_number.set_text (empty_if_null(record.flight_number));
+			glide_editor.parent_id = record.id;
+			hold_editor.parent_id = record.id;
+			takeoff_editor.parent_id = record.id;
+			tag_manager.object_id = record.id;
 		}
 
 		public override void set_record_from_fields () {
@@ -329,7 +327,7 @@ namespace SqlpGtk {
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool on_role_focus_out_event (ComboBoxEntry entry, EventFocus ev)
+		public bool on_role_focus_out_event (Entry entry, EventFocus ev)
 		{
 			message ("on_role_focus_oute_event ()");
 			return false;
@@ -339,7 +337,7 @@ namespace SqlpGtk {
 			edited = true;
 		}
 
-		public bool on_role_entry_focus_out_event (Entry entry) {
+		public bool on_role_entry_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
 				record.role = record.table.database.role.find_or_new_by_abbreviation (role_entry.get_text ());
 				save ();
@@ -378,7 +376,7 @@ namespace SqlpGtk {
 			edited = true;
 		}
 
-		public bool on_aircraft_entry_focus_out_event (Entry entry) {
+		public bool on_aircraft_entry_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
 				var aircraft_table = record.table.database.aircraft;
 				record.aircraft = tail.active ?
@@ -670,6 +668,7 @@ namespace SqlpGtk {
 			set_aircraft_combobox_visibility ();
 		}
 
+
 		public void on_person_add_clicked (Button button) {
 		}
 
@@ -698,12 +697,6 @@ namespace SqlpGtk {
 		}
 
 		public void on_hold_remove_clicked (Button button) {
-		}
-
-		public void on_glide_add_clicked (Button button) {
-		}
-
-		public void on_glide_remove_clicked (Button button) {
 		}
 
 		[CCode (instance_pos = -1)]

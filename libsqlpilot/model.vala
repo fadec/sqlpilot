@@ -2,10 +2,6 @@ using Sqlite;
 namespace Sqlp {
 	public class Model : Record <ModelTable> {
 
-		public string[] tags {
-			
-		}
-
 		public string abbreviation;
 		public string make;
 		public string name;

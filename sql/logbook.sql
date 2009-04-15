@@ -77,7 +77,7 @@ CREATE TABLE Routing (
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,airport_id INTEGER NOT NULL
 		REFERENCES Airports (id) ON DELETE RESTRICT
-	,Sequence INTEGER
+	,Sequence INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE Roles (
@@ -148,54 +148,10 @@ CREATE TABLE Airports (
 	,Notes TEXT
 );
 
-CREATE TABLE Approaches (
-	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,flight_id INTEGER NOT NULL
-		REFERENCES Flights (id) ON DELETE CASCADE
-	,airport_id INTEGER
-		REFERENCES Airports (id) ON DELETE RESTRICT
-	-- Approach Info
-	,approach_type_id INTEGER
-		REFERENCES ApproachTypes (id) ON DELETE RESTRICT
-	,Sequence INTEGER
-	,ApproachRunway CHAR
-	,Visibility FLOAT
-	,Ceiling FLOAT
-	,Coupled BOOLEAN NOT NULL
-		DEFAULT 0
-	-- Landing Info
-	,surface_id INTEGER
-		REFERENCES Surfaces (id) ON DELETE RESTRICT
-	,Landing BOOLEAN NOT NULL
-		DEFAULT 0
-	,FullStop BOOLEAN NOT NULL
-		DEFAULT 0
-	,LandingRunway CHAR
-	,Crosswind FLOAT
-	,Night BOOLEAN NOT NULL
-		DEFAULT 0
-	,NightVisionGoggles BOOLEAN NOT NULL
-		DEFAULT 0
-	,Autoland BOOLEAN NOT NULL
-		DEFAULT 0
-	,CHECK (Landing OR NOT FullStop)
-);
-
-CREATE TABLE ApproachTypes (
+CREATE TABLE Surfaces (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
-	,Name CHAR
-	,InstrumentCurrency BOOLEAN NOT NULL
-		DEFAULT 0
-);
-
-CREATE TABLE Holds (
-	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,flight_id INTEGER NOT NULL
-		REFERENCES Flights (id) ON DELETE CASCADE
-	,Location CHAR
-	,Turns INTEGER
-	,Duration INTEGER
+	,Description CHAR -- grass, pavement-good, pavement-fair, ship, glacier, ...
 );
 
 CREATE TABLE Takeoffs (
@@ -205,21 +161,71 @@ CREATE TABLE Takeoffs (
 	,airport_id INTEGER
 		REFERENCES Airports (id) ON DELETE RESTRICT
 	,surface_id INTEGER
-		REFERENCES Airports (id) ON DELETE RESTRICT
-	,Sequence INTEGER
-	,Runway CHAR -- 35L
-	,Visibility FLOAT
-	,Crosswind FLOAT
-	,Aborted BOOLEAN NOT NULL
-		DEFAULT 0
+		REFERENCES Surfaces (id) ON DELETE RESTRICT
+	,Sequence INTEGER NOT NULL DEFAULT 0
 	,Night BOOLEAN NOT NULL
+		DEFAULT 0
+	,Runway CHAR -- 35L
+	,Crosswind FLOAT
+	,Visibility FLOAT
+	,Aborted BOOLEAN NOT NULL
 		DEFAULT 0
 );
 
-CREATE TABLE Surfaces (
+CREATE TABLE Landings (
+        id INTEGER PRIMARY KEY AUTOINCREMENT
+        ,flight_id INTEGER NOT NULL
+		REFERENCES Flights (id) ON DELETE CASCADE
+	,airport_id INTEGER
+		REFERENCES Airports (id) ON DELETE RESTRICT
+	,surface_id INTEGER
+		REFERENCES Surfaces (id) ON DELETE RESTRICT
+	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Night BOOLEAN NOT NULL
+		DEFAULT 0
+	,Runway CHAR
+	,Crosswind FLOAT
+	,FullStop BOOLEAN NOT NULL
+		DEFAULT 0
+	,NightVision BOOLEAN NOT NULL
+		DEFAULT 0
+	,Autoland BOOLEAN NOT NULL
+		DEFAULT 0
+);
+
+CREATE TABLE Approaches (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER NOT NULL
+		REFERENCES Flights (id) ON DELETE CASCADE
+	,airport_id INTEGER
+		REFERENCES Airports (id) ON DELETE RESTRICT
+	-- Approach Info
+	,approach_type_id INTEGER
+		REFERENCES ApproachTypes (id) ON DELETE RESTRICT
+	,landing_id INTEGER
+		REFERENCES Landings (id) ON DELETE SET NULL
+	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Runway CHAR
+	,Visibility FLOAT
+	,Ceiling FLOAT
+	,Coupled BOOLEAN NOT NULL
+		DEFAULT 0
+);
+
+CREATE TABLE ApproachTypes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
-	,Name CHAR -- grass, pavement-good, pavement-fair, ship, glacier, ...
+	,Description CHAR
+);
+
+CREATE TABLE Holds (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,flight_id INTEGER NOT NULL
+		REFERENCES Flights (id) ON DELETE CASCADE
+	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Location CHAR
+	,Turns INTEGER
+	,Duration INTEGER
 );
 
 CREATE TABLE Glides (
@@ -228,17 +234,18 @@ CREATE TABLE Glides (
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,launch_type_id INTEGER
 		REFERENCES LaunchTypes (id) ON DELETE RESTRICT
-	,Sequence INTEGER
+	,Sequence INTEGER NOT NULL DEFAULT 0
 	,Duration INTEGER
 	,Distance FLOAT
 	,ReleaseAltitude FLOAT
-	,EngineStartAltitude FLOAT
 	,MaxAltitude FLOAT
+	,EngineStartAltitude FLOAT
 );
 
 CREATE TABLE LaunchTypes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Name CHAR
+	,Abbreviation CHAR
+	,Description CHAR
 );
 
 CREATE TABLE People (
@@ -272,12 +279,12 @@ CREATE TABLE Registry (
        ,value INTEGER
 );
 
-INSERT INTO LaunchTypes (Name) VALUES ("Aerotow");
-INSERT INTO LaunchTypes (Name) VALUES ("Winch");
-INSERT INTO LaunchTypes (Name) VALUES ("Self Launch");
-INSERT INTO LaunchTypes (Name) VALUES ("Hill");
-INSERT INTO LaunchTypes (Name) VALUES ("Bungee");
-INSERT INTO LaunchTypes (Name) VALUES ("Balloon Drop");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Aerotow");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Winch");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Self Launch");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Hill");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Bungee");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Balloon Drop");
 
 
 INSERT INTO Reports (Title, SQL) VALUES ("Time in Model", "select Model, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by model;");

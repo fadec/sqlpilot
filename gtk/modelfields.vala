@@ -9,9 +9,10 @@ namespace SqlpGtk {
 
 		public TagManager tag_manager {	get; construct;	}
 
-		public ModelFields (TagManager tag_manager) {
+		public ModelFields (Sqlp.Table table, TagManager tag_manager) {
 			this.gui_name = "model_fields";
 			this.tag_manager = tag_manager;
+			this.table = table;
 		}
 
 		private Entry name;

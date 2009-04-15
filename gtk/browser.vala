@@ -12,13 +12,14 @@ namespace SqlpGtk {
 		// for crud operations
 		public unowned Sqlp.Table <Sqlp.Database, Record> table { set construct; get; }
 
+		public TableObserverStore table_store { get; set; }
+
 		private Fieldset <Record> _fieldset;
 		public Fieldset <Record> fieldset {
 			get { return _fieldset; }
 			set construct {
 				_fieldset = value;
 				if (_fieldset == null) return;
-				_fieldset.browser = this;
 				set_fieldset_sensitivity ();
 				set_slot ("fields", _fieldset);
 			}

@@ -19,9 +19,10 @@ namespace SqlpGtk {
 		private CheckButton instructor;
 		private CheckButton military;
 
-		public RoleFields (TagManager tag_manager) {
+		public RoleFields (Sqlp.Table table, TagManager tag_manager) {
 			this.gui_name = "role_fields";
 			this.tag_manager = tag_manager;
+			this.table = table;
 		}
 
 		construct {
@@ -40,6 +41,7 @@ namespace SqlpGtk {
 			assert (record is Record);
  			abbreviation.set_text (record.abbreviation != null ? record.abbreviation : "");
 			description.set_text (record.description != null ? record.description : "");
+			tag_manager.object_id = record.id;
 		}
 
 		protected override void set_record_from_fields () {

@@ -4,7 +4,8 @@ namespace SqlpGtk {
 	public abstract class Fieldset <RecordType> : Pane {
 
 		// owns this
-		public unowned Browser browser { construct set; get; }
+//		public unowned Browser browser { construct set; get; }
+		public unowned Sqlp.Table <Logbook, Record> table { construct; get; }
 
 		public bool edited { get; set; }
 
@@ -48,9 +49,8 @@ namespace SqlpGtk {
 		}
 
 		private void ensure_record () {
- 			assert (browser != null);
- 			assert (browser.table is Table);
-			if (_record == null) _record = browser.table.new_record ();
+ 			assert (table is Table);
+			if (_record == null) _record = table.new_record ();
  			assert (_record is Record);
 		}
 	}

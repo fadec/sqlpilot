@@ -6,8 +6,9 @@ namespace SqlpGtk {
 
 	public class AircraftFields : Fieldset <Role> {
 
-		public AircraftFields () {
+		public AircraftFields (Sqlp.Table table) {
 			this.gui_name = "aircraft_fields";
+			this.table = table;
 		}
 
 		construct {

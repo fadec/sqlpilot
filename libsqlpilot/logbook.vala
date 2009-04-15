@@ -5,6 +5,14 @@ namespace Sqlp {
 	public class Logbook : Sqlp.Database {
 
 		public FlightTable flight;
+		public TakeoffTable takeoffs;
+		public LandingTable landings;
+		public SurfaceTable surfaces;
+		public ApproachTable approaches;
+		public ApproachTypeTable approach_types;
+		public HoldTable holds;
+		public GlideTable glides;
+		public LaunchTypeTable launch_types;
  		public RoleTable role;
  		public AircraftTable aircraft;
  		public ModelTable model;
@@ -25,6 +33,12 @@ namespace Sqlp {
 		construct {
 			load_db_extensions ();
  			flight = new FlightTable (this);
+			takeoffs = new TakeoffTable (this);
+			surfaces = new SurfaceTable (this);
+			approaches = new ApproachTable (this);
+			holds = new HoldTable (this);
+			glides = new GlideTable (this);
+			launch_types = new LaunchTypeTable (this);
 			role = new RoleTable (this);
 			aircraft = new AircraftTable (this);
 			model = new ModelTable (this);
@@ -37,6 +51,7 @@ namespace Sqlp {
 			role_taggings = new RoleTaggingTable (this);
 			flight_tags = new FlightTagTable (this);
 			flight_taggings = new FlightTaggingTable (this);
+		   
 		}
 
 		private void load_db_extensions () {
