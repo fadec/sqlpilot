@@ -1,0 +1,88 @@
+using Sqlite;
+namespace Sqlp {
+	public class Landing : Record <LandingTable> {
+
+		private int64 flight_id;
+		private Flight? _flight;
+		public Flight? flight {
+			get {
+				if (_flight == null && flight_id != 0) {
+					_flight = table.database.flight.find_by_id (flight_id);
+				}
+				return _flight;
+			}
+			set {
+				_flight = value;
+				flight_id = (value == null) ? 0 : value.id;
+			}
+		}
+
+		private int64 airport_id;
+		private Airport? _airport;
+		public Airport? airport {
+			get {
+				if (_airport == null && airport_id != 0) {
+					_airport = table.database.airport.find_by_id (airport_id);
+				}
+				return _airport;
+			}
+			set {
+				_airport = value;
+				airport_id = (value == null) ? 0 : value.id;
+			}
+		}
+
+		private int64 surface_id;
+		private Surface? _surface;
+		public Surface? surface {
+			get {
+				if (_surface == null && surface_id != 0) {
+					_surface = table.database.surfaces.find_by_id (surface_id);
+				}
+				return _surface;
+			}
+			set {
+				_surface = value;
+				surface_id = (value == null) ? 0 : value.id;
+			}
+		}
+
+		public int sequence { get; set; }
+		public bool night { get; set; }
+		public string runway { get; set; }
+		public double crosswind { get; set; }
+		public bool full_stop { get; set; }
+		public bool night_vision { get; set; }
+		public bool autoland { get; set; }
+
+		protected override int bind_for_save (Statement stmt) {
+			var i = 1;
+			stmt.bind_int64 (i++, flight_id);
+			stmt.bind_int64 (i++, airport_id);
+			stmt.bind_int64 (i++, surface_id);
+			stmt.bind_int   (i++, sequence);
+			stmt.bind_int (i++, (int) night);
+			stmt.bind_nonempty_text (i++, runway);
+			stmt.bind_double (i++, crosswind);
+			stmt.bind_int (i++, (int) full_stop);
+			stmt.bind_int (i++, (int) night_vision);
+			stmt.bind_int (i++, (int) autoland);
+			return i;
+		}
+
+		protected override void set_from_stmt (Statement stmt) {
+			var i = 1;
+			flight_id = stmt.column_int64 (i++);
+			airport_id = stmt.column_int64 (i++);
+			surface_id = stmt.column_int (i++);
+			sequence = stmt.column_int (i++);
+		    night = (bool) stmt.column_int (i++);
+			runway = empty_if_null (stmt.column_text (i++));
+			crosswind = stmt.column_double (i++);
+		    full_stop = (bool) stmt.column_int (i++);
+			night_vision = (bool) stmt.column_int (i++);
+			autoland = (bool) stmt.column_int (i++);
+		}
+
+	}
+}

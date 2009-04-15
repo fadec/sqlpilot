@@ -32,22 +32,9 @@ namespace SqlpGtk {
 		private Entry trip;
 		private Entry trip_date;
 
-		private TreeView takeoffs_view;
-		private Button takeoff_add;
-		private Button takeoff_remove;
-		private Label takeoff_summary;
-
-		private TreeView landings_view;
-		private Button landing_add;
-		private Button landing_remove;
-		private Label landing_summary;
-
 		private GlideEditor glide_editor;
-
-		private TreeView holds_view;
-		private Button hold_add;
-		private Button hold_remove;
-		private Label hold_summary;
+		private HoldEditor hold_editor;
+		private TakeoffEditor takeoff_editor;
 
 		private ToggleButton cross_country;
 
@@ -82,6 +69,12 @@ namespace SqlpGtk {
 
 			glide_editor = new GlideEditor (logbook);
 			set_slot ("glides", glide_editor);
+
+			hold_editor = new HoldEditor (logbook);
+			set_slot ("holds", hold_editor);
+
+			takeoff_editor = new TakeoffEditor (logbook);
+			set_slot ("takeoffs", takeoff_editor);
 
 			tag_manager = new TagManager (logbook.flight, logbook.flight_taggings, logbook.flight_tags);
 			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
@@ -119,7 +112,6 @@ namespace SqlpGtk {
 			flight_number		= gui.object ("flight_number")			as Entry;
 			trip				= gui.object ("trip")					as Entry;
 			trip_date			= gui.object ("trip_date")				as Entry;
-			takeoffs_view		= gui.object ("takeoffs_view")			as TreeView;
 
 
 			// Treemodel and combobox for picking a role
@@ -182,7 +174,9 @@ namespace SqlpGtk {
 			trip.set_text (empty_if_null(record.trip));
 			trip_date.set_text (record.trip_date.to_iso8601 ());
 			flight_number.set_text (empty_if_null(record.flight_number));
-			glide_editor.flight_id = record.id;
+			glide_editor.parent_id = record.id;
+			hold_editor.parent_id = record.id;
+			takeoff_editor.parent_id = record.id;
 			tag_manager.object_id = record.id;
 		}
 
