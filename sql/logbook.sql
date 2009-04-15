@@ -232,8 +232,8 @@ CREATE TABLE Glides (
 	,Duration INTEGER
 	,Distance FLOAT
 	,ReleaseAltitude FLOAT
-	,EngineStartAltitude FLOAT
 	,MaxAltitude FLOAT
+	,EngineStartAltitude FLOAT
 );
 
 CREATE TABLE LaunchTypes (
@@ -273,12 +273,12 @@ CREATE TABLE Registry (
        ,value INTEGER
 );
 
-INSERT INTO LaunchTypes (Name) VALUES ("Aerotow");
-INSERT INTO LaunchTypes (Name) VALUES ("Winch");
-INSERT INTO LaunchTypes (Name) VALUES ("Self Launch");
-INSERT INTO LaunchTypes (Name) VALUES ("Hill");
-INSERT INTO LaunchTypes (Name) VALUES ("Bungee");
-INSERT INTO LaunchTypes (Name) VALUES ("Balloon Drop");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Aerotow");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Winch");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Self Launch");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Hill");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Bungee");
+INSERT INTO LaunchTypes (Abbreviation) VALUES ("Balloon Drop");
 
 
 INSERT INTO Reports (Title, SQL) VALUES ("Time in Model", "select Model, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by model;");

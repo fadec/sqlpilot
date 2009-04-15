@@ -14,7 +14,9 @@ BUILT_SOURCES = vala.stamp
 
 sqlpilot_gtk_VALASOURCES = \
 	about.vala \
+	aircraftbrowser.vala \
 	aircraftfields.vala \
+	airportbrowser.vala \
 	airportfields.vala \
 	application.vala \
 	book.vala \
@@ -23,11 +25,15 @@ sqlpilot_gtk_VALASOURCES = \
 	fieldset.vala \
 	filters.vala \
 	filtertree.vala \
+	flightbrowser.vala \
 	flightfields.vala \
+	glideeditor.vala \
 	gui.vala \
 	main.vala \
+	modelbrowser.vala \
 	modelfields.vala \
 	pane.vala \
+	rolebrowser.vala \
 	rolefields.vala \
 	settreemodelfilter.vala \
 	tableobserverstore.vala \

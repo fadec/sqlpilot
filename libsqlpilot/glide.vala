@@ -47,8 +47,8 @@ namespace Sqlp {
 			stmt.bind_int64   (i++, duration.to_seconds ());
 			stmt.bind_double (i++, distance);
 			stmt.bind_double (i++, release_altitude);
-			stmt.bind_double (i++, engine_start_altitude);
 			stmt.bind_double (i++, max_altitude);
+			stmt.bind_double (i++, engine_start_altitude);
 			return i;
 		}
 
@@ -60,8 +60,8 @@ namespace Sqlp {
 			duration = Duration.from_seconds ((long)stmt.column_int64 (i++));
 			distance = stmt.column_double (i++);
 			release_altitude = stmt.column_double (i++);
-			engine_start_altitude = stmt.column_double (i++);
 			max_altitude = stmt.column_double (i++);
+			engine_start_altitude = stmt.column_double (i++);
 		}
 
 	}

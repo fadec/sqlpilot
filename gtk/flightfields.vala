@@ -42,11 +42,7 @@ namespace SqlpGtk {
 		private Button landing_remove;
 		private Label landing_summary;
 
-		private Button glide_add;
-		private Button glide_remove;
-		private Label glide_summary;
-		private TableView glides_view;
-		private TableObserverStore glides;
+		private GlideEditor glide_editor;
 
 		private TreeView holds_view;
 		private Button hold_add;
@@ -80,23 +76,12 @@ namespace SqlpGtk {
 		private Entry aircraft_entry {
 			get { return tail.active ? aircraft_tail_entry : aircraft_registration_entry; }
 		}
-
+		
 		construct {
 			logbook = table.database;
 
-			glide_add = gui.object ("glide_add") as Button;
-			glide_remove = gui.object ("glide_remove") as Button;
-			glides = new TableObserverStore ();
-			glides.select_sql = "SELECT * FROM Glides";
-			glides.scope_sql = "flight_id = ?";
-			glides.bind_scope = (stmt, i) => {
-				stmt.bind_int64 (i++, record.id);
-				return i;
-			};
-			glides.database = logbook;
-			glides.observe (logbook.glides);
-			glides_view = new TableView.with_model (glides);
-			set_slot ("glides", glides_view);
+			glide_editor = new GlideEditor (logbook);
+			set_slot ("glides", glide_editor);
 
 			tag_manager = new TagManager (logbook.flight, logbook.flight_taggings, logbook.flight_tags);
 			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
@@ -180,7 +165,6 @@ namespace SqlpGtk {
 		}
 
 		protected override void set_fields_from_record () {
-			glides.repopulate ();
 			date.set_text  (record.date.to_iso8601 ());
 			leg.set_text (record.leg.to_string ());
 			route.set_text (record.route.to_string_icao ());
@@ -198,6 +182,8 @@ namespace SqlpGtk {
 			trip.set_text (empty_if_null(record.trip));
 			trip_date.set_text (record.trip_date.to_iso8601 ());
 			flight_number.set_text (empty_if_null(record.flight_number));
+			glide_editor.flight_id = record.id;
+			tag_manager.object_id = record.id;
 		}
 
 		public override void set_record_from_fields () {
@@ -347,7 +333,7 @@ namespace SqlpGtk {
 		}
 
 		[CCode (instance_pos = -1)]
-		public bool on_role_focus_out_event (ComboBoxEntry entry, EventFocus ev)
+		public bool on_role_focus_out_event (Entry entry, EventFocus ev)
 		{
 			message ("on_role_focus_oute_event ()");
 			return false;
@@ -357,7 +343,7 @@ namespace SqlpGtk {
 			edited = true;
 		}
 
-		public bool on_role_entry_focus_out_event (EventFocus ev) {
+		public bool on_role_entry_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
 				record.role = record.table.database.role.find_or_new_by_abbreviation (role_entry.get_text ());
 				save ();
@@ -396,7 +382,7 @@ namespace SqlpGtk {
 			edited = true;
 		}
 
-		public bool on_aircraft_entry_focus_out_event (EventFocus ev) {
+		public bool on_aircraft_entry_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
 				var aircraft_table = record.table.database.aircraft;
 				record.aircraft = tail.active ?
@@ -717,21 +703,6 @@ namespace SqlpGtk {
 		}
 
 		public void on_hold_remove_clicked (Button button) {
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_glide_add_clicked (Button button) {
-			var glide = logbook.glides.new_record ();
-			glide.flight = record;
-			glide.save ();
-		}
-
-		[CCode (instance_pos = -1)]
-		public void on_glide_remove_clicked (Button button) {
-			var ids = glides_view.get_selected_ids ();
-			foreach (var id in ids) {
-				logbook.glides.delete_id (id);
-			}
 		}
 
 		[CCode (instance_pos = -1)]

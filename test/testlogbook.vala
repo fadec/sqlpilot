@@ -9,9 +9,7 @@ int main ( string[] args) {
 	var role = logbook.role.new_record ();
 	assert (role is Role);
 
-	role.pic = true;
 	role.abbreviation = "CA";
-	assert (role.pic == true);
 	assert (role.abbreviation == "CA");
 	role.save ();
 	assert (role.id == 1);
@@ -19,7 +17,6 @@ int main ( string[] args) {
 	assert (role is Role);
 
 	assert (role != null);
-	assert (role.pic == true);
 	assert (role.abbreviation == "CA");
 
 	var flight = logbook.flight.new_record ();

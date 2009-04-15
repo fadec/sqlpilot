@@ -41,6 +41,7 @@ namespace SqlpGtk {
 			assert (record is Record);
  			abbreviation.set_text (record.abbreviation != null ? record.abbreviation : "");
 			description.set_text (record.description != null ? record.description : "");
+			tag_manager.object_id = record.id;
 		}
 
 		protected override void set_record_from_fields () {

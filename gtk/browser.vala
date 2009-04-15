@@ -12,6 +12,8 @@ namespace SqlpGtk {
 		// for crud operations
 		public unowned Sqlp.Table <Sqlp.Database, Record> table { set construct; get; }
 
+		public TableObserverStore table_store { get; set; }
+
 		private Fieldset <Record> _fieldset;
 		public Fieldset <Record> fieldset {
 			get { return _fieldset; }

@@ -855,6 +855,8 @@
                         <signal name="clicked" handler="on_takeoff_add_clicked"/>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -868,6 +870,8 @@
                         <signal name="clicked" handler="on_takeoff_remove_clicked"/>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -1013,6 +1017,8 @@
                         <signal name="clicked" handler="on_approach_add_clicked"/>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -1026,6 +1032,8 @@
                         <signal name="clicked" handler="on_approach_remove_clicked"/>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -1071,71 +1079,10 @@
       </packing>
     </child>
     <child>
-      <object class="GtkVBox" id="vbox11">
+      <object class="GtkVBox" id="glides">
         <property name="visible">True</property>
         <child>
-          <object class="GtkVBox" id="glides">
-            <property name="visible">True</property>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkHBox" id="hbox4">
-            <property name="visible">True</property>
-            <child>
-              <object class="GtkHButtonBox" id="hbuttonbox7">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkButton" id="glide_add">
-                    <property name="label" translatable="yes">gtk-add</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="use_stock">True</property>
-                    <signal name="clicked" handler="on_glide_add_clicked"/>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="glide_remove">
-                    <property name="label" translatable="yes">gtk-remove</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="use_stock">True</property>
-                    <signal name="clicked" handler="on_glide_remove_clicked"/>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="glide_summary">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">2 Glides</property>
-              </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="position">1</property>
-          </packing>
+          <placeholder/>
         </child>
       </object>
       <packing>
@@ -1206,6 +1153,8 @@
                     <signal name="clicked" handler="on_hold_add_clicked"/>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">0</property>
                   </packing>
                 </child>
@@ -1219,6 +1168,8 @@
                     <signal name="clicked" handler="on_hold_remove_clicked"/>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -1317,6 +1268,8 @@
                         <signal name="clicked" handler="on_person_add_clicked"/>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -1330,6 +1283,8 @@
                         <signal name="clicked" handler="on_person_remove_clicked"/>
                       </object>
                       <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
