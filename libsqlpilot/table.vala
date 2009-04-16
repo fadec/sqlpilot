@@ -19,10 +19,10 @@ namespace Sqlp {
 		}
 		public string table_name { construct; get; }
 		public Type record_type { construct; get; }
-		protected Statement find;
-		protected Statement insert;
-		protected Statement update;
-		protected Statement destroy;
+		protected Statement find_stmt;
+		protected Statement insert_stmt;
+		protected Statement update_stmt;
+		protected Statement delete_stmt;
 		private string[] _column_names;
 		public string[] column_names { get { return _column_names; } }
 		public int column_count { get { return _column_names.length; } }
@@ -42,10 +42,10 @@ namespace Sqlp {
 
 		construct {
 			_column_names = table_column_names (table_name);
-			find   = _database.prepare_statement (make_find_sql (table_name));
-			insert = _database.prepare_statement (make_insert_sql (table_name));
-			update = _database.prepare_statement (make_update_sql (table_name));
-			destroy = _database.prepare_statement (make_destroy_sql (table_name));
+			find_stmt   = _database.prepare_statement (make_find_sql (table_name));
+			insert_stmt = _database.prepare_statement (make_insert_sql (table_name));
+			update_stmt = _database.prepare_statement (make_update_sql (table_name));
+			delete_stmt = _database.prepare_statement (make_delete_sql (table_name));
 		}
 
 		public RecordType new_record () {
@@ -86,8 +86,8 @@ namespace Sqlp {
 		}
 		
 		public virtual RecordType? find_by_id (int64 id) {
-			find.bind_int64 (1, id);
- 			return find_first(find);
+			find_stmt.bind_int64 (1, id);
+ 			return find_first(find_stmt);
  		}
 
 		public virtual RecordType? find_first (Statement stmt) {
@@ -125,7 +125,7 @@ namespace Sqlp {
 // 		}
 
 		public void delete_id (int64 id) {
-			unowned Statement stmt = this.destroy;
+			unowned Statement stmt = this.delete_stmt;
 			stmt.bind_int64 (1, id);
 			stmt.step ();
 			stmt.reset ();
@@ -174,7 +174,7 @@ namespace Sqlp {
 			return sql;
 		}
 
-		private string make_destroy_sql ( string table_name ) {
+		private string make_delete_sql ( string table_name ) {
 			return "DELETE FROM " + table_name + " WHERE id = ?";
 		}
 
@@ -190,7 +190,7 @@ namespace Sqlp {
 			(use_like ? " LIKE" : " =") + " ? AND id != ?";
 		}
 
-// 		private string make_destroy_all_sql (string table_name, Collection<int64?> ids) {
+// 		private string make_delete_all_sql (string table_name, Collection<int64?> ids) {
 // 			var sb = new StringBuilder ();
 // 			sb.append ("DELETE FROM ");
 // 			sb.append (table_name);

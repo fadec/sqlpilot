@@ -46,10 +46,10 @@ namespace Sqlp {
 				return false;
 			}
 			if (is_new ()) {
-				stmt = _table.insert;
+				stmt = _table.insert_stmt;
 				ncol = bind_for_save (stmt);
 			} else {
-				stmt = _table.update;
+				stmt = _table.update_stmt;
 				bind_for_save (stmt);
 				ncol = bind_for_save (stmt);
 				stmt.bind_int64 (ncol, id);
@@ -77,14 +77,14 @@ namespace Sqlp {
 			}
 			transaction.commit ();
 			message ("</%s>", _table.table_name);
-			if (stmt == _table.insert) _table.tell_inserted (this);
+			if (stmt == _table.insert_stmt) _table.tell_inserted (this);
 			else _table.tell_updated (this);
 			return true;
 		}
 
 		public bool destroy () {
 			if (is_new () || ! deletable ()) return false;
-			weak Statement stmt = _table.destroy;
+			weak Statement stmt = _table.delete_stmt;
 			stmt.bind_int64 (1, id);
 			stmt.step ();
 			stmt.reset ();
