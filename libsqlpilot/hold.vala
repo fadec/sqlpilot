@@ -25,11 +25,11 @@ namespace Sqlp {
 
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_int64 (i++, flight_id);
+			stmt.bind_nonzero_int64 (i++, flight_id);
 			stmt.bind_int   (i++, sequence);
 			stmt.bind_nonempty_text (i++, location);
 			stmt.bind_int (i++, turns);
-			stmt.bind_int64 (i++, duration.to_seconds ());
+			stmt.bind_nonzero_int64 (i++, duration.to_seconds ());
 			return i;
 		}
 

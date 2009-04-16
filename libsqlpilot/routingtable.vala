@@ -22,7 +22,7 @@ namespace Sqlp {
 		}
 
 		public List<Routing> find_by_flight ( Flight f ) {
-			find_by_flight_id_stmt.bind_int64 (1, f.id);
+			find_by_flight_id_stmt.bind_nonzero_int64 (1, f.id);
 			return find_all (find_by_flight_id_stmt);
 		}
 

@@ -42,7 +42,7 @@ namespace Sqlp {
 
 		public List <Flight> find_by_role_id (int64 role_id) {
 			weak Statement stmt = find_by_role_id_stmt;
-			stmt.bind_int64 (1, role_id);
+			stmt.bind_nonzero_int64 (1, role_id);
 			return find_all (stmt);
 		}
 	}

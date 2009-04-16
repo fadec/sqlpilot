@@ -207,6 +207,11 @@ namespace Sqlite {
 			else this.bind_null (col);
 		}
 
+		public int bind_nonzero_int64 (int col, int64 value) {
+			if (value != 0) this.bind_int64 (col, value);
+			else this.bind_null (col);
+		}
+
 		public int step_reset_clear () {
 			int code = this.step ();
 			this.reset ();

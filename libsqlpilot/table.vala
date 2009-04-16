@@ -86,7 +86,7 @@ namespace Sqlp {
 		}
 		
 		public virtual RecordType? find_by_id (int64 id) {
-			find_stmt.bind_int64 (1, id);
+			find_stmt.bind_nonzero_int64 (1, id);
  			return find_first(find_stmt);
  		}
 
@@ -126,7 +126,7 @@ namespace Sqlp {
 
 		public void delete_id (int64 id) {
 			unowned Statement stmt = this.delete_stmt;
-			stmt.bind_int64 (1, id);
+			stmt.bind_nonzero_int64 (1, id);
 			stmt.step ();
 			stmt.reset ();
 			stmt.clear_bindings ();

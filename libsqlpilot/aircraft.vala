@@ -27,7 +27,7 @@ namespace Sqlp {
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_int64 (i++, model_id);
+			stmt.bind_nonzero_int64 (i++, model_id);
 			stmt.bind_nonempty_text (i++, registration);
 			stmt.bind_nonempty_text (i++, tail);
 			stmt.bind_nonempty_text (i++, notes);

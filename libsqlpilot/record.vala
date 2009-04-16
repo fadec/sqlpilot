@@ -52,7 +52,7 @@ namespace Sqlp {
 				stmt = _table.update_stmt;
 				bind_for_save (stmt);
 				ncol = bind_for_save (stmt);
-				stmt.bind_int64 (ncol, id);
+				stmt.bind_nonzero_int64 (ncol, id);
 			}
 			// If my bind_for_save methods are correct the counts should match.
 			if (ncol != _table.column_count) {
@@ -85,7 +85,7 @@ namespace Sqlp {
 		public bool destroy () {
 			if (is_new () || ! deletable ()) return false;
 			weak Statement stmt = _table.delete_stmt;
-			stmt.bind_int64 (1, id);
+			stmt.bind_nonzero_int64 (1, id);
 			stmt.step ();
 			stmt.reset ();
 			stmt.clear_bindings ();
@@ -115,7 +115,7 @@ namespace Sqlp {
 		// Use Table#prepare_unique_column_statement to prep query for first argument.
 		protected bool is_unique_text (Statement unique_stmt, string? value) {
 			unique_stmt.bind_nonempty_text (1, value);
-			unique_stmt.bind_int64 (2, id);
+			unique_stmt.bind_nonzero_int64 (2, id);
 			var status = unique_stmt.step ();
 			unique_stmt.reset ();
 			unique_stmt.clear_bindings ();

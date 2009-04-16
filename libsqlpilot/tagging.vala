@@ -14,8 +14,8 @@ namespace Sqlp {
 		}
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_int64 (i++, object_id);
-			stmt.bind_int64 (i++, tag_id);
+			stmt.bind_nonzero_int64 (i++, object_id);
+			stmt.bind_nonzero_int64 (i++, tag_id);
 			return i;
 		}
 	}

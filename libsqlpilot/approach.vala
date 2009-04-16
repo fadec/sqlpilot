@@ -71,10 +71,10 @@ namespace Sqlp {
 
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_int64 (i++, flight_id);
-			stmt.bind_int64 (i++, airport_id);
-			stmt.bind_int64 (i++, approach_type_id);
-			stmt.bind_int64 (i++, landing_id);
+			stmt.bind_nonzero_int64 (i++, flight_id);
+			stmt.bind_nonzero_int64 (i++, airport_id);
+			stmt.bind_nonzero_int64 (i++, approach_type_id);
+			stmt.bind_nonzero_int64 (i++, landing_id);
 			stmt.bind_int   (i++, sequence);
 			stmt.bind_nonempty_text (i++, runway);
 			stmt.bind_double (i++, visibility);

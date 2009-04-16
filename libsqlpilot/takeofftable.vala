@@ -19,14 +19,14 @@ namespace Sqlp {
 
 		public List <Takeoff> find_by_flight_id (int64 flight_id) {
 			weak Statement stmt = find_by_flight_id_stmt;
-			stmt.bind_int64 (1, flight_id);
+			stmt.bind_nonzero_int64 (1, flight_id);
 			return find_all (stmt);
 		}
 
 
 		public List <Takeoff> find_by_surface_id (int64 surface_id) {
 			weak Statement stmt = find_by_surface_id_stmt;
-			stmt.bind_int64 (1, surface_id);
+			stmt.bind_nonzero_int64 (1, surface_id);
 			return find_all (stmt);
 		}
 

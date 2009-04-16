@@ -118,10 +118,10 @@ namespace Sqlp {
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
-			stmt.bind_int64				(i++, aircraft_id);
-			stmt.bind_int64				(i++, role_id);
-			stmt.bind_int64				(i++, origin_id);
-			stmt.bind_int64				(i++, destination_id);
+			stmt.bind_nonzero_int64				(i++, aircraft_id);
+			stmt.bind_nonzero_int64				(i++, role_id);
+			stmt.bind_nonzero_int64				(i++, origin_id);
+			stmt.bind_nonzero_int64				(i++, destination_id);
 			stmt.bind_nonempty_text		(i++, date.to_iso8601 ());
 			stmt.bind_int				(i++, leg);
 
@@ -187,7 +187,7 @@ namespace Sqlp {
 
 		private void bind_duration (Statement stmt, int iter, Duration dur) {
 			if (dur.to_minutes () > 0) {
-				stmt.bind_int64 (iter, dur.to_minutes ());
+				stmt.bind_nonzero_int64 (iter, dur.to_minutes ());
 			} else {
 				stmt.bind_null (iter);
 			}

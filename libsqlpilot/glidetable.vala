@@ -17,7 +17,7 @@ namespace Sqlp {
 
 		public List <Flight> find_by_flight_id (int64 flight_id) {
 			weak Statement stmt = find_by_flight_id_stmt;
-			stmt.bind_int64 (1, flight_id);
+			stmt.bind_nonzero_int64 (1, flight_id);
 			return find_all (stmt);
 		}
 
