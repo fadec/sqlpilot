@@ -104,8 +104,8 @@ namespace SqlpGtk {
 		}
 
 		protected void init () {
-			if (! ready_for_init) return;
-			if (database == null ||
+			if ((! ready_for_init) ||
+				database == null ||
 				select_sql == null ||
 				id_column_name == null ||
 				scope_sql == null) return;
@@ -122,7 +122,7 @@ namespace SqlpGtk {
 
 		// Catch all table events.
 		// Scope applied elsewhere.
-		public void observe (Sqlp.Table table) {
+		public void observe (Sqlp.Table table, int column = 0) {
 			table.inserted += (table, record) => {
 				add_id (record.id);
 			};
@@ -135,6 +135,26 @@ namespace SqlpGtk {
 			table.destroyed += (table, record) => {
 				remove_id (record.id);
 			};
+		}
+
+		public void repopulate () {
+			TreeIter iter;
+			clear ();
+			int i = 1;
+			i = bind_scope (select_statement, 1);
+			row_count = 0;
+			while (select_statement.step () == Sqlite.ROW) {
+				append (out iter);
+				set_row (iter, select_statement);
+				row_count += 1;
+			}
+			select_statement.reset ();
+			select_statement.clear_bindings ();
+
+			if (has_insert_row) {
+				append (out iter);
+				set (iter, 1, insert_row_text);
+			}
 		}
 
 		public HashSet <int64?> get_int64_column_hashset (int column) {
@@ -179,7 +199,6 @@ namespace SqlpGtk {
 			set_column_types (types);
 		}
 
-
 		private TreeIter add_id (int64 id) {
 			var i = 1;
 			i = bind_scope (select_by_id_statement, i);
@@ -196,7 +215,6 @@ namespace SqlpGtk {
 		}
 
 		private void remove_id (int64 id) {
-			message (id.to_string ());
 			var iter = get_iter_at_id (id);
 			remove (iter);
 		}
@@ -224,26 +242,6 @@ namespace SqlpGtk {
 				} while (iter_next (ref iter));
 			}
 			return iter;
-		}
-
-		public void repopulate () {
-			TreeIter iter;
-			clear ();
-			int i = 1;
-			i = bind_scope (select_statement, 1);
-			row_count = 0;
-			while (select_statement.step () == Sqlite.ROW) {
-				append (out iter);
-				set_row (iter, select_statement);
-				row_count += 1;
-			}
-			select_statement.reset ();
-			select_statement.clear_bindings ();
-
-			if (has_insert_row) {
-				append (out iter);
-				set (iter, 1, insert_row_text);
-			}
 		}
 
 		private void set_row (TreeIter iter, Statement statement) {

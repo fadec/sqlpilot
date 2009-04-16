@@ -15,7 +15,7 @@ namespace SqlpGtk {
 			}
 		}
 
-		public int column { construct; get; }
+		public int column { set construct; get; default = 0; }
 
 		public SetTreeModelFilterFunction function { get; set; default = SetTreeModelFilterFunction.HIDE; }
 

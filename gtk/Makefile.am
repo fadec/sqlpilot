@@ -19,7 +19,6 @@ sqlpilot_gtk_VALASOURCES = \
 	airportbrowser.vala \
 	airportfields.vala \
 	application.vala \
-	approacheditor.vala \
 	book.vala \
 	browser.vala \
 	component.vala \

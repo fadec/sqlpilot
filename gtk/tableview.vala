@@ -48,6 +48,10 @@ namespace SqlpGtk {
 		}
 
 		public int64[] get_selected_ids () {
+			return get_selected_int64s (0);
+		}
+
+		private int64[] get_selected_int64s (int column) {
 			var selection = view.get_selection ();
 			var paths = selection.get_selected_rows (out sort);
 			int64[] ids = {0};
@@ -57,7 +61,7 @@ namespace SqlpGtk {
 				TreeIter iter;
 				int64 id;
 				store.get_iter (out iter, convert_sort_path_to_model_path(path));
-				store.get (iter, 0, out id);
+				store.get (iter, column, out id);
 				ids[i++] = id;
 			}
 			return ids;
@@ -118,13 +122,13 @@ namespace SqlpGtk {
 			return id;
 		}
 
-		public void focus_iter (TreeIter iter) {
+		private void focus_iter (TreeIter iter) {
 			assert (store.iter_is_valid (iter));
 			set_selection_and_cursor_on_model_iter (iter);
 			scroll_to_cursor ();
 		}
 
-		public bool iter_is_visible (TreeIter iter) {
+		private bool iter_is_visible (TreeIter iter) {
 			return (convert_model_path_to_sort_path (store.get_path (iter)) != null);
 		}
 

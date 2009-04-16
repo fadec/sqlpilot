@@ -840,137 +840,15 @@
               </packing>
             </child>
             <child>
-              <object class="GtkTreeView" id="approaches_view">
+              <object class="GtkVBox" id="landings">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="model">approaches_model</property>
-                <property name="headers_clickable">False</property>
-                <property name="search_column">0</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn62">
-                    <property name="title">Airport</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn63">
-                    <property name="title">Type</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn64">
-                    <property name="title">Runway</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn65">
-                    <property name="title">Visibility</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn66">
-                    <property name="title">Ceiling</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn67">
-                    <property name="title">Coupled</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn68">
-                    <property name="title">Termination</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn70">
-                    <property name="title">Surface</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn69">
-                    <property name="title">Runway</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn71">
-                    <property name="title">Crosswind</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn72">
-                    <property name="title">Night</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn73">
-                    <property name="title">Goggles</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn" id="treeviewcolumn74">
-                    <property name="title">Autoland</property>
-                  </object>
+                  <placeholder/>
                 </child>
               </object>
               <packing>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkHBox" id="hbox3">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkHButtonBox" id="hbuttonbox6">
-                    <property name="visible">True</property>
-                    <child>
-                      <object class="GtkButton" id="approach_add">
-                        <property name="label" translatable="yes">gtk-add</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_approach_add_clicked"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="approach_remove">
-                        <property name="label" translatable="yes">gtk-remove</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="use_stock">True</property>
-                        <signal name="clicked" handler="on_approach_remove_clicked"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="approach_summary">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">2 Landings</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="position">2</property>
               </packing>
             </child>
           </object>

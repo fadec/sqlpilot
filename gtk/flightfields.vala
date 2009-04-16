@@ -35,6 +35,7 @@ namespace SqlpGtk {
 		private GlideEditor glide_editor;
 		private HoldEditor hold_editor;
 		private TakeoffEditor takeoff_editor;
+		private LandingEditor landing_editor;
 
 		private ToggleButton cross_country;
 
@@ -75,6 +76,9 @@ namespace SqlpGtk {
 
 			takeoff_editor = new TakeoffEditor (logbook);
 			set_slot ("takeoffs", takeoff_editor);
+
+			landing_editor = new LandingEditor (logbook);
+			set_slot ("landings", landing_editor);
 
 			tag_manager = new TagManager (logbook.flight, logbook.flight_taggings, logbook.flight_tags);
 			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
@@ -177,6 +181,7 @@ namespace SqlpGtk {
 			glide_editor.parent_id = record.id;
 			hold_editor.parent_id = record.id;
 			takeoff_editor.parent_id = record.id;
+			landing_editor.parent_id = record.id;
 			tag_manager.object_id = record.id;
 		}
 
@@ -679,24 +684,6 @@ namespace SqlpGtk {
 		}
 
 		public void on_crew_remove_clicked (Button button) {
-		}
-
-		public void on_takeoff_add_clicked (Button button) {
-		}
-
-		public void on_takeoff_remove_clicked (Button button) {
-		}
-
-		public void on_approach_add_clicked (Button button) {
-		}
-
-		public void on_approach_remove_clicked (Button button) {
-		}
-
-		public void on_hold_add_clicked (Button button) {
-		}
-
-		public void on_hold_remove_clicked (Button button) {
 		}
 
 		[CCode (instance_pos = -1)]

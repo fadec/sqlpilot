@@ -206,23 +206,31 @@ CREATE TABLE Landings (
 	,ApproachRunway CHAR
 	,Visibility FLOAT
 	,Ceiling FLOAT
-	,Coupled BOOLEAN NOT NULL
-		DEFAULT 0
+	,Coupled BOOLEAN
 	-- Landing Info: surface_id is null if no landing
 	,surface_id INTEGER
 		REFERENCES Surfaces (id) ON DELETE RESTRICT
-	,Night BOOLEAN NOT NULL
-		DEFAULT 0
+	,Night BOOLEAN
 	,LandingRunway CHAR
 	,Crosswind FLOAT
-	,FullStop BOOLEAN NOT NULL
-		DEFAULT 0
-	,NightVision BOOLEAN NOT NULL
-		DEFAULT 0
-	,Autoland BOOLEAN NOT NULL
-		DEFAULT 0
+	,FullStop BOOLEAN
+	,NightVision BOOLEAN
+	,Autoland BOOLEAN
 	,CHECK (id <> 0 AND flight_id <> 0 AND airport_id <> 0 AND approach_type_id <> 0 and surface_id <> 0)
-	,CHECK (approach_type_id IS NOT NULL OR surface_id IS NOT NULL)
+	-- row is approach or approach data is null
+	,CHECK (approach_type_id IS NOT NULL OR
+		(ApproachRunway IS NULL AND
+		 Visibility IS NULL AND
+		 Ceiling IS NULL AND
+		 Coupled IS NULL))
+	-- row is landing or landing data is null
+	,CHECK (surface_id IS NOT NULL OR
+		(Night IS NULL AND
+		 LandingRunway IS NULL AND
+		 Crosswind IS NULL AND
+		 FullStop IS NULL AND
+		 NightVision IS NULL AND
+		 Autoland IS NULL))
 );
 
 CREATE TABLE Holds (
