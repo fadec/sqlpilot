@@ -36,8 +36,8 @@ namespace SqlpGtk {
 			}
 		}
 
-		private TableViewComponent _table_view;
-		public TableViewComponent table_view {
+		private TableView _table_view;
+		public TableView table_view {
 			get { return _table_view; }
 			set {
 				_table_view = value;

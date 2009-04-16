@@ -40,8 +40,8 @@ sqlpilot_gtk_VALASOURCES = \
 	rolebrowser.vala \
 	rolefields.vala \
 	settreemodelfilter.vala \
-	tablestore.vala \
-	tableviewcomponent.vala \
+	tableobserverstore.vala \
+	tableview.vala \
 	tableviewcolumn.vala \
 	tagmanager.vala \
 	takeoffeditor.vala \

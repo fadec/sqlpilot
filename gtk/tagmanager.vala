@@ -30,17 +30,17 @@ namespace SqlpGtk {
 		// uint64, string,   string
 		// tag.id, tag.name, tag.description
 		private enum TagColumn { TAG_ID, TAG_NAME, TAG_DESCRIPTION }
-		private TableStore tags;
+		private TableObserverStore tags;
 		private TreeModelFilter tags_filter;
 		private TreeModelSort tags_sort;
-		public TableViewComponent tags_view { get; private set; }
+		public TableView tags_view { get; private set; }
 
 		// ListStore taggings
 		// uint64,     uint64,            uint64,         string,   string
 		// tagging.id, tagging.object_id, tagging.tag_id, tag.name, tag.description
 		private enum TaggingColumn { TAGGING_ID, OBJECT_ID, TAG_ID, TAG_NAME, TAG_DESCRIPTION }
-		private TableStore taggings;
-		public TableViewComponent taggings_view { get; private set; }
+		private TableObserverStore taggings;
+		public TableView taggings_view { get; private set; }
 
 		private Button _add_tagging_button;
 		public Button add_tagging_button {
@@ -102,22 +102,22 @@ namespace SqlpGtk {
 		public void delete_selected_taggings () {}
 		public void delete_selected_tags () {}
 
-		private TableStore make_tags () {
+		private TableObserverStore make_tags () {
 			//GLib.Type[] types = { typeof(uint64), typeof(string), typeof(string) };
-			var tags = new TableStore ();
+			var tags = new TableObserverStore ();
 			tags.database = tag_table.database;
 			tags.select_sql = "SELECT id, Name, Description FROM " + tag_table.table_name;
 			tags.observe (tag_table);
 			return tags;
 		}
 
-		private TableViewComponent make_tags_view (TableStore model) {
-			var view = new TableViewComponent.with_model (model);
+		private TableView make_tags_view (TableObserverStore model) {
+			var view = new TableView.with_model (model);
 			view.edited += tags_view_edited;
 			return view;
 		}
 
-		private void tags_view_edited (TableViewComponent tv, int64 id, string column_name, string new_text) {
+		private void tags_view_edited (TableView tv, int64 id, string column_name, string new_text) {
 			var tag = tag_table.find_by_id (id);
 			switch (column_name) {
 			case "Name":
@@ -130,9 +130,9 @@ namespace SqlpGtk {
 			tag.save ();	
 		}
 
-		private TableStore make_taggings () {
+		private TableObserverStore make_taggings () {
 			//GLib.Type[] types = { typeof(uint64), typeof(uint64), typeof(uint64), typeof(string), typeof(string) };
-			var taggings = new TableStore ();
+			var taggings = new TableObserverStore ();
 			taggings.default_column_type = typeof(int64);
 			taggings.database = tagging_table.database;
 			taggings.id_column_name = "j.id";
@@ -142,8 +142,8 @@ namespace SqlpGtk {
 			return taggings;
 		}
 
-		private TableViewComponent make_taggings_view (TableStore model) {
-			return new TableViewComponent.with_model (model);
+		private TableView make_taggings_view (TableObserverStore model) {
+			return new TableView.with_model (model);
 		}
 
 		private string find_taggings_by_object_id_select_sql () {
