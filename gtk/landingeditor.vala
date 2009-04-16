@@ -20,5 +20,8 @@ namespace SqlpGtk {
 		private override void on_table_view_edited (TableView view, int64 id, string column_name, string new_text) {
 		}
 
+		private override string summary_label_text () {
+			return "[ Approaches: %d ]       [ Landings: %d, Day: %d, Night: %d ]".printf (3, 1, 2, 1);
+		}
 	}
 }

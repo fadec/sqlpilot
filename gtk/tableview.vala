@@ -43,6 +43,14 @@ namespace SqlpGtk {
 			this.top_widget = scrolled_window;
 		}
 
+		public int count_visible_rows () {
+			int count = 0;
+			TreeIter iter;
+			if (! filter.get_iter_first (out iter)) return 0;
+			do { count++; } while (filter.iter_next (ref iter));
+			return count;
+		}
+
 		public int count_selected_rows () {
 			return view.get_selection ().count_selected_rows ();
 		}

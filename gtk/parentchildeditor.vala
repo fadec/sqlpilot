@@ -55,15 +55,24 @@ namespace SqlpGtk {
 			table_store.database = parent_table.database;
 			table_store.observe (child_table);
 			table_view = new TableView.with_model (table_store);
-			table_view.edited += on_table_view_edited;
+			table_view.edited += call_on_table_view_edited;
 			set_slot ("list_view", table_view);
+
+			summary_label.set_text (summary_label_text ());
 		}
+
+		private void call_on_table_view_edited (TableView view, int64 id, string column_name, string new_text) {
+			on_table_view_edited (view, id, column_name, new_text);
+			summary_label.set_text (summary_label_text ());
+		}
+
 
 		[CCode (instance_pos = -1)]
 		public void on_add_clicked (Button button) {
 			var child = child_table.new_record ();
 			associate_parent (child, parent_id);
 			child.save ();
+			summary_label.set_text (summary_label_text ());
 		}
 
 		[CCode (instance_pos = -1)]
@@ -72,7 +81,11 @@ namespace SqlpGtk {
 			foreach (var id in ids) {
 				child_table.delete_id (id);
 			}
+			summary_label.set_text (summary_label_text ());
 		}
-
+		
+		private virtual string summary_label_text () {
+			return "%d records".printf(table_view.count_visible_rows ());
+		}
 	}
 }

@@ -39,5 +39,9 @@ namespace SqlpGtk {
 			glide.save ();
 		}
 
+
+		private virtual string summary_label_text () {
+			return "33333";
+		}
 	}
 }
