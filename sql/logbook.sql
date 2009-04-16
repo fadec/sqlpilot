@@ -55,12 +55,14 @@ CREATE TABLE Flights (
 	,ScheduledDuration INTEGER
 	,Trip VARCHAR
 	,TripDate DATE
+	,CHECK (id <> 0 AND aircraft_id <> 0 AND role_id <> 0 AND origin_airport_id <> 0 AND destination_airport_id <> 0)
 );
 
 CREATE TABLE FlightTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Name CHAR
 	,Description CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE FlightTaggings (
@@ -69,6 +71,7 @@ CREATE TABLE FlightTaggings (
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,flight_tag_id INTEGER NOT NULL
 		REFERENCES FlightTags (id) ON DELETE CASCADE
+	,CHECK (id <> 0 AND flight_id <> 0 AND flight_tag_id <> 0)
 );
 
 CREATE TABLE Routing (
@@ -78,18 +81,21 @@ CREATE TABLE Routing (
 	,airport_id INTEGER NOT NULL
 		REFERENCES Airports (id) ON DELETE RESTRICT
 	,Sequence INTEGER NOT NULL DEFAULT 0
+	,CHECK (id <> 0 AND airport_id <> 0)
 );
 
 CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
 	,Description CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE RoleTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Name CHAR
 	,Description CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE RoleTaggings (
@@ -98,6 +104,7 @@ CREATE TABLE RoleTaggings (
 		REFERENCES Roles (id) ON DELETE CASCADE
 	,role_tag_id INTEGER NOT NULL
 		REFERENCES RoleTags (id) ON DELETE CASCADE
+	,CHECK (id <> 0 AND role_id <> 0 AND role_tag_id <> 0)
 );
 
 CREATE TABLE Aircraft (
@@ -107,6 +114,7 @@ CREATE TABLE Aircraft (
 	,Registration CHAR
 	,Tail CHAR
 	,Notes TEXT
+	,CHECK (id <> 0 AND model_id <> 0)
 );
 
 CREATE TABLE Models (
@@ -114,12 +122,14 @@ CREATE TABLE Models (
 	,Abbreviation CHAR
 	,Make CHAR
 	,Name CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE ModelTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Name CHAR
 	,Description CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE ModelTaggings (
@@ -128,6 +138,7 @@ CREATE TABLE ModelTaggings (
 		REFERENCES Models (id) ON DELETE CASCADE
 	,model_tag_id INTEGER NOT NULL
 		REFERENCES ModelTags (id) ON DELETE CASCADE
+	,CHECK (id <> 0 AND model_id <> 0 AND model_tag_id <> 0)
 );
 
 CREATE TABLE Airports (
@@ -146,12 +157,14 @@ CREATE TABLE Airports (
 	,OffsetDST FLOAT
 	,Timezone CHAR
 	,Notes TEXT
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE Surfaces (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
-	,Description CHAR -- grass, pavement-good, pavement-fair, ship, glacier, ...
+	,Description CHAR -- grass, pavement-good, water, ship, glacier, towered airport, ...
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE Takeoffs (
@@ -170,6 +183,14 @@ CREATE TABLE Takeoffs (
 	,Visibility FLOAT
 	,Aborted BOOLEAN NOT NULL
 		DEFAULT 0
+	,CHECK (id <> 0 AND flight_id <> 0 AND airport_id <> 0 AND surface_id <> 0)
+);
+
+CREATE TABLE ApproachTypes (
+	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,Abbreviation CHAR
+	,Description CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE Landings (
@@ -178,12 +199,21 @@ CREATE TABLE Landings (
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,airport_id INTEGER
 		REFERENCES Airports (id) ON DELETE RESTRICT
+	,Sequence INTEGER NOT NULL DEFAULT 0
+	-- Approach Info: approach_type_id is null if no approach
+	,approach_type_id INTEGER
+		REFERENCES ApproachTypes (id) ON DELETE RESTRICT
+	,ApproachRunway CHAR
+	,Visibility FLOAT
+	,Ceiling FLOAT
+	,Coupled BOOLEAN NOT NULL
+		DEFAULT 0
+	-- Landing Info: surface_id is null if no landing
 	,surface_id INTEGER
 		REFERENCES Surfaces (id) ON DELETE RESTRICT
-	,Sequence INTEGER NOT NULL DEFAULT 0
 	,Night BOOLEAN NOT NULL
 		DEFAULT 0
-	,Runway CHAR
+	,LandingRunway CHAR
 	,Crosswind FLOAT
 	,FullStop BOOLEAN NOT NULL
 		DEFAULT 0
@@ -191,31 +221,8 @@ CREATE TABLE Landings (
 		DEFAULT 0
 	,Autoland BOOLEAN NOT NULL
 		DEFAULT 0
-);
-
-CREATE TABLE Approaches (
-	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,flight_id INTEGER NOT NULL
-		REFERENCES Flights (id) ON DELETE CASCADE
-	,airport_id INTEGER
-		REFERENCES Airports (id) ON DELETE RESTRICT
-	-- Approach Info
-	,approach_type_id INTEGER
-		REFERENCES ApproachTypes (id) ON DELETE RESTRICT
-	,landing_id INTEGER
-		REFERENCES Landings (id) ON DELETE SET NULL
-	,Sequence INTEGER NOT NULL DEFAULT 0
-	,Runway CHAR
-	,Visibility FLOAT
-	,Ceiling FLOAT
-	,Coupled BOOLEAN NOT NULL
-		DEFAULT 0
-);
-
-CREATE TABLE ApproachTypes (
-	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
-	,Description CHAR
+	,CHECK (id <> 0 AND flight_id <> 0 AND airport_id <> 0 AND approach_type_id <> 0 and surface_id <> 0)
+	,CHECK (approach_type_id IS NOT NULL OR surface_id IS NOT NULL)
 );
 
 CREATE TABLE Holds (
@@ -226,6 +233,7 @@ CREATE TABLE Holds (
 	,Location CHAR
 	,Turns INTEGER
 	,Duration INTEGER
+	,CHECK (id <> 0 AND flight_id <> 0)
 );
 
 CREATE TABLE Glides (
@@ -240,12 +248,14 @@ CREATE TABLE Glides (
 	,ReleaseAltitude FLOAT
 	,MaxAltitude FLOAT
 	,EngineStartAltitude FLOAT
+	,CHECK (id <> 0 AND flight_id <> 0 AND launch_type_id <> 0)
 );
 
 CREATE TABLE LaunchTypes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
 	,Description CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE People (
@@ -254,6 +264,7 @@ CREATE TABLE People (
 	,FirstName CHAR
 	,Identification CHAR
 	,Notes CHAR
+	,CHECK (id <> 0)
 );
 
 CREATE TABLE Crew (
@@ -264,12 +275,14 @@ CREATE TABLE Crew (
 		REFERENCES People (id) ON DELETE RESTRICT
 	,role_id INTEGER
 		REFERENCES Roles (id) ON DELETE RESTRICT
+	,CHECK (id <> 0 AND person_id <> 0 AND role_id <> 0)
 );
 
 CREATE TABLE Reports (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Title CHAR
 	,SQL TEXT
+	,CHECK (id <> 0)
 );
 create unique index reports_title on Reports(title);
 
