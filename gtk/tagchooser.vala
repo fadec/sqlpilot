@@ -5,7 +5,7 @@ using Sqlite;
 
 namespace SqlpGtk {
 
-	public class TagManager : GLib.Object {
+	public class TagChooser : Pane {
 		
 		public unowned Sqlp.Table <Logbook, Record> object_table { get; construct; }
 		public unowned Sqlp.TaggingTable tagging_table { get; construct; }
@@ -36,55 +36,32 @@ namespace SqlpGtk {
 		private TableObserverStore taggings;
 		public TableView taggings_view { get; private set; }
 
-		private Button _add_tagging_button;
-		public Button add_tagging_button {
-			get { return _add_tagging_button; }
-			set {
-				_add_tagging_button = value;
-				_add_tagging_button.clicked += on_add_tagging_button_clicked;
-			}
-		}
-		private Button _remove_tagging_button;
-		public Button remove_tagging_button {
-			get { return _remove_tagging_button; }
-			set {
-				_remove_tagging_button = value;
-				_remove_tagging_button.clicked += on_remove_tagging_button_clicked;
-			}
-		}
+		private Button add_tagging_button;
+		private Button remove_tagging_button;
 
-		private Button _add_tag_button;
-		public Button add_tag_button {
-			get { return _add_tag_button; }
-			set {
-				_add_tag_button = value;
-				_add_tag_button.clicked += on_add_tag_button_clicked;
-			}
-		}
-		private Button _remove_tag_button;
-		public Button remove_tag_button {
-			get { return _remove_tag_button; }
-			set {
-				_remove_tag_button = value;
-				_remove_tag_button.clicked += on_remove_tag_button_clicked;
-			}
-		}
-
-		
-		public TagManager (Sqlp.Table object_table, Sqlp.TaggingTable tagging_table, Sqlp.TagTable tag_table) {
+		public TagChooser (Sqlp.Table object_table, Sqlp.TaggingTable tagging_table, Sqlp.TagTable tag_table) {
 			this.object_table = object_table;
 			this.tagging_table = tagging_table;
 			this.tag_table = tag_table;
+			this.gui_name = "tag_chooser";
 		}
 		
 		construct {
 			Logbook l; // seems to fix (work around) vala header dependency bug
 			Tag t;
 			Tagging tt;
+			add_tagging_button = gui.object ("add_tagging") as Button;
+			add_tagging_button.clicked += on_add_tagging_button_clicked;
+			remove_tagging_button = gui.object ("remove_tagging") as Button;
+			remove_tagging_button.clicked += on_remove_tagging_button_clicked;
+
 			tags = make_tags ();
 			tags_view = make_tags_view (tags);
 			taggings = make_taggings ();
 			taggings_view = make_taggings_view (taggings);
+
+			set_slot ("tags", tags_view);
+			set_slot ("taggings", taggings_view);
 
 			taggings.bind_scope = (stmt, i) => {
 				stmt.bind_int64 (i++, object_id);
@@ -107,21 +84,7 @@ namespace SqlpGtk {
 
 		private TableView make_tags_view (TableObserverStore model) {
 			var view = new TableView.with_model (model);
-			view.edited += tags_view_edited;
 			return view;
-		}
-
-		private void tags_view_edited (TableView tv, int64 id, string column_name, string new_text) {
-			var tag = tag_table.find_by_id (id);
-			switch (column_name) {
-			case "Abbreviation":
-				tag.abbreviation = new_text;
-				break;
-			case "Description":
-				tag.description = new_text;
-				break;
-			}
-			tag.save ();	
 		}
 
 		private TableObserverStore make_taggings () {
@@ -190,18 +153,5 @@ namespace SqlpGtk {
 			var ids = taggings.get_int64_column_hashset (TaggingColumn.TAG_ID);
 			tags_view.set_hidden_ids (ids);
 		}
-
-		private void on_add_tag_button_clicked (Button button) {
-			var tag = tag_table.new_record ();
-			tag.save ();
-		}
-
-		private void on_remove_tag_button_clicked (Button button) {
-			var ids = tags_view.get_selected_ids ();
-			foreach (var id in ids) {
-				tag_table.delete_id (id);
-			}
-		}
-		
 	}
 }

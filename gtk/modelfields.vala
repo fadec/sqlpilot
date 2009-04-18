@@ -7,11 +7,10 @@ namespace SqlpGtk {
 
 	public class ModelFields : Fieldset <Model> {
 
-		public TagManager tag_manager {	get; construct;	}
+		private TagChooser tag_chooser;
 
-		public ModelFields (Sqlp.Table table, TagManager tag_manager) {
+		public ModelFields (Sqlp.Table table) {
 			this.gui_name = "model_fields";
-			this.tag_manager = tag_manager;
 			this.table = table;
 		}
 
@@ -22,24 +21,21 @@ namespace SqlpGtk {
 
 		construct {
 			Logbook l; // Vala seems to need a declaration to generate correct dependencies in c headers.
+			var logbook = table.database;
 
 			name = gui.object ("name") as Entry;
 			abbreviation = gui.object ("abbreviation") as Entry;
 			make = gui.object ("make") as Entry;
 			type = gui.object ("type") as Entry;
 
-			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
-			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
-			tag_manager.add_tag_button = gui.object ("add_tag") as Button;
-			tag_manager.remove_tag_button = gui.object ("remove_tag") as Button;
-			set_slot ("tags", tag_manager.tags_view);
-			set_slot ("taggings", tag_manager.taggings_view);
+			tag_chooser = new TagChooser (table, logbook.role_taggings, logbook.role_tags);			
+			set_slot ("properties", tag_chooser);
 		}
 
 		protected override void set_fields_from_record () {
 			name.set_text (record.name);
 			abbreviation.set_text (record.abbreviation);
-			tag_manager.object_id = record.id;
+			tag_chooser.object_id = record.id;
 		}
 
 		protected override void set_record_from_fields () {

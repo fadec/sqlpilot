@@ -55,7 +55,8 @@ namespace SqlpGtk {
 		private TableObserverStore role_store;
 		private TableObserverStore aircraft_store;
 
-		private TagManager tag_manager;
+		private TagChooser tag_chooser;
+		private TagChooser crew_chooser;
 
 		public FlightFields (Sqlp.Table table) {
 			this.gui_name = "flight_fields";
@@ -84,13 +85,11 @@ namespace SqlpGtk {
 			landing_editor = new LandingEditor (logbook);
 			set_slot ("landings", landing_editor);
 
-			tag_manager = new TagManager (logbook.flight, logbook.flight_taggings, logbook.flight_tags);
-			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
-			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
-			tag_manager.add_tag_button = gui.object ("add_tag") as Button;
-			tag_manager.remove_tag_button = gui.object ("remove_tag") as Button;
-			set_slot ("tags", tag_manager.tags_view);
-			set_slot ("taggings", tag_manager.taggings_view);
+			tag_chooser = new TagChooser (table, logbook.flight_taggings, logbook.flight_tags);
+			set_slot ("tags", tag_chooser);
+
+// 			crew_chooser = new TagChooser (table, logbook.crew, logbook.people);
+// 			set_slot ("crew", crew_chooser);
 
 			var date_edit = new Entry ();
 			gui.box ("date_slot").pack_start_defaults (date_edit);
@@ -187,7 +186,7 @@ namespace SqlpGtk {
 			hold_editor.parent_id = record.id;
 			takeoff_editor.parent_id = record.id;
 			landing_editor.parent_id = record.id;
-			tag_manager.object_id = record.id;
+			tag_chooser.object_id = record.id;
 		}
 
 		public override void set_record_from_fields () {

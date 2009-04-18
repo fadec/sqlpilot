@@ -6,7 +6,7 @@ namespace SqlpGtk {
 
 	public class RoleFields : Fieldset <Role> {
 
-		public TagManager tag_manager {	get; construct;	}
+		private TagChooser tag_chooser;
 
 		private Entry abbreviation;
 		private Entry description;
@@ -19,29 +19,25 @@ namespace SqlpGtk {
 		private CheckButton instructor;
 		private CheckButton military;
 
-		public RoleFields (Sqlp.Table table, TagManager tag_manager) {
+		public RoleFields (Sqlp.Table table) {
 			this.gui_name = "role_fields";
-			this.tag_manager = tag_manager;
 			this.table = table;
 		}
 
 		construct {
+			var logbook = table.database;
+
 			abbreviation	= gui.object ("abbreviation")			 as Entry;
 			description		= gui.object ("description")			 as Entry;
-
-			tag_manager.add_tagging_button = gui.object ("add_tagging") as Button;
-			tag_manager.remove_tagging_button = gui.object ("remove_tagging") as Button;
-			tag_manager.add_tag_button = gui.object ("add_tag") as Button;
-			tag_manager.remove_tag_button = gui.object ("remove_tag") as Button;
-			set_slot ("tags", tag_manager.tags_view);
-			set_slot ("taggings", tag_manager.taggings_view);
+			tag_chooser = new TagChooser (table, logbook.role_taggings, logbook.role_tags);			
+			set_slot ("properties", tag_chooser);
 		}
 
 		protected override void set_fields_from_record () {
 			assert (record is Record);
  			abbreviation.set_text (record.abbreviation != null ? record.abbreviation : "");
 			description.set_text (record.description != null ? record.description : "");
-			tag_manager.object_id = record.id;
+			tag_chooser.object_id = record.id;
 		}
 
 		protected override void set_record_from_fields () {

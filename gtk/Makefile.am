@@ -42,6 +42,7 @@ sqlpilot_gtk_VALASOURCES = \
 	settreemodelfilter.vala \
 	tableobserverstore.vala \
 	tableview.vala \
+	tagchooser.vala \
 	tagmanager.vala \
 	takeoffeditor.vala \
 	util.vala

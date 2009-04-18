@@ -13,8 +13,7 @@ namespace SqlpGtk {
 			table_store = new TableObserverStore.with_view (logbook, "Roles");
 			table_store.observe (table);
 
-			var role_tag_manager = new TagManager (table, logbook.role_taggings, logbook.role_tags);
-			fieldset = new RoleFields (table, role_tag_manager);
+			fieldset = new RoleFields (table);
 			table_view = new TableView.with_model (table_store);			
 		}
 	}

@@ -12,8 +12,7 @@ namespace SqlpGtk {
 			var logbook = table.database as Logbook;
 			table_store = new TableObserverStore.with_view (table.database, "Models");
 			table_store.observe (table);
-			var model_tag_manager = new TagManager (table, logbook.model_taggings, logbook.model_tags);
-			fieldset = new ModelFields (table, model_tag_manager);
+			fieldset = new ModelFields (table);
 			table_view = new TableView.with_model (table_store);
 		}
 	}
