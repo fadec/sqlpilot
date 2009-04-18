@@ -57,7 +57,7 @@ namespace Sqlp {
 			// If my bind_for_save methods are correct the counts should match.
 			if (ncol != _table.column_count) {
 				message ("bind_for_save returned incorrect count of %d for %s which has %d columns",
-						 ncol, _table.table_name, _table.column_names.length);
+						 ncol, _table.table_name, _table.column_count);
 				transaction.rollback ();
 				return false;
 			}
