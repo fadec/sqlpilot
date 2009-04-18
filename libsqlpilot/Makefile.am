@@ -17,6 +17,8 @@ libsqlpilot_la_VALASOURCES = \
 	approachtable.vala \
 	approachtype.vala \
 	approachtypetable.vala \
+	crew.vala \
+	crewtable.vala \
 	database.vala \
 	date.vala \
 	datetime.vala \
@@ -38,6 +40,8 @@ libsqlpilot_la_VALASOURCES = \
 	modeltable.vala \
 	modeltaggingtable.vala \
 	modeltagtable.vala \
+	person.vala \
+	persontable.vala \
 	record.vala \
 	role.vala \
 	roletable.vala \

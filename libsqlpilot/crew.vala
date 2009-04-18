@@ -1,16 +1,16 @@
-
+using Sqlite;
 namespace Sqlp {
-	public class Crew {
-		
-		public Crew () {
+	public class Crew : Record <ModelTable> {
+
+		public override int bind_for_save (Statement stmt) {
+			var i = 1;
+
+			return i;
 		}
 
-		public Crew read () {
-			
-			return this;
+		public override void set_from_stmt (Statement stmt) {
+			var i = 1;
 		}
-		public Crew write () {
-			return this;
-		}
+
 	}
 }

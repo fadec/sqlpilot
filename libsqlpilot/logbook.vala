@@ -18,6 +18,8 @@ namespace Sqlp {
  		public ModelTable model;
  		public AirportTable airport;
 		public RoutingTable routing;
+		public PersonTable people;
+		public CrewTable crew;
 
 		public ModelTagTable model_tags;
 		public ModelTaggingTable model_taggings;
@@ -46,6 +48,8 @@ namespace Sqlp {
 			model = new ModelTable (this);
 			airport = new AirportTable (this);
 			routing = new RoutingTable (this);
+			people = new PersonTable (this);
+			crew = new CrewTable (this);
 
 			model_tags = new ModelTagTable (this);
 			model_taggings = new ModelTaggingTable (this);

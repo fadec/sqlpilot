@@ -88,8 +88,8 @@ namespace SqlpGtk {
 			tag_chooser = new TagChooser (table, logbook.flight_taggings, logbook.flight_tags);
 			set_slot ("tags", tag_chooser);
 
-// 			crew_chooser = new TagChooser (table, logbook.crew, logbook.people);
-// 			set_slot ("crew", crew_chooser);
+			crew_chooser = new TagChooser (table, logbook.crew, logbook.people);
+			set_slot ("crew", crew_chooser);
 
 			var date_edit = new Entry ();
 			gui.box ("date_slot").pack_start_defaults (date_edit);
