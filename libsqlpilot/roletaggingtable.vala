@@ -5,9 +5,9 @@ namespace Sqlp {
 		public RoleTaggingTable (Logbook logbook) {
 			this.record_type = typeof (Tagging);
 			this.database = logbook;
-			this.table_name = "RoleTaggings";
+			this.table_name = "RolePropertyAssignments";
 			this.object_id_column_name = "role_id";
-			this.tag_id_column_name = "role_tag_id";
+			this.tag_id_column_name = "role_property_id";
 		}
 
 	}

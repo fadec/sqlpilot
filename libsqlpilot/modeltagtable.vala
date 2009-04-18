@@ -7,7 +7,7 @@ namespace Sqlp {
 		public ModelTagTable (Logbook logbook) {
 			this.record_type = typeof (Tag);
 			this.database = logbook;
-			this.table_name = "ModelTags";
+			this.table_name = "ModelProperties";
 		}
 
 	}

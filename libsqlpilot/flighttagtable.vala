@@ -7,7 +7,7 @@ namespace Sqlp {
 		public FlightTagTable (Logbook logbook) {
 			this.record_type = typeof (Tag);
 			this.database = logbook;
-			this.table_name = "FlightTags";
+			this.table_name = "FlightProperties";
 		}
 
 	}

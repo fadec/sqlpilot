@@ -106,7 +106,7 @@ namespace SqlpGtk {
 			//GLib.Type[] types = { typeof(uint64), typeof(string), typeof(string) };
 			var tags = new TableObserverStore ();
 			tags.database = tag_table.database;
-			tags.select_sql = "SELECT id, Name, Description FROM " + tag_table.table_name;
+			tags.select_sql = "SELECT * FROM " + tag_table.table_name;
 			tags.observe (tag_table);
 			return tags;
 		}
@@ -120,8 +120,8 @@ namespace SqlpGtk {
 		private void tags_view_edited (TableView tv, int64 id, string column_name, string new_text) {
 			var tag = tag_table.find_by_id (id);
 			switch (column_name) {
-			case "Name":
-				tag.name = new_text;
+			case "Abbreviation":
+				tag.abbreviation = new_text;
 				break;
 			case "Description":
 				tag.abbreviation = new_text;
@@ -153,7 +153,7 @@ namespace SqlpGtk {
 			s.append (tagging_table.object_id_column_name);
 			s.append (" as object_id, t.id");
 			s.append (" as tag_id, t.");
-			s.append ("Name");
+			s.append ("Abbreviation");
 			s.append (", t.");
 			s.append ("Description");
 			s.append (" FROM ");

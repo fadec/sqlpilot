@@ -57,20 +57,20 @@ CREATE TABLE Flights (
 	,CHECK (id <> 0 AND aircraft_id <> 0 AND role_id <> 0 AND origin_airport_id <> 0 AND destination_airport_id <> 0)
 );
 
-CREATE TABLE FlightTags (
+CREATE TABLE FlightProperties (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Name CHAR
+	,Abbreviation CHAR
 	,Description CHAR
 	,CHECK (id <> 0)
 );
 
-CREATE TABLE FlightTaggings (
+CREATE TABLE FlightPropertyAssignments (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,flight_id INTEGER NOT NULL
 		REFERENCES Flights (id) ON DELETE CASCADE
-	,flight_tag_id INTEGER NOT NULL
-		REFERENCES FlightTags (id) ON DELETE CASCADE
-	,CHECK (id <> 0 AND flight_id <> 0 AND flight_tag_id <> 0)
+	,flight_property_id INTEGER NOT NULL
+		REFERENCES FlightProperties (id) ON DELETE CASCADE
+	,CHECK (id <> 0 AND flight_id <> 0 AND flight_property_id <> 0)
 );
 
 CREATE TABLE Routing (
@@ -90,20 +90,20 @@ CREATE TABLE Roles (
 	,CHECK (id <> 0)
 );
 
-CREATE TABLE RoleTags (
+CREATE TABLE RoleProperties (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Name CHAR
+	,Abbreviation CHAR
 	,Description CHAR
 	,CHECK (id <> 0)
 );
 
-CREATE TABLE RoleTaggings (
+CREATE TABLE RolePropertyAssignments (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,role_id INTEGER NOT NULL
 		REFERENCES Roles (id) ON DELETE CASCADE
-	,role_tag_id INTEGER NOT NULL
-		REFERENCES RoleTags (id) ON DELETE CASCADE
-	,CHECK (id <> 0 AND role_id <> 0 AND role_tag_id <> 0)
+	,role_property_id INTEGER NOT NULL
+		REFERENCES RoleProperties (id) ON DELETE CASCADE
+	,CHECK (id <> 0 AND role_id <> 0 AND role_property_id <> 0)
 );
 
 CREATE TABLE Aircraft (
@@ -124,20 +124,20 @@ CREATE TABLE Models (
 	,CHECK (id <> 0)
 );
 
-CREATE TABLE ModelTags (
+CREATE TABLE ModelProperties (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Name CHAR
+	,Abbreviation CHAR
 	,Description CHAR
 	,CHECK (id <> 0)
 );
 
-CREATE TABLE ModelTaggings (
+CREATE TABLE ModelPropertyAssignments (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,model_id INTEGER NOT NULL
 		REFERENCES Models (id) ON DELETE CASCADE
-	,model_tag_id INTEGER NOT NULL
-		REFERENCES ModelTags (id) ON DELETE CASCADE
-	,CHECK (id <> 0 AND model_id <> 0 AND model_tag_id <> 0)
+	,model_property_id INTEGER NOT NULL
+		REFERENCES ModelProperties (id) ON DELETE CASCADE
+	,CHECK (id <> 0 AND model_id <> 0 AND model_property_id <> 0)
 );
 
 CREATE TABLE Airports (
