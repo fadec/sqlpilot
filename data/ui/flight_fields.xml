@@ -142,30 +142,52 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkRadioButton" id="icao">
-                    <property name="label" translatable="yes">ICAO</property>
+                  <object class="GtkHBox" id="hbox2">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                    <signal name="toggled" handler="on_icao_toggled"/>
+                    <child>
+                      <object class="GtkRadioButton" id="icao">
+                        <property name="label" translatable="yes">ICAO</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <signal name="toggled" handler="on_icao_toggled"/>
+                      </object>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRadioButton" id="iata">
+                        <property name="label" translatable="yes">IATA</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">icao</property>
+                      </object>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkRadioButton" id="iata">
-                    <property name="label" translatable="yes">IATA</property>
+                  <object class="GtkCheckButton" id="cross_country">
+                    <property name="label" translatable="yes">Cross Country</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="active">True</property>
                     <property name="draw_indicator">True</property>
-                    <property name="group">icao</property>
+                    <signal name="toggled" handler="on_cross_country_toggled"/>
                   </object>
                   <packing>
+                    <property name="expand">False</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
@@ -294,16 +316,16 @@
             <property name="visible">True</property>
             <property name="spacing">8</property>
             <child>
-              <object class="GtkHBox" id="hbox14">
+              <object class="GtkVBox" id="vbox27">
                 <property name="visible">True</property>
-                <property name="spacing">4</property>
+                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkVBox" id="vbox53">
+                  <object class="GtkHBox" id="hbox3">
                     <property name="visible">True</property>
-                    <property name="spacing">4</property>
                     <child>
                       <object class="GtkVBox" id="vbox54">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel" id="label46">
                             <property name="visible">True</property>
@@ -318,6 +340,7 @@
                           <object class="GtkEntry" id="duration">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="width_chars">6</property>
                             <signal name="changed" handler="on_duration_changed"/>
                             <signal name="focus_out_event" handler="on_duration_focus_out_event"/>
@@ -334,82 +357,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkVBox" id="vbox55">
-                        <property name="visible">True</property>
-                        <child>
-                          <object class="GtkLabel" id="label47">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">SDur</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="scheduled_duration">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="width_chars">6</property>
-                            <signal name="changed" handler="on_scheduled_duration_changed"/>
-                            <signal name="focus_out_event" handler="on_scheduled_duration_focus_out_event"/>
-                            <signal name="focus_in_event" handler="on_scheduled_duration_focus_in_event"/>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkVBox" id="vbox56">
-                        <property name="visible">True</property>
-                        <child>
-                          <object class="GtkLabel" id="label48">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">Night</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="night">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="width_chars">6</property>
-                            <signal name="changed" handler="on_night_changed"/>
-                            <signal name="focus_out_event" handler="on_night_focus_out_event"/>
-                            <signal name="focus_in_event" handler="on_night_focus_in_event"/>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkVBox" id="vbox34">
-                    <property name="visible">True</property>
-                    <property name="spacing">4</property>
-                    <child>
                       <object class="GtkVBox" id="vbox35">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel" id="label41">
                             <property name="visible">True</property>
@@ -424,10 +374,87 @@
                           <object class="GtkEntry" id="actual_out">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="width_chars">6</property>
                             <signal name="changed" handler="on_actual_out_changed"/>
                             <signal name="focus_out_event" handler="on_actual_out_focus_out_event"/>
                             <signal name="focus_in_event" handler="on_actual_out_focus_in_event"/>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkVBox" id="vbox31">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="label35">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">In</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="actual_in">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <property name="width_chars">6</property>
+                            <signal name="changed" handler="on_actual_in_changed"/>
+                            <signal name="focus_out_event" handler="on_actual_in_focus_out_event"/>
+                            <signal name="focus_in_event" handler="on_actual_in_focus_in_event"/>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkHBox" id="hbox4">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkVBox" id="vbox55">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="label47">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">SDur</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="scheduled_duration">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <property name="width_chars">6</property>
+                            <signal name="changed" handler="on_scheduled_duration_changed"/>
+                            <signal name="focus_out_event" handler="on_scheduled_duration_focus_out_event"/>
+                            <signal name="focus_in_event" handler="on_scheduled_duration_focus_in_event"/>
                           </object>
                           <packing>
                             <property name="position">1</property>
@@ -442,6 +469,7 @@
                     <child>
                       <object class="GtkVBox" id="vbox36">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel" id="label42">
                             <property name="visible">True</property>
@@ -456,6 +484,7 @@
                           <object class="GtkEntry" id="scheduled_out">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="width_chars">6</property>
                             <signal name="changed" handler="on_scheduled_out_changed"/>
                             <signal name="focus_out_event" handler="on_scheduled_out_focus_out_event"/>
@@ -472,82 +501,9 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkVBox" id="vbox51">
-                        <property name="visible">True</property>
-                        <child>
-                          <object class="GtkLabel" id="label43">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">Inst</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="instrument">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="width_chars">6</property>
-                            <signal name="changed" handler="on_instrument_changed"/>
-                            <signal name="focus_out_event" handler="on_instrument_focus_out_event"/>
-                            <signal name="focus_in_event" handler="on_instrument_focus_in_event"/>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkVBox" id="vbox25">
-                    <property name="visible">True</property>
-                    <property name="spacing">4</property>
-                    <child>
-                      <object class="GtkVBox" id="vbox27">
-                        <property name="visible">True</property>
-                        <child>
-                          <object class="GtkLabel" id="label35">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">In</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkEntry" id="actual_in">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="width_chars">6</property>
-                            <signal name="changed" handler="on_actual_in_changed"/>
-                            <signal name="focus_out_event" handler="on_actual_in_focus_out_event"/>
-                            <signal name="focus_in_event" handler="on_actual_in_focus_in_event"/>
-                          </object>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkVBox" id="vbox29">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel" id="label39">
                             <property name="visible">True</property>
@@ -562,10 +518,87 @@
                           <object class="GtkEntry" id="scheduled_in">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="width_chars">6</property>
                             <signal name="changed" handler="on_scheduled_in_changed"/>
                             <signal name="focus_out_event" handler="on_scheduled_in_focus_out_event"/>
                             <signal name="focus_in_event" handler="on_scheduled_in_focus_in_event"/>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkHBox" id="hbox5">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkVBox" id="vbox56">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="label48">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Night</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="night">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <property name="width_chars">6</property>
+                            <signal name="changed" handler="on_night_changed"/>
+                            <signal name="focus_out_event" handler="on_night_focus_out_event"/>
+                            <signal name="focus_in_event" handler="on_night_focus_in_event"/>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkVBox" id="vbox51">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="label43">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Inst</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="instrument">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                            <property name="width_chars">6</property>
+                            <signal name="changed" handler="on_instrument_changed"/>
+                            <signal name="focus_out_event" handler="on_instrument_focus_out_event"/>
+                            <signal name="focus_in_event" handler="on_instrument_focus_in_event"/>
                           </object>
                           <packing>
                             <property name="position">1</property>
@@ -580,6 +613,7 @@
                     <child>
                       <object class="GtkVBox" id="vbox30">
                         <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel" id="label40">
                             <property name="visible">True</property>
@@ -594,6 +628,7 @@
                           <object class="GtkEntry" id="hood">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
                             <property name="width_chars">6</property>
                             <signal name="changed" handler="on_hood_changed"/>
                             <signal name="focus_out_event" handler="on_hood_focus_out_event"/>
@@ -611,51 +646,55 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
                     <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkHBox" id="hbox11">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkHBox" id="hbox13">
+                        <property name="visible">True</property>
+                        <child>
+                          <object class="GtkRadioButton" id="utc">
+                            <property name="label" translatable="yes">UTC</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="draw_indicator">True</property>
+                            <signal name="toggled" handler="on_utc_toggled"/>
+                          </object>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkRadioButton" id="local">
+                            <property name="label" translatable="yes">Local</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="draw_indicator">True</property>
+                            <property name="group">utc</property>
+                          </object>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
                   </packing>
                 </child>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkVBox" id="vbox1">
-                <property name="visible">True</property>
-                <child>
-                  <object class="GtkRadioButton" id="utc">
-                    <property name="label" translatable="yes">UTC</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                    <property name="group">local</property>
-                    <signal name="toggled" handler="on_utc_toggled"/>
-                  </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkRadioButton" id="local">
-                    <property name="label" translatable="yes">Local</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
-                    <property name="active">True</property>
-                    <property name="draw_indicator">True</property>
-                  </object>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="position">1</property>
               </packing>
             </child>
           </object>
@@ -817,22 +856,12 @@
           </packing>
         </child>
         <child>
-          <object class="GtkHSeparator" id="hseparator1">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="padding">2</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkVBox" id="vbox7">
             <property name="visible">True</property>
             <child>
               <object class="GtkLabel" id="label13">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">Approaches and Landings</property>
+                <property name="label" translatable="yes">Landings</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -853,7 +882,7 @@
             </child>
           </object>
           <packing>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>
@@ -896,38 +925,65 @@
       <object class="GtkVBox" id="vbox10">
         <property name="visible">True</property>
         <child>
-          <object class="GtkCheckButton" id="cross_country">
-            <property name="label" translatable="yes">Cross Country</property>
+          <object class="GtkVBox" id="vbox11">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">False</property>
-            <property name="draw_indicator">True</property>
-            <signal name="toggled" handler="on_cross_country_toggled"/>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="A">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Approaches</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="approaches">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="expand">False</property>
             <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label32">
+          <object class="GtkVBox" id="vbox24">
             <property name="visible">True</property>
-            <property name="label" translatable="yes">Holding</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkVBox" id="holds">
-            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
             <child>
-              <placeholder/>
+              <object class="GtkLabel" id="label32">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Holding</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkVBox" id="holds">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="position">1</property>
+              </packing>
             </child>
           </object>
           <packing>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </object>
@@ -938,7 +994,7 @@
     <child type="tab">
       <object class="GtkLabel" id="label5">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">Enroute</property>
+        <property name="label" translatable="yes">IFR</property>
       </object>
       <packing>
         <property name="position">4</property>

@@ -13,6 +13,8 @@ libsqlpilot_la_VALASOURCES = \
 	aircrafttable.vala \
 	airport.vala \
 	airporttable.vala \
+	approach.vala \
+	approachtable.vala \
 	approachtype.vala \
 	approachtypetable.vala \
 	database.vala \

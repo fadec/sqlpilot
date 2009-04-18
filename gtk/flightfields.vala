@@ -33,6 +33,7 @@ namespace SqlpGtk {
 		private Entry trip_date;
 
 		private GlideEditor glide_editor;
+		private ApproachEditor approach_editor;
 		private HoldEditor hold_editor;
 		private TakeoffEditor takeoff_editor;
 		private LandingEditor landing_editor;
@@ -70,6 +71,9 @@ namespace SqlpGtk {
 
 			glide_editor = new GlideEditor (logbook);
 			set_slot ("glides", glide_editor);
+
+			approach_editor = new ApproachEditor (logbook);
+			set_slot ("approaches", approach_editor);
 
 			hold_editor = new HoldEditor (logbook);
 			set_slot ("holds", hold_editor);
@@ -179,6 +183,7 @@ namespace SqlpGtk {
 			trip_date.set_text (record.trip_date.to_iso8601 ());
 			flight_number.set_text (empty_if_null(record.flight_number));
 			glide_editor.parent_id = record.id;
+			approach_editor.parent_id = record.id;
 			hold_editor.parent_id = record.id;
 			takeoff_editor.parent_id = record.id;
 			landing_editor.parent_id = record.id;

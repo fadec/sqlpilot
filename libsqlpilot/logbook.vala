@@ -8,6 +8,7 @@ namespace Sqlp {
 		public TakeoffTable takeoffs;
 		public LandingTable landings;
 		public SurfaceTable surfaces;
+		public ApproachTable approaches;
 		public ApproachTypeTable approach_types;
 		public HoldTable holds;
 		public GlideTable glides;
@@ -35,6 +36,7 @@ namespace Sqlp {
 			takeoffs = new TakeoffTable (this);
 			landings = new LandingTable (this);
 			surfaces = new SurfaceTable (this);
+			approaches = new ApproachTable (this);
 			approach_types = new ApproachTypeTable (this);
 			holds = new HoldTable (this);
 			glides = new GlideTable (this);
