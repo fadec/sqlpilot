@@ -8,7 +8,7 @@ namespace SqlpGtk {
 	public class TagChooser : Pane {
 		
 		public unowned Sqlp.Table <Logbook, Record> object_table { get; construct; }
-		public unowned Sqlp.TaggingTable tagging_table { get; construct; }
+		public unowned Sqlp.ITaggingTable tagging_table { get; construct; }
 		public unowned Sqlp.TagTable tag_table { get; construct; }
 
 		public string tag_header;
@@ -39,7 +39,7 @@ namespace SqlpGtk {
 		private Button add_tagging_button;
 		private Button remove_tagging_button;
 
-		public TagChooser (Sqlp.Table object_table, Sqlp.TaggingTable tagging_table, Sqlp.TagTable tag_table) {
+		public TagChooser (Sqlp.Table object_table, Sqlp.ITaggingTable tagging_table, Sqlp.TagTable tag_table) {
 			this.object_table = object_table;
 			this.tagging_table = tagging_table;
 			this.tag_table = tag_table;

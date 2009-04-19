@@ -2,7 +2,7 @@ using GLib;
 using Sqlite;
 
 namespace Sqlp {
-	public class Tagging : Record <TaggingTable> {
+	public class Tagging : Record <ITaggingTable> {
 
 		public int64 object_id { get; set; }
 		public int64 tag_id { get; set; }

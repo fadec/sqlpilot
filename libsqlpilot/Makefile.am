@@ -55,7 +55,7 @@ libsqlpilot_la_VALASOURCES = \
 	table.vala \
 	tag.vala \
 	tagging.vala \
-	taggingtable.vala \
+	itaggingtable.vala \
 	tagtable.vala \
 	takeoff.vala \
 	takeofftable.vala \

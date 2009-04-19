@@ -1,13 +1,14 @@
 using Sqlite;
 namespace Sqlp {
-	public class FlightTaggingTable : TaggingTable {
+	public class FlightTaggingTable : Table, ITaggingTable {
+
+		public string object_id_column_name { get { return "flight_id"; } }
+		public string tag_id_column_name { get { return "flight_property_id";} }
 
 		public FlightTaggingTable (Logbook logbook) {
 			this.record_type = typeof (Tagging);
 			this.database = logbook;
 			this.table_name = "FlightPropertyAssignments";
-			this.object_id_column_name = "flight_id";
-			this.tag_id_column_name = "flight_property_id";
 		}
 
 	}

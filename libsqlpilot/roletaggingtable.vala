@@ -1,13 +1,14 @@
 using Sqlite;
 namespace Sqlp {
-	public class RoleTaggingTable : TaggingTable {
+	public class RoleTaggingTable : Table, ITaggingTable {
+
+		public string object_id_column_name { get { return "role_id"; } }
+		public string tag_id_column_name { get { return "role_property_id"; } }
 
 		public RoleTaggingTable (Logbook logbook) {
 			this.record_type = typeof (Tagging);
 			this.database = logbook;
 			this.table_name = "RolePropertyAssignments";
-			this.object_id_column_name = "role_id";
-			this.tag_id_column_name = "role_property_id";
 		}
 
 	}
