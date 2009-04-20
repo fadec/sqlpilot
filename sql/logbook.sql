@@ -57,20 +57,20 @@ CREATE TABLE Flights (
 	,CHECK (id <> 0 AND aircraft_id <> 0 AND role_id <> 0 AND origin_airport_id <> 0 AND destination_airport_id <> 0)
 );
 
-CREATE TABLE FlightProperties (
+CREATE TABLE FlightTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,Abbreviation CHAR
 	,Description CHAR
 	,CHECK (id <> 0)
 );
 
-CREATE TABLE FlightPropertyAssignments (
+CREATE TABLE FlightTaggings (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,flight_id INTEGER NOT NULL
 		REFERENCES Flights (id) ON DELETE CASCADE
-	,flight_property_id INTEGER NOT NULL
-		REFERENCES FlightProperties (id) ON DELETE CASCADE
-	,CHECK (id <> 0 AND flight_id <> 0 AND flight_property_id <> 0)
+	,flight_tag_id INTEGER NOT NULL
+		REFERENCES FlightTags (id) ON DELETE CASCADE
+	,CHECK (id <> 0 AND flight_id <> 0 AND flight_tag_id <> 0)
 );
 
 CREATE TABLE Routing (
