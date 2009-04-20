@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class ModelTable : Table <Logbook, Model> {
+	public class ModelTable : Table {
 
 		private Statement find_by_abbreviation_stmt;
 

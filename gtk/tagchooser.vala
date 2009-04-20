@@ -8,7 +8,7 @@ namespace SqlpGtk {
 	public class TagChooser : Pane {
 		
 		public unowned Sqlp.Table <Logbook, Record> object_table { get; construct; }
-		public unowned Sqlp.ITaggingTable tagging_table { get; construct; }
+		public unowned Sqlp.ITaggingTable <Sqlp.Database, Record> tagging_table { get; construct; }
 		public unowned Sqlp.TagTable tag_table { get; construct; }
 
 		public string tag_header;
@@ -133,9 +133,11 @@ namespace SqlpGtk {
 		private void on_add_tagging_button_clicked (Button button) {
 			var ids = tags_view.get_selected_ids ();
 			foreach (var id in ids) {
-				var tagging = tagging_table.new_record ();
+				var tagging = tagging_table.new_record () as ITagging;
 				tagging.tag_id = id;
 				tagging.object_id = object_id;
+				message (tagging.tag_id.to_string ());
+				message (tagging.object_id.to_string ());
 				tagging.save ();
 			}
 			refilter_tags_view ();

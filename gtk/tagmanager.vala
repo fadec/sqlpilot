@@ -112,16 +112,16 @@ namespace SqlpGtk {
 		}
 
 		private void tags_view_edited (TableView tv, int64 id, string column_name, string new_text) {
-			var tag = tag_table.find_by_id (id);
-			switch (column_name) {
-			case "Abbreviation":
-				tag.abbreviation = new_text;
-				break;
-			case "Description":
-				tag.description = new_text;
-				break;
-			}
-			tag.save ();	
+	// 		var tag = tag_table.find_by_id (id);
+// 			switch (column_name) {
+// 			case "Abbreviation":
+// 				tag.abbreviation = new_text;
+// 				break;
+// 			case "Description":
+// 				tag.description = new_text;
+// 				break;
+// 			}
+// 			tag.save ();	
 		}
 
 		private TableObserverStore make_taggings () {
@@ -170,7 +170,7 @@ namespace SqlpGtk {
 		private void on_add_tagging_button_clicked (Button button) {
 			var ids = tags_view.get_selected_ids ();
 			foreach (var id in ids) {
-				var tagging = tagging_table.new_record ();
+				var tagging = tagging_table.new_record () as ITagging;
 				tagging.tag_id = id;
 				tagging.object_id = object_id;
 				tagging.save ();

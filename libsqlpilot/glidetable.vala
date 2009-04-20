@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class GlideTable : Table <Logbook, Glide> {
+	public class GlideTable : Table {
 		
 		private Statement find_by_flight_id_stmt;
 

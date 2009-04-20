@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class HoldTable : Table <Logbook, Hold> {
+	public class HoldTable : Table {
 		
 		private Statement find_by_flight_id_stmt;
 

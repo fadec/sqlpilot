@@ -9,9 +9,9 @@
 
 using Sqlite;
 namespace Sqlp {
-	public abstract class Table <DatabaseType, RecordType> : Object {
+	public abstract class Table : Object {
 		private unowned Sqlp.Database _database;
-		public unowned DatabaseType database {
+		public unowned Database database {
 			construct { _database = value as Sqlp.Database; }
 			get {
 				return _database;
@@ -48,7 +48,7 @@ namespace Sqlp {
 			delete_stmt = _database.prepare_statement (make_delete_sql (table_name));
 		}
 
-		public RecordType new_record () {
+		public Record new_record () {
 			var record = Object.new (this.record_type, "table", this) as Record;
 			return record;
 		}
@@ -85,12 +85,12 @@ namespace Sqlp {
 			return names;
 		}
 		
-		public virtual RecordType? find_by_id (int64 id) {
+		public virtual Record? find_by_id (int64 id) {
 			find_stmt.bind_nonzero_int64 (1, id);
  			return find_first(find_stmt);
  		}
 
-		public virtual RecordType? find_first (Statement stmt) {
+		public virtual Record? find_first (Statement stmt) {
 			Record? record;
 			if (stmt.step () == ROW) {
 				record = new_record () as Record;
@@ -105,7 +105,7 @@ namespace Sqlp {
 			return record;
 		}
 
-		public List<RecordType> find_all (Statement stmt) {
+		public List<Record> find_all (Statement stmt) {
 			Record? record;
 			var records = new List<Record> ();
 			while (stmt.step () == ROW) {

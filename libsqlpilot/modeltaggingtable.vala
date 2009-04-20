@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class ModelTaggingTable : Table <Logbook, Tagging>, ITaggingTable {
+	public class ModelTaggingTable : Table, ITaggingTable {
 
 		public string object_id_column_name { get { return "model_id"; } }
 		public string tag_id_column_name { get { return "model_property_id"; } }

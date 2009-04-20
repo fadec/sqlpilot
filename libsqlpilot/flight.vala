@@ -1,14 +1,14 @@
 using Sqlite;
 
 namespace Sqlp {
-	public class Flight : Record <FlightTable> {
+	public class Flight : Record {
 
 		public int64 aircraft_id;
 		private Aircraft? _aircraft = null;
 		public Aircraft? aircraft {
 			get {
 				if (_aircraft == null && aircraft_id != 0) {
-					_aircraft = table.database.aircraft.find_by_id (aircraft_id);
+					_aircraft = (table.database as Logbook).aircraft.find_by_id (aircraft_id) as Aircraft?;
 				}
 				return _aircraft;
 			}
@@ -23,7 +23,7 @@ namespace Sqlp {
 		public Role? role {
 			get {
 				if (_role == null && role_id != 0) {
-					_role = table.database.role.find_by_id (role_id);
+					_role = (table.database as Logbook).role.find_by_id (role_id) as Role?;
 				}
 				return _role;
 			}
@@ -38,7 +38,7 @@ namespace Sqlp {
 		public Airport? origin {
 			get {
 				if (_origin == null && origin_id != 0) {
-					_origin = table.database.airport.find_by_id (origin_id);
+					_origin = (table.database as Logbook).airport.find_by_id (origin_id) as Airport?;
 				}
 				return _origin;
 			}
@@ -58,7 +58,7 @@ namespace Sqlp {
 		public Airport? destination {
 			get {
 				if (_destination == null && destination_id != 0) {
-					_destination = table.database.airport.find_by_id (destination_id);
+					_destination = (table.database as Logbook).airport.find_by_id (destination_id) as Airport?;
 				}
 				return _destination;
 			}
@@ -77,7 +77,7 @@ namespace Sqlp {
 		public Route route {
 			get {
 				if (_route == null) {
-					_route = new Route (table.database.routing);
+					_route = new Route ((table.database as Logbook).routing);
 					_route.flight = this;
 					_route.lookup ();
 				}
@@ -93,7 +93,7 @@ namespace Sqlp {
 		public List <Glide> glides {
 			get {
 				if (_glides == null) {
-					_glides = table.database.glides.find_by_flight_id (id);
+					_glides = (table.database as Logbook).glides.find_by_flight_id (id);
 				}
 				return _glides;
 			}
@@ -154,11 +154,11 @@ namespace Sqlp {
 		public void read_full_route (string str) {
 			string[] idents = str.split (" ");
 			if (idents.length > 0) {
-				this.origin = table.database.airport.find_or_create_by_ident (idents[0]);
+				this.origin = (table.database as Logbook).airport.find_or_create_by_ident (idents[0]) as Airport;
 				for (var i=1; i < idents.length - 1; i++) {
-					route.append_maybe_airport (table.database.airport.find_or_create_by_ident (idents[i]));
+					route.append_maybe_airport ((table.database as Logbook).airport.find_or_create_by_ident (idents[i]));
 				}
-				this.destination = table.database.airport.find_or_create_by_ident (idents[idents.length - 1]);
+				this.destination = (table.database as Logbook).airport.find_or_create_by_ident (idents[idents.length - 1]);
 			}
 		}
 

@@ -6,7 +6,7 @@ namespace Sqlp {
 		public string tag_id_column_name { get { return "person_id"; } }
 
 		public CrewTable (Logbook logbook) {
-			this.record_type = typeof (Tagging);
+			this.record_type = typeof (Crew);
 			this.database = logbook;
 			this.table_name = "Crew";
 		}

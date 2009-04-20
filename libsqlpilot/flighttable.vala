@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class FlightTable : Table <Logbook, Flight> {
+	public class FlightTable : Table {
 
 		protected Statement find_by_date_fltno_dep_arr_stmt;
 		protected Statement find_by_role_id_stmt;
@@ -37,7 +37,7 @@ namespace Sqlp {
 			stmt.bind_text (i++, dep_ident);
 			stmt.bind_text (i++, arr_ident);
 			stmt.bind_text (i++, arr_ident);
-			return find_first (stmt);
+			return find_first (stmt) as Flight?;
 		}
 
 		public List <Flight> find_by_role_id (int64 role_id) {

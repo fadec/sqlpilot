@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class Surface : Record <SurfaceTable> {
+	public class Surface : Record {
 		public string abbreviation { get; set; default = ""; }
 		public string description { get; set; default = ""; }
 
@@ -8,7 +8,7 @@ namespace Sqlp {
 		public List <Takeoff> takeoffs {
 			get {
 				if (_takeoffs == null) {
-					_takeoffs = table.database.takeoffs.find_by_surface_id (id);
+					_takeoffs = (table.database as Logbook).takeoffs.find_by_surface_id (id);
 				}
 				return _takeoffs;
 			}
@@ -18,7 +18,7 @@ namespace Sqlp {
 		public List <Landing> landings {
 			get {
 				if (_landings == null) {
-					_landings = table.database.landings.find_by_surface_id (id);
+					_landings = (table.database as Logbook).landings.find_by_surface_id (id);
 				}
 				return _landings;
 			}
@@ -55,7 +55,7 @@ namespace Sqlp {
 		}
 
 		protected override bool valid () {
-			if (! is_unique_text(table.unique_abbreviation_stmt, abbreviation)) {
+			if (! is_unique_text((table as SurfaceTable).unique_abbreviation_stmt, abbreviation)) {
 				return false;
 			}
 			return true;

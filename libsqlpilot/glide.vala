@@ -1,13 +1,13 @@
 using Sqlite;
 namespace Sqlp {
-	public class Glide : Record <GlideTable> {
+	public class Glide : Record {
 
 		private int64 flight_id;
 		private Flight? _flight;
 		public Flight? flight {
 			get {
 				if (_flight == null && flight_id != 0) {
-					_flight = table.database.flight.find_by_id (flight_id);
+					_flight = (table.database as Logbook).flight.find_by_id (flight_id) as Flight?;
 				}
 				return _flight;
 			}
@@ -22,7 +22,7 @@ namespace Sqlp {
 		public LaunchType? launch_type {
 			get {
 				if (_launch_type == null && launch_type_id != 0) {
-					_launch_type = table.database.launch_types.find_by_id (launch_type_id);
+					_launch_type = (table.database as Logbook).launch_types.find_by_id (launch_type_id) as LaunchType?;
 				}
 				return _launch_type;
 			}

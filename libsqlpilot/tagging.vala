@@ -2,7 +2,7 @@ using GLib;
 using Sqlite;
 
 namespace Sqlp {
-	public class Tagging : Record <ITaggingTable> {
+	public class Tagging : Record, ITagging {
 
 		public int64 object_id { get; set; }
 		public int64 tag_id { get; set; }
@@ -12,6 +12,7 @@ namespace Sqlp {
 			object_id = stmt.column_int64 (i++);
 			tag_id = stmt.column_int64 (i++);
 		}
+
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
 			stmt.bind_nonzero_int64 (i++, object_id);

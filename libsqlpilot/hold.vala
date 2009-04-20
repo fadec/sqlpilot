@@ -1,13 +1,13 @@
 using Sqlite;
 namespace Sqlp {
-	public class Hold : Record <HoldTable> {
+	public class Hold : Record {
 
 		private int64 flight_id;
 		private Flight? _flight;
 		public Flight? flight {
 			get {
 				if (_flight == null && flight_id != 0) {
-					_flight = table.database.flight.find_by_id (flight_id);
+					_flight = (table.database as Logbook).flight.find_by_id (flight_id) as Flight?;
 				}
 				return _flight;
 			}

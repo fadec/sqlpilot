@@ -3,7 +3,7 @@ using Gdk;
 using Sqlp;
 
 namespace SqlpGtk {
-	public class FlightFields : Fieldset <Flight> {
+	public class FlightFields : Fieldset {
 
 		private Logbook logbook;
 
@@ -58,6 +58,11 @@ namespace SqlpGtk {
 		private TagChooser tag_chooser;
 		private TagChooser crew_chooser;
 
+		public Flight flight {
+			get { return this.record as Flight; }
+			set { this.record = value; }
+		}
+
 		public FlightFields (Sqlp.Table table) {
 			this.gui_name = "flight_fields";
 			this.table = table;
@@ -68,7 +73,7 @@ namespace SqlpGtk {
 		}
 		
 		construct {
-			logbook = table.database;
+			logbook = table.database as Logbook;
 
 			glide_editor = new GlideEditor (logbook);
 			set_slot ("glides", glide_editor);
@@ -164,36 +169,37 @@ namespace SqlpGtk {
 		}
 
 		protected override void set_fields_from_record () {
-			date.set_text  (record.date.to_iso8601 ());
-			leg.set_text (record.leg.to_string ());
-			route.set_text (record.route.to_string_icao ());
-		   	role_entry.set_text (record.role == null ? "" : record.role.abbreviation);
-			aircraft_entry.set_text (record.aircraft == null ? "" : (tail.active ? record.aircraft.tail : record.aircraft.registration));
-			duration.set_text (record.duration.to_string ());
-			actual_out.set_text (record.actual_out.to_iso8601 ());
-			actual_in.set_text (record.actual_in.to_iso8601 ());
-			scheduled_duration.set_text (record.scheduled_duration.to_string ());
-			scheduled_out.set_text (record.scheduled_out.to_iso8601 ());
-			scheduled_in.set_text (record.scheduled_in.to_iso8601 ());
-			night.set_text (record.night.to_string ());
-			instrument.set_text (record.instrument.to_string ());
-			hood.set_text (record.hood.to_string ());
-			trip.set_text (empty_if_null(record.trip));
-			trip_date.set_text (record.trip_date.to_iso8601 ());
-			flight_number.set_text (empty_if_null(record.flight_number));
-			glide_editor.parent_id = record.id;
-			approach_editor.parent_id = record.id;
-			hold_editor.parent_id = record.id;
-			takeoff_editor.parent_id = record.id;
-			landing_editor.parent_id = record.id;
-			tag_chooser.object_id = record.id;
+			date.set_text  (flight.date.to_iso8601 ());
+			leg.set_text (flight.leg.to_string ());
+			route.set_text (flight.route.to_string_icao ());
+		   	role_entry.set_text (flight.role == null ? "" : flight.role.abbreviation);
+			aircraft_entry.set_text (flight.aircraft == null ? "" : (tail.active ? flight.aircraft.tail : flight.aircraft.registration));
+			duration.set_text (flight.duration.to_string ());
+			actual_out.set_text (flight.actual_out.to_iso8601 ());
+			actual_in.set_text (flight.actual_in.to_iso8601 ());
+			scheduled_duration.set_text (flight.scheduled_duration.to_string ());
+			scheduled_out.set_text (flight.scheduled_out.to_iso8601 ());
+			scheduled_in.set_text (flight.scheduled_in.to_iso8601 ());
+			night.set_text (flight.night.to_string ());
+			instrument.set_text (flight.instrument.to_string ());
+			hood.set_text (flight.hood.to_string ());
+			trip.set_text (empty_if_null(flight.trip));
+			trip_date.set_text (flight.trip_date.to_iso8601 ());
+			flight_number.set_text (empty_if_null(flight.flight_number));
+			glide_editor.parent_id = flight.id;
+			approach_editor.parent_id = flight.id;
+			hold_editor.parent_id = flight.id;
+			takeoff_editor.parent_id = flight.id;
+			landing_editor.parent_id = flight.id;
+			tag_chooser.object_id = flight.id;
+			crew_chooser.object_id = flight.id;
 		}
 
 		public override void set_record_from_fields () {
-			record.date = Sqlp.Date.from_iso8601 (date.get_text ());
-			record.leg = leg.get_value_as_int ();
-			record.route.read (route.get_text ());
-//			record.role = browser.book.logbook.role.find_by_abbreviation (role.get_text ());
+			flight.date = Sqlp.Date.from_iso8601 (date.get_text ());
+			flight.leg = leg.get_value_as_int ();
+			flight.route.read (route.get_text ());
+//			flight.role = browser.book.logbook.role.find_by_abbreviation (role.get_text ());
 		}
 
 		private void reconcile_time_entries (Entry changed, Entry start, Entry stop, Entry elapsed) {
@@ -248,11 +254,11 @@ namespace SqlpGtk {
 		}
 
 		private Timezone timezone_for_departure () {
-			return (utc.active || (record.origin == null)) ? Timezone ("UTC") : record.origin.timezone;
+			return (utc.active || (flight.origin == null)) ? Timezone ("UTC") : flight.origin.timezone;
 		}
 
 		private Timezone timezone_for_arrival () {
-			return (utc.active || (record.destination == null)) ? Timezone ("UTC") : record.destination.timezone;
+			return (utc.active || (flight.destination == null)) ? Timezone ("UTC") : flight.destination.timezone;
 		}
 
 		private Sqlp.Date date_for_difftime () {
@@ -285,12 +291,12 @@ namespace SqlpGtk {
 
 		private void set_date () {
 			if (date.get_text ().length == 0) {
-				record.date.clear ();
+				flight.date.clear ();
 				return;
 			}
 			var newdate = Sqlp.Date.from_iso8601 (date.get_text ());
 			if (newdate.valid ()) {
-				record.date = newdate;
+				flight.date = newdate;
 				date.set_text (newdate.to_iso8601 ());
 			} else {
 				Idle.add ( () => { select_entry (this.date); } );
@@ -318,12 +324,12 @@ namespace SqlpGtk {
 
 		private void set_trip_date () {
 			if (trip_date.get_text ().length == 0) {
-				record.trip_date.clear ();
+				flight.trip_date.clear ();
 				return;
 			}
 			var newdate = Sqlp.Date.from_iso8601 (trip_date.get_text ());
 			if (newdate.valid ()) {
-				record.trip_date = newdate;
+				flight.trip_date = newdate;
 				trip_date.set_text (newdate.to_iso8601 ());
 			} else {
 				Idle.add ( () => { select_entry (this.trip_date); } );
@@ -348,7 +354,7 @@ namespace SqlpGtk {
 
 		public bool on_role_entry_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
-				record.role = record.table.database.role.find_or_new_by_abbreviation (role_entry.get_text ());
+				flight.role = (flight.table.database as Logbook).role.find_or_new_by_abbreviation (role_entry.get_text ());
 				save ();
 			}
 			return false;
@@ -387,8 +393,8 @@ namespace SqlpGtk {
 
 		public bool on_aircraft_entry_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
-				var aircraft_table = record.table.database.aircraft;
-				record.aircraft = tail.active ?
+				var aircraft_table = (flight.table.database as Logbook).aircraft;
+				flight.aircraft = tail.active ?
 					aircraft_table.find_or_new_by_tail (aircraft_entry.get_text ()) :
 					aircraft_table.find_or_new_by_registration (aircraft_entry.get_text ());
 				save ();
@@ -405,15 +411,15 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public bool on_route_focus_out_event (Entry entry, EventFocus ev)
 		{
-			var origin = record.origin != null ? record.origin.id : 0;
-			var destination = record.destination != null ? record.destination.id : 0;
-			record.read_full_route (route.get_text ());
-			route.set_text (record.show_full_route_icao ());
-			if (origin != record.origin.id) {
+			var origin = flight.origin != null ? flight.origin.id : 0;
+			var destination = flight.destination != null ? flight.destination.id : 0;
+			flight.read_full_route (route.get_text ());
+			route.set_text (flight.show_full_route_icao ());
+			if (origin != flight.origin.id) {
 				// origin changed
 				message ("origin changed");
 			}
-			if (destination != record.destination.id) {
+			if (destination != flight.destination.id) {
 				// destination changed
 				message ("destination changed");
 			}
@@ -431,15 +437,15 @@ namespace SqlpGtk {
 		public bool on_scheduled_out_focus_out_event (Entry entry, EventFocus ev)
 		{
 			format_time_of_day_entry (entry);
-			record.scheduled_out = TimeOfDay.from_timezone_time (timezone_for_departure (), entry.get_text ());
-			if (! record.scheduled_out.valid ()) return false;
-			if (record.scheduled_in.valid ()) {
-				record.scheduled_duration = Datetime (date_for_difftime (), record.scheduled_out).duration_to_time_of_day (record.scheduled_in);
-				scheduled_duration.set_text (record.scheduled_duration.to_string ());
-			} else if (record.scheduled_duration.valid ()) {
-				var tmp = Datetime (date_for_difftime (), record.scheduled_out).add (record.scheduled_duration);
-				record.scheduled_in = tmp.time_of_day;
-				scheduled_in.set_text (record.scheduled_in.to_iso8601 ());
+			flight.scheduled_out = TimeOfDay.from_timezone_time (timezone_for_departure (), entry.get_text ());
+			if (! flight.scheduled_out.valid ()) return false;
+			if (flight.scheduled_in.valid ()) {
+				flight.scheduled_duration = Datetime (date_for_difftime (), flight.scheduled_out).duration_to_time_of_day (flight.scheduled_in);
+				scheduled_duration.set_text (flight.scheduled_duration.to_string ());
+			} else if (flight.scheduled_duration.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.scheduled_out).add (flight.scheduled_duration);
+				flight.scheduled_in = tmp.time_of_day;
+				scheduled_in.set_text (flight.scheduled_in.to_iso8601 ());
 			}
 			if (edited) {
 				save ();
@@ -457,7 +463,7 @@ namespace SqlpGtk {
 		public bool on_scheduled_in_focus_in_event (Entry entry, EventFocus ev)
 		{
 			format_time_entry_for_edit (entry);
-			record.scheduled_in = TimeOfDay.from_timezone_time (timezone_for_arrival (), entry.get_text ());
+			flight.scheduled_in = TimeOfDay.from_timezone_time (timezone_for_arrival (), entry.get_text ());
 			return false;
 		}
 
@@ -465,15 +471,15 @@ namespace SqlpGtk {
 		public bool on_scheduled_in_focus_out_event (Entry entry, EventFocus ev)
 		{
  			format_time_of_day_entry (entry);
-			record.scheduled_in = TimeOfDay.from_timezone_time (timezone_for_arrival (), entry.get_text ());
-			if (! record.scheduled_in.valid ()) return false;
-			if (record.scheduled_out.valid ()) {
-				record.scheduled_duration = Datetime (date_for_difftime (), record.scheduled_out).duration_to_time_of_day (record.scheduled_in);
-				scheduled_duration.set_text (record.scheduled_duration.to_string ());
-			} else if (record.scheduled_duration.valid ()) {
-				var tmp = Datetime (date_for_difftime (), record.scheduled_in).subtract (record.scheduled_duration);
-				record.scheduled_out = tmp.time_of_day;
-				scheduled_out.set_text (record.scheduled_out.to_iso8601 ());
+			flight.scheduled_in = TimeOfDay.from_timezone_time (timezone_for_arrival (), entry.get_text ());
+			if (! flight.scheduled_in.valid ()) return false;
+			if (flight.scheduled_out.valid ()) {
+				flight.scheduled_duration = Datetime (date_for_difftime (), flight.scheduled_out).duration_to_time_of_day (flight.scheduled_in);
+				scheduled_duration.set_text (flight.scheduled_duration.to_string ());
+			} else if (flight.scheduled_duration.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.scheduled_in).subtract (flight.scheduled_duration);
+				flight.scheduled_out = tmp.time_of_day;
+				scheduled_out.set_text (flight.scheduled_out.to_iso8601 ());
 			}
 			if (edited) {
 				save ();
@@ -498,18 +504,18 @@ namespace SqlpGtk {
 		public bool on_scheduled_duration_focus_out_event (Entry entry, EventFocus ev)
 		{
 			format_elapsed_time_entry (entry);
-			record.scheduled_duration = Duration.from_string (entry.get_text ());
-			if (! record.scheduled_duration.valid ()) {
+			flight.scheduled_duration = Duration.from_string (entry.get_text ());
+			if (! flight.scheduled_duration.valid ()) {
 				return false;
 			}
-			if (record.scheduled_out.valid ()) {
-				var tmp = Datetime (date_for_difftime (), record.scheduled_out).add (record.scheduled_duration);
-				record.scheduled_in = tmp.time_of_day;
-				scheduled_in.set_text (record.scheduled_in.to_iso8601 ());
-			} else if (record.scheduled_in.valid ()) {
-				var tmp = Datetime (date_for_difftime (), record.scheduled_in).subtract (record.scheduled_duration);
-				record.scheduled_out = tmp.time_of_day;
-				scheduled_out.set_text (record.scheduled_out.to_iso8601 ());
+			if (flight.scheduled_out.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.scheduled_out).add (flight.scheduled_duration);
+				flight.scheduled_in = tmp.time_of_day;
+				scheduled_in.set_text (flight.scheduled_in.to_iso8601 ());
+			} else if (flight.scheduled_in.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.scheduled_in).subtract (flight.scheduled_duration);
+				flight.scheduled_out = tmp.time_of_day;
+				scheduled_out.set_text (flight.scheduled_out.to_iso8601 ());
 			}
 			if (edited) {
 				save ();
@@ -655,15 +661,15 @@ namespace SqlpGtk {
 				origin_tz = timezone_for_departure ();
 				destination_tz = timezone_for_arrival ();
 			}
-// 			record.scheduled_out.move_to_timezone (origin_tz);
-// 			record.scheduled_in.move_to_timezone (destination_tz);
-// 			record.actual_out.move_to_timezone (origin_tz);
-// 			record.actual_in.move_to_timezone (destination_tz);
+// 			flight.scheduled_out.move_to_timezone (origin_tz);
+// 			flight.scheduled_in.move_to_timezone (destination_tz);
+// 			flight.actual_out.move_to_timezone (origin_tz);
+// 			flight.actual_in.move_to_timezone (destination_tz);
 			var save_edited = edited;
-			scheduled_out.set_text (record.scheduled_out.to_iso8601 ());
-			scheduled_in.set_text (record.scheduled_in.to_iso8601 ());
-			actual_out.set_text (record.actual_out.to_iso8601 ());
-			actual_in.set_text (record.actual_in.to_iso8601 ());
+			scheduled_out.set_text (flight.scheduled_out.to_iso8601 ());
+			scheduled_in.set_text (flight.scheduled_in.to_iso8601 ());
+			actual_out.set_text (flight.actual_out.to_iso8601 ());
+			actual_in.set_text (flight.actual_in.to_iso8601 ());
 			edited = save_edited;
 		}
 

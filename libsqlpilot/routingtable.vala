@@ -1,7 +1,7 @@
 using GLib;
 using Sqlite;
 namespace Sqlp {
-	public class RoutingTable : Table <Logbook, Routing> {
+	public class RoutingTable : Table {
 		protected Statement find_by_flight_id_stmt;
 		protected Statement destroy_by_flight_id_stmt;
 

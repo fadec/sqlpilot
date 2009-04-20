@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class ApproachTable : Table <Logbook, Approach> {
+	public class ApproachTable : Table {
 		
 		private Statement find_by_flight_id_stmt;
 		private Statement find_by_approach_type_id_stmt;

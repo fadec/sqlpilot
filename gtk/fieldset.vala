@@ -1,18 +1,18 @@
 using Sqlp;
 
 namespace SqlpGtk {
-	public abstract class Fieldset <RecordType> : Pane {
+	public abstract class Fieldset : Pane {
 
 		// owns this
 //		public unowned Browser browser { construct set; get; }
-		public unowned Sqlp.Table <Logbook, Record> table { construct; get; }
+		public unowned Sqlp.Table table { construct; get; }
 
 		public bool edited { get; set; }
 
 		public bool setting_record { get; private set; }
 
 		protected Record _record;
-		public RecordType record {
+		public Record record {
 			get {
 				assert (this is Fieldset);
 				ensure_record ();

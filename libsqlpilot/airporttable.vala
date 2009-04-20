@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class AirportTable : Table <Logbook, Airport> {
+	public class AirportTable : Table {
 
 		private Statement find_by_ident_stmt;
 
@@ -25,7 +25,7 @@ namespace Sqlp {
 		public Airport? find_or_create_by_ident (string ident) {
 			var ap = find_by_ident (ident);
 			if (ap == null) {
-				ap = new_record ();
+				ap = new_record () as Airport?;
 				ap.set_ident (ident);
 			}
 			return ap.save () ? ap : null;

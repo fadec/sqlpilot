@@ -4,7 +4,7 @@ using Sqlp;
 
 namespace SqlpGtk {
 
-	public class RoleFields : Fieldset <Role> {
+	public class RoleFields : Fieldset {
 
 		private TagChooser tag_chooser;
 
@@ -19,13 +19,18 @@ namespace SqlpGtk {
 		private CheckButton instructor;
 		private CheckButton military;
 
+		public Role role {
+			get { return this.record as Role; }
+			set { this.record = value; }
+		}
+
 		public RoleFields (Sqlp.Table table) {
 			this.gui_name = "role_fields";
 			this.table = table;
 		}
 
 		construct {
-			var logbook = table.database;
+			var logbook = table.database as Logbook;
 
 			abbreviation	= gui.object ("abbreviation")			 as Entry;
 			description		= gui.object ("description")			 as Entry;
@@ -34,10 +39,9 @@ namespace SqlpGtk {
 		}
 
 		protected override void set_fields_from_record () {
-			assert (record is Record);
- 			abbreviation.set_text (record.abbreviation != null ? record.abbreviation : "");
-			description.set_text (record.description != null ? record.description : "");
-			tag_chooser.object_id = record.id;
+ 			abbreviation.set_text (role.abbreviation != null ? role.abbreviation : "");
+			description.set_text (role.description != null ? role.description : "");
+			tag_chooser.object_id = role.id;
 		}
 
 		protected override void set_record_from_fields () {
@@ -52,7 +56,7 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public bool on_abbreviation_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
-				record.abbreviation = entry.get_text ();
+				role.abbreviation = entry.get_text ();
 				if (! save ()) {
 					Idle.add ( () => { select_entry (this.abbreviation); } );
 				}
@@ -68,7 +72,7 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public bool on_description_focus_out_event (Entry entry, EventFocus ev) {
 			if (edited) {
-				record.description = entry.get_text ();
+				role.description = entry.get_text ();
 				save ();
 			}
 			return false;

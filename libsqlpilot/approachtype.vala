@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class ApproachType : Record <ApproachTypeTable> {
+	public class ApproachType : Record {
 
 		public string abbreviation { get; set; }
 		public string description { get; set; }

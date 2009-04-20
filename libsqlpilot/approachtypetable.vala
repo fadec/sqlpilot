@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class ApproachTypeTable : Table <Logbook, ApproachType> {
+	public class ApproachTypeTable : Table {
 
 		public ApproachTypeTable ( Logbook logbook ) {
 			this.record_type = typeof (ApproachType);

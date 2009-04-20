@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class SurfaceTable : Table <Logbook, Surface> {
+	public class SurfaceTable : Table {
 		
 		private Statement find_by_abbreviation_stmt;
 		public Statement unique_abbreviation_stmt;
@@ -19,13 +19,13 @@ namespace Sqlp {
 
 		public Surface? find_by_abbreviation (string abbreviation) {
 			find_by_abbreviation_stmt.bind_text (1, abbreviation);
-			return find_first (find_by_abbreviation_stmt);
+			return find_first (find_by_abbreviation_stmt) as Surface?;
 		}
 
 		public Surface find_or_new_by_abbreviation (string ident) {
 			var surface = find_by_abbreviation (ident);
 			if (surface != null) return surface;
-			surface = new_record ();
+			surface = new_record () as Surface;
 			surface.abbreviation = ident;
 			return surface;
 		}

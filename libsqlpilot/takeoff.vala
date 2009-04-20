@@ -1,13 +1,13 @@
 using Sqlite;
 namespace Sqlp {
-	public class Takeoff : Record <TakeoffTable> {
+	public class Takeoff : Record {
 
 		private int64 flight_id;
 		private Flight? _flight;
 		public Flight? flight {
 			get {
 				if (_flight == null && flight_id != 0) {
-					_flight = table.database.flight.find_by_id (flight_id);
+					_flight = (table.database as Logbook).flight.find_by_id (flight_id) as Flight?;
 				}
 				return _flight;
 			}
@@ -22,7 +22,7 @@ namespace Sqlp {
 		public Airport? airport {
 			get {
 				if (_airport == null && airport_id != 0) {
-					_airport = table.database.airport.find_by_id (airport_id);
+					_airport = (table.database as Logbook).airport.find_by_id (airport_id) as Airport?;
 				}
 				return _airport;
 			}
@@ -37,7 +37,7 @@ namespace Sqlp {
 		public Surface? surface {
 			get {
 				if (_surface == null && surface_id != 0) {
-					_surface = table.database.surfaces.find_by_id (surface_id);
+					_surface = (table.database as Logbook).surfaces.find_by_id (surface_id) as Surface?;
 				}
 				return _surface;
 			}

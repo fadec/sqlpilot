@@ -2,6 +2,6 @@ using GLib;
 using Sqlite;
 
 namespace Sqlp {
-	public class TagTable : Table <Logbook, Tag> {
+	public class TagTable : Table {
 	}
 }

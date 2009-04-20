@@ -1,6 +1,6 @@
 using Sqlite;
 namespace Sqlp {
-	public class Person : Record <RoleTable> {
+	public class Person : Record {
 
 		public string last_name { get; set; default = ""; }
 		public string first_name { get; set; default = ""; }

@@ -2,7 +2,7 @@ using GLib;
 using Sqlite;
 
 namespace Sqlp {
-	public class Tag : Record <TagTable> {
+	public class Tag : Record {
 		public string abbreviation { get; set; }
 		public string description { get; set; }
 

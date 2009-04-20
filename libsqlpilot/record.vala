@@ -8,10 +8,10 @@
 
 using Sqlite;
 namespace Sqlp {
-	public abstract class Record <TableType> : Object {
+	public abstract class Record : Object {
 		
 		private weak Table _table;
-		public TableType table {
+		public Table table {
 			get { return _table; }
 			construct {
 				_table = value as Table;

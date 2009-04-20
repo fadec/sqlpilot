@@ -44,7 +44,7 @@ namespace Sqlp {
 		}
 
 		public void append_airport (Airport airport) {
-			var routing = table.new_record ();
+			var routing = table.new_record () as Routing;
 			routing.airport = airport;
 			routings.append (routing);
 		}
@@ -58,7 +58,7 @@ namespace Sqlp {
 			clear ();
 			if (str != null) {
 				foreach (string ident in str.split (" ")) {
-					append_airport (table.database.airport.find_by_ident (ident));
+					append_airport ((table.database as Logbook).airport.find_by_ident (ident));
 				}
 			}
 			return this;

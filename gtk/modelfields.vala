@@ -5,9 +5,14 @@ using Sqlp;
 
 namespace SqlpGtk {
 
-	public class ModelFields : Fieldset <Model> {
+	public class ModelFields : Fieldset {
 
 		private TagChooser tag_chooser;
+
+		public Model model {
+			get { return this.record as Model; }
+			set { this.record = value; }
+		}
 
 		public ModelFields (Sqlp.Table table) {
 			this.gui_name = "model_fields";
@@ -21,7 +26,7 @@ namespace SqlpGtk {
 
 		construct {
 			Logbook l; // Vala seems to need a declaration to generate correct dependencies in c headers.
-			var logbook = table.database;
+			var logbook = table.database as Logbook;
 
 			name = gui.object ("name") as Entry;
 			abbreviation = gui.object ("abbreviation") as Entry;
@@ -33,9 +38,9 @@ namespace SqlpGtk {
 		}
 
 		protected override void set_fields_from_record () {
-			name.set_text (record.name);
-			abbreviation.set_text (record.abbreviation);
-			tag_chooser.object_id = record.id;
+			name.set_text (model.name);
+			abbreviation.set_text (model.abbreviation);
+			tag_chooser.object_id = model.id;
 		}
 
 		protected override void set_record_from_fields () {
@@ -48,7 +53,7 @@ namespace SqlpGtk {
 
 		[CCode (instance_pos = -1)]
 		public bool on_name_focus_out_event (Entry entry, EventFocus ev) {
-			record.name = name.get_text ();
+			model.name = name.get_text ();
 			if (edited && ! save ()) {
 				Idle.add ( () => { select_entry (this.name); } );
 			}
@@ -62,7 +67,7 @@ namespace SqlpGtk {
 
 		[CCode (instance_pos = -1)]
 		public bool on_abbreviation_focus_out_event (Entry entry, EventFocus ev) {
-			record.abbreviation = abbreviation.get_text ();
+			model.abbreviation = abbreviation.get_text ();
 			if (edited && ! save ()) {
 				Idle.add ( () => { select_entry (this.abbreviation); } );
 			}
@@ -76,7 +81,7 @@ namespace SqlpGtk {
 
 		[CCode (instance_pos = -1)]
 		public bool on_make_focus_out_event (Entry entry, EventFocus ev) {
-			record.make = make.get_text ();
+			model.make = make.get_text ();
 			if (edited && ! save ()) {
 				Idle.add ( () => { select_entry (this.make); } );
 			}

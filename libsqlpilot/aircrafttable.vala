@@ -1,7 +1,7 @@
 using Sqlite;
 
 namespace Sqlp {
-	public class AircraftTable : Table <Logbook, Aircraft> {
+	public class AircraftTable : Table {
 
 		Statement find_by_tail_stmt;
 		Statement find_by_registration_stmt;
@@ -21,18 +21,18 @@ namespace Sqlp {
 
 		public Aircraft? find_by_tail (string tail) {
 			find_by_tail_stmt.bind_text (1, tail);
-			return find_first (find_by_tail_stmt);
+			return find_first (find_by_tail_stmt) as Aircraft?;
 		}
 
 		public Aircraft? find_by_registration (string registration) {
 			find_by_registration_stmt.bind_text (1, registration);
-			return find_first (find_by_registration_stmt);
+			return find_first (find_by_registration_stmt) as Aircraft?;
 		}
 
 		public Aircraft find_or_new_by_tail (string tail) {
 			var aircraft = find_by_tail (tail);
 			if (aircraft != null) return aircraft;
-			aircraft = new_record ();
+			aircraft = new_record () as Aircraft;
 			aircraft.tail = tail;
 			return aircraft;
 		}
@@ -40,7 +40,7 @@ namespace Sqlp {
 		public Aircraft find_or_new_by_registration (string registration) {
 			var aircraft = find_by_registration (registration);
 			if (aircraft != null) return aircraft;
-			aircraft = new_record ();
+			aircraft = new_record () as Aircraft;
 			aircraft.registration = registration;
 			return aircraft;
 		}
