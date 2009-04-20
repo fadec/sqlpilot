@@ -92,6 +92,12 @@ namespace Sqlp {
  			return find_first(find_stmt);
  		}
 
+		public virtual Record find_by_id_or_new_record (int64 id) {
+			var record = find_by_id (id);
+			if (record == null) record = new_record ();
+			return record;
+		}
+
 		public virtual Record? find_first (Statement stmt) {
 			Record? record;
 			if (stmt.step () == ROW) {
@@ -133,6 +139,10 @@ namespace Sqlp {
 			stmt.reset ();
 			stmt.clear_bindings ();
 			deleted (id);
+		}
+
+		public int64 largest_autoincrement () {
+			return database.largest_autoincrement (table_name);
 		}
 
 		// First column is 1. -1 if not found.

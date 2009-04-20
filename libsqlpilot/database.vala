@@ -11,12 +11,13 @@ namespace Sqlp {
 
 		public Transaction transaction { get; private set; }
 
+		private Statement largest_autoincrement_stmt;
+
 		public abstract Database (string filename) {
 			this.filename = filename;
 		}
 
 		~Database () {
-			message ("closing db");
 			_db.exec ("VACUUM;");
 		}
 
@@ -26,6 +27,7 @@ namespace Sqlp {
 				stderr.printf ( "Some db error while opening" );
 			}
 			transaction = new Transaction.on_database (this);
+			largest_autoincrement_stmt = prepare_statement ("SELECT seq FROM sqlite_sequence WHERE name = ?");
 		}
 
 		public Statement? prepare_statement (string sql) {
@@ -56,6 +58,18 @@ namespace Sqlp {
 
 		public void use_exclusive_locking () {
 			_db.exec ("PRAGMA locking_mode = EXCLUSIVE;");
+		}
+
+		public int64 largest_autoincrement (string table_name) {
+			int64 id = 0;
+			largest_autoincrement_stmt.bind_text (1, table_name);
+			if (largest_autoincrement_stmt.step () == Sqlite.ROW)
+				id = largest_autoincrement_stmt.column_int64 (0);
+			largest_autoincrement_stmt.reset ();
+			largest_autoincrement_stmt.clear_bindings ();
+			return id;
+			
+
 		}
 	}
 }

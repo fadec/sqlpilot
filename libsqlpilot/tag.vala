@@ -3,8 +3,8 @@ using Sqlite;
 
 namespace Sqlp {
 	public class Tag : Record {
-		public string abbreviation { get; set; }
-		public string description { get; set; }
+		public string abbreviation { get; set; default = ""; }
+		public string description { get; set; default = ""; }
 
 		protected override void set_from_stmt (Statement stmt) {
 			var i = 1;
@@ -17,5 +17,10 @@ namespace Sqlp {
 			stmt.bind_text (i++, description);
 			return i;
 		}
+
+		public override bool valid () {
+			return (abbreviation.length > 0);
+		}
+
 	}
 }

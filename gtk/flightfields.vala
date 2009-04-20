@@ -56,6 +56,7 @@ namespace SqlpGtk {
 		private TableObserverStore aircraft_store;
 
 		private TagChooser tag_chooser;
+		private TagEditor tag_editor;
 		private TagChooser crew_chooser;
 
 		public Flight flight {
@@ -91,7 +92,10 @@ namespace SqlpGtk {
 			set_slot ("landings", landing_editor);
 
 			tag_chooser = new TagChooser (table, logbook.flight_taggings, logbook.flight_tags);
-			set_slot ("tags", tag_chooser);
+			set_slot ("tag_chooser", tag_chooser);
+
+			tag_editor = new TagEditor (logbook.flight_tags);
+			set_slot ("tag_editor", tag_editor);
 
 			crew_chooser = new TagChooser (table, logbook.crew, logbook.people);
 			set_slot ("crew", crew_chooser);
