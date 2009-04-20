@@ -7,8 +7,8 @@ namespace SqlpGtk {
 
 	public class TagChooser : Pane {
 		
-		public unowned Sqlp.Table <Logbook, Record> object_table { get; construct; }
-		public unowned Sqlp.ITaggingTable <Sqlp.Database, Record> tagging_table { get; construct; }
+		public unowned Sqlp.Table object_table { get; construct; }
+		public unowned Sqlp.ITaggingTable tagging_table { get; construct; }
 		public unowned Sqlp.TagTable tag_table { get; construct; }
 
 		public string tag_header;
@@ -110,11 +110,11 @@ namespace SqlpGtk {
 			s.append (tagging_table.object_id_column_name);
 			s.append (" as object_id, t.id");
 			s.append (" as tag_id");
-			foreach (string column_name in tag_table.column_names) {
+			for (int i=0; i < tag_table.column_count; i++) {
 				s.append (", t.");
-				s.append (column_name);
+				s.append (tag_table.column_names[i]);
 				s.append (" as ");
-				s.append (column_name);
+				s.append (tag_table.column_names[i]);
 			}
 			s.append (" FROM ");
 			s.append (tag_table.table_name);

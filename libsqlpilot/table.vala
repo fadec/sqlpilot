@@ -25,7 +25,8 @@ namespace Sqlp {
 		protected Statement delete_stmt;
 		private string[] _column_names;
 		public string[] column_names { get { return _column_names; } }
-		public int column_count { get { return _column_names.length; } }
+		private int _column_count;
+		public int column_count { get { return _column_count; } }
 
 		public signal void inserted (Record record);
 		public signal void updated (Record record);
@@ -42,6 +43,7 @@ namespace Sqlp {
 
 		construct {
 			_column_names = table_column_names (table_name);
+			_column_count = _column_names.length;
 			find_stmt   = _database.prepare_statement (make_find_sql (table_name));
 			insert_stmt = _database.prepare_statement (make_insert_sql (table_name));
 			update_stmt = _database.prepare_statement (make_update_sql (table_name));
