@@ -14,6 +14,7 @@ namespace SqlpGtk {
 			table_store.observe (table);
 			fieldset = new ModelFields (table);
 			table_view = new TableView.with_model (table_store);
+			table_view.set_column_visible (0, false); // id
 		}
 	}
 }

@@ -11,8 +11,6 @@ namespace SqlpGtk {
 		public unowned Sqlp.IJoinTable join_table { get; construct; }
 		public unowned Sqlp.Table child_table { get; construct; }
 
-		public Statement find_join_records_by_parent_id_stmt;
-
 		private int64 _parent_id;
 		public int64 parent_id {
 			get { return _parent_id; }
@@ -22,6 +20,8 @@ namespace SqlpGtk {
 				refilter_children_view ();
 			}
 		}
+
+		private Statement find_join_records_by_parent_id_stmt;
 
 		private TableObserverStore children;
 		private TreeModelFilter children_filter;

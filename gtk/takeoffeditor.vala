@@ -12,6 +12,15 @@ namespace SqlpGtk {
 			this.parent_id_fkey_column_name = "flight_id";
 			this.gui_name = "parent_child_editor";
 		}
+		
+		construct {
+			table_view.set_column_visible (0, false); // id
+			table_view.set_column_visible (1, false); // flight_id
+			table_view.set_column_visible (2, false); // airport_id
+			table_view.set_column_visible (3, false); // surface_id
+			table_view.set_column_visible (4, false); // Sequence
+		}
+
 
 		public override void associate_parent (Record child, int64 parent_id) {
 			(child as Takeoff).flight = parent_table.find_by_id (parent_id) as Flight;

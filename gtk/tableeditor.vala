@@ -7,7 +7,7 @@ namespace SqlpGtk {
 
 		public unowned Sqlp.Table table { get; construct; }
 		private TableObserverStore tags;
-		private TableView view;
+		protected TableView view;
 
 		public TableEditor (Sqlp.Table table) {
 			this.table = table;

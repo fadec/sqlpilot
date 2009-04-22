@@ -10,6 +10,10 @@ namespace SqlpGtk {
 			this.gui_name = "table_editor";
 		}
 
+		construct {
+			view.set_column_visible (0, false);
+		}
+
 		private override void on_edit (Record record, string column_name, string new_text) {
 			var person = record as Person;
 			switch (column_name) {

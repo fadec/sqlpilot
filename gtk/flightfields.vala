@@ -91,7 +91,7 @@ namespace SqlpGtk {
 			tag_editor = new TagEditor (logbook.flight_tags);
 			set_slot ("tag_editor", tag_editor);
 
-			crew_chooser = new JoinTableEditor (table, logbook.crew, logbook.people);
+			crew_chooser = new CrewChooser (table, logbook.crew, logbook.people);
 			set_slot ("crew_chooser", crew_chooser);
 
 			person_editor = new PersonEditor (logbook.people);

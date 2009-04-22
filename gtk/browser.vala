@@ -164,6 +164,7 @@ namespace SqlpGtk {
 			var record = table.new_record ();
 			// todo set default according to filters
 			if (record.save ()) {
+				refilter ();
 				// check visible and adjust filters
 			}
 		}

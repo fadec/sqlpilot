@@ -23,6 +23,7 @@ sqlpilot_gtk_VALASOURCES = \
 	book.vala \
 	browser.vala \
 	component.vala \
+	crewchooser.vala \
 	fieldset.vala \
 	filters.vala \
 	filtertree.vala \

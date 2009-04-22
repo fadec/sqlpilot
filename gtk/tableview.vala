@@ -87,6 +87,24 @@ namespace SqlpGtk {
 			this.filter.refilter ();
 		}
 
+		public void set_column_visible_by_title (string column_name, bool visible) {
+			var column = get_column_by_title (column_name);
+			if (column != null) column.set_visible (visible);
+		}
+
+		public void set_column_visible (int col, bool visible) {
+			var column = view.get_column (col);
+			if (column != null) column.set_visible (visible);			
+		}
+
+		private TreeViewColumn? get_column_by_title (string title) {
+			TreeViewColumn col;
+			for (int i = 0; (col = view.get_column(i)) != null; i++) {
+				if (col.get_title() == title) return col;
+			}
+			return null;
+		}
+
 		private void init_tree_selection () {
 			var selection = view.get_selection ();
 			selection.set_mode (SelectionMode.MULTIPLE);

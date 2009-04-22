@@ -14,7 +14,12 @@ namespace SqlpGtk {
 			table_store.database = table.database;
 			table_store.observe (table);
 			fieldset = new FlightFields (table);
-			table_view = new TableView.with_model (table_store);			
+			table_view = new TableView.with_model (table_store);
+			table_view.set_column_visible (0, false);
+			table_view.set_column_visible (1, false);
+			table_view.set_column_visible (2, false);
+			table_view.set_column_visible (3, false);
+			table_view.set_column_visible (4, false);
 		}
 	}
 }
