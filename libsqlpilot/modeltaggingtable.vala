@@ -1,9 +1,9 @@
 using Sqlite;
 namespace Sqlp {
-	public class ModelTaggingTable : Table, ITaggingTable {
+	public class ModelTaggingTable : Table, IJoinTable {
 
-		public string object_id_column_name { get { return "model_id"; } }
-		public string tag_id_column_name { get { return "model_property_id"; } }
+		public string parent_id_column_name { get { return "model_id"; } }
+		public string child_id_column_name { get { return "model_property_id"; } }
 
 		public ModelTaggingTable (Logbook logbook) {
 			this.record_type = typeof (Tagging);

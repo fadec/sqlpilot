@@ -31,6 +31,8 @@ libsqlpilot_la_VALASOURCES = \
 	glidetable.vala \
 	hold.vala \
 	holdtable.vala \
+	ijoinrecord.vala \
+	ijointable.vala \
 	landing.vala \
 	landingtable.vala \
 	launchtype.vala \
@@ -54,11 +56,7 @@ libsqlpilot_la_VALASOURCES = \
 	surfacetable.vala \
 	table.vala \
 	tag.vala \
-	ijoinrecord.vala \
-	ijointable.vala \
-	itagging.vala \
 	tagging.vala \
-	itaggingtable.vala \
 	takeoff.vala \
 	takeofftable.vala \
 	timeofday.vala \

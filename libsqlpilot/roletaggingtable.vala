@@ -1,9 +1,9 @@
 using Sqlite;
 namespace Sqlp {
-	public class RoleTaggingTable : Table, ITaggingTable {
+	public class RoleTaggingTable : Table, IJoinTable {
 
-		public string object_id_column_name { get { return "role_id"; } }
-		public string tag_id_column_name { get { return "role_property_id"; } }
+		public string parent_id_column_name { get { return "role_id"; } }
+		public string child_id_column_name { get { return "role_property_id"; } }
 
 		public RoleTaggingTable (Logbook logbook) {
 			this.record_type = typeof (Tagging);

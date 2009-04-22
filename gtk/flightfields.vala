@@ -193,7 +193,7 @@ namespace SqlpGtk {
 			hold_editor.parent_id = flight.id;
 			takeoff_editor.parent_id = flight.id;
 			landing_editor.parent_id = flight.id;
-			tag_chooser.object_id = flight.id;
+			tag_chooser.parent_id = flight.id;
 			crew_chooser.parent_id = flight.id;
 		}
 

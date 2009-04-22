@@ -6,8 +6,8 @@ namespace SqlpGtk {
 	public class Pane : Component {
 		
 		public string gui_name { get; construct; }
+		private List<Component> children;
 		protected Gui gui;
-		protected List<Component> children;
 
 		public Pane ( string gui_name ) {
 			this.gui_name = gui_name;

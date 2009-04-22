@@ -47,7 +47,7 @@ namespace SqlpGtk {
 		protected override void set_fields_from_record () {
  			abbreviation.set_text (role.abbreviation != null ? role.abbreviation : "");
 			description.set_text (role.description != null ? role.description : "");
-			property_chooser.object_id = role.id;
+			property_chooser.parent_id = role.id;
 		}
 
 		protected override void set_record_from_fields () {

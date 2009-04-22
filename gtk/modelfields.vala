@@ -45,7 +45,7 @@ namespace SqlpGtk {
 		protected override void set_fields_from_record () {
 			name.set_text (model.name);
 			abbreviation.set_text (model.abbreviation);
-			property_chooser.object_id = model.id;
+			property_chooser.parent_id = model.id;
 		}
 
 		protected override void set_record_from_fields () {
