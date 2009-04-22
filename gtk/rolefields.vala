@@ -6,8 +6,6 @@ namespace SqlpGtk {
 
 	public class RoleFields : Fieldset {
 
-		private TagChooser tag_chooser;
-
 		private Entry abbreviation;
 		private Entry description;
 		private CheckButton total;
@@ -18,6 +16,9 @@ namespace SqlpGtk {
 		private CheckButton dual_received;
 		private CheckButton instructor;
 		private CheckButton military;
+
+		private TagChooser property_chooser;
+		private TableEditor property_editor;
 
 		public Role role {
 			get { return this.record as Role; }
@@ -34,14 +35,19 @@ namespace SqlpGtk {
 
 			abbreviation	= gui.object ("abbreviation")			 as Entry;
 			description		= gui.object ("description")			 as Entry;
-			tag_chooser = new TagChooser (table, logbook.role_taggings, logbook.role_tags);			
-			set_slot ("properties", tag_chooser);
+
+			property_chooser = new TagChooser (table, logbook.role_taggings, logbook.role_tags);
+			set_slot ("property_chooser", property_chooser);
+
+			property_editor = new TagEditor (logbook.role_tags);
+			set_slot ("property_editor", property_editor);
+
 		}
 
 		protected override void set_fields_from_record () {
  			abbreviation.set_text (role.abbreviation != null ? role.abbreviation : "");
 			description.set_text (role.description != null ? role.description : "");
-			tag_chooser.object_id = role.id;
+			property_chooser.object_id = role.id;
 		}
 
 		protected override void set_record_from_fields () {
