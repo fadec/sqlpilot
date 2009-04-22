@@ -7,8 +7,6 @@ namespace SqlpGtk {
 
 	public class ModelFields : Fieldset {
 
-		private TagChooser tag_chooser;
-
 		public Model model {
 			get { return this.record as Model; }
 			set { this.record = value; }
@@ -24,6 +22,10 @@ namespace SqlpGtk {
 		private Entry make;
 		private Entry type;
 
+		private TagChooser property_chooser;
+		private TableEditor property_editor;
+
+
 		construct {
 			Logbook l; // Vala seems to need a declaration to generate correct dependencies in c headers.
 			var logbook = table.database as Logbook;
@@ -33,14 +35,17 @@ namespace SqlpGtk {
 			make = gui.object ("make") as Entry;
 			type = gui.object ("type") as Entry;
 
-			tag_chooser = new TagChooser (table, logbook.role_taggings, logbook.role_tags);			
-			set_slot ("properties", tag_chooser);
+			property_chooser = new TagChooser (table, logbook.model_taggings, logbook.model_tags);			
+			set_slot ("property_chooser", property_chooser);
+
+			property_editor = new TagEditor (logbook.model_tags);
+			set_slot ("property_editor", property_editor);
 		}
 
 		protected override void set_fields_from_record () {
 			name.set_text (model.name);
 			abbreviation.set_text (model.abbreviation);
-			tag_chooser.object_id = model.id;
+			property_chooser.object_id = model.id;
 		}
 
 		protected override void set_record_from_fields () {
