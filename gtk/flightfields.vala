@@ -49,7 +49,7 @@ namespace SqlpGtk {
 		private TagChooser tag_chooser;
 		private TableEditor tag_editor;
 
-		private TagChooser crew_chooser;
+		private JoinTableEditor crew_chooser;
 		private TableEditor person_editor;
 
 
@@ -91,7 +91,7 @@ namespace SqlpGtk {
 			tag_editor = new TagEditor (logbook.flight_tags);
 			set_slot ("tag_editor", tag_editor);
 
-			crew_chooser = new TagChooser (table, logbook.crew, logbook.people);
+			crew_chooser = new JoinTableEditor (table, logbook.crew, logbook.people);
 			set_slot ("crew_chooser", crew_chooser);
 
 			person_editor = new PersonEditor (logbook.people);
@@ -194,7 +194,7 @@ namespace SqlpGtk {
 			takeoff_editor.parent_id = flight.id;
 			landing_editor.parent_id = flight.id;
 			tag_chooser.object_id = flight.id;
-			crew_chooser.object_id = flight.id;
+			crew_chooser.parent_id = flight.id;
 		}
 
 		public override void set_record_from_fields () {

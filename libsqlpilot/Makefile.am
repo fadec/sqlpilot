@@ -54,6 +54,8 @@ libsqlpilot_la_VALASOURCES = \
 	surfacetable.vala \
 	table.vala \
 	tag.vala \
+	ijoinrecord.vala \
+	ijointable.vala \
 	itagging.vala \
 	tagging.vala \
 	itaggingtable.vala \

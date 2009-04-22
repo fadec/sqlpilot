@@ -1,9 +1,9 @@
 using Sqlite;
 namespace Sqlp {
-	public class Crew : Record, ITagging  {
+	public class Crew : Record, IJoinRecord  {
 
-		public int64 object_id { get; set; }
-		public int64 tag_id { get; set; }
+		public int64 parent_id { get; set; }
+		public int64 child_id { get; set; }
 
 		public int64 role_id;
 		private Role? _role;
@@ -22,21 +22,17 @@ namespace Sqlp {
 
 		protected override void set_from_stmt (Statement stmt) {
 			var i = 1;
-			object_id = stmt.column_int64 (i++);
-			tag_id = stmt.column_int64 (i++);
+			parent_id = stmt.column_int64 (i++);
+			child_id = stmt.column_int64 (i++);
 			role_id	= stmt.column_int64 (i++);
 		}
 
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
- 			debug (object_id.to_string());
- 			debug (tag_id.to_string());
-			stmt.bind_nonzero_int64 (i++, object_id);
-			stmt.bind_nonzero_int64 (i++, tag_id);
+			stmt.bind_nonzero_int64 (i++, parent_id);
+			stmt.bind_nonzero_int64 (i++, child_id);
 			stmt.bind_nonzero_int64	(i++, role_id);
 			return i;
 		}
-
-
 	}
 }

@@ -31,6 +31,7 @@ sqlpilot_gtk_VALASOURCES = \
 	glideeditor.vala \
 	gui.vala \
 	holdeditor.vala \
+	jointableeditor.vala \
 	landingeditor.vala \
 	main.vala \
 	modelbrowser.vala \
