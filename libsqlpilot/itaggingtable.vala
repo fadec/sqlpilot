@@ -1,4 +1,4 @@
-using Sqlite;
+
 namespace Sqlp {
 	public abstract interface ITaggingTable : Table  {
 		public abstract string object_id_column_name { get; }

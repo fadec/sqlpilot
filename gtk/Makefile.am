@@ -37,14 +37,15 @@ sqlpilot_gtk_VALASOURCES = \
 	modelfields.vala \
 	pane.vala \
 	parentchildeditor.vala \
+	personeditor.vala \
 	rolebrowser.vala \
 	rolefields.vala \
 	settreemodelfilter.vala \
+	tableeditor.vala \
 	tableobserverstore.vala \
 	tableview.vala \
 	tagchooser.vala \
 	tageditor.vala \
-	tagmanager.vala \
 	takeoffeditor.vala \
 	util.vala
 

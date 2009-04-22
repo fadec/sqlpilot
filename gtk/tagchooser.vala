@@ -9,7 +9,7 @@ namespace SqlpGtk {
 		
 		public unowned Sqlp.Table object_table { get; construct; }
 		public unowned Sqlp.ITaggingTable tagging_table { get; construct; }
-		public unowned Sqlp.TagTable tag_table { get; construct; }
+		public unowned Sqlp.Table tag_table { get; construct; }
 
 		public string tag_header;
 		public string tagging_header;
@@ -26,20 +26,20 @@ namespace SqlpGtk {
 			}
 		}
 
-		private enum TagColumn { TAG_ID, TAG_NAME, TAG_DESCRIPTION }
+		private enum TagColumn { TAG_ID }
 		private TableObserverStore tags;
 		private TreeModelFilter tags_filter;
 		private TreeModelSort tags_sort;
 		public TableView tags_view { get; private set; }
 
-		private enum TaggingColumn { TAGGING_ID, OBJECT_ID, TAG_ID, TAG_NAME, TAG_DESCRIPTION }
+		private enum TaggingColumn { TAGGING_ID, OBJECT_ID, TAG_ID }
 		private TableObserverStore taggings;
 		public TableView taggings_view { get; private set; }
 
 		private Button add_tagging_button;
 		private Button remove_tagging_button;
 
-		public TagChooser (Sqlp.Table object_table, Sqlp.ITaggingTable tagging_table, Sqlp.TagTable tag_table) {
+		public TagChooser (Sqlp.Table object_table, Sqlp.ITaggingTable tagging_table, Sqlp.Table tag_table) {
 			this.object_table = object_table;
 			this.tagging_table = tagging_table;
 			this.tag_table = tag_table;

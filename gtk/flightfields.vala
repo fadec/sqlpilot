@@ -40,24 +40,18 @@ namespace SqlpGtk {
 
 		private ToggleButton cross_country;
 
-		private TreeView people_view;
-		private Button   person_add;
-		private Button   person_remove;
-		private Label    person_summary;
-
-		private TreeView crew_view;
-		private Button crew_add;
-		private Button crew_remove;
-		private Label crew_summary;
-
 		private TextView notes;
 
 		private TableObserverStore role_store;
 		private TableObserverStore aircraft_store;
 
+
 		private TagChooser tag_chooser;
-		private TagEditor tag_editor;
+		private TableEditor tag_editor;
+
 		private TagChooser crew_chooser;
+		private TableEditor person_editor;
+
 
 		public Flight flight {
 			get { return this.record as Flight; }
@@ -98,7 +92,11 @@ namespace SqlpGtk {
 			set_slot ("tag_editor", tag_editor);
 
 			crew_chooser = new TagChooser (table, logbook.crew, logbook.people);
-			set_slot ("crew", crew_chooser);
+			set_slot ("crew_chooser", crew_chooser);
+
+			person_editor = new PersonEditor (logbook.people);
+			set_slot ("person_editor", person_editor);
+
 
 			var date_edit = new Entry ();
 			gui.box ("date_slot").pack_start_defaults (date_edit);
@@ -685,19 +683,6 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_tail_toggled(ToggleButton button) {
 			set_aircraft_combobox_visibility ();
-		}
-
-
-		public void on_person_add_clicked (Button button) {
-		}
-
-		public void on_person_remove_clicked (Button button) {
-		}
-
-		public void on_crew_add_clicked (Button button) {
-		}
-
-		public void on_crew_remove_clicked (Button button) {
 		}
 
 		[CCode (instance_pos = -1)]
