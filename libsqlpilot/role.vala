@@ -1,6 +1,7 @@
 using Sqlite;
 namespace Sqlp {
 	public class Role : Record {
+		public bool for_flights { get; set; default = true; }
 		public string abbreviation { get; set; default = ""; }
 		public string description { get; set; default = ""; }
 
@@ -19,11 +20,11 @@ namespace Sqlp {
 		}
 
 		construct {
-			message ("new role made");
 		}
 
 		protected override int bind_for_save (Statement stmt) {
 			var i = 1;
+			stmt.bind_int           (i++, (int) for_flights);
 			stmt.bind_nonempty_text (i++, abbreviation);
 			stmt.bind_nonempty_text (i++, description);
 			return i;
@@ -31,6 +32,7 @@ namespace Sqlp {
 
 		protected override void set_from_stmt (Statement stmt) {
 			var i = 1;
+			for_flights = (bool) stmt.column_int(i++);
 			abbreviation = stmt.column_text(i++);
 			description = stmt.column_text (i++);
 		}

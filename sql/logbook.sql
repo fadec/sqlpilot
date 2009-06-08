@@ -86,6 +86,7 @@ CREATE TABLE Routing (
 
 CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
+	,ForFlights BOOLEAN NOT NULL DEFAULT 1
 	,Abbreviation CHAR
 	,Description CHAR
 	,CHECK (id <> 0)
