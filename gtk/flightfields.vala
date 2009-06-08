@@ -99,7 +99,7 @@ namespace SqlpGtk {
 
 
 			var date_edit = new Entry ();
-			gui.box ("date_slot").pack_start_defaults (date_edit);
+			gui.box ("date_slot").pack_start (date_edit, true, true, 0);
 			date_edit.show ();
 			date_edit.changed += (date_edit) => {
 				on_date_changed (date_edit);

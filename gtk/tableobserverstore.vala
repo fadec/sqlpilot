@@ -27,15 +27,6 @@ namespace SqlpGtk {
 
 		public GLib.Type default_column_type { get; set; default = typeof(string); }
 
-		public bool has_insert_row { default = false;
-			get;
-			set;
-		}
-		public string insert_row_text { default = "<new>";
-			get;
-			set;
-		}
-
 		public int row_count { get; private set; }
 
 		private string[] _column_names;
@@ -150,11 +141,6 @@ namespace SqlpGtk {
 			}
 			select_statement.reset ();
 			select_statement.clear_bindings ();
-
-			if (has_insert_row) {
-				append (out iter);
-				set (iter, 1, insert_row_text);
-			}
 		}
 
 		public HashSet <int64?> get_int64_column_hashset (int column) {

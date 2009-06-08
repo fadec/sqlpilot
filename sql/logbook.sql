@@ -54,6 +54,7 @@ CREATE TABLE Flights (
 	,ScheduledDuration INTEGER
 	,Trip VARCHAR
 	,TripDate DATE
+	-- Ensure insert with id=0 is impossible. Fkey fields should be NULL if not set, never 0.
 	,CHECK (id <> 0 AND aircraft_id <> 0 AND role_id <> 0 AND origin_airport_id <> 0 AND destination_airport_id <> 0)
 );
 

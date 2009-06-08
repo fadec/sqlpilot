@@ -25,7 +25,7 @@ namespace SqlpGtk {
 		}
 
 		public void set_slot ( string slot_name, Component child ) {
-			gui.box ( slot_name ).pack_start_defaults ( child.top_widget );
+			gui.box ( slot_name ).pack_start ( child.top_widget, true, true, 0 );
 			children.append( child );
 		}
 
