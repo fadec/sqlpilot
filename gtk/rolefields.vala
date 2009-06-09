@@ -18,7 +18,6 @@ namespace SqlpGtk {
 		private CheckButton military;
 
 		private TagChooser property_chooser;
-		private TableEditor property_editor;
 
 		public Role role {
 			get { return this.record as Role; }
@@ -38,10 +37,6 @@ namespace SqlpGtk {
 
 			property_chooser = new TagChooser (table, logbook.role_taggings, logbook.role_tags);
 			set_slot ("property_chooser", property_chooser);
-
-			property_editor = new TagEditor (logbook.role_tags);
-			set_slot ("property_editor", property_editor);
-
 		}
 
 		protected override void set_fields_from_record () {

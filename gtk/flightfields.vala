@@ -47,7 +47,6 @@ namespace SqlpGtk {
 
 
 		private TagChooser tag_chooser;
-		private TableEditor tag_editor;
 
 		private JoinTableEditor crew_chooser;
 		private TableEditor person_editor;
@@ -88,15 +87,11 @@ namespace SqlpGtk {
 			tag_chooser = new TagChooser (table, logbook.flight_taggings, logbook.flight_tags);
 			set_slot ("tag_chooser", tag_chooser);
 
-			tag_editor = new TagEditor (logbook.flight_tags);
-			set_slot ("tag_editor", tag_editor);
-
 			crew_chooser = new CrewChooser (table, logbook.crew, logbook.people);
 			set_slot ("crew_chooser", crew_chooser);
 
 			person_editor = new PersonEditor (logbook.people);
 			set_slot ("person_editor", person_editor);
-
 
 			var date_edit = new Entry ();
 			gui.box ("date_slot").pack_start (date_edit, true, true, 0);

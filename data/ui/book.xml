@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <interface>
-  <requires lib="gtk+" version="2.14"/>
+  <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy project-wide -->
   <object class="GtkNotebook" id="top">
     <property name="visible">True</property>
@@ -9,13 +9,11 @@
     <child>
       <object class="GtkVBox" id="flights">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
       </object>
-      <packing>
-        <property name="tab_expand">True</property>
-      </packing>
     </child>
     <child type="tab">
       <object class="GtkLabel" id="label4">
@@ -23,18 +21,42 @@
         <property name="label" translatable="yes">Flights</property>
       </object>
       <packing>
-        <property name="tab_fill">False</property>
+        <property name="tab_expand">True</property>
+        <property name="detachable">True</property>
       </packing>
     </child>
     <child>
-      <object class="GtkVBox" id="roles">
+      <object class="GtkVBox" id="flight_tags">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
       </object>
       <packing>
         <property name="position">1</property>
+      </packing>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label1">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Flight Tags</property>
+      </object>
+      <packing>
+        <property name="position">1</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="roles">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">2</property>
       </packing>
     </child>
     <child type="tab">
@@ -43,19 +65,42 @@
         <property name="label" translatable="yes">Roles</property>
       </object>
       <packing>
-        <property name="position">1</property>
+        <property name="position">2</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="role_properties">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">3</property>
+      </packing>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label10">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Role Properties</property>
+      </object>
+      <packing>
+        <property name="position">3</property>
         <property name="tab_fill">False</property>
       </packing>
     </child>
     <child>
       <object class="GtkVBox" id="aircraft">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
       </object>
       <packing>
-        <property name="position">2</property>
+        <property name="position">4</property>
       </packing>
     </child>
     <child type="tab">
@@ -64,19 +109,20 @@
         <property name="label" translatable="yes">Aircraft</property>
       </object>
       <packing>
-        <property name="position">2</property>
+        <property name="position">4</property>
         <property name="tab_fill">False</property>
       </packing>
     </child>
     <child>
       <object class="GtkVBox" id="models">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
       </object>
       <packing>
-        <property name="position">3</property>
+        <property name="position">5</property>
       </packing>
     </child>
     <child type="tab">
@@ -85,29 +131,118 @@
         <property name="label" translatable="yes">Models</property>
       </object>
       <packing>
-        <property name="position">3</property>
+        <property name="position">5</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="model_properties">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">6</property>
+      </packing>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label2">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Model Properties</property>
+      </object>
+      <packing>
+        <property name="position">6</property>
         <property name="tab_fill">False</property>
       </packing>
     </child>
     <child>
       <object class="GtkVBox" id="airports">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <placeholder/>
         </child>
       </object>
       <packing>
-        <property name="position">4</property>
+        <property name="position">7</property>
+      </packing>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label9">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Airports</property>
+      </object>
+      <packing>
+        <property name="position">7</property>
         <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="reports">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">8</property>
       </packing>
     </child>
     <child type="tab">
       <object class="GtkLabel" id="label8">
         <property name="visible">True</property>
-        <property name="label" translatable="yes">Airports</property>
+        <property name="label" translatable="yes">Reports</property>
       </object>
       <packing>
-        <property name="position">4</property>
+        <property name="position">8</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="summaries">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">9</property>
+        <property name="tab_expand">True</property>
+      </packing>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label11">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Summaries</property>
+      </object>
+      <packing>
+        <property name="position">5</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="import">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">10</property>
+      </packing>
+    </child>
+    <child type="tab">
+      <object class="GtkLabel" id="label3">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">Import</property>
+      </object>
+      <packing>
+        <property name="position">8</property>
         <property name="tab_fill">False</property>
       </packing>
     </child>

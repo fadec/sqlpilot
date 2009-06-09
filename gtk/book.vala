@@ -79,6 +79,15 @@ namespace SqlpGtk {
 			this.aircraft_browser = new AircraftBrowser (logbook.aircraft);
 			this.model_browser = new ModelBrowser (logbook.model);
 			this.airport_browser = new AirportBrowser (logbook.airport);
+
+			var flight_tags = new TagEditor (logbook.flight_tags);
+			set_slot ("flight_tags", flight_tags);
+
+			var role_properties = new TagEditor (logbook.role_tags);
+			set_slot ("role_properties", role_properties);
+
+			var model_properties = new TagEditor (logbook.model_tags);
+			set_slot ("model_properties", model_properties);
 		}
 	}
 }

@@ -23,8 +23,6 @@ namespace SqlpGtk {
 		private Entry type;
 
 		private TagChooser property_chooser;
-		private TableEditor property_editor;
-
 
 		construct {
 			Logbook l; // Vala seems to need a declaration to generate correct dependencies in c headers.
@@ -37,9 +35,6 @@ namespace SqlpGtk {
 
 			property_chooser = new TagChooser (table, logbook.model_taggings, logbook.model_tags);			
 			set_slot ("property_chooser", property_chooser);
-
-			property_editor = new TagEditor (logbook.model_tags);
-			set_slot ("property_editor", property_editor);
 		}
 
 		protected override void set_fields_from_record () {
