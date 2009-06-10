@@ -11,7 +11,7 @@ namespace SqlpGtk {
 		}
 
 		construct {
-			view.set_column_visible (0, false); // hide id
+			table_view.set_column_visible (0, false); // hide id
 		}
 
 		private override void on_edit (Record record, string column_name, string new_text) {

@@ -62,8 +62,9 @@ namespace Sqlp {
 				return false;
 			}
 			message("before step %s", _table.table_name);
-			if (stmt.step () != Sqlite.OK) {
-				((Sqlp.Database)_table.database).dump_error ();
+			int err_code = stmt.step ();
+			if (err_code != Sqlite.DONE) {
+				message ("Database error %d: %s\n", err_code, stmt.db_handle().errmsg ());
 			}
 			message("after step %s", _table.table_name);
 			stmt.reset ();

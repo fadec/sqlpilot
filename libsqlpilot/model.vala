@@ -17,8 +17,8 @@ namespace Sqlp {
 		public override void set_from_stmt (Statement stmt) {
 			var i = 1;
 			abbreviation		= stmt.column_text (i++);
-			name				= stmt.column_text (i++);
 			make				= stmt.column_text (i++);
+			name				= stmt.column_text (i++);
 		}
 
 	}

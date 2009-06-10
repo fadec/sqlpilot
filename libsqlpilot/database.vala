@@ -41,10 +41,6 @@ namespace Sqlp {
 			}
 		}
 
-		public void dump_error () {
-			message (_db.errmsg ());
-		}
-
 		public bool load_extension (string filename) {
 			string errmsg;
 			var query = "SELECT load_extension(\"" + filename + "\");";

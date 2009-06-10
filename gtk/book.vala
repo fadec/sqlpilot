@@ -16,45 +16,6 @@ namespace SqlpGtk {
 				set_slot ("flights", _flight_browser);
 			}
 		}
-		private Browser _role_browser;
-		private Browser role_browser {
-			get { return _role_browser; }
-			set {
-				_role_browser = value;
-				if (_role_browser == null) return;
-				set_slot ("roles", _role_browser);
-			}
-		}
-
-		private Browser _aircraft_browser;
-		private Browser aircraft_browser {
-			get { return _aircraft_browser; }
-			set {
-				_aircraft_browser = value;
-				if (_aircraft_browser == null) return;
-				set_slot ("aircraft", _aircraft_browser);
-			}
-		}
-
-		private Browser _model_browser;
-		private Browser model_browser {
-			get { return _model_browser; }
-			set {
-				_model_browser = value;
-				if (_model_browser == null) return;
-				set_slot ("models", _model_browser);
-			}
-		}
-
-		private Browser _airport_browser;
-		private Browser airport_browser {
-			get { return _airport_browser; }
-			set {
-				_airport_browser = value;
-				if (_airport_browser == null) return;
-				set_slot ("airports", _airport_browser);
-			}
-		}
 
 		private TableObserverStore role_store;
 		private TableObserverStore aircraft_store;
@@ -75,19 +36,27 @@ namespace SqlpGtk {
 
 		private void add_pages () {
 			this.flight_browser = new FlightBrowser (logbook.flight);
-			this.role_browser = new RoleBrowser (logbook.role);
-			this.aircraft_browser = new AircraftBrowser (logbook.aircraft);
-			this.model_browser = new ModelBrowser (logbook.model);
-			this.airport_browser = new AirportBrowser (logbook.airport);
 
 			var flight_tags = new TagEditor (logbook.flight_tags);
 			set_slot ("flight_tags", flight_tags);
 
+			var roles = new RoleEditor (logbook.role);
+			set_slot ("roles", roles);
+
 			var role_properties = new TagEditor (logbook.role_tags);
 			set_slot ("role_properties", role_properties);
 
+			var aircraft = new AircraftEditor (logbook.aircraft);
+			set_slot ("aircraft", aircraft);
+
+			var models = new ModelEditor (logbook.model);
+			set_slot ("models", models);
+
 			var model_properties = new TagEditor (logbook.model_tags);
 			set_slot ("model_properties", model_properties);
+			
+			var airports = new AirportEditor (logbook.airport);
+			set_slot ("airports", airports);
 		}
 	}
 }

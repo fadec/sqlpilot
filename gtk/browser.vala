@@ -14,8 +14,8 @@ namespace SqlpGtk {
 
 		public TableObserverStore table_store { get; set; }
 
-		private Fieldset <Record> _fieldset;
-		public Fieldset <Record> fieldset {
+		private Fieldset _fieldset;
+		public Fieldset fieldset {
 			get { return _fieldset; }
 			set construct {
 				_fieldset = value;
@@ -62,7 +62,7 @@ namespace SqlpGtk {
 			}
 		}
 
-		private Entry where_clause;
+		protected Entry where_clause;
 		private Label query_error;
 		private Label query_summary;
 		private ToolButton add_btn;
@@ -81,7 +81,7 @@ namespace SqlpGtk {
 			add_btn				= gui.object ("add")			as ToolButton;
 			delete_btn			= gui.object ("delete")			as ToolButton;
 			arm_delete_btn		= gui.object ("arm_delete")		as ToggleToolButton;
-			record_summary = gui.object ("record_summary") as Label;
+			record_summary      = gui.object ("record_summary") as Label;
 			
 
 			this.filters = new Filters ();
