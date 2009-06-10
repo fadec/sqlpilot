@@ -3,18 +3,18 @@ using Sqlite;
 namespace Sqlp {
 	public class Airport : Record <AirportTable> {
 
-		public string icao;
-		public string iata;
-		public string abbreviation;
-		public string name;
-		public string city;
-		public string province;
-		public string country;
-		public string lat; //float
-		public string lon; //float
-		public string elev; //int
+		public string icao { get; set; default = ""; }
+		public string iata { get; set; default = ""; }
+		public string abbreviation { get; set; default = ""; }
+		public string name { get; set; default = ""; }
+		public string city { get; set; default = ""; }
+		public string province { get; set; default = ""; }
+		public string country { get; set; default = ""; }
+		public string lat { get; set; default = ""; } //float
+		public string lon { get; set; default = ""; } //float
+		public string elev { get; set; default = ""; } //int
 		public Timezone timezone = Timezone ("UTC");
-		public string notes;
+		public string notes { get; set; default = ""; }
 
 		public override int bind_for_save (Statement stmt) {
 			var i = 1;
