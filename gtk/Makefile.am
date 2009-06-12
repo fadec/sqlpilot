@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.decl
 bin_PROGRAMS = sqlpilot-gtk
 
 AM_CPPFLAGS = \
-	-I$(top_srcdir) \
+	-I$(top_srcdir)/libsqlpilot \
 	$(GLIB_CFLAGS)  \
 	$(GTK_CFLAGS)   \
 	$(SQLITE_CFLAGS) \
@@ -54,13 +54,14 @@ sqlpilot_gtk_VALASOURCES = \
 
 sqlpilot_gtk_SOURCES = \
 	sqlpilot.vala.stamp \
-	$(sqlpilot_gtk_VALASOURCES:.vala=.c) \
-	$(sqlpilot_gtk_VALASOURCES:.vala=.h)
+	$(sqlpilot_gtk_VALASOURCES:.vala=.c)
 
 vala.stamp: $(sqlpilot_gtk_VALASOURCES)
 	$(VALAC) $(VALAFLAGS) --basedir $(top_srcdir) \
-	--vapidir $(top_srcdir)/libsqlpilot --pkg gmodule-2.0 --pkg libsqlpilot \
+	--vapidir $(top_srcdir)/libsqlpilot \
+	--pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi \
+	--pkg gmodule-2.0 \
 	--pkg gtk+-2.0 \
 	--pkg sqlite3 \
 	--pkg libglade-2.0 \
@@ -76,10 +77,5 @@ sqlpilot_gtk_LDADD = \
 	$(GEE_LIBS) \
 	../libsqlpilot/libsqlpilot.la
 
-#vapidir = $(datadir)/vala/vapi
-
-# dist_vapi_DATA = \
-# 	gee-1.0.vapi \
-# 	$(NULL)
-
-# EXTRA_DIST += sqlpilot
+MAINTAINERCLEANFILES = \
+	$(sqlpilot_gtk_VALASOURCES:.vala=.c)

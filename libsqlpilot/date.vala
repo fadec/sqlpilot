@@ -34,6 +34,7 @@ namespace Sqlp {
 				gdate.strftime((char[])s, "%Y-%m-%d");
 				return s;
 			} else {
+				// perhaps should throw
 				return "";
 			}
 		}
@@ -47,6 +48,7 @@ namespace Sqlp {
 		}
 		
 		public void add_days (uint days) {
+			// perhaps should throw if invalid
 			gdate.add_days (days);
 		}
 		

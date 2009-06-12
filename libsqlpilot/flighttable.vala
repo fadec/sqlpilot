@@ -4,6 +4,7 @@ namespace Sqlp {
 
 		protected Statement find_by_date_fltno_dep_arr_stmt;
 		protected Statement find_by_role_id_stmt;
+		protected Statement find_by_date_leg_stmt;
 
 		public FlightTable ( Logbook logbook ) {
 			this.record_type = typeof (Flight);
@@ -21,8 +22,12 @@ namespace Sqlp {
 			"(destination.ICAO = ? OR destination.IATA = ?)";
 			find_by_date_fltno_dep_arr_stmt = database.prepare_statement (
 				find_by_date_fltno_dep_arr_sql);
+			
 			find_by_role_id_stmt = database.prepare_statement (
 				"SELECT * FROM Flights WHERE role_id = ?");
+			
+			find_by_date_leg_stmt = database.prepare_statement (
+				"SELECT * FROM Flights WHERE Date = ? AND Leg = ?");
 		}
 
 		public Flight? find_by_date_fltno_dep_arr (string date_str,
@@ -44,6 +49,13 @@ namespace Sqlp {
 			weak Statement stmt = find_by_role_id_stmt;
 			stmt.bind_nonzero_int64 (1, role_id);
 			return find_all (stmt);
+		}
+		
+		public Flight? find_by_date_leg (Date date, int leg) {
+			weak Statement stmt = find_by_date_leg_stmt;
+			stmt.bind_text (1, date.to_iso8601 ());
+			stmt.bind_int (2, leg);
+			return find_first (stmt) as Flight?;
 		}
 	}
 }

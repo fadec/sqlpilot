@@ -42,6 +42,7 @@ libsqlpilot_la_VALASOURCES = \
 	modeltable.vala \
 	modeltaggingtable.vala \
 	modeltagtable.vala \
+	ordinal.vala \
 	person.vala \
 	persontable.vala \
 	record.vala \
@@ -65,17 +66,13 @@ libsqlpilot_la_VALASOURCES = \
 	util.vala
 
 libsqlpilot_la_SOURCES = \
-	$(libsqlpilot_la_VALASOURCES:.vala=.c) \
-	$(libsqlpilot_la_VALASOURCES:.vala=.h)
+	vala.stamp \
+	$(libsqlpilot_la_VALASOURCES:.vala=.c)
 
-# libsqlpilotincludedir = $(includedir)/libsqlpilot
-# libsqlpilotinclude_HEADERS = \
-# 	$(libsqlpilot_la_VALASOURCES:.vala=.h)
-
-vala.stamp: $(libsqlpilot_la_VALASOURCES)
+libsqlpilot.vapi vala.stamp: $(libsqlpilot_la_VALASOURCES)
 	$(VALAC) --basedir $(top_srcdir) --library libsqlpilot \
 	--vapidir $(top_srcdir)/vapi --pkg sqlite3 --pkg time \
-	-C $^
+	-C -H libsqlpilot.h $^
 	touch $@
 
 libsqlpilot_la_LIBADD = \
@@ -83,4 +80,9 @@ libsqlpilot_la_LIBADD = \
 	$(SQLITE_LIBS)
 
 
-EXTRA_DIST += vala.stamp
+EXTRA_DIST += $(libsqlpilot_la_VALASOURCES) libsqlpilot.vapi vala.stamp
+
+MAINTAINERCLEANFILES = \
+	libsqlpilot.vapi \
+	libsqlpilot.h \
+	$(libsqlpilot_la_VALASOURCES:.vala=.c)

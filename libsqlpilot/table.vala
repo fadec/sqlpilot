@@ -76,7 +76,7 @@ namespace Sqlp {
 			return statement_colunm_names (statement);
 		}
 
-		public string[] statement_colunm_names ( Statement select ) {
+		private string[] statement_colunm_names ( Statement select ) {
 			int ncol = 0;
 			ncol = select.column_count ();
 			var names = new string[] {};
@@ -88,6 +88,7 @@ namespace Sqlp {
 		}
 		
 		public virtual Record? find_by_id (int64 id) {
+			if (id == 0) return null; // 0 is the id of a new record, not one saved in the db.
 			find_stmt.bind_nonzero_int64 (1, id);
  			return find_first(find_stmt);
  		}
@@ -146,15 +147,21 @@ namespace Sqlp {
 		}
 
 		// First column is 1. -1 if not found.
-		protected int column_index (string name) {
+		public int column_index (string name) {
 			if (column_indexes == null) {
 				column_indexes = new HashTable <string, int> (str_hash, str_equal);
-				for (int i=0; i < column_names.length; i++) {
+				for (int i=0; i < column_count; i++) {
 					column_indexes.insert (column_names[i], i + 1);
 				}
 			}
 			var idx = column_indexes.lookup (name);
 			return idx > 0 ? idx : -1;
+		}
+
+		// Begins at 0.
+		public int column_offset (string name) {
+			int i = column_index (name);
+			return i > 0 ? i - 1 : -1;
 		}
 
 		private string make_insert_sql ( string table_name ) {

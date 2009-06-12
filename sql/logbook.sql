@@ -55,7 +55,12 @@ CREATE TABLE Flights (
 	,Trip VARCHAR
 	,TripDate DATE
 	-- Ensure insert with id=0 is impossible. Fkey fields should be NULL if not set, never 0.
-	,CHECK (id <> 0 AND aircraft_id <> 0 AND role_id <> 0 AND origin_airport_id <> 0 AND destination_airport_id <> 0)
+	,CHECK (id <> 0 AND
+	       	aircraft_id <> 0 AND
+		role_id <> 0 AND
+		origin_airport_id <> 0 AND
+		destination_airport_id <> 0 AND	
+		Leg >= 0)
 );
 
 CREATE TABLE FlightTags (
@@ -80,7 +85,7 @@ CREATE TABLE Routing (
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,airport_id INTEGER NOT NULL
 		REFERENCES Airports (id) ON DELETE RESTRICT
-	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Sequence INTEGER
 	,CHECK (id <> 0 AND airport_id <> 0)
 );
 
@@ -176,7 +181,7 @@ CREATE TABLE Takeoffs (
 		REFERENCES Airports (id) ON DELETE RESTRICT
 	,surface_id INTEGER
 		REFERENCES Surfaces (id) ON DELETE RESTRICT
-	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Sequence INTEGER
 	,Night BOOLEAN NOT NULL	DEFAULT 0
 	,Runway CHAR -- 35L
 	,Crosswind FLOAT
@@ -193,7 +198,7 @@ CREATE TABLE Landings (
 		REFERENCES Airports (id) ON DELETE RESTRICT
 	,surface_id INTEGER
 		REFERENCES Surfaces (id) ON DELETE RESTRICT
-	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Sequence INTEGER
 	,Night BOOLEAN NOT NULL DEFAULT 0
 	,Runway CHAR
 	,Crosswind FLOAT
@@ -218,7 +223,7 @@ CREATE TABLE Approaches (
 		REFERENCES Airports (id) ON DELETE RESTRICT
 	,approach_type_id INTEGER
 		REFERENCES ApproachTypes (id) ON DELETE RESTRICT
-	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Sequence INTEGER
 	,Runway CHAR
 	,Visibility FLOAT
 	,Ceiling FLOAT
@@ -231,7 +236,7 @@ CREATE TABLE Holds (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,flight_id INTEGER NOT NULL
 		REFERENCES Flights (id) ON DELETE CASCADE
-	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Sequence INTEGER
 	,Location CHAR
 	,Turns INTEGER
 	,Duration INTEGER
@@ -244,7 +249,7 @@ CREATE TABLE Glides (
 		REFERENCES Flights (id) ON DELETE CASCADE
 	,launch_type_id INTEGER
 		REFERENCES LaunchTypes (id) ON DELETE RESTRICT
-	,Sequence INTEGER NOT NULL DEFAULT 0
+	,Sequence INTEGER
 	,Duration INTEGER
 	,Distance FLOAT
 	,ReleaseAltitude FLOAT
@@ -387,6 +392,7 @@ INSERT INTO Registry (path, key, value) VALUES ("flights/view", "Over",     0);
 INSERT INTO Registry (path, key, value) VALUES ("flights", "UTC", 0);
 
 
+CREATE UNIQUE    INDEX flights_date_leg                  ON flights(Date,Leg);
 CREATE UNIQUE	 INDEX airports_icao			 ON airports(icao);
 CREATE UNIQUE	 INDEX airports_iata			 ON airports(iata);
 CREATE UNIQUE	 INDEX airports_abbreviaton		 ON airports(abbreviation);
@@ -394,6 +400,12 @@ CREATE UNIQUE	 INDEX aircraft_registration		 ON aircraft(registration);
 CREATE UNIQUE	 INDEX aircraft_tail			 ON aircraft(tail);
 CREATE UNIQUE	 INDEX roles_abbreviation		 ON roles(abbreviation);
 CREATE UNIQUE	 INDEX model_abbreviation		 ON models(abbreviation);
+CREATE UNIQUE	 INDEX routing_flight_id_sequence 	 ON routing(flight_id, Sequence);
+CREATE UNIQUE	 INDEX takeoffs_flight_id_sequence	 ON takeoffs(flight_id, Sequence);
+CREATE UNIQUE	 INDEX landings_flight_id_sequence	 ON landings(flight_id, Sequence);
+CREATE UNIQUE	 INDEX approaches_flight_id_sequence	 ON approaches(flight_id, Sequence);
+CREATE UNIQUE	 INDEX holds_flight_id_sequence	 	 ON holds(flight_id, Sequence);
+CREATE UNIQUE	 INDEX holds_flight_id_glides	 	 ON glides(flight_id, Sequence);
 
 CREATE		 INDEX flights_role_id			 ON flights (role_id);
 CREATE		 INDEX flights_origin_airport_id	 ON flights (origin_airport_id);

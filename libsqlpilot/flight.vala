@@ -100,7 +100,7 @@ namespace Sqlp {
 		}
 
 		public Date date;
-		public int leg;
+		public Ordinal leg;
 		public TimeOfDay actual_out = TimeOfDay ();
 		public TimeOfDay actual_in = TimeOfDay ();
 		public Duration duration;
@@ -123,7 +123,8 @@ namespace Sqlp {
 			stmt.bind_nonzero_int64				(i++, origin_id);
 			stmt.bind_nonzero_int64				(i++, destination_id);
 			stmt.bind_nonempty_text		(i++, date.to_iso8601 ());
-			stmt.bind_int				(i++, leg);
+
+			leg.bind_to_stmt (stmt, i++);
 
 			bind_time_of_day (stmt, i++, actual_out, (origin != null) ? origin.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, actual_out, Timezone ("UTC"));
@@ -201,7 +202,9 @@ namespace Sqlp {
 			destination_id  	= stmt.column_int64 (i++);
 			// null roundtrip for date = read null -> "" -> invalid date -> dwrite null
 			date				= Date.from_iso8601 (empty_if_null(stmt.column_text (i++)));
-			leg					= stmt.column_int   (i++);
+
+			leg					= Ordinal.from_stmt (stmt, i++);
+
 			i++; // skip local ss read
 			actual_out			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
 			i++; // skip local
@@ -220,7 +223,24 @@ namespace Sqlp {
 			scheduled_duration  = Duration.from_minutes (stmt.column_int (i++));
 			trip				= stmt.column_text (i++);
 			trip_date			= Date.from_iso8601 (empty_if_null(stmt.column_text (i++)));
-//			stderr.printf("WTF: %s\n", sout.timezone.name);
+		}
+
+		protected override void before_save () {
+			var flight_table = table as FlightTable;
+			var old_self = flight_table.find_by_id (id) as Flight;
+			var leg_conflict = flight_table.find_by_date_leg (date, leg.get ());
+			if (leg_conflict != null && leg_conflict.id != id) {
+// 				if (old_self != null) {
+// 					leg_conflict.leg = old_self.leg;
+// 					// nuke old_self leg for unique constraint
+// 					old_self.leg = -1;
+// 					old_self.save ();
+// 				} else {
+// 					leg_conflict.leg = leg_conflict.leg + 1;
+// 				}
+				leg_conflict.leg = Ordinal.set (leg_conflict.leg.get () + 1);
+				leg_conflict.save ();
+			}
 		}
 
 		protected override bool save_dependencies () {

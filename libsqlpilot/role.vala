@@ -1,6 +1,13 @@
 using Sqlite;
 namespace Sqlp {
 	public class Role : Record {
+		public enum ColumnOffset {
+			id,
+			ForFlights,
+			Abbreviation,
+			Description,
+		}
+
 		public bool for_flights { get; set; default = true; }
 		public string abbreviation { get; set; default = ""; }
 		public string description { get; set; default = ""; }

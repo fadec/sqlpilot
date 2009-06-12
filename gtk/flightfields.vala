@@ -128,7 +128,7 @@ namespace SqlpGtk {
 			role_store.select_sql = "SELECT * FROM Roles";
 			role_store.database = logbook;
 			role_store.observe (logbook.role);
-			role = new ComboBoxEntry.with_model (role_store, 1);
+			role = new ComboBoxEntry.with_model (role_store, logbook.role.column_offset ("Abbreviation"));
 			role_entry = role.get_child () as Entry;
 			role_entry.changed += on_role_entry_changed;
 			role_entry.focus_out_event += on_role_entry_focus_out_event;
@@ -143,14 +143,14 @@ namespace SqlpGtk {
 			aircraft_store.observe (logbook.aircraft);
 
 			// Combobox for aircraft registration.
-			aircraft_registration = new ComboBoxEntry.with_model (aircraft_store, 2);
+			aircraft_registration = new ComboBoxEntry.with_model (aircraft_store, logbook.aircraft.column_offset ("Registration"));
 			aircraft_registration_entry = aircraft_registration.get_child () as Entry;
 			aircraft_registration_entry.changed += on_aircraft_entry_changed;
 			aircraft_registration_entry.focus_out_event += on_aircraft_entry_focus_out_event;
 			(gui.object ("aircraft_slot") as Box).add (aircraft_registration);
 
 			// And for aircraft tail.
-			aircraft_tail = new ComboBoxEntry.with_model (aircraft_store, 3);
+			aircraft_tail = new ComboBoxEntry.with_model (aircraft_store, logbook.aircraft.column_offset ("Tail"));
 			aircraft_tail_entry = aircraft_tail.get_child () as Entry;
 			aircraft_tail_entry.changed += on_aircraft_entry_changed;
 			aircraft_tail_entry.focus_out_event += on_aircraft_entry_focus_out_event;
@@ -167,7 +167,7 @@ namespace SqlpGtk {
 
 		protected override void set_fields_from_record () {
 			date.set_text  (flight.date.to_iso8601 ());
-			leg.set_text (flight.leg.to_string ());
+			leg.set_text (flight.leg.get().to_string ());
 			route.set_text (flight.route.to_string_icao ());
 		   	role_entry.set_text (flight.role == null ? "" : flight.role.abbreviation);
 			aircraft_entry.set_text (flight.aircraft == null ? "" : (tail.active ? flight.aircraft.tail : flight.aircraft.registration));
@@ -194,7 +194,7 @@ namespace SqlpGtk {
 
 		public override void set_record_from_fields () {
 			flight.date = Sqlp.Date.from_iso8601 (date.get_text ());
-			flight.leg = leg.get_value_as_int ();
+			flight.leg = Ordinal.set (leg.get_value_as_int ());
 			flight.route.read (route.get_text ());
 //			flight.role = browser.book.logbook.role.find_by_abbreviation (role.get_text ());
 		}
@@ -371,6 +371,9 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_leg_value_changed (SpinButton button)
 		{
+			int new_value = button.get_value_as_int ();
+			flight.leg = Ordinal.set (new_value);
+			save ();
 		}
 
 		[CCode (instance_pos = -1)]

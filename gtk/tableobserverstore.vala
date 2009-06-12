@@ -234,7 +234,7 @@ namespace SqlpGtk {
 			set (iter, 0, statement.column_int64 (0));
 			var ncol = statement.column_count ();
 			for (int col=1; col < ncol; col++) {
-				switch (statement_column_type (statement, col)) {
+				switch ((int)statement_column_type (statement, col)) {
 				case typeof(bool):
 					set (iter, col, statement.column_int (col));
 					break;
