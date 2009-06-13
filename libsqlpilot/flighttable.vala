@@ -5,6 +5,7 @@ namespace Sqlp {
 		protected Statement find_by_date_fltno_dep_arr_stmt;
 		protected Statement find_by_role_id_stmt;
 		protected Statement find_by_date_leg_stmt;
+		protected Statement find_greatest_leg_stmt;
 
 		public FlightTable ( Logbook logbook ) {
 			this.record_type = typeof (Flight);
@@ -28,6 +29,9 @@ namespace Sqlp {
 			
 			find_by_date_leg_stmt = database.prepare_statement (
 				"SELECT * FROM Flights WHERE Date = ? AND Leg = ?");
+
+			find_greatest_leg_stmt = database.prepare_statement (
+				"SELECT leg FROM Flights WHERE Date = ? ORDER BY leg DESC");
 		}
 
 		public Flight? find_by_date_fltno_dep_arr (string date_str,
@@ -56,6 +60,20 @@ namespace Sqlp {
 			stmt.bind_text (1, date.to_iso8601 ());
 			stmt.bind_int (2, leg);
 			return find_first (stmt) as Flight?;
+		}
+
+		public int next_leg (Date date) {
+			weak Statement stmt = find_greatest_leg_stmt;
+			int next = 1;
+
+			stmt.bind_text (1, date.to_iso8601 ());
+			if (stmt.step () == ROW) {
+				next = stmt.column_int (0) + 1;
+			}
+			stmt.reset ();
+			stmt.clear_bindings ();
+
+			return next;
 		}
 	}
 }

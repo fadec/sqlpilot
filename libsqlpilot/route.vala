@@ -27,13 +27,6 @@ namespace Sqlp {
 			clear ();
 		}
 
-		public string to_string_icao () {
-			return "bla icao";
-		}
-		public string to_string_iata () {
-			return "bla iata";
-		}
-		
 		public void clear () {
 			routings = new List<Routing> ();
 		}
@@ -64,8 +57,11 @@ namespace Sqlp {
 			return this;
 		}
 
-		public Route write () {
-			return this;
+		public void append_to_string_builder (StringBuilder sb, Airport.KeyPreference kp) {
+			foreach (Routing r in routings) {
+				sb.append (" ");
+				sb.append (r.airport.show (kp));
+			}
 		}
 
 		public bool save () {

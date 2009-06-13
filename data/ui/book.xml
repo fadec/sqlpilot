@@ -5,6 +5,7 @@
   <object class="GtkNotebook" id="top">
     <property name="visible">True</property>
     <property name="can_focus">True</property>
+    <property name="tab_pos">left</property>
     <property name="homogeneous">True</property>
     <child>
       <object class="GtkVBox" id="flights">
@@ -22,6 +23,7 @@
       </object>
       <packing>
         <property name="tab_expand">True</property>
+        <property name="tab_fill">False</property>
         <property name="detachable">True</property>
       </packing>
     </child>
@@ -180,7 +182,7 @@
       </packing>
     </child>
     <child>
-      <object class="GtkVBox" id="reports">
+      <object class="GtkVBox" id="people">
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
@@ -192,12 +194,34 @@
       </packing>
     </child>
     <child type="tab">
+      <object class="GtkLabel" id="label12">
+        <property name="visible">True</property>
+        <property name="label" translatable="yes">People</property>
+      </object>
+      <packing>
+        <property name="position">5</property>
+        <property name="tab_fill">False</property>
+      </packing>
+    </child>
+    <child>
+      <object class="GtkVBox" id="reports">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <placeholder/>
+        </child>
+      </object>
+      <packing>
+        <property name="position">9</property>
+      </packing>
+    </child>
+    <child type="tab">
       <object class="GtkLabel" id="label8">
         <property name="visible">True</property>
         <property name="label" translatable="yes">Reports</property>
       </object>
       <packing>
-        <property name="position">8</property>
+        <property name="position">9</property>
         <property name="tab_fill">False</property>
       </packing>
     </child>
@@ -210,7 +234,7 @@
         </child>
       </object>
       <packing>
-        <property name="position">9</property>
+        <property name="position">10</property>
         <property name="tab_expand">True</property>
       </packing>
     </child>
@@ -233,7 +257,7 @@
         </child>
       </object>
       <packing>
-        <property name="position">10</property>
+        <property name="position">11</property>
       </packing>
     </child>
     <child type="tab">
@@ -242,7 +266,7 @@
         <property name="label" translatable="yes">Import</property>
       </object>
       <packing>
-        <property name="position">8</property>
+        <property name="position">9</property>
         <property name="tab_fill">False</property>
       </packing>
     </child>

@@ -3,6 +3,22 @@ using Sqlite;
 namespace Sqlp {
 	public class Airport : Record <AirportTable> {
 
+		public enum KeyType {
+			ICAO, IATA, USER
+		}
+
+		public struct KeyPreference {
+			public KeyType p1;
+			public KeyType p2;
+			public KeyType p3;
+
+			public KeyPreference (KeyType a, KeyType b, KeyType c) {
+				p1 = a;
+				p2 = b;
+				p3 = c;
+			}
+		}
+
 		public string icao { get; set; default = ""; }
 		public string iata { get; set; default = ""; }
 		public string abbreviation { get; set; default = ""; }
@@ -63,6 +79,25 @@ namespace Sqlp {
 			default: abbreviation = ident;
 				break;
 			}
+		}
+
+		public string show (KeyPreference kp) {
+			switch (kp.p1) {
+			case KeyType.ICAO: if (icao.length > 0) return icao; break;
+			case KeyType.IATA: if (iata.length > 0) return iata; break;
+			case KeyType.USER: if (abbreviation.length > 0) return abbreviation; break;
+			}
+			switch (kp.p2) {
+			case KeyType.ICAO: if (icao.length > 0) return icao; break;
+			case KeyType.IATA: if (iata.length > 0) return iata; break;
+			case KeyType.USER: if (abbreviation.length > 0) return abbreviation; break;
+			}
+			switch (kp.p3) {
+			case KeyType.ICAO: if (icao.length > 0) return icao; break;
+			case KeyType.IATA: if (iata.length > 0) return iata; break;
+			case KeyType.USER: if (abbreviation.length > 0) return abbreviation; break;
+			}
+			return "";
 		}
 
 		public override bool valid () {

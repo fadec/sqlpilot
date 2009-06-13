@@ -57,7 +57,7 @@ sqlpilot_gtk_SOURCES = \
 	$(sqlpilot_gtk_VALASOURCES:.vala=.c)
 
 vala.stamp: $(sqlpilot_gtk_VALASOURCES)
-	$(VALAC) $(VALAFLAGS) --basedir $(top_srcdir) \
+	$(VALAC) $(VALAFLAGS) \
 	--vapidir $(top_srcdir)/libsqlpilot \
 	--pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi \

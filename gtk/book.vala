@@ -57,6 +57,9 @@ namespace SqlpGtk {
 			
 			var airports = new AirportEditor (logbook.airport);
 			set_slot ("airports", airports);
+
+			var people = new PersonEditor (logbook.people);
+			set_slot ("people", people);
 		}
 	}
 }

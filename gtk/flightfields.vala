@@ -45,12 +45,11 @@ namespace SqlpGtk {
 		private TableObserverStore role_store;
 		private TableObserverStore aircraft_store;
 
-
 		private TagChooser tag_chooser;
 
 		private JoinTableEditor crew_chooser;
-		private TableEditor person_editor;
 
+		private Airport.KeyPreference airport_key_preference;
 
 		public Flight flight {
 			get { return this.record as Flight; }
@@ -90,9 +89,6 @@ namespace SqlpGtk {
 			crew_chooser = new CrewChooser (table, logbook.crew, logbook.people);
 			set_slot ("crew_chooser", crew_chooser);
 
-			person_editor = new PersonEditor (logbook.people);
-			set_slot ("person_editor", person_editor);
-
 			var date_edit = new Entry ();
 			gui.box ("date_slot").pack_start (date_edit, true, true, 0);
 			date_edit.show ();
@@ -118,6 +114,7 @@ namespace SqlpGtk {
 			night				= gui.object ("night")					as Entry;
 			instrument			= gui.object ("instrument")				as Entry;
 			hood				= gui.object ("hood")					as Entry;
+			cross_country       = gui.object ("cross_country")          as ToggleButton;
 			flight_number		= gui.object ("flight_number")			as Entry;
 			trip				= gui.object ("trip")					as Entry;
 			trip_date			= gui.object ("trip_date")				as Entry;
@@ -158,6 +155,19 @@ namespace SqlpGtk {
 
 			set_aircraft_combobox_visibility ();
 
+			set_aircraft_key_preference ();
+		}
+
+		private void set_aircraft_key_preference () {
+			if (icao.active) {
+				airport_key_preference = Airport.KeyPreference (Airport.KeyType.USER,
+																Airport.KeyType.ICAO,
+																Airport.KeyType.IATA);
+			} else {
+				airport_key_preference = Airport.KeyPreference (Airport.KeyType.USER,
+																Airport.KeyType.IATA,
+																Airport.KeyType.ICAO);
+			}
 		}
 
 		private void set_aircraft_combobox_visibility () {
@@ -167,8 +177,8 @@ namespace SqlpGtk {
 
 		protected override void set_fields_from_record () {
 			date.set_text  (flight.date.to_iso8601 ());
-			leg.set_text (flight.leg.get().to_string ());
-			route.set_text (flight.route.to_string_icao ());
+			leg.set_text (flight.leg.to_string ());
+			route.set_text (flight.show_full_route (airport_key_preference));
 		   	role_entry.set_text (flight.role == null ? "" : flight.role.abbreviation);
 			aircraft_entry.set_text (flight.aircraft == null ? "" : (tail.active ? flight.aircraft.tail : flight.aircraft.registration));
 			duration.set_text (flight.duration.to_string ());
@@ -180,6 +190,7 @@ namespace SqlpGtk {
 			night.set_text (flight.night.to_string ());
 			instrument.set_text (flight.instrument.to_string ());
 			hood.set_text (flight.hood.to_string ());
+			cross_country.active = flight.cross_country;
 			trip.set_text (empty_if_null(flight.trip));
 			trip_date.set_text (flight.trip_date.to_iso8601 ());
 			flight_number.set_text (empty_if_null(flight.flight_number));
@@ -194,7 +205,7 @@ namespace SqlpGtk {
 
 		public override void set_record_from_fields () {
 			flight.date = Sqlp.Date.from_iso8601 (date.get_text ());
-			flight.leg = Ordinal.set (leg.get_value_as_int ());
+			flight.leg.set (leg.get_value_as_int ());
 			flight.route.read (route.get_text ());
 //			flight.role = browser.book.logbook.role.find_by_abbreviation (role.get_text ());
 		}
@@ -360,19 +371,41 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_trip_changed (Entry entry)
 		{
-			
+			edited = true;
 		}
+		
+		[CCode (instance_pos = -1)]
+		public bool on_trip_focus_out_event (Entry entry, EventFocus ev)
+		{
+			if (edited) {
+				flight.trip = trip.get_text ();
+				save ();
+			}
+			return false;
+		}
+
 
 		[CCode (instance_pos = -1)]
 		public void on_flight_number_changed (Entry entry)
 		{
+			edited = true;
+		}
+
+		[CCode (instance_pos = -1)]
+		public bool on_flight_number_focus_out_event (Entry entry, EventFocus ev)
+		{
+			if (edited) {
+				flight.flight_number = flight_number.get_text ();
+				save ();
+			}
+			return false;
 		}
 
 		[CCode (instance_pos = -1)]
 		public void on_leg_value_changed (SpinButton button)
 		{
 			int new_value = button.get_value_as_int ();
-			flight.leg = Ordinal.set (new_value);
+			flight.leg.set (new_value);
 			save ();
 		}
 
@@ -413,16 +446,21 @@ namespace SqlpGtk {
 		{
 			var origin = flight.origin != null ? flight.origin.id : 0;
 			var destination = flight.destination != null ? flight.destination.id : 0;
+
 			flight.read_full_route (route.get_text ());
-			route.set_text (flight.show_full_route_icao ());
-			if (origin != flight.origin.id) {
+
+			var new_origin = flight.origin != null ? flight.origin.id : 0;
+			var new_destination = flight.destination != null ? flight.destination.id : 0;
+
+			if (origin != new_origin) {
 				// origin changed
 				message ("origin changed");
 			}
-			if (destination != flight.destination.id) {
+			if (destination != new_destination) {
 				// destination changed
 				message ("destination changed");
 			}
+			route.set_text (flight.show_full_route (airport_key_preference));
 			return false;
 		}
 
@@ -676,6 +714,7 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_icao_toggled (ToggleButton button)
 		{
+			set_aircraft_key_preference ();
 		}
 
 		[CCode (instance_pos = -1)]
@@ -692,6 +731,8 @@ namespace SqlpGtk {
 		[CCode (instance_pos = -1)]
 		public void on_cross_country_toggled(Widget button)
 		{
+			flight.cross_country = cross_country.active;
+			save ();
 		}
 	}
 }

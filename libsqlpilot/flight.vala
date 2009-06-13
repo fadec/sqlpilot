@@ -100,7 +100,7 @@ namespace Sqlp {
 		}
 
 		public Date date;
-		public Ordinal leg;
+		public Ordinal leg = Ordinal.invalid ();
 		public TimeOfDay actual_out = TimeOfDay ();
 		public TimeOfDay actual_in = TimeOfDay ();
 		public Duration duration;
@@ -152,7 +152,10 @@ namespace Sqlp {
 			return i;
 		}
 
+		// route member only includes enroute stuff.
+		// read_full_route modifies origin and destination.
 		public void read_full_route (string str) {
+			route.clear ();
 			string[] idents = str.split (" ");
 			if (idents.length > 0) {
 				this.origin = (table.database as Logbook).airport.find_or_create_by_ident (idents[0]) as Airport;
@@ -160,15 +163,31 @@ namespace Sqlp {
 					route.append_maybe_airport ((table.database as Logbook).airport.find_or_create_by_ident (idents[i]));
 				}
 				this.destination = (table.database as Logbook).airport.find_or_create_by_ident (idents[idents.length - 1]);
+			} else {
+				origin = null;
+				destination = null;
 			}
 		}
 
-		public string show_full_route_icao () {
-			return (origin != null ? origin.icao : "?") + " " + (destination != null ? destination.icao : "?");
-		}
+		public string show_full_route (Airport.KeyPreference kp) {
+			if (origin == null && destination == null && route.length == 0)
+				return "";
 
-		public string show_full_route_iata () {
-			return (origin != null ? origin.iata : "?") + " " + (destination != null ? destination.iata : "?");
+			var sb = new StringBuilder.sized (64);
+			if (origin == null)
+				sb.append ("?");
+			else
+				sb.append (origin.show (kp));
+
+			route.append_to_string_builder (sb, kp);
+
+			sb.append (" ");
+			if (destination == null)
+				sb.append ("?");
+			else
+				sb.append (destination.show (kp));
+
+			return sb.str;
 		}
 
 		private void bind_time_of_day (Statement stmt, int iter, TimeOfDay tod, Timezone in_timezone) {
@@ -213,7 +232,7 @@ namespace Sqlp {
 			night				= Duration.from_minutes (stmt.column_int (i++));
 			instrument			= Duration.from_minutes (stmt.column_int (i++));
 			hood				= Duration.from_minutes (stmt.column_int (i++));
-			cross_country		= (bool) stmt.column_text (i++);
+			cross_country		= (bool) stmt.column_int (i++);
 			notes				= stmt.column_text (i++);
 			flight_number       = stmt.column_text (i++);
 			i++; // skip local
@@ -226,20 +245,27 @@ namespace Sqlp {
 		}
 
 		protected override void before_save () {
+			adjust_leg ();
+		}
+
+		private void adjust_leg () {
 			var flight_table = table as FlightTable;
-			var old_self = flight_table.find_by_id (id) as Flight;
-			var leg_conflict = flight_table.find_by_date_leg (date, leg.get ());
-			if (leg_conflict != null && leg_conflict.id != id) {
-// 				if (old_self != null) {
-// 					leg_conflict.leg = old_self.leg;
-// 					// nuke old_self leg for unique constraint
-// 					old_self.leg = -1;
-// 					old_self.save ();
-// 				} else {
-// 					leg_conflict.leg = leg_conflict.leg + 1;
-// 				}
-				leg_conflict.leg = Ordinal.set (leg_conflict.leg.get () + 1);
-				leg_conflict.save ();
+			if (leg.valid ()) {
+				var old_self = flight_table.find_by_id (id) as Flight;
+				var leg_conflict = flight_table.find_by_date_leg (date, leg.get ());
+				if (leg_conflict != null && leg_conflict.id != this.id) {
+					if (old_self != null) {
+						leg_conflict.leg = old_self.leg;
+						// nuke old_self leg for unique constraint with leg_conflict
+						old_self.leg = Ordinal.invalid ();
+						old_self.save ();
+					} else {
+						leg_conflict.leg.set (leg_conflict.leg.get () + 1);
+					}
+					leg_conflict.save ();
+				}
+			} else {
+				leg.set (flight_table.next_leg (date));
 			}
 		}
 

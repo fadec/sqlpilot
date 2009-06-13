@@ -70,7 +70,7 @@ libsqlpilot_la_SOURCES = \
 	$(libsqlpilot_la_VALASOURCES:.vala=.c)
 
 libsqlpilot.vapi vala.stamp: $(libsqlpilot_la_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir) --library libsqlpilot \
+	$(VALAC) --library libsqlpilot \
 	--vapidir $(top_srcdir)/vapi --pkg sqlite3 --pkg time \
 	-C -H libsqlpilot.h $^
 	touch $@
