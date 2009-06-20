@@ -1,3 +1,5 @@
+using Sqlite;
+
 namespace Sqlp {
 
 	public struct TimeOfDay {
@@ -9,7 +11,13 @@ namespace Sqlp {
 		public int get_minute () { return (int)(seconds % 3600) / 60; }
 		public int get_second () { return (int)(seconds % 60); }
 
+		public TimeOfDay () {
+			seconds = -1;
+			timezone = Timezone ("UTC");
+		}
+
 		public static TimeOfDay from_tzname_time (string timezone_string, string time_string) {
+			assert (time_string != null);
 			var tod = TimeOfDay ();
 			if (time_string == "") {
 				tod.seconds = -1;
@@ -21,6 +29,7 @@ namespace Sqlp {
 		}
 
 		public static TimeOfDay from_timezone_time (Timezone timezone, string time_string) {
+			assert (time_string != null);
 			var tod = TimeOfDay ();
 			if (time_string == "") {
 				tod.seconds = -1;
@@ -32,6 +41,7 @@ namespace Sqlp {
 		}
 
 		public static TimeOfDay from_iso8601 (string time_string) {
+			assert (time_string != null);
 			var tod = TimeOfDay ();
 			if (time_string == "") {
 				tod.seconds = -1;
@@ -55,7 +65,7 @@ namespace Sqlp {
 		}
 
 		public void read_iso8601 (string time) {
-			if ((time == null) || (! time.validate ())) return;
+			if (! time.validate ()) return;
 			int h = 0;
 			int m = 0;
 			int s = 0;
@@ -74,6 +84,22 @@ namespace Sqlp {
 		public void set_hms (int h, int m, int s) {
 			seconds = h * 3600 + m * 60 + s;
 		}
+
+		public TimeOfDay.from_stmt (Statement stmt, int offset) {
+			if (stmt.column_type (offset) == Sqlite.NULL) {
+				seconds = -1;
+			} else {
+				from_tzname_time ("UTC", stmt.column_text (offset));
+			}
+		}
+
+// 		public void bind_to_stmt (Statement stmt, int index) {
+// 			if (valid ()) {
+// 				stmt.bind_text (index, to_iso8601 ());
+// 			} else {
+// 				stmt.bind_null (index);
+// 			}
+// 		}
 
 	}
 }

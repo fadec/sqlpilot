@@ -45,10 +45,6 @@ namespace SqlpGtk {
 			property_chooser.parent_id = role.id;
 		}
 
-		protected override void set_record_from_fields () {
-		}
-
-
 		[CCode (instance_pos = -1)]
 		public void on_abbreviation_changed (Entry entry) {
 			edited = true;

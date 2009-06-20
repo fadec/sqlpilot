@@ -34,7 +34,6 @@ namespace Sqlp {
 		}
 
 		public time_t diff (Datetime other) {
-			// return difftime (mktime (), other.mktime ());
 			return mktime () - other.mktime ();
 		}
 

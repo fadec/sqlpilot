@@ -218,6 +218,15 @@ namespace Sqlite {
 			this.clear_bindings ();
 			return code;
 		}
+
+		public weak string column_nonnull_text (int offset) {
+			if (this.column_type (offset) == Sqlite.NULL) {
+				return "";
+			} else {
+				return column_text (offset);
+			}
+		}
+
 	}
 
 	[Compact]

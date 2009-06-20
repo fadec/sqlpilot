@@ -203,17 +203,6 @@ namespace SqlpGtk {
 			crew_chooser.parent_id = flight.id;
 		}
 
-		public override void set_record_from_fields () {
-			flight.date = Sqlp.Date.from_iso8601 (date.get_text ());
-			flight.leg.set (leg.get_value_as_int ());
-			flight.route.read (route.get_text ());
-//			flight.role = browser.book.logbook.role.find_by_abbreviation (role.get_text ());
-		}
-
-		private void reconcile_time_entries (Entry changed, Entry start, Entry stop, Entry elapsed) {
-			
-		}
-
 		private void format_time_entry_for_edit (Entry entry) {
 			string text = entry.get_text ();
 			if (! text.validate ()) return;
@@ -544,6 +533,7 @@ namespace SqlpGtk {
 			format_elapsed_time_entry (entry);
 			flight.scheduled_duration = Duration.from_string (entry.get_text ());
 			if (! flight.scheduled_duration.valid ()) {
+				message ("invalid duration");
 				return false;
 			}
 			if (flight.scheduled_out.valid ()) {
@@ -578,7 +568,19 @@ namespace SqlpGtk {
 		public bool on_actual_out_focus_out_event (Entry entry, EventFocus ev)
 		{
 			format_time_of_day_entry (entry);
-			reconcile_time_entries (entry, actual_out, actual_in, duration);
+			flight.actual_out = TimeOfDay.from_timezone_time (timezone_for_departure (), entry.get_text ());
+			if (! flight.actual_out.valid ()) return false;
+			if (flight.actual_in.valid ()) {
+				flight.duration = Datetime (date_for_difftime (), flight.actual_out).duration_to_time_of_day (flight.actual_in);
+				duration.set_text (flight.duration.to_string ());
+			} else if (flight.duration.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.actual_out).add (flight.duration);
+				flight.actual_in = tmp.time_of_day;
+				actual_in.set_text (flight.actual_in.to_iso8601 ());
+			}
+			if (edited) {
+				save ();
+			}
 			return false;
 		}
 
@@ -599,7 +601,19 @@ namespace SqlpGtk {
 		public bool on_actual_in_focus_out_event (Entry entry, EventFocus ev)
 		{
 			format_time_of_day_entry (entry);
-			reconcile_time_entries (entry, actual_out, actual_in, duration);
+			flight.actual_in = TimeOfDay.from_timezone_time (timezone_for_arrival (), entry.get_text ());
+			if (! flight.actual_in.valid ()) return false;
+			if (flight.actual_out.valid ()) {
+				flight.duration = Datetime (date_for_difftime (), flight.actual_out).duration_to_time_of_day (flight.actual_in);
+				duration.set_text (flight.duration.to_string ());
+			} else if (flight.duration.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.actual_in).subtract (flight.duration);
+				flight.actual_out = tmp.time_of_day;
+				actual_out.set_text (flight.actual_out.to_iso8601 ());
+			}
+			if (edited) {
+				save ();
+			}
 			return false;
 		}
 
@@ -620,7 +634,23 @@ namespace SqlpGtk {
 		public bool on_duration_focus_out_event (Entry entry, EventFocus ev)
 		{
 			format_elapsed_time_entry (entry);
-			reconcile_time_entries (entry, actual_out, actual_in, duration);
+			flight.duration = Duration.from_string (entry.get_text ());
+			if (! flight.duration.valid ()) {
+				message ("invalid duration");
+				return false;
+			}
+			if (flight.actual_out.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.actual_out).add (flight.duration);
+				flight.actual_in = tmp.time_of_day;
+				actual_in.set_text (flight.actual_in.to_iso8601 ());
+			} else if (flight.actual_in.valid ()) {
+				var tmp = Datetime (date_for_difftime (), flight.actual_in).subtract (flight.duration);
+				flight.actual_out = tmp.time_of_day;
+				actual_out.set_text (flight.actual_out.to_iso8601 ());
+			}
+			if (edited) {
+				save ();
+			}
 			return false;
 		}
 

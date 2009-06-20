@@ -43,9 +43,6 @@ namespace SqlpGtk {
 			property_chooser.parent_id = model.id;
 		}
 
-		protected override void set_record_from_fields () {
-		}
-
 		[CCode (instance_pos = -1)]
 		public void on_name_changed (Entry entry) {
 			edited = true;

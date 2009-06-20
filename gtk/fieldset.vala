@@ -35,7 +35,6 @@ namespace SqlpGtk {
 		}
 
 		protected abstract void set_fields_from_record ();
-		protected abstract void set_record_from_fields ();
 
 		public bool save () {
 			if (setting_record) return true;

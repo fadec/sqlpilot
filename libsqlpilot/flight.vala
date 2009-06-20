@@ -103,16 +103,16 @@ namespace Sqlp {
 		public Ordinal leg = Ordinal.invalid ();
 		public TimeOfDay actual_out = TimeOfDay ();
 		public TimeOfDay actual_in = TimeOfDay ();
-		public Duration duration;
-		public Duration night;
-		public Duration instrument;
-		public Duration hood;
+		public Duration duration = Duration ();
+		public Duration night = Duration ();
+		public Duration instrument = Duration ();
+		public Duration hood = Duration ();
 		public bool cross_country;
 		public string notes = "";
 		public string flight_number = "";
 		public TimeOfDay scheduled_out = TimeOfDay ();
 		public TimeOfDay scheduled_in = TimeOfDay ();
-		public Duration scheduled_duration;
+		public Duration scheduled_duration = Duration ();
 		public string trip = "";
 		public Date trip_date;
 
@@ -131,10 +131,10 @@ namespace Sqlp {
 			bind_time_of_day (stmt, i++, actual_in, (destination != null) ? destination.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, actual_in, Timezone ("UTC"));
 
-			bind_duration (stmt, i++, duration);
-			bind_duration (stmt, i++, night);
-			bind_duration (stmt, i++, instrument);
-			bind_duration (stmt, i++, hood);
+			duration.bind_to_stmt (stmt, i++); //bind_duration (stmt, i++, duration);
+			night.bind_to_stmt (stmt, i++); //bind_duration (stmt, i++, night);
+			instrument.bind_to_stmt (stmt, i++); //bind_duration (stmt, i++, instrument);
+			hood.bind_to_stmt (stmt, i++); //bind_duration (stmt, i++, hood);
 
 			stmt.bind_int (i++, (int) cross_country);
 			stmt.bind_nonempty_text		(i++, notes);
@@ -145,7 +145,7 @@ namespace Sqlp {
 			bind_time_of_day (stmt, i++, scheduled_in, (destination != null) ? destination.timezone : Timezone ("UTC"));
 			bind_time_of_day (stmt, i++, scheduled_in, Timezone ("UTC"));
 
-			bind_duration (stmt, i++, scheduled_duration);
+			scheduled_duration.bind_to_stmt (stmt, i++); //bind_duration (stmt, i++, scheduled_duration);
 
 			stmt.bind_nonempty_text		(i++, trip);
 			stmt.bind_nonempty_text		(i++, trip_date.to_iso8601() );
@@ -205,14 +205,6 @@ namespace Sqlp {
 			}
 		}
 
-		private void bind_duration (Statement stmt, int iter, Duration dur) {
-			if (dur.to_minutes () > 0) {
-				stmt.bind_nonzero_int64 (iter, dur.to_minutes ());
-			} else {
-				stmt.bind_null (iter);
-			}
-		}
-
 		public override void set_from_stmt (Statement stmt) {
 			var i = 1;
 			aircraft_id			= stmt.column_int64 (i++);
@@ -225,21 +217,24 @@ namespace Sqlp {
 			leg					= Ordinal.from_stmt (stmt, i++);
 
 			i++; // skip local ss read
-			actual_out			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
+			actual_out			= TimeOfDay.from_stmt (stmt, i++);
 			i++; // skip local
-			actual_in			= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			duration			= Duration.from_minutes (stmt.column_int (i++));
-			night				= Duration.from_minutes (stmt.column_int (i++));
-			instrument			= Duration.from_minutes (stmt.column_int (i++));
-			hood				= Duration.from_minutes (stmt.column_int (i++));
+			actual_in			= TimeOfDay.from_stmt (stmt, i++);
+
+			duration			= Duration.from_stmt (stmt, i++);
+			night				= Duration.from_stmt (stmt, i++);
+			instrument			= Duration.from_stmt (stmt, i++);
+			hood				= Duration.from_stmt (stmt, i++);
 			cross_country		= (bool) stmt.column_int (i++);
 			notes				= stmt.column_text (i++);
 			flight_number       = stmt.column_text (i++);
+
 			i++; // skip local
-			scheduled_out		= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
+			scheduled_out		= TimeOfDay.from_stmt (stmt, i++);
 			i++; // skip local
-			scheduled_in		= TimeOfDay.from_tzname_time ("UTC", stmt.column_text (i++));
-			scheduled_duration  = Duration.from_minutes (stmt.column_int (i++));
+			scheduled_in		= TimeOfDay.from_stmt (stmt, i++);
+
+			scheduled_duration  = Duration.from_stmt (stmt, i++);
 			trip				= stmt.column_text (i++);
 			trip_date			= Date.from_iso8601 (empty_if_null(stmt.column_text (i++)));
 		}

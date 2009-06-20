@@ -38,6 +38,17 @@ namespace Sqlp {
 		time = TimeOfDay.from_iso8601 ("08:00");
 		assert (dt1.duration_to_time_of_day (time).to_hours () == 23);
 
+
+		dt1 = Datetime (Date ().from_iso8601 ("2009-07-04"), TimeOfDay.from_iso8601 ("09:00"));
+		var dur = Duration.from_minutes (85);
+		dt2 = dt1.add (dur);
+		assert (dt2.diff (dt1) == 85 * 60);
+
+		dt1 = Datetime (Date ().from_iso8601 ("2009-07-04"), TimeOfDay.from_iso8601 ("09:00"));
+		dur = Duration.from_minutes (85);
+		dt2 = dt1.subtract (dur);
+		assert (dt2.diff (dt1) == -85 * 60);
+
 		return 0;
 	}
 }

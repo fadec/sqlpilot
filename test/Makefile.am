@@ -14,7 +14,7 @@ TESTS = $(check_PROGRAMS)
 TESTS_ENVIRONMENT = $(srcdir)/runner.sh
 
 AM_CPPFLAGS = \
-	-I$(top_srcdir) \
+	-I$(top_srcdir)/libsqlpilot \
 	$(GLIB_CFLAGS)
 
 BUILT_SOURCES = \
@@ -34,7 +34,7 @@ test_csv_SOURCES = \
 
 
 test_csv.vala.stamp: $(test_csv_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir) \
+	$(VALAC) \
 	--vapidir $(top_srcdir)/libcsv --pkg libcsv -C $^
 	touch $@
 
@@ -51,7 +51,7 @@ test_logbook_SOURCES = \
 
 
 test_logbook.vala.stamp: $(test_logbook_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir) \
+	$(VALAC) \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^
 	touch $@
@@ -71,7 +71,7 @@ test_date_SOURCES = \
 
 
 test_date.vala.stamp: $(test_date_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir) \
+	$(VALAC) \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^
 	touch $@
@@ -90,7 +90,7 @@ test_timeofday_SOURCES = \
 
 
 test_timeofday.vala.stamp: $(test_timeofday_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir) \
+	$(VALAC) \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^
 	touch $@
@@ -110,7 +110,7 @@ test_datetime_SOURCES = \
 
 
 test_datetime.vala.stamp: $(test_datetime_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir) \
+	$(VALAC) \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^
 	touch $@
@@ -130,7 +130,7 @@ test_duration_SOURCES = \
 
 
 test_duration.vala.stamp: $(test_duration_VALASOURCES)
-	$(VALAC) --basedir $(top_srcdir) \
+	$(VALAC) \
 	--vapidir $(top_srcdir)/libsqlpilot --pkg libsqlpilot \
 	--vapidir $(top_srcdir)/vapi --pkg sqlite3 -C $^
 	touch $@

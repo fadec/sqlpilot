@@ -37,9 +37,9 @@ namespace Sqlp {
 		public override void set_from_stmt (Statement stmt) {
 			var i = 1;
 			model_id = stmt.column_int64 (i++);
-			registration = stmt.column_text (i++);
-			tail = stmt.column_text (i++);
-			notes = stmt.column_text (i++);
+			registration = stmt.column_nonnull_text (i++);
+			tail = stmt.column_nonnull_text (i++);
+			notes = stmt.column_nonnull_text (i++);
 		}
 
 		protected override bool save_dependencies () {

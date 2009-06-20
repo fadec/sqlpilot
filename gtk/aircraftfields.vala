@@ -16,8 +16,5 @@ namespace SqlpGtk {
 
 		protected override void set_fields_from_record () {
 		}
-
-		protected override void set_record_from_fields () {
-		}
 	}
 }

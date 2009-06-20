@@ -52,19 +52,19 @@ namespace Sqlp {
 
 		public override void set_from_stmt (Statement stmt) {
 			var i = 1;
-			icao = stmt.column_text (i++);
-			iata = stmt.column_text (i++);
-			abbreviation = stmt.column_text (i++);
-			name = stmt.column_text (i++);
-			city = stmt.column_text (i++);
-			province = stmt.column_text (i++);
-			country = stmt.column_text (i++);
-			lat = stmt.column_text (i++);
-			lon = stmt.column_text (i++);
-			elev = stmt.column_text (i++);
+			icao = stmt.column_nonnull_text (i++);
+			iata = stmt.column_nonnull_text (i++);
+			abbreviation = stmt.column_nonnull_text (i++);
+			name = stmt.column_nonnull_text (i++);
+			city = stmt.column_nonnull_text (i++);
+			province = stmt.column_nonnull_text (i++);
+			country = stmt.column_nonnull_text (i++);
+			lat = stmt.column_nonnull_text (i++);
+			lon = stmt.column_nonnull_text (i++);
+			elev = stmt.column_nonnull_text (i++);
 			i++; i++;
 			timezone = Timezone (stmt.column_text (i++));
-			notes = stmt.column_text (i++);
+			notes = stmt.column_nonnull_text (i++);
 		}
 
 		public void set_ident (string? ident) {
