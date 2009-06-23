@@ -19,7 +19,9 @@ sqlpilot_gtk_VALASOURCES = \
 	airporteditor.vala \
 	airportfields.vala \
 	application.vala \
+	approachtypeeditor.vala \
 	approacheditor.vala \
+	approachview.vala \
 	book.vala \
 	browser.vala \
 	component.vala \
@@ -30,10 +32,14 @@ sqlpilot_gtk_VALASOURCES = \
 	flightbrowser.vala \
 	flightfields.vala \
 	glideeditor.vala \
+	glideview.vala \
 	gui.vala \
 	holdeditor.vala \
+	holdview.vala \
 	jointableeditor.vala \
 	landingeditor.vala \
+	landingview.vala \
+	launchtypeeditor.vala \
 	main.vala \
 	modeleditor.vala \
 	modelfields.vala \
@@ -43,6 +49,7 @@ sqlpilot_gtk_VALASOURCES = \
 	roleeditor.vala \
 	rolefields.vala \
 	settreemodelfilter.vala \
+	surfaceeditor.vala \
 	tableeditor.vala \
 	tableeditorwithfields.vala \
 	tableobserverstore.vala \
@@ -50,6 +57,7 @@ sqlpilot_gtk_VALASOURCES = \
 	tagchooser.vala \
 	tageditor.vala \
 	takeoffeditor.vala \
+	takeoffview.vala \
 	util.vala
 
 sqlpilot_gtk_SOURCES = \

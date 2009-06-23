@@ -13,12 +13,8 @@ namespace SqlpGtk {
 			this.gui_name = "parent_child_editor";
 		}
 
-		construct {
-			table_view.set_column_visible (0, false); // id
-			table_view.set_column_visible (1, false); // flight_id
-			table_view.set_column_visible (2, false); // airport_id
-			table_view.set_column_visible (3, false); // approach_type_id
-			table_view.set_column_visible (4, false); // Sequence
+		public override TableView make_table_view (TableObserverStore store) {
+			return new ApproachView.with_model (store);
 		}
 
 		public override void associate_parent (Record child, int64 parent_id) {

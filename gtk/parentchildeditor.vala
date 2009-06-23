@@ -5,8 +5,8 @@ namespace SqlpGtk {
 
 	public abstract class ParentChildEditor : Pane {
 
-		public unowned Sqlp.Table <Database, Record> parent_table { get; construct; }
-		public unowned Sqlp.Table <Database, Record> child_table { get; construct; }
+		public unowned Sqlp.Table parent_table { get; construct; }
+		public unowned Sqlp.Table child_table { get; construct; }
 
 		public string child_view_name { get; construct; }
 		public string parent_id_fkey_column_name { get; construct; }
@@ -24,11 +24,12 @@ namespace SqlpGtk {
 		private Button remove_button;
 		private Label summary_label;
 		private TableObserverStore table_store;
-		protected TableView table_view; // vala 0.6.1 makes bad C if this is private :/
+		private TableView table_view;
 
 
 		// example (child as Glide).flight = parent_table.find_by_id (parent_id);
 		public abstract void associate_parent (Record child, int64 parent_id);
+
 		private abstract void on_table_view_edited (TableView view, int64 id, string column_name, string new_text);
 
 		public ParentChildEditor (Sqlp.Table parent_table, Sqlp.Table child_table, string child_view_name, string parent_id_fkey_column_name) {
@@ -54,11 +55,15 @@ namespace SqlpGtk {
 			};
 			table_store.database = parent_table.database;
 			table_store.observe (child_table);
-			table_view = new TableView.with_model (table_store);
+			table_view = make_table_view (table_store);
 			table_view.edited += call_on_table_view_edited;
 			set_slot ("list_view", table_view);
 
 			summary_label.set_text (summary_label_text ());
+		}
+
+		protected virtual TableView make_table_view (TableObserverStore store) {
+			return new TableView.with_model (table_store);
 		}
 
 		private void call_on_table_view_edited (TableView view, int64 id, string column_name, string new_text) {

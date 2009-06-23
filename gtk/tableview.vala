@@ -9,6 +9,8 @@ namespace SqlpGtk {
 
 		public signal void edited (int64 record_id, string column_name, string new_text);
 		public signal void selection_changed ();
+
+		protected TableObserverStore store;
 		public TableObserverStore model {
 			get { return store; }
 			construct {
@@ -16,11 +18,11 @@ namespace SqlpGtk {
 			}
 		}
 
+		protected TreeView view;
+
 		private ScrolledWindow scrolled_window;
-		private TableObserverStore store;
 		private SetTreeModelFilter<int64?> filter;
 		private TreeModelSort sort;
-		private TreeView view;
 
  		public TableView.with_model (TableObserverStore model) {
 			this.model = model;
@@ -117,13 +119,15 @@ namespace SqlpGtk {
 			selection_changed ();
  		}
 
-		private void add_view_columns () {
+		protected virtual void add_view_columns () {
 			int ncol = store.column_count;
 			for (int n = 0; n < ncol; n++) {
 				var renderer = new CellRendererText ();
 				renderer.editable = true;
 				renderer.edited += on_cell_renderer_edited;
+				
 				renderer.set_data ("column-name", store.column_names[n]);
+					
 				var column = new TreeViewColumn.with_attributes (store.column_names[n],
 																 renderer,
 																 "text",
@@ -133,6 +137,7 @@ namespace SqlpGtk {
 				column.set_reorderable (true);
 				column.set_resizable (true);
 				view.insert_column (column, n);
+
 			}
 		}
 
@@ -140,12 +145,16 @@ namespace SqlpGtk {
 			edited (get_id_at_path (new TreePath.from_string (path)), (string)renderer.get_data ("column-name"), new_text);
 		}
 
-		private int64 get_id_at_path (TreePath path) {
+		protected int64 get_id_at_path (TreePath path) {
 			TreeIter iter;
 			int64 id = 0;
 			store.get_iter (out iter, convert_sort_path_to_model_path (path));
 			store.get (iter, 0, &id);
 			return id;
+		}
+
+		protected int64 get_id_at_path_string (string path) {
+			return get_id_at_path (new TreePath.from_string (path));
 		}
 
 		private void focus_iter (TreeIter iter) {

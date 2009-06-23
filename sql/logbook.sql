@@ -65,9 +65,9 @@ CREATE TABLE Flights (
 
 CREATE TABLE FlightTags (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Description CHAR
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE FlightTaggings (
@@ -92,16 +92,16 @@ CREATE TABLE Routing (
 CREATE TABLE Roles (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ForFlights BOOLEAN NOT NULL DEFAULT 1
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Description CHAR
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE RoleProperties (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Description CHAR
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE RolePropertyAssignments (
@@ -125,17 +125,17 @@ CREATE TABLE Aircraft (
 
 CREATE TABLE Models (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Make CHAR
 	,Name CHAR
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE ModelProperties (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Description CHAR
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE ModelPropertyAssignments (
@@ -151,7 +151,7 @@ CREATE TABLE Airports (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
 	,ICAO CHAR
 	,IATA CHAR
-	,Abbreviation CHAR -- For glider launch sites/ships
+	,Abbreviation CHAR -- For glider launch sites/ships, null okay
 	,Name CHAR
 	,City CHAR
 	,State CHAR
@@ -163,14 +163,14 @@ CREATE TABLE Airports (
 	,OffsetDST FLOAT
 	,Timezone CHAR
 	,Notes TEXT
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE Surfaces (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Description CHAR -- grass, pavement-good, water, ship, glacier, towered airport, ...
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE Takeoffs (
@@ -205,14 +205,14 @@ CREATE TABLE Landings (
 	,FullStop BOOLEAN NOT NULL DEFAULT 1
 	,NightVision BOOLEAN NOT NULL DEFAULT 0
 	,Autoland BOOLEAN NOT NULL DEFAULT 0
-	,CHECK (id <> 0 AND flight_id <> 0 AND airport_id <> 0 AND surface_id <> 0)
+	,CHECK (id <> 0 AND flight_id <> 0 AND airport_id <> 0 AND surface_id <> 0 AND (Night OR NOT NightVision))
 );
 
 CREATE TABLE ApproachTypes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Description CHAR
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE Approaches (
@@ -260,9 +260,9 @@ CREATE TABLE Glides (
 
 CREATE TABLE LaunchTypes (
 	id INTEGER PRIMARY KEY AUTOINCREMENT
-	,Abbreviation CHAR
+	,Abbreviation CHAR NOT NULL
 	,Description CHAR
-	,CHECK (id <> 0)
+	,CHECK (id <> 0 AND length(Abbreviation) > 0)
 );
 
 CREATE TABLE People (
@@ -299,13 +299,26 @@ CREATE TABLE Registry (
        ,value INTEGER
 );
 
-INSERT INTO LaunchTypes (Abbreviation) VALUES ("Aerotow");
-INSERT INTO LaunchTypes (Abbreviation) VALUES ("Winch");
-INSERT INTO LaunchTypes (Abbreviation) VALUES ("Self Launch");
-INSERT INTO LaunchTypes (Abbreviation) VALUES ("Hill");
-INSERT INTO LaunchTypes (Abbreviation) VALUES ("Bungee");
-INSERT INTO LaunchTypes (Abbreviation) VALUES ("Balloon Drop");
+INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("AERO", "Aerotow");
+INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("WNCH", "Winch");
+INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("SELF", "Self Launch");
+INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("HILL", "Hill");
+INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("BUNG", "Bungee");
+INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("BALN", "Balloon Drop");
 
+INSERT INTO Surfaces (Abbreviation, Description) VALUES ("P", "Paved");
+INSERT INTO Surfaces (Abbreviation, Description) VALUES ("G", "Grass");
+INSERT INTO Surfaces (Abbreviation, Description) VALUES ("D", "Dirt");
+INSERT INTO Surfaces (Abbreviation, Description) VALUES ("W", "Water");
+INSERT INTO Surfaces (Abbreviation, Description) VALUES ("S", "Snow");
+INSERT INTO Surfaces (Abbreviation, Description) VALUES ("B", "Boat");
+
+INSERT INTO ApproachTypes (Abbreviation, Description) VALUES ("VIS", "Visual");
+INSERT INTO ApproachTypes (Abbreviation, Description) VALUES ("ILS", "ILS");
+INSERT INTO ApproachTypes (Abbreviation, Description) VALUES ("VOR", "VOR");
+INSERT INTO ApproachTypes (Abbreviation, Description) VALUES ("NDB", "NDB");
+INSERT INTO ApproachTypes (Abbreviation, Description) VALUES ("GPS", "GPS");
+INSERT INTO ApproachTypes (Abbreviation, Description) VALUES ("RNAV", "RNAV");
 
 INSERT INTO Reports (Title, SQL) VALUES ("Time in Model", "select Model, count(*) as Flights, hm(sum(pic)) as PIC, hm(sum(sic)) as SIC, sum(dist) as Distance, hm(sum(dur)) as Total, hm(avg(dur)) as AvgDur, hm(sum(inst)) as Inst, hm(sum(night)) as Night from experience group by model;");
 
@@ -399,8 +412,10 @@ CREATE UNIQUE	 INDEX airports_abbreviaton		 ON airports(abbreviation);
 CREATE UNIQUE	 INDEX aircraft_registration		 ON aircraft(registration);
 CREATE UNIQUE	 INDEX aircraft_tail			 ON aircraft(tail);
 CREATE UNIQUE	 INDEX roles_abbreviation		 ON roles(abbreviation);
-CREATE UNIQUE	 INDEX model_abbreviation		 ON models(abbreviation);
+CREATE UNIQUE	 INDEX models_abbreviation		 ON models(abbreviation);
 CREATE UNIQUE	 INDEX routing_flight_id_sequence 	 ON routing(flight_id, Sequence);
+CREATE UNIQUE	 INDEX surfaces_abbreviation		 ON surfaces(abbreviation);
+CREATE UNIQUE	 INDEX launch_types_abbreviation	 ON LaunchTypes(abbreviation);
 CREATE UNIQUE	 INDEX takeoffs_flight_id_sequence	 ON takeoffs(flight_id, Sequence);
 CREATE UNIQUE	 INDEX landings_flight_id_sequence	 ON landings(flight_id, Sequence);
 CREATE UNIQUE	 INDEX approaches_flight_id_sequence	 ON approaches(flight_id, Sequence);

@@ -13,15 +13,12 @@ namespace SqlpGtk {
 			this.gui_name = "parent_child_editor";
 		}
 
-		construct {
-			table_view.set_column_visible (0, false); // id
-			table_view.set_column_visible (1, false); // flight_id
-			table_view.set_column_visible (2, false); // launch_type_id
-			table_view.set_column_visible (3, false); // Sequence
-		}
-
 		public override void associate_parent (Record child, int64 parent_id) {
 			(child as Glide).flight = parent_table.find_by_id (parent_id) as Flight;
+		}
+
+		public override TableView make_table_view (TableObserverStore store) {
+			return new GlideView.with_model (store);
 		}
 
 		private override void on_table_view_edited (TableView view, int64 id, string column_name, string new_text) {

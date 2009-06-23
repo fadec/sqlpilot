@@ -157,6 +157,13 @@ namespace SqlpGtk {
 			return s;
 		}
 
+		public int column_offset (string name) {
+			for (int i = 0; i < column_count; i++) {
+				if (name == column_names[i]) return i;
+			}
+			return -1;
+		}
+
 		private int init_column_names () {
 			int ncol;
 			int n;

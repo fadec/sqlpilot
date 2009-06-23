@@ -58,6 +58,15 @@ namespace SqlpGtk {
 			var airports = new AirportEditor (logbook.airport);
 			set_slot ("airports", airports);
 
+			var approach_types = new ApproachTypeEditor (logbook.approach_types);
+			set_slot ("approach_types", approach_types);
+
+			var surfaces = new SurfaceEditor (logbook.surfaces);
+			set_slot ("surfaces", surfaces);
+
+			var launch_types = new LaunchTypeEditor (logbook.launch_types);
+			set_slot ("launch_types", launch_types);
+
 			var people = new PersonEditor (logbook.people);
 			set_slot ("people", people);
 		}

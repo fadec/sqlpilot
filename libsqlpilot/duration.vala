@@ -55,7 +55,7 @@ namespace Sqlp {
 
 		public string to_string () {
 			if (valid ()) {
-				var s = "%d+%d".printf ((int)(_seconds / 3600), (int)((_seconds / 60) % 60));
+				var s = "%d+%02d".printf ((int)(_seconds / 3600), (int)((_seconds / 60) % 60));
 				return s;
 			} else {
 				return "";
