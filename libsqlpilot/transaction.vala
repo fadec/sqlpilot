@@ -3,9 +3,9 @@ using GLib;
 
 namespace Sqlp {
 	public class Transaction : Object {
-		private static const string ta_begin_sql    = "BEGIN TRANSACTION;";
-		private static const string ta_commit_sql   = "COMMIT;";
-		private static const string ta_rollback_sql = "ROLLBACK;";
+		private static const string ta_begin_sql    = "SAVEPOINT s";
+		private static const string ta_commit_sql   = "RELEASE s";
+		private static const string ta_rollback_sql = "ROLLBACK TO s;";
 
 		public unowned Database database { get; construct; }
 
@@ -27,24 +27,21 @@ namespace Sqlp {
 		}
 
 		public void begin () {
-			if (nesting++ > 0) return;
 			ta_begin.step ();
 			ta_begin.reset ();
-			nesting = 0;
+			nesting++;
 		}
 
 		public void commit () {
-			if (--nesting > 0) return;
 			ta_commit.step ();
 			ta_commit.reset ();
-			nesting = 0;
+			nesting--;
 		}
 
 		public void rollback () {
-			if (--nesting > 0) return;
 			ta_rollback.step ();
 			ta_rollback.reset ();
-			nesting = 0;
+			nesting--;
 		}
 	}
 }

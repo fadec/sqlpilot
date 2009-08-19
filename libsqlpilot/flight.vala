@@ -245,17 +245,22 @@ namespace Sqlp {
 
 		private void adjust_leg () {
 			var flight_table = table as FlightTable;
+
 			if (leg.valid ()) {
 				var old_self = flight_table.find_by_id (id) as Flight;
 				var leg_conflict = flight_table.find_by_date_leg (date, leg.get ());
+
 				if (leg_conflict != null && leg_conflict.id != this.id) {
-					if (old_self != null) {
+					// have conflict
+					if (old_self != null && old_self.leg.get () != leg_conflict.leg.get ()) {
+						// swap legs
 						leg_conflict.leg = old_self.leg;
 						// nuke old_self leg for unique constraint with leg_conflict
 						old_self.leg = Ordinal.invalid ();
 						old_self.save ();
 					} else {
-						leg_conflict.leg.set (leg_conflict.leg.get () + 1);
+						// cannot swap legs
+						leg_conflict.leg = Ordinal.invalid ();
 					}
 					leg_conflict.save ();
 				}

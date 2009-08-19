@@ -8,7 +8,7 @@ namespace SqlpGtk {
 		public ApproachEditor (Logbook logbook) {
 			this.parent_table = logbook.flight;
 			this.child_table = logbook.approaches;
-			this.child_view_name = "Approaches";
+			this.child_view_sql = "SELECT * FROM Approaches";
 			this.parent_id_fkey_column_name = "flight_id";
 			this.gui_name = "parent_child_editor";
 		}

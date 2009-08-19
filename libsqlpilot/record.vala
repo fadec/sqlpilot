@@ -37,10 +37,10 @@ namespace Sqlp {
 			if (! valid ()) return false;
 			int ncol = 0;
 			weak Statement stmt;
-			weak Transaction transaction = ((Sqlp.Database)_table.database).transaction;
+			weak Transaction transaction = _table.database.transaction;
 			before_save ();
 			transaction.begin ();
-			message ("<%s>", _table.table_name);
+			message ("<%s-%s>", _table.table_name, id.to_string());
 			if (! save_dependencies ()) {
 				transaction.rollback ();
 				return false;
@@ -64,7 +64,11 @@ namespace Sqlp {
 			message("before step %s", _table.table_name);
 			int err_code = stmt.step ();
 			if (err_code != Sqlite.DONE) {
-				message ("Database error %d: %s\n", err_code, stmt.db_handle().errmsg ());
+				warning ("Database error saving %s with id = %s\n%d: %s\n",
+						 _table.table_name,
+						 id.to_string (),
+						 err_code,
+						 stmt.db_handle().errmsg ());
 			}
 			message("after step %s", _table.table_name);
 			stmt.reset ();
@@ -77,7 +81,7 @@ namespace Sqlp {
 				return false;
 			}
 			transaction.commit ();
-			message ("</%s>", _table.table_name);
+			message ("</%s-%s>", _table.table_name, id.to_string ());
 			if (stmt == _table.insert_stmt) _table.tell_inserted (this);
 			else _table.tell_updated (this);
 			return true;

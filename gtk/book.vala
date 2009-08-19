@@ -31,6 +31,7 @@ namespace SqlpGtk {
 			logbook = new Logbook (logbook_filename);
 			// So this gui is the only thing that can chage db and thereby stay in sync with it.
 			logbook.use_exclusive_locking ();
+			logbook.db.exec ("SAVEPOINT outer");
 			add_pages ();
 		}
 

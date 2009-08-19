@@ -8,7 +8,7 @@ namespace SqlpGtk {
 		public HoldEditor (Logbook logbook) {
 			this.parent_table = logbook.flight;
 			this.child_table = logbook.holds;
-			this.child_view_name = "Holds";
+			this.child_view_sql = "SELECT * FROM Holds";
 			this.parent_id_fkey_column_name = "flight_id";
 			this.gui_name = "parent_child_editor";
 		}

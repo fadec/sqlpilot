@@ -19,6 +19,12 @@ namespace SqlpGtk {
 			case "Abbreviation":
 				airport.abbreviation = new_text;
 				break;
+			case "ICAO":
+				airport.icao = new_text;
+				break;
+			case "IATA":
+				airport.iata = new_text;
+				break;
 			}
 			airport.save ();
 		}

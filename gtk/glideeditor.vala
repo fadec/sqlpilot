@@ -8,7 +8,7 @@ namespace SqlpGtk {
 		public GlideEditor (Logbook logbook) {
 			this.parent_table = logbook.flight;
 			this.child_table = logbook.glides;
-			this.child_view_name = "Glides";
+			this.child_view_sql = "SELECT * FROM Glides";
 			this.parent_id_fkey_column_name = "flight_id";
 			this.gui_name = "parent_child_editor";
 		}

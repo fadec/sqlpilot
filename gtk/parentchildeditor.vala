@@ -8,7 +8,7 @@ namespace SqlpGtk {
 		public unowned Sqlp.Table parent_table { get; construct; }
 		public unowned Sqlp.Table child_table { get; construct; }
 
-		public string child_view_name { get; construct; }
+		public string child_view_sql { get; construct; }
 		public string parent_id_fkey_column_name { get; construct; }
 
 		private int64 _parent_id;
@@ -17,6 +17,7 @@ namespace SqlpGtk {
 			set {
 				_parent_id = value;
 				table_store.repopulate ();
+				on_parent_id_changed (value);
 			}
 		}
 
@@ -24,7 +25,7 @@ namespace SqlpGtk {
 		private Button remove_button;
 		private Label summary_label;
 		private TableObserverStore table_store;
-		private TableView table_view;
+		protected TableView table_view;
 
 
 		// example (child as Glide).flight = parent_table.find_by_id (parent_id);
@@ -32,12 +33,14 @@ namespace SqlpGtk {
 
 		private abstract void on_table_view_edited (TableView view, int64 id, string column_name, string new_text);
 
-		public ParentChildEditor (Sqlp.Table parent_table, Sqlp.Table child_table, string child_view_name, string parent_id_fkey_column_name) {
+		private virtual void on_parent_id_changed (int64 id) {}
+
+		public ParentChildEditor (Sqlp.Table parent_table, Sqlp.Table child_table, string child_view_sql, string parent_id_fkey_column_name) {
 			// for example
 			this.gui_name = "parent_child_editor";
 			this.parent_table = parent_table;
 			this.child_table = child_table;
-			this.child_view_name = child_view_name;
+			this.child_view_sql = child_view_sql;
 			this.parent_id_fkey_column_name = parent_id_fkey_column_name;
 		}
 
@@ -47,7 +50,7 @@ namespace SqlpGtk {
 			summary_label = gui.object ("summary") as Label;
 
 			table_store = new TableObserverStore ();
-			table_store.select_sql = "SELECT * FROM " + child_view_name;
+			table_store.select_sql = child_view_sql;
 			table_store.scope_sql = parent_id_fkey_column_name + " = ?";
 			table_store.bind_scope = (stmt, i) => {
 				stmt.bind_int64 (i++, parent_id);

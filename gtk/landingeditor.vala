@@ -8,7 +8,7 @@ namespace SqlpGtk {
 		public LandingEditor (Logbook logbook) {
 			this.parent_table = logbook.flight;
 			this.child_table = logbook.landings;
-			this.child_view_name = "Landings";
+			this.child_view_sql = "SELECT * FROM Landings";
 			this.parent_id_fkey_column_name = "flight_id";
 			this.gui_name = "parent_child_editor";
 		}

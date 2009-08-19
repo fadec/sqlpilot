@@ -36,7 +36,7 @@ namespace Sqlp {
 			if (_db.prepare (sql, (int)sql.length, out stmt) == OK) {
 				return stmt;
 			} else {
-				message ("Error preparing statement.\n%s\n%s", sql, db.errmsg ());
+				warning ("error preparing statement\n%s\n%s", sql, db.errmsg ());
 				return null;
 			}
 		}

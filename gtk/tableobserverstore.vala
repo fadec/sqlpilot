@@ -16,6 +16,9 @@ namespace SqlpGtk {
 	// for the store is read directly from the Database object.
 	public class TableObserverStore : ListStore {
 
+		// The database where the sql for this store is compiled.
+		// Observed tables have their own database and their
+		// database is none of this class's business.
 		public unowned Sqlp.Database _database;
 		public unowned Sqlp.Database database {
 			get { return _database; }
@@ -89,6 +92,8 @@ namespace SqlpGtk {
 			init ();
 		}
 
+		// Should begin binding at offset i and increment i for each
+		// binding. Return the new i.
 		private int default_bind_scope (Statement stmt, int i) {
 			// bound 0 variables
 			return i;
@@ -103,6 +108,11 @@ namespace SqlpGtk {
 			_scoped_select_sql = select_sql + " WHERE (" + scope_sql + ")";
 			select_statement = database.prepare_statement (scoped_select_sql);
 			select_by_id_statement = database.prepare_statement (scoped_select_sql + " AND " + id_column_name + " = ?");
+
+			if (select_statement == null || select_by_id_statement == null) {
+				warning ("could not prepare required statements");
+			}
+
 			if (column_names == null) {
 				// do once
 				init_column_types ();
@@ -113,7 +123,7 @@ namespace SqlpGtk {
 
 		// Catch all table events.
 		// Scope applied elsewhere.
-		public void observe (Sqlp.Table table, int column = 0) {
+		public void observe (Sqlp.Table table) {
 			table.inserted += (table, record) => {
 				add_id (record.id);
 			};
@@ -125,6 +135,19 @@ namespace SqlpGtk {
 			};
 			table.destroyed += (table, record) => {
 				remove_id (record.id);
+			};
+		}
+
+		// watch a foriegn key
+		// arg1 - foreign table
+		// arg2 - column in this select/select_by_id statement that
+		// corresponds to the id of the foreign table
+		public void observe_foreign (Sqlp.Table table, int column) {
+			table.updated += (table, record) => {
+			};
+			table.deleted += (table, id) => {
+			};
+			table.destroyed += (table, record) => {
 			};
 		}
 

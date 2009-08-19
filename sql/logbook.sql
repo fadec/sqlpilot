@@ -190,6 +190,23 @@ CREATE TABLE Takeoffs (
 	,CHECK (id <> 0 AND flight_id <> 0 AND airport_id <> 0 AND surface_id <> 0)
 );
 
+CREATE VIEW TakeoffsView AS
+SELECT t.id,
+t.flight_id,
+t.airport_id,
+t.surface_id,
+t.Sequence,
+t.Night,
+t.Runway,
+t.Crosswind,
+t.Visibility,
+t.Aborted,
+COALESCE(a.ICAO, '') || '/' || COALESCE(a.IATA, '') || '/'|| COALESCE(a.Abbreviation, '') as Airport,
+s.abbreviation as Surface
+FROM Takeoffs t
+LEFT JOIN Airports a ON a.id = t.airport_id
+LEFT JOIN Surfaces s ON s.id = t.surface_id;
+
 CREATE TABLE Landings (
         id INTEGER PRIMARY KEY AUTOINCREMENT
         ,flight_id INTEGER NOT NULL
@@ -298,6 +315,19 @@ CREATE TABLE Registry (
        ,key INTEGER		-- integer affinity for sort
        ,value INTEGER
 );
+
+INSERT INTO FlightTags (Abbreviation, Description) VALUES ("CHECK", "Checkride");
+
+INSERT INTO Roles (Abbreviation, Description) VALUES ("CA", "Captain");
+INSERT INTO Roles (Abbreviation, Description) VALUES ("FO", "First Officer");
+INSERT INTO Roles (Abbreviation, Description) VALUES ("FE", "Flight Engineer");
+INSERT INTO Roles (Abbreviation, Description) VALUES ("FI", "Flight Instructor");
+INSERT INTO Roles (Abbreviation, Description) VALUES ("ST", "Student");
+INSERT INTO Roles (Abbreviation, Description) VALUES ("SOLO", "Solo");
+
+INSERT INTO RoleProperties (Abbreviation, Description) VALUES ("PIC", "Pilot in Command");
+INSERT INTO RoleProperties (Abbreviation, Description) VALUES ("SIC", "Second in Command");
+INSERT INTO RoleProperties (Abbreviation, Description) VALUES ("PIC", "Pilot in Command");
 
 INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("AERO", "Aerotow");
 INSERT INTO LaunchTypes (Abbreviation, Description) VALUES ("WNCH", "Winch");

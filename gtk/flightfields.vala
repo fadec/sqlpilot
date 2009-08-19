@@ -168,6 +168,7 @@ namespace SqlpGtk {
 																Airport.KeyType.IATA,
 																Airport.KeyType.ICAO);
 			}
+			route.set_text (flight.show_full_route (airport_key_preference));
 		}
 
 		private void set_aircraft_combobox_visibility () {
@@ -450,6 +451,13 @@ namespace SqlpGtk {
 				message ("destination changed");
 			}
 			route.set_text (flight.show_full_route (airport_key_preference));
+
+			if (edited) {
+				save ();
+				// make takeoff view update its airport filter
+				takeoff_editor.parent_id = flight.id;
+			}
+
 			return false;
 		}
 
