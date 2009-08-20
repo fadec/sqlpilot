@@ -65,6 +65,8 @@ namespace Sqlp {
 		}
 
 		public bool save () {
+			assert (_flight != null);
+			table.delete_by_flight_id (_flight.id);
 			int seq = 1;
 			foreach (Routing r in routings) {
 				r.flight = _flight;

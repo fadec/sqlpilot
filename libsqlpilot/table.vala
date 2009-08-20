@@ -136,7 +136,14 @@ namespace Sqlp {
 		public void delete_id (int64 id) {
 			unowned Statement stmt = this.delete_stmt;
 			stmt.bind_nonzero_int64 (1, id);
-			stmt.step ();
+			int err_code = stmt.step ();
+			if (err_code != Sqlite.DONE) {
+				warning ("Database error deleting %s with id = %s\n%d: %s\n",
+						 this.table_name,
+						 id.to_string (),
+						 err_code,
+						 stmt.db_handle().errmsg ());
+			}
 			stmt.reset ();
 			stmt.clear_bindings ();
 			deleted (id);

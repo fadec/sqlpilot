@@ -66,7 +66,7 @@ namespace Sqlp {
 			if (err_code != Sqlite.DONE) {
 				warning ("Database error saving %s with id = %s\n%d: %s\n",
 						 _table.table_name,
-						 id.to_string (),
+						 id == 0 ? "<new>" : id.to_string (),
 						 err_code,
 						 stmt.db_handle().errmsg ());
 			}
@@ -91,7 +91,14 @@ namespace Sqlp {
 			if (is_new () || ! deletable ()) return false;
 			weak Statement stmt = _table.delete_stmt;
 			stmt.bind_nonzero_int64 (1, id);
-			stmt.step ();
+			int err_code = stmt.step ();
+			if (err_code != Sqlite.DONE) {
+				warning ("Database error deleting %s with id = %s\n%d: %s\n",
+						 _table.table_name,
+						 id.to_string (),
+						 err_code,
+						 stmt.db_handle().errmsg ());
+			}
 			stmt.reset ();
 			stmt.clear_bindings ();
 			_table.tell_destroyed (this);
